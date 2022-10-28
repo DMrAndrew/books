@@ -1,5 +1,6 @@
-##
 description = "Default layout"
+
+[socialconnect]
 ==
 <!DOCTYPE html>
 <html>
@@ -20,7 +21,8 @@ description = "Default layout"
                 </button>
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        {% partial 'site/nav' %}
+                    {% component 'socialconnect' %}
+                        {# {% partial 'site/nav' %} #}
                     </ul>
                 </div>
             </div>
