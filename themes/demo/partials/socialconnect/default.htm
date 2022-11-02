@@ -1,0 +1,47 @@
+{% set links = __SELF__.socialLinks %}
+
+
+
+{% if links|length > 0 %}
+
+{% for link in links %}
+
+<form action="{{ link.url }}">
+<button  class="auth-item-sign _indent">
+    <svg class="square-16 _{{link.tag}}">
+        <use xlink:href="{{('assets/icon-sprite/svg-sprite.svg#social-'~link.tag~'-stroked-16') | theme}}"></use>
+    </svg>
+    <span class="ui-text--medium">{{ link.label }}</span>
+</button>
+</form>
+
+{% endfor %}
+
+{% endif %}
+
+
+<!--<button class="auth-item-sign _indent">-->
+<!--    <svg class="square-16 _vk">-->
+<!--        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-vk-stroked-16' | theme}}"></use>-->
+<!--    </svg>-->
+<!--    <span class="ui-text&#45;&#45;medium">ВКонтакте</span>-->
+<!--</button>-->
+<!--<button class="auth-item-sign _indent">-->
+<!--    <svg class="square-16 _ok">-->
+<!--        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-stroked-16' | theme}}"></use>-->
+<!--    </svg>-->
+<!--    <span class="ui-text&#45;&#45;medium">Одноклассники</span>-->
+<!--</button>-->
+<!--<button class="auth-item-sign _indent">-->
+<!--    <svg class="square-16">-->
+<!--        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-google-stroked-16' | theme}}"></use>-->
+<!--    </svg>-->
+<!--    <span class="ui-text&#45;&#45;medium">Google</span>-->
+<!--</button>-->
+<!--<button class="auth-item-sign _indent">-->
+<!--    <svg class="square-16 _yandex">-->
+<!--        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-yandex-stroked-16' | theme}}"></use>-->
+<!--    </svg>-->
+<!--    <span class="ui-text&#45;&#45;medium">Яндекс</span>-->
+<!--</button>-->
+
