@@ -1,0 +1,31 @@
+<div  class="auth" >
+<form  class="auth__container _small"
+       data-request="{{ __SELF__ }}::onRestorePassword"
+       data-request-update="'{{ __SELF__ }}::reset': '#partialUserResetForm'"
+>
+    <div class="auth__header _desktop">
+        <svg class="square-24 auth__button-back active">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+        </svg>
+        <div class="auth__title ui-text--bold">Восстановление пароля</div>
+
+    </div>
+    <div class="auth__body">
+        <div class="auth__addition">
+            Чтобы сбросить пароль, введите почту, которую вы указали при регистрации аккаунта.
+        </div>
+
+        <div class="auth__form-container">
+            <div class="ui-input-wrapper">
+                <input class="ui-input-item _size-32" name="email" type="email" id="userRestoreEmail" placeholder="Электронная почта">
+                <span data-validate-for="email"></span>
+                <span class="validation-error" data-validate-for="email"></span>
+            </div>
+        </div>
+
+        <button  type="submit" class="auth__action ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+            <span class="ui-text--medium">Восстановить</span>
+        </button>
+    </div>
+</form>
+</div>
