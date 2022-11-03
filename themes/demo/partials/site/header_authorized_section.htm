@@ -314,7 +314,7 @@
                         </div>
                     </li>
                     <li class="dropwdown-profile__separator"></li>
-                    <li><a href="#" onclick="logout()">Выйти</a></li>
+                    <li><a href="#" data-request="session::onLogout"  data-request-success="closeForm()" data-request-redirect="/">Выйти</a></li>
                 </ul>
             </div>
         </div>
@@ -819,3 +819,6 @@
         </div>
     </div>
 </div>
+<script>
+    initFn();
+</script>

@@ -17,24 +17,26 @@
     #login_popup, #register_popup, #register_form, #login_form, #auth_popup {
         display: none;
     }
-    .validation-error{
+
+    .validation-error {
         color: red;
         font-size: 12px;
     }
 </style>
 {% styles %}
 <script src="{{ 'assets/js/tabs.js'|theme }}"></script>
-<script defer src="{{'assets/js/menu-mobile.js' | theme}}"></script>
-<script defer  src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script defer src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="{{'assets/js/menu-mobile.js' | theme}}"></script>
+<script src="{{'assets/js/favorite-accordion.js' | theme}}"></script>
+
 
 <script>
-    let logout = () => oc.ajax('onLogout',{
-        data:{
-            redirect: '',
-        }
-    })
     let openForm = (id = 'auth_popup') => document.getElementById(id).style.display = 'flex'
-    let closeForm = (id = 'auth_popup') => document.getElementById(id).style.display = 'none'
+    let closeForm = (id = 'auth_popup') => {
+        const c = document.getElementById(id)
+        c ? c.style.display = 'none' : null
+    }
     let closeContainers = () => Array.from(document.getElementsByClassName('auth__container')).forEach(e => e.style.display = 'none')
     let openContainer = (id) => document.getElementById(id).style.display = 'block'
     let toForm = (id) => {

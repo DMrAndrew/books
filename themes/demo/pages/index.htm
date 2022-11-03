@@ -3,13 +3,16 @@ layout = "default"
 title = "Welcome"
 meta_title = "Welcome"
 
-[account auth]
+[account]
 paramCode = "code"
 forceSecure = 0
 requirePassword = 0
+
+[session]
+security = "all"
 ==
+{% component 'session' %}
 <div>
-    {% component 'auth' %}
     <div class="promo _indent">
         <div class="ui-container">
             <div class="promo__container">

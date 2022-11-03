@@ -127,9 +127,9 @@
 <!--        <a href="#" class="ui-link _violet">Маги</a>, <a href="#" class="ui-link _violet">Приключения</a>-->
 <!--    </div>-->
 <!--</div>-->
-<script  src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-<script >
-    const swiper = new Swiper('.swiper', {
+
+<script>
+    (() => {new Swiper('.swiper', {
         // Optional parameters
         direction: 'horizontal',
         loop: false,
@@ -153,5 +153,5 @@
             nextEl: '.thematic-section__nav._right',
             prevEl: '.thematic-section__nav._left',
         },
-    });
+    });})()
 </script>

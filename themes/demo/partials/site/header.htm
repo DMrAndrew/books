@@ -1,10 +1,4 @@
-[session]
-security = "all"
-==
-{% component 'session' %}
-<header class="header">
-    <div class="ui-container">
-
+<div class="ui-container">
         <div class="header__panel">
             <svg class="header__menu-burger square-24 active" data-button-menu="mobile">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#burger-24' | theme}}"></use>
@@ -35,9 +29,6 @@ security = "all"
             {% else %}
             {% partial "site/header_authorized_section" %}
             {% endif %}
-            <svg class="header__menu-search square-24" data-button-search="open">
-                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#search-stroked-24' | theme}}"></use>
-            </svg>
         </div>
         <nav class="header__nav nav">
             <ul class="nav__list">
@@ -143,10 +134,3 @@ security = "all"
             </ul>
         </nav>
     </div>
-    <div id="auth"></div>
-</header>
-
-
-
-
-

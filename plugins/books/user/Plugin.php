@@ -3,13 +3,13 @@
 use Backend;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
+use Books\User\Behaviors\BookUser;
 
 /**
  * Plugin Information File
  */
 class Plugin extends PluginBase
 {
-    public $elevated = true;
     public $require = ['RainLab.User'];
 
     /**
@@ -44,11 +44,7 @@ class Plugin extends PluginBase
     public function boot()
     {
         User::extend(function (User $model) {
-            $model->addValidationRule('birthday', 'required');
-            $model->addValidationRule('birthday', 'date');
-            $model->addFillable('birthday');
-            //TODO перевод для birthday
-
+            $model->implementClassWith(BookUser::class);
         });
     }
 

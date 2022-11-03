@@ -1,5 +1,18 @@
 [socialconnect]
 ==
+<div class="header__actions-auth">
+    <button class="header__actions-auth-button ui-button ui-button-view--3 ui-button-size--32"
+
+            onclick="loginPopup()"
+    >
+        Войти
+    </button>
+    <button class="header__actions-auth-button ui-button ui-button-view--2 ui-button-size--32"
+            onclick="registerPopup()"
+    >
+        Зарегистрироваться
+    </button>
+</div>
 <div id="auth_popup" class="auth" style="display: none">
     <div id="login_popup" class="auth__container _small">
         <div class="auth__header _desktop">
@@ -159,7 +172,6 @@
     <form id="login_form" class="auth__container _small"
           data-request="onSignin"
           data-request-validate
-          data-request-redirect="/"
     >
         <div class="auth__header _desktop">
             <svg class="square-24 auth__button-back active">
@@ -190,7 +202,7 @@
                 </div>
             </div>
 
-            <button class="auth__action ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+            <button type="submit" class="auth__action ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
                 <span class="ui-text--medium">Войти</span>
             </button>
 

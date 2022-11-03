@@ -16,7 +16,8 @@
         "responsiv/uploader-plugin": "^1.0",
         "rainlab/blog-plugin": "^1.6",
         "rainlab/notify-plugin": "^1.2",
-        "mobecan/socialconnect-plugin": "*"
+        "mobecan/socialconnect-plugin": "*",
+        "mobecan/favorites-plugin": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -65,6 +66,10 @@
         "mobecan/socialconnect-plugin": {
             "type": "git",
             "url": "https://gitlab.mobecan.com/mobecan/socialconnect.git"
+        },
+        "mobecan/favorites-plugin": {
+            "type": "git",
+            "url": "https://gitlab.mobecan.com/mobecan/favorites.git"
         }
     }
 }
