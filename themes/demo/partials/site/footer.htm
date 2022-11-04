@@ -1,104 +1,33 @@
-<div class="element-footer {{ blueFooterStyle|default(false) ? 'footer-bluezone' }}">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-lg-6 col-xl-5">
-                <div class="footer-brand">
-                    <img src="{{ 'assets/images/logo.svg'|theme }}" alt="October CMS Demo" width="270" />
-                </div>
-                <div class="footer-nav">
-                    <div class="row gx-0">
-                        <div class="col-md-4 mb-3">
-                            <ul class="nav flex-column">
-                                <li class="nav-item nav-item-header">
-                                    <a class="nav-link" href="{{ 'index'|page }}">Company</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ 'blog/index'|page }}">Blog</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ 'wiki/index'|page }}">Wiki</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ 'about'|page }}">About</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ 'contact'|page }}">Contact</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <ul class="nav flex-column">
-                                <li class="nav-item nav-item-header">
-                                    <a class="nav-link" href="{{ 'index'|page }}">Technology</a>
-                                </li>
-                                {% if backendUrl %}
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ backendUrl }}" target="backend">Backend Area</a>
-                                    </li>
-                                {% endif %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ 'ajax'|page }}">AJAX Demo</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ 'components'|page }}">Components Demo</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <ul class="nav flex-column">
-                                <li class="nav-item nav-item-header">
-                                    <a class="nav-link" href="https://octobercms.com" target="_blank">October CMS</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="https://docs.octobercms.com" target="_blank">Documentation</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="https://octobercms.com/pricing" target="_blank">Buy a License</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="https://www.youtube.com/c/OctoberCMSOfficial" target="_blank">YouTube Channel</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<footer class="footer _indent _color">
+    <div class="ui-container">
+        <div class="footer__warning">
+            <div class="footer__warning-label">18+</div>
+            <span>Внимание! Сайт может содержать материалы, не предназначенные для просмотра лицами, не достигшими 18 лет</span>
         </div>
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="footer-social">
-                    <ul class="nav">
-                        <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="https://dribbble.com/" target="_blank">
-                                <img src="{{ 'assets/images/social-icons-white/dribbble-white.png'|theme }}" alt="Dribbble"  />
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="https://www.linkedin.com/company/october-cms/" target="_blank">
-                                <img src="{{ 'assets/images/social-icons-white/linkedin-white.png'|theme }}" alt="LinkedIn"  />
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="https://twitter.com/octobercms" target="_blank">
-                                <img src="{{ 'assets/images/social-icons-white/twitter-white.png'|theme }}" alt="Twitter" />
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="https://www.facebook.com/octobercms" target="_blank">
-                                <img src="{{ 'assets/images/social-icons-white/facebook-white.png'|theme }}" alt="Facebook" />
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+        <nav class="footer__nav ui-grid-container ui-grid-gap">
+            <div class=" ui-col-md-4 ui-col-sm-6">
+                <a href="#" class="footer__link">Новости</a>
+                <a href="#" class="footer__link">Правообладателям</a>
+                <a href="#" class="footer__link">Справка авторам и читателям</a>
+                <a href="#" class="footer__link">Оплата</a>
+                <a href="#" class="footer__link">О сайте</a>
+                <a href="#" class="footer__link">Контакты</a>
             </div>
-            <div class="col-sm-6">
-                <div class="footer-copyright">
-                    <p>&copy; {{ "now"|date("Y") }} Your Company Name</p>
-                    <p>All rights reserved</p>
-                </div>
+            <div class="ui-col-md-4 ui-col-sm-6">
+                <a href="#" class="footer__link">Пользовательское соглашение</a>
+                <a href="#" class="footer__link">Соглашение о конфеденциальности</a>
+                <a href="#" class="footer__link">Правила размещения авторского контента</a>
             </div>
-        </div>
-        <div class="footer-decoration-1"></div>
-        <div class="footer-decoration-2"></div>
+            <div class="footer-social ui-col-md-4 ui-col-sm-6">
+                <span>Мы в социальных сетях</span>
+                <svg>
+                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#logo-vk-28"></use>
+                </svg>
+                <svg>
+                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#logo-telegram-28"></use>
+                </svg>
+            </div>
+        </nav>
+        <div class="footer__footer">© 2022, Время книг</div>
     </div>
-</div>
+</footer>

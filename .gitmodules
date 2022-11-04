@@ -1,0 +1,3 @@
+[submodule "themes/demo/front_src"]
+	path = themes/demo/front_src
+	url = https://gitlab.mobecan.com/books/frontend.git

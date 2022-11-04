@@ -2,32 +2,53 @@
 <title>October CMS - {{ this.page.meta_title ?: placeholder('pageTitle') }}</title>
 <meta name="description" content="{{ this.page.meta_description }}">
 <meta name="title" content="{{ this.page.meta_title }}">
-<meta name="author" content="October CMS">
+<meta name="author" content="Mobecan">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="October CMS">
-<link rel="icon" type="image/png" href="{{ 'assets/images/october.png'|theme }}">
-<link href="{{ 'assets/vendor/bootstrap/bootstrap.css'|theme }}" rel="stylesheet">
-<link href="{{ 'assets/vendor/bootstrap-icons/bootstrap-icons.css'|theme }}" rel="stylesheet">
-<link href="{{ 'assets/vendor/slick-carousel/slick.css'|theme }}" rel="stylesheet">
-<link href="{{ 'assets/vendor/slick-carousel/slick-theme.css'|theme }}" rel="stylesheet">
-<link href="{{ 'assets/vendor/photoswipe/photoswipe.css'|theme }}" rel="stylesheet">
-<link href="{{ 'assets/vendor/photoswipe-dynamic-caption-plugin/photoswipe-dynamic-caption-plugin.css'|theme }}" rel="stylesheet">
-<link href="{{ ['assets/less/theme.less']|theme }}" rel="stylesheet">
+<meta name="generator" content="Books">
+<link href="{{ ['assets/css/main.min.css']|theme }}" rel="stylesheet">
+<!-- Временное подключение шрифтов -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Подключение стилей свайпера -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
+<style>
+    #login_popup, #register_popup, #register_form, #login_form, #auth_popup {
+        display: none;
+    }
+
+    .validation-error {
+        color: red;
+        font-size: 12px;
+    }
+</style>
 {% styles %}
-<script src="{{ 'assets/vendor/jquery.min.js'|theme }}"></script>
-<script src="{{ 'assets/vendor/bootstrap/bootstrap.min.js'|theme }}"></script>
-<script src="{{ 'assets/vendor/codeblocks/codeblocks.min.js'|theme }}"></script>
-<script src="{{ 'assets/vendor/slick-carousel/slick.min.js'|theme }}"></script>
-<script src="{{ 'assets/js/app.js'|theme }}"></script>
+<script src="{{ 'assets/js/tabs.js'|theme }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script defer src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="{{'assets/js/menu-mobile.js' | theme}}"></script>
+<script src="{{'assets/js/favorite-accordion.js' | theme}}"></script>
+
+
+<script>
+    let openForm = (id = 'auth_popup') => document.getElementById(id).style.display = 'flex'
+    let closeForm = (id = 'auth_popup') => {
+        const c = document.getElementById(id)
+        c ? c.style.display = 'none' : null
+    }
+    let closeContainers = () => Array.from(document.getElementsByClassName('auth__container')).forEach(e => e.style.display = 'none')
+    let openContainer = (id) => document.getElementById(id).style.display = 'block'
+    let toForm = (id) => {
+        openForm(), closeContainers(), openContainer(id)
+    }
+    let loginPopup = () => toForm('login_popup');
+    let registerPopup = () => toForm('register_popup');
+    let loginForm = () => toForm('login_form');
+    let registerForm = () => toForm('register_form');
+</script>
+
 {% framework extras turbo %}
 {% scripts %}
 
-<script type="module">
-    import PhotoSwipeLightbox from "{{ 'assets/vendor/photoswipe/photoswipe-lightbox.esm.min.js'|theme }}";
-    import PhotoSwipeModule from  "{{ 'assets/vendor/photoswipe/photoswipe.esm.min.js'|theme }}"
-    import PhotoSwipeDynamicCaption from "{{ 'assets/vendor/photoswipe-dynamic-caption-plugin/photoswipe-dynamic-caption-plugin.esm.js'|theme }}";
 
-    window.PhotoSwipeLightbox = PhotoSwipeLightbox;
-    window.PhotoSwipeModule = PhotoSwipeModule;
-    window.PhotoSwipeDynamicCaption = PhotoSwipeDynamicCaption;
-</script>

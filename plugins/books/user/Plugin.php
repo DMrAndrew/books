@@ -1,13 +1,17 @@
 <?php namespace Books\User;
 
 use Backend;
+use RainLab\User\Models\User;
 use System\Classes\PluginBase;
+use Books\User\Behaviors\BookUser;
 
 /**
  * Plugin Information File
  */
 class Plugin extends PluginBase
 {
+    public $require = ['RainLab.User'];
+
     /**
      * Returns information about this plugin.
      *
@@ -16,10 +20,10 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'User',
+            'name' => 'User',
             'description' => 'No description provided yet...',
-            'author'      => 'Books',
-            'icon'        => 'icon-leaf'
+            'author' => 'Books',
+            'icon' => 'icon-leaf'
         ];
     }
 
@@ -30,7 +34,6 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-
     }
 
     /**
@@ -40,7 +43,9 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+        User::extend(function (User $model) {
+            $model->implementClassWith(BookUser::class);
+        });
     }
 
     /**
@@ -50,11 +55,7 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
-        return [
-            'Books\User\Components\MyComponent' => 'myComponent',
-        ];
+        return [];
     }
 
     /**
@@ -85,11 +86,11 @@ class Plugin extends PluginBase
 
         return [
             'user' => [
-                'label'       => 'User',
-                'url'         => Backend::url('books/user/mycontroller'),
-                'icon'        => 'icon-leaf',
+                'label' => 'User',
+                'url' => Backend::url('books/user/mycontroller'),
+                'icon' => 'icon-leaf',
                 'permissions' => ['books.user.*'],
-                'order'       => 500,
+                'order' => 500,
             ],
         ];
     }

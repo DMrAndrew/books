@@ -2,7 +2,9 @@
 composer.phar
 .DS_Store
 .idea
+.fleet
 .env
+.env.*
 .env.*.php
 .env.php
 auth.json
@@ -25,3 +27,5 @@ nbproject
 # Project
 /bootstrap/compiled.php
 /vendor
+/themes/demo/front_src/
+/plugins/mobecan/

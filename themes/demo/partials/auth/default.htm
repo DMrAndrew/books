@@ -1,0 +1,219 @@
+[socialconnect]
+==
+<div class="header__actions-auth">
+    <button class="header__actions-auth-button ui-button ui-button-view--3 ui-button-size--32"
+
+            onclick="loginPopup()"
+    >
+        Войти
+    </button>
+    <button class="header__actions-auth-button ui-button ui-button-view--2 ui-button-size--32"
+            onclick="registerPopup()"
+    >
+        Зарегистрироваться
+    </button>
+</div>
+<div id="auth_popup" class="auth" style="display: none">
+    <div id="login_popup" class="auth__container _small">
+        <div class="auth__header _desktop">
+            <svg class="square-24 auth__button-back">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+            </svg>
+            <div class="auth__title ui-text--bold">Вход</div>
+            <svg onclick="closeForm()" class="auth__button-close square-24">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+            </svg>
+        </div>
+        <div class="auth__body">
+            <button class="auth-item-sign _indent"
+                    onclick="loginForm()"
+            >
+                <svg class="square-16 _mail">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#mail-filled-16' | theme}}"></use>
+                </svg>
+                <span class="ui-text--medium">Почта</span>
+            </button>
+            {% component 'socialconnect' %}
+            <a href="#" class="ui-link _violet"
+               onclick="registerForm()"
+            >Регистрация</a>
+        </div>
+    </div>
+    <div id="register_popup" class="auth__container _small">
+        <div class="auth__header _desktop">
+            <svg class="square-24 auth__button-back">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+            </svg>
+            <div class="auth__title ui-text--bold">Регистрация</div>
+            <svg onclick="closeForm()" class="auth__button-close square-24">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+            </svg>
+        </div>
+        <div class="auth__body">
+            <button class="auth-item-sign _indent" type="button"
+                    onclick="registerForm()"
+            >
+                <svg class="square-16 _mail">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#mail-filled-16' | theme}}"></use>
+                </svg>
+                <span class="ui-text--medium">Почта</span>
+            </button>
+            {% component 'socialconnect' %}
+
+
+            <!--            <a href="#" class="auth__button-back-desktop ui-link _violet">-->
+            <!--                <svg class="square-16">-->
+            <!--                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>-->
+            <!--                </svg>-->
+            <!--                <span>Назад</span>-->
+            <!--            </a>-->
+
+            <div class="auth__addition">
+                Есть аккаунт? <a href="#" class="ui-link _violet"
+                                 onclick="loginForm()"
+            >Войти</a>
+            </div>
+
+            <div class="auth__addition ui-text-body--3 _color-gray">
+                Регистрируясь, вы соглашаетесь с <a href="#" class="ui-link _violet">пользовательским соглашением</a> и <a
+                href="#" class="ui-link _violet">политикой конфиденциальности</a>.
+            </div>
+        </div>
+    </div>
+    <form id="register_form" class="auth__container _large"
+          data-request="onRegister"
+          data-request-validate
+
+    >
+        <div class="auth__header _desktop">
+            <svg class="square-24 auth__button-back active">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+            </svg>
+            <div class="auth__title ui-text--bold">Регистрация</div>
+            <svg onclick="closeForm()" class="auth__button-close square-24">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+            </svg>
+        </div>
+        <div class="auth__body">
+            <a href="#" class="auth__button-back-desktop ui-link _violet"
+               onclick="registerPopup()"
+            >
+                <svg class="square-16">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+                </svg>
+                <span>Назад</span>
+            </a>
+
+            <div class="auth__reg-container ui-grid-container ui-grid-gap">
+                <div class="ui-col-sm-6">
+                    <div class="ui-input-wrapper">
+                        <div class="ui-input-label">Имя или псевдоним</div>
+                        <input name="username" class="ui-input-item _size-32" type="text">
+                        <span class="validation-error" data-validate-for="username"></span>
+                    </div>
+                </div>
+                <div class="ui-col-sm-6">
+                    <div class="ui-input-wrapper">
+                        <div class="ui-input-label">Дата рождения</div>
+                        <input name="birthday"  class="ui-input-item _size-32" type="text">
+                        <span class="validation-error" data-validate-for="birthday"></span>
+                    </div>
+                </div>
+                <div class="ui-col-sm-12">
+                    <div class="ui-input-wrapper">
+                        <div class="ui-input-label">Любимые жанры</div>
+                        <input name="favorite" class="ui-input-item _size-32" type="text">
+                        <span class="validation-error" data-validate-for="favorite"></span>
+                    </div>
+                    <div class="ui-input-hint ui-text-body--3">
+                        Не обязательно для заполнения. Жанры в любой момент можно выбрать в настройках профиля.
+                    </div>
+                </div>
+                <div class="ui-col-sm-12">
+                    <div class="ui-input-wrapper">
+                        <div class="ui-input-label">Электронная почта</div>
+                        <input name="email" class="ui-input-item _size-32" type="text">
+                        <span class="validation-error" data-validate-for="email"></span>
+                    </div>
+                </div>
+                <div class="ui-col-sm-6">
+                    <div class="ui-input-wrapper">
+                        <div class="ui-input-label">Пароль</div>
+                        <input name="password" class="ui-input-item _size-32" type="text">
+                        <span class="validation-error" data-validate-for="password"></span>
+                    </div>
+                </div>
+                <div class="ui-col-sm-6">
+                    <div class="ui-input-wrapper">
+                        <div class="ui-input-label">Подтверждение пароля</div>
+                        <input name="password_confirmation" class="ui-input-item _size-32" type="text">
+                        <span class="validation-error" data-validate-for="password_confirmation"></span>
+                    </div>
+                </div>
+                <div class="ui-col-sm-12">
+                    <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full">
+                        <span class="ui-text--medium">Зарегистрироваться</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="auth__addition auth__action ">
+                Есть аккаунт? <a href="#" class="ui-link _violet"
+                                 onclick="loginForm()"
+            >Войти</a>
+            </div>
+
+            <div class="auth__addition ui-text-body--3 _color-gray">
+                Регистрируясь, вы соглашаетесь с <a href="#" class="ui-link _violet">пользовательским соглашением</a> и <a
+                href="#" class="ui-link _violet">политикой конфиденциальности</a>.
+            </div>
+        </div>
+    </form>
+    <form id="login_form" class="auth__container _small"
+          data-request="onSignin"
+          data-request-validate
+    >
+        <div class="auth__header _desktop">
+            <svg class="square-24 auth__button-back active">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+            </svg>
+            <div class="auth__title ui-text--bold">Вход</div>
+            <svg onclick="closeForm()" class="auth__button-close square-24">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+            </svg>
+        </div>
+        <div class="auth__body">
+            <a href="#" class="auth__button-back-desktop ui-link _violet" onclick="loginPopup()"
+            >
+                <svg class="square-16">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+                </svg>
+                <span>Назад</span>
+            </a>
+
+            <div class="auth__form-container">
+                <div class="ui-input-wrapper">
+                    <input class="ui-input-item _size-32" type="email" name="email" placeholder="Электронная почта">
+                    <span class="validation-error" data-validate-for="email"></span>
+                </div>
+                <div class="ui-input-wrapper">
+                    <input class="ui-input-item _size-32" type="password" name="password" placeholder="Пароль">
+                    <span class="validation-error" data-validate-for="password"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="auth__action ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                <span class="ui-text--medium">Войти</span>
+            </button>
+
+            <a href="/forgot-password" target="_blank" class="auth__link ui-link _violet"
+
+            >Забыли пароль?</a>
+            <a href="#" class="auth__link ui-link _violet" onclick="registerForm()"
+
+            >Регистрация</a>
+        </div>
+    </form>
+
+</div>
+

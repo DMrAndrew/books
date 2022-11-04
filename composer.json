@@ -15,12 +15,15 @@
         "offline/oc-sentry-plugin": "^2.1",
         "responsiv/uploader-plugin": "^1.0",
         "rainlab/blog-plugin": "^1.6",
-        "rainlab/notify-plugin": "^1.2"
+        "rainlab/notify-plugin": "^1.2",
+        "mobecan/socialconnect-plugin": "*",
+        "mobecan/favorites-plugin": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
         "lemax10/asail": "1.x-dev",
-        "phpunit/phpunit": "^8.5|^9.0"
+        "phpunit/phpunit": "^8.5|^9.0",
+        "barryvdh/laravel-debugbar": "^3.7"
     },
     "scripts": {
         "post-root-package-install": [
@@ -59,6 +62,14 @@
         "octobercms": {
             "type": "composer",
             "url": "https://gateway.octobercms.com"
+        },
+        "mobecan/socialconnect-plugin": {
+            "type": "git",
+            "url": "https://gitlab.mobecan.com/mobecan/socialconnect.git"
+        },
+        "mobecan/favorites-plugin": {
+            "type": "git",
+            "url": "https://gitlab.mobecan.com/mobecan/favorites.git"
         }
     }
 }

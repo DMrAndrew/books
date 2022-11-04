@@ -1,0 +1,89 @@
+<!-- Блок "Любимые жанры" -->
+<div class="favorite-genres _indent">
+    <div class="ui-container-fluid">
+        <div class="favorite-genres__container">
+            <div class="favorite-genres__header active">
+                <span class="ui-text-head--3 ui-text--bold">Любимые жанры</span>
+                <svg>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                </svg>
+            </div>
+            <div class="favorite-genres__body">
+                <div class="favorite-genres__description">На основе ваших предпочтений, рекомендации сервиса будут точнее и
+                    интереснее</div>
+                <div class="favorite-genres__actions ui-grid-container ui-grid-gap">
+                    <div class="ui-col-sm-6">
+                        <div class="ui-grid-container ui-grid-gap">
+                            <div class="ui-col-lg-6 ui-col-sm-12">
+                                {% for item in collect(['Любовное фэнтези','Приключенческое фэнтези','Магическая академия','Попаданцы']) %}
+                                <label class="ui-checkbox">
+                                    <input type="checkbox" hidden>
+                                    <div class="ui-checkbox-checker">
+                                        <svg>
+                                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                        </svg>
+
+                                    </div>
+                                    <span class="ui-checkbox-text">{{item}}</span>
+                                </label>
+
+                                {% endfor %}
+                            </div>
+                            <div class="ui-col-lg-6 ui-col-sm-12">
+                                {% for item in collect(['Космос','Бояръ-аниме','Боевая фантастика','Уся']) %}
+                                <label class="ui-checkbox">
+                                    <input type="checkbox" hidden>
+                                    <div class="ui-checkbox-checker">
+                                        <svg>
+                                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                        </svg>
+
+                                    </div>
+                                    <span class="ui-checkbox-text">{{item}}</span>
+                                </label>
+
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-col-sm-6">
+                        <div class="ui-grid-container ui-grid-gap">
+                            <div class="ui-col-lg-6 ui-col-sm-12">
+                                {% for item in collect(['Современный любовный роман','Остросюжетный любовный роман','Короткий любовный роман','Исторический детектив']) %}
+                                <label class="ui-checkbox">
+                                    <input type="checkbox" hidden>
+                                    <div class="ui-checkbox-checker">
+                                        <svg>
+                                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                        </svg>
+
+                                    </div>
+                                    <span class="ui-checkbox-text">{{item}}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                            <div class="ui-col-lg-6 ui-col-sm-12">
+                                {% for item in collect(['Магический детектив','РПГ','Янг-эдалт']) %}
+                                <label class="ui-checkbox">
+                                    <input type="checkbox" hidden>
+                                    <div class="ui-checkbox-checker">
+                                        <svg>
+                                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                        </svg>
+
+                                    </div>
+                                    <span class="ui-checkbox-text">{{item}}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    accordionInit();
+</script>

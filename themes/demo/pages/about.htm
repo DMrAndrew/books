@@ -1,4 +1,3 @@
-##
 url = "/about"
 layout = "default"
 title = "About Page"
@@ -8,10 +7,14 @@ meta_title = "{{ landingPage.title }}"
 handle = "LandingPage"
 
 [resources]
-vars[activeNavLink] = 'about'
-vars[howItsMadeCmsTemplate] = 'cms:cms-page:about.htm'
-vars[howItsMadeTailorBlueprint] = 'tailor:tailor-blueprint:landing/landing-page.yaml'
-vars[howItsMadeTailorContent] = 'entries/landing_page'
+vars[activeNavLink] = "about"
+vars[howItsMadeCmsTemplate] = "cms:cms-page:about.htm"
+vars[howItsMadeTailorBlueprint] = "tailor:tailor-blueprint:landing/landing-page.yaml"
+vars[howItsMadeTailorContent] = "entries/landing_page"
+
+[sitePicker]
+
+[socialconnect]
 ==
 {% put headerAfter %}
     <div class="container">
