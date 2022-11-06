@@ -1,7 +1,10 @@
 <?php namespace Books\Reviews;
 
+use Config;
 use Backend;
+use RainLab\User\Models\User;
 use System\Classes\PluginBase;
+use Books\Reviews\Behaviors\PerformsReviews;
 
 /**
  * Plugin Information File
@@ -16,10 +19,10 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'Reviews',
+            'name' => 'Reviews',
             'description' => 'No description provided yet...',
-            'author'      => 'Books',
-            'icon'        => 'icon-leaf'
+            'author' => 'Books',
+            'icon' => 'icon-leaf'
         ];
     }
 
@@ -30,7 +33,6 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-
     }
 
     /**
@@ -40,7 +42,13 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+        Config::set('reviews', Config::get('books.reviews::config'));
+        User::extend(function (User $model) {
+            $model->implementClassWith(PerformsReviews::class);
+        });
+//        Post::extend(function (RainLab\Blog\Models\Post $model) {
+//            $model->implementClassWith(Reviewable::class);
+//        });
     }
 
     /**
@@ -50,11 +58,7 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
-        return [
-            'Books\Reviews\Components\MyComponent' => 'myComponent',
-        ];
+        return [];
     }
 
     /**
@@ -85,11 +89,11 @@ class Plugin extends PluginBase
 
         return [
             'reviews' => [
-                'label'       => 'Reviews',
-                'url'         => Backend::url('books/reviews/mycontroller'),
-                'icon'        => 'icon-leaf',
+                'label' => 'Reviews',
+                'url' => Backend::url('books/reviews/mycontroller'),
+                'icon' => 'icon-leaf',
                 'permissions' => ['books.reviews.*'],
-                'order'       => 500,
+                'order' => 500,
             ],
         ];
     }

@@ -17,7 +17,8 @@
         "rainlab/blog-plugin": "^1.6",
         "rainlab/notify-plugin": "^1.2",
         "mobecan/socialconnect-plugin": "*",
-        "mobecan/favorites-plugin": "*"
+        "mobecan/favorites-plugin": "*",
+        "mtvs/laravel-reviews": "^1.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
