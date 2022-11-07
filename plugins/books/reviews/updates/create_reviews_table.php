@@ -17,8 +17,7 @@ class CreateReviewsTable extends Migration
             $table->string('title');
             $table->text('body');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('reviewable_id');
-            $table->string('reviewable_type');
+            $table->morphs('reviewable');
             $table->timestamps();
             $table->approvals();
         });

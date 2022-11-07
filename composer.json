@@ -18,7 +18,7 @@
         "rainlab/notify-plugin": "^1.2",
         "mobecan/socialconnect-plugin": "*",
         "mobecan/favorites-plugin": "*",
-        "mtvs/laravel-reviews": "^1.0"
+        "books/reviews-plugin": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -71,6 +71,10 @@
         "mobecan/favorites-plugin": {
             "type": "git",
             "url": "https://gitlab.mobecan.com/mobecan/favorites.git"
+        },
+        "books/reviews-plugin": {
+            "type": "path",
+            "url": "./plugins/books/reviews"
         }
     }
 }
