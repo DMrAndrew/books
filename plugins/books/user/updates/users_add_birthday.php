@@ -17,7 +17,7 @@ class UsersAddBirthday extends Migration
     public function down()
     {
         Schema::table('users', function ($table) {
-            $table->dropColumn('birthday');;
+            $table->dropColumn('birthday');
         });
     }
 }
