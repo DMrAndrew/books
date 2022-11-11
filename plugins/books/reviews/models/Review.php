@@ -36,7 +36,7 @@ class Review extends Model
     public $rules = [
         'rating' => ['required', 'numeric', 'min:1', 'max:5'],
         'title' => ['required', 'string', 'max:255'],
-        'body' => ['required', 'string'],];
+        'body' => ['required', 'string']];
 
     /**
      * @var array Attributes to be cast to native types

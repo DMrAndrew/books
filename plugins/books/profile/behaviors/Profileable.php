@@ -20,7 +20,7 @@ class Profileable extends ExtensionBase
 
         $this->class::addGlobalScope(new ProfiledScope());
 
-        $this->model->hasOne['user'] ??= [User::class, 'key' => 'id', 'otherKey' => 'user_id'];
+        $this->model->belongsTo['user'] ??= [User::class, 'key' => 'id', 'otherKey' => 'user_id'];
 
         $this->bindEvents();
     }
