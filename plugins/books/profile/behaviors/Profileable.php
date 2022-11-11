@@ -9,10 +9,9 @@ use Books\Profile\Classes\ProfiledScope;
 use October\Rain\Extension\ExtensionBase;
 use Books\Profile\Classes\OnDeleteListener;
 use Books\Profile\Classes\OnCreatedListener;
-
+//TODO refactor listeners
 class Profileable extends ExtensionBase
 {
-
     protected string $class;
 
     public function __construct(protected Model $model)
@@ -54,18 +53,9 @@ class Profileable extends ExtensionBase
     {
         $builder = ($user ?? $model->user)->profilers()->where('entity_type', '=', get_class($model));
         if (!$builder->exists()) {
-            $builder->create(['entity_type' => get_class($model), 'ids' => []]);
+            $builder->create(['entity_type' => get_class($model)]);
         }
 
         return $builder->first();
     }
-
-    /**
-     * @return mixed
-     */
-    public function withoutProfiled(): mixed
-    {
-        return with(new $this->class())->newQueryWithoutScope(new ProfiledScope());
-    }
-
 }

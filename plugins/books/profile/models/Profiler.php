@@ -1,13 +1,14 @@
 <?php namespace Books\Profile\Models;
 
 use Model;
+use October\Rain\Database\Traits\Validation;
 
 /**
  * Profiler Model
  */
 class Profiler extends Model
 {
-    use \October\Rain\Database\Traits\Validation;
+    use Validation;
 
     public $timestamps = false;
 
@@ -77,10 +78,5 @@ class Profiler extends Model
     public function getIds()
     {
         return $this->ids;
-    }
-
-    public function addEntity(Model $model)
-    {
-        $this->update(['ids' => $this->getIds() + [$model->id]]);
     }
 }
