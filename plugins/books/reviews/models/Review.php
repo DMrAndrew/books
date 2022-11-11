@@ -1,7 +1,9 @@
 <?php namespace Books\Reviews\Models;
 
 use Model;
-use Mtvs\Reviews\ReviewConcerns;
+use RainLab\User\Models\User;
+use Mtvs\EloquentApproval\Approvable;
+use Illuminate\Database\Eloquent\Builder;
 use October\Rain\Database\Traits\Validation;
 
 /**
@@ -10,7 +12,7 @@ use October\Rain\Database\Traits\Validation;
 class Review extends Model
 {
     use Validation;
-    use ReviewConcerns;
+    use Approvable;
 
 
     /**
@@ -72,9 +74,9 @@ class Review extends Model
      */
     public $hasOne = [];
     public $hasMany = [];
-    public $belongsTo = [];
+    public $belongsTo = ['user' => User::class,'key'=>'id','otherKey' => 'user_id'];
     public $belongsToMany = [];
-    public $morphTo = [];
+    public $morphTo = ['reviewable' => []];
     public $morphOne = [];
     public $morphMany = [];
     public $attachOne = [];
@@ -91,10 +93,35 @@ class Review extends Model
      *
      * @return array
      **/
-    public function approvalRequired()
+    public function approvalRequired(): array
     {
         return [
             'title', 'body',
         ];
+    }
+
+//    public function user(): BelongsTo
+//    {
+//        return $this->belongsTo(User::class);
+//    }
+
+//    /**
+//     * @return MorphTo
+//     */
+//    public function reviewable(): MorphTo
+//    {
+//        return $this->morphTo();
+//    }
+
+    /**
+     * Add the query scope for the reviewable model
+     *
+     * @param Builder $query
+     * @param \Illuminate\Database\Eloquent\Model $reviewable
+     * @return void
+     */
+    public function scopeReviewable($query, \Illuminate\Database\Eloquent\Model $reviewable): void
+    {
+        $query->whereMorphedTo($this->reviewable(), $reviewable);
     }
 }

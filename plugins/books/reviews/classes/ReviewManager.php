@@ -2,12 +2,12 @@
 
 namespace Books\Reviews\Classes;
 
-use Books\Reviews\Behaviors\Reviewable;
 use Validator;
 use ValidationException;
 use RainLab\User\Facades\Auth;
 use Books\Reviews\Models\Review;
 use Mtvs\Reviews\IndexesReviews;
+use Books\Reviews\Behaviors\Reviewable;
 
 class ReviewManager
 {
@@ -43,6 +43,7 @@ class ReviewManager
             ->associate($reviewable);
 
         $review->save();
+        $review->approve();
 
         return $review;
     }
