@@ -16,6 +16,17 @@ class HasProfile extends ExtensionBase
         $this->model->hasMany['profilers'] = [Profiler::class, 'key' => 'profile_id', 'otherKey' => 'current_profile_id'];
         $this->model->hasMany['profiles'] = [Profile::class];
         $this->model->hasOne['currentProfile'] = [Profile::class, 'key' => 'id', 'otherKey' => 'current_profile_id'];
+        $this->model->append(['profiles_list']);
         User::created(fn(User $user) => (new ProfileManager())->createProfile($user));
+    }
+
+    public function getProfilesListAttribute()
+    {
+        return $this->model->profiles()->select(['id', 'username'])->get();
+    }
+
+    public function setUserName(?string $username = null)
+    {
+        return $this->model->currentProfile()->update(['username' => $username ?? $this->model->username]);
     }
 }

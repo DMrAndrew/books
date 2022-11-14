@@ -301,15 +301,17 @@
                         </a>
                         <div class="dropwdown-profile _dropdown">
                             <ul class="dropwdown-profile__list _dropdown">
+                                {% for profile in user.profiles_list %}
                                 <li>
                                     <a href="#" class="dropwdown-profile__link active">
                                         <svg class="square-16">
                                             <use
                                                 xlink:href="./assets/icon-sprite/svg-sprite.svg#check-stroked-16"></use>
                                         </svg>
-                                        <span>{{user.username}} ({{user.email}})</span>
+                                        <span>{{profile.username}} </span>
                                     </a>
                                 </li>
+                                {% endfor %}
                             </ul>
                         </div>
                     </li>

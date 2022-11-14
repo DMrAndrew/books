@@ -4,6 +4,7 @@ use Backend;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 use Books\User\Behaviors\BookUser;
+use Books\User\Components\PostRegister;
 
 /**
  * Plugin Information File
@@ -55,7 +56,9 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return [];
+        return [
+            PostRegister::class => 'postregister'
+        ];
     }
 
     /**
