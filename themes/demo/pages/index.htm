@@ -10,21 +10,28 @@ requirePassword = 0
 
 [session]
 security = "all"
+
+[postregister]
+paramCode = "code"
+forceSecure = 0
+requirePassword = 0
 ==
 {% component 'session' %}
+{% component 'postregister' %}
 <div>
     <div class="promo _indent">
         <div class="ui-container">
             <div class="promo__container">
-                <img class="promo__image" src="{{'assets/images/main/promo-main-image.svg' | theme}}" alt="" >
+                <img class="promo__image" src="{{'assets/images/main/promo-main-image.svg' | theme}}" alt="">
                 <h1 class="promo__title ui-text-head--1 ui-text--bold">Уютное место для авторов и читателей</h1>
                 <div class="promo__actions">
-                    <a href="#"  class="ui-button ui-button-view--1 ui-button-size--56 ui-button--full-mobile">
+                    <a href="#" class="ui-button ui-button-view--1 ui-button-size--56 ui-button--full-mobile">
                         <span class="ui-text--medium">Присоединиться</span>
                     </a>
                     <a href="#" class="promo__actions-info">
                         <svg>
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#questions-stroked-circle-16' | theme}}"></use>
+                            <use
+                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#questions-stroked-circle-16' | theme}}"></use>
                         </svg>
                         <span>Справка авторам и читателям</span>
                     </a>
@@ -35,4 +42,8 @@ security = "all"
     {% partial 'site/favorite' %}
     {% partial 'site/thematic' %}
     {% partial 'site/desc' %}
+    {% if user and ( user.required_post_register == 1) %}
+    {% partial "site/header_unauthorized_section" %}
+    <script>registerForm()</script>
+    {% endif %}
 </div>
