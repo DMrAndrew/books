@@ -1,0 +1,19 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    name:
+        label: Название
+    desc:
+        label: Описание
+    active:
+        label: Активный
+        type: checkbox
+    favorite:
+        label: Любимый жанр
+        type: checkbox
+    parent:
+        label: Родитель
+        type: dropdown
+        emptyOption: Без родителя

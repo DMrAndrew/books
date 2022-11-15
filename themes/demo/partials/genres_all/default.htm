@@ -1,0 +1,121 @@
+<!-- Блок "Все жанры книг" -->
+{% set all = __SELF__.allGenres %}
+<div class="book-genres _indent">
+    <div class="ui-container">
+        <h1 class="book-genres__title ui-text-head--2 ui-text--bold">Все жанры книг</h1>
+    </div>
+    <div class="ui-container-fluid">
+        <div class="book-genres__container ui-grid-container ui-grid-gap">
+            <div class="book-genres__column ui-col-sm-6 ui-col-lg-3">
+
+                {% for parent in all[0] %}
+
+                <div class="book-genres__wrapper book-genres-item" data-list="accordion">
+                    <div class="book-genres-item__header">
+                        <div class="book-genres-item__title ui-text--bold">
+                            <span class="ui-text-head--3">{{parent.name}}</span>
+                            <span></span>
+
+                        </div>
+                        <svg>
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                        </svg>
+                    </div>
+                    <div class="book-genres-item__body">
+
+                        {% for child in parent.children %}
+                        <a href="#" class="book-genres-item__body-link">{{child.name}}</a>
+                        {% endfor %}
+                        <span></span>
+
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+            <div class="book-genres__column ui-col-sm-6 ui-col-lg-3">
+
+                {% for parent in all[1] %}
+
+                <div class="book-genres__wrapper book-genres-item" data-list="accordion">
+                    <div class="book-genres-item__header">
+                        <div class="book-genres-item__title ui-text--bold">
+                            <span class="ui-text-head--3">{{parent.name}}</span>
+                            <span></span>
+
+                        </div>
+                        <svg>
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                        </svg>
+                    </div>
+                    <div class="book-genres-item__body">
+
+                        {% for child in parent.children %}
+                        <a href="#" class="book-genres-item__body-link">{{child.name}}</a>
+                        <span></span>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+            <div class="book-genres__column ui-col-sm-6 ui-col-lg-3">
+
+                {% for parent in all[2] %}
+
+                <div class="book-genres__wrapper book-genres-item" data-list="accordion">
+                    <div class="book-genres-item__header">
+                        <div class="book-genres-item__title ui-text--bold">
+                            <span class="ui-text-head--3">{{parent.name}}</span>
+                            <span></span>
+
+                        </div>
+                        <svg>
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                        </svg>
+                    </div>
+                    <div class="book-genres-item__body">
+
+                        {% for child in parent.children %}
+                        <a href="#" class="book-genres-item__body-link">{{child.name}}</a>
+                        <span></span>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+            <div class="book-genres__column ui-col-sm-6 ui-col-lg-3">
+
+                {% for parent in all[3] %}
+
+                <div class="book-genres__wrapper book-genres-item" data-list="accordion">
+                    <div class="book-genres-item__header">
+                        <div class="book-genres-item__title ui-text--bold">
+                            <span class="ui-text-head--3">{{parent.name}}</span>
+                            <span></span>
+
+                        </div>
+                        <svg>
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                        </svg>
+                    </div>
+                    <div class="book-genres-item__body">
+
+                        {% for child in parent.children %}
+                        <a href="#" class="book-genres-item__body-link">{{child.name}}</a>
+                        <span></span>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+
+
+        </div>
+    </div>
+</div>

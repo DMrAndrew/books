@@ -1,0 +1,4 @@
+{% set genres = __SELF__.parented %}
+{% for item in genres %}
+<li><a href="#" class="menu-book-genres__item ui-text--medium">{{item.name}}</a></li>
+{% endfor %}

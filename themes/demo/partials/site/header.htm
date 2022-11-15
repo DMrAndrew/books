@@ -6,7 +6,7 @@
             <svg class="header__menu-burger square-24" data-button-menu="mobile">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
             </svg>
-            <a href="/frontend/" class="header__logo-wrapper">
+            <a href="/" class="header__logo-wrapper">
                 <div class="header__logo"></div>
                 <div class="header__logo-text ui-text-body--1 ui-text--bold">Время книг</div>
             </a>
@@ -91,31 +91,10 @@
                             <div class="menu-book-genres">
                                 <div class="menu-book-genres__title ui-text-head--3 ui-text--bold">Жанры</div>
                                 <ul class="menu-book-genres__list">
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Фэнтези</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Попаданцы</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Космос</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Проза</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Мистика</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Бояръ-аниме</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Неформат</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Поэзия</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Фантастика</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">18+</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Фанфик</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Детское</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Ужасы</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Сказка</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Уся</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Романы</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Детективы</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">РПГ</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Триллер</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Янг-эдалт</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Драма</a></li>
-                                    <li><a href="#" class="menu-book-genres__item ui-text--medium">Магический
-                                        реализм</a></li>
+                                    {% component 'genres_parented' %}
+
                                 </ul>
-                                <a href="/frontend/all-books.html" class="menu-book-genres__more">
+                                <a href="/all-genres" class="menu-book-genres__more">
                                     <svg class="square-16">
                                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-lines-16' | theme}}"></use>
                                     </svg>

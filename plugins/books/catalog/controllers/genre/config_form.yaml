@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: books.catalog::lang.genre.label
+
+# Model Form Field configuration
+form: $/books/catalog/models/genre/fields.yaml
+
+# Model Class name
+modelClass: Books\Catalog\Models\Genre
+
+# Default redirect location
+defaultRedirect: books/catalog/genre
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: books/catalog/genre/update/:id
+    redirectClose: books/catalog/genre
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/catalog/genre
+    redirectClose: books/catalog/genre
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title

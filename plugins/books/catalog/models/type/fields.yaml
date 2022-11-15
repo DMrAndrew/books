@@ -1,0 +1,19 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    name:
+        label: Название
+    desc:
+        label: Описание
+        type: textarea
+    active:
+        label: Активный
+        type: checkbox
+    icon:
+        label: Иконка
+        type: fileupload
+        mode: image
+        imageHeight: 260
+        imageWidth: 260

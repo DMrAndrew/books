@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Type
+
+# Model Form Field configuration
+form: $/books/catalog/models/type/fields.yaml
+
+# Model Class name
+modelClass: Books\Catalog\Models\Type
+
+# Default redirect location
+defaultRedirect: books/catalog/type
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: books/catalog/type/update/:id
+    redirectClose: books/catalog/type
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/catalog/type
+    redirectClose: books/catalog/type
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title

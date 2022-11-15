@@ -3,21 +3,8 @@ layout = "default"
 title = "Welcome"
 meta_title = "Welcome"
 
-[account]
-paramCode = "code"
-forceSecure = 0
-requirePassword = 0
-
-[session]
-security = "all"
-
-[postregister]
-paramCode = "code"
-forceSecure = 0
-requirePassword = 0
 ==
-{% component 'session' %}
-{% component 'postregister' %}
+
 <div>
     <div class="promo _indent">
         <div class="ui-container">
@@ -39,6 +26,7 @@ requirePassword = 0
             </div>
         </div>
     </div>
+
     {% partial 'site/favorite' %}
     {% partial 'site/thematic' %}
     {% partial 'site/desc' %}

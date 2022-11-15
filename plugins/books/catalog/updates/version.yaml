@@ -1,1 +1,4 @@
-1.0.1: First version of Catalog
+1.0.1:
+    - create_genres_table.php
+    - create_types_table.php
+    - seed_all_tables.php
