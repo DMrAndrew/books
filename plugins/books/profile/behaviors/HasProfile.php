@@ -2,11 +2,10 @@
 
 namespace Books\Profile\Behaviors;
 
-use Books\Profile\Classes\ProfileManager;
+use RainLab\User\Models\User;
 use Books\Profile\Models\Profile;
 use Books\Profile\Models\Profiler;
 use October\Rain\Extension\ExtensionBase;
-use RainLab\User\Models\User;
 
 class HasProfile extends ExtensionBase
 {
@@ -17,7 +16,6 @@ class HasProfile extends ExtensionBase
         $this->model->hasMany['profiles'] = [Profile::class];
         $this->model->hasOne['currentProfile'] = [Profile::class, 'key' => 'id', 'otherKey' => 'current_profile_id'];
         $this->model->append(['profiles_list']);
-        User::created(fn(User $user) => (new ProfileManager())->createProfile($user));
     }
 
     public function getProfilesListAttribute()

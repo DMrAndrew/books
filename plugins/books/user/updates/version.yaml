@@ -1,3 +1,4 @@
 1.0.1:
     - users_add_birthday.php
     - user_add_verified_after_social_connect_register.php
+    - users_add_favorite_genres.php

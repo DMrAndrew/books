@@ -26,7 +26,7 @@ class Genre extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['name', 'desc', 'active', 'favorite','parent_id'];
+    protected $fillable = ['name', 'desc', 'active', 'favorite', 'parent_id'];
 
     /**
      * @var array rules for validation
@@ -80,42 +80,39 @@ class Genre extends Model
     public $attachOne = [];
     public $attachMany = [];
 
-    public function activate()
+    public function activate(): static
     {
-        $this->active = 1;
-        $this->save();
-        return $this;
-    }
-
-    public function deactivate()
-    {
-        $this->active = 0;
-        $this->save();
+        $this->update(['active' => 1]);
 
         return $this;
     }
 
-    public function enableFavorite()
+    public function deactivate(): static
     {
-        $this->favorite = 1;
-        $this->save();
+        $this->update(['active' => 0]);
 
         return $this;
     }
 
-    public function disableFavorite()
+    public function enableFavorite(): static
     {
-        $this->favorite = 0;
-        $this->save();
+        $this->update(['favorite' => 1]);
+
+        return $this;
+    }
+
+    public function disableFavorite(): static
+    {
+        $this->update(['favorite' => 0]);
 
         return $this;
 
     }
 
     /**
-     * getUserOptions
+     * getParentOptions
      */
-    public function getParentOptions()
+    public function getParentOptions(): array
     {
         $options = [];
 
@@ -127,14 +124,18 @@ class Genre extends Model
     }
 
 
-    public function scopeParent(Builder $query){
+    public function scopeRoots(Builder $query): Builder
+    {
         return $query->whereNull('parent_id');
     }
-    public function scopeFavorites(Builder $query){
-        return $query->where('favorite','=',1);
+
+    public function scopeFavorite(Builder $query): Builder
+    {
+        return $query->where('favorite', '=', 1);
     }
 
-    public function scopeActive(Builder $query){
-        return $query->where('active','=',1);
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('active', '=', 1);
     }
 }

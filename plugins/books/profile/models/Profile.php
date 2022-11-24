@@ -1,6 +1,7 @@
 <?php namespace Books\Profile\Models;
 
 use Model;
+use RainLab\User\Models\User;
 use October\Rain\Database\Traits\Validation;
 
 /**
@@ -65,7 +66,7 @@ class Profile extends Model
      */
     public $hasOne = [];
     public $hasMany = [];
-    public $belongsTo = [];
+    public $belongsTo = ['user' => User::class,'key' => 'id','otherKey' => 'user_id'];
     public $belongsToMany = [];
     public $morphTo = [];
     public $morphOne = [];

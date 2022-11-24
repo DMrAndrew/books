@@ -1,11 +1,13 @@
 <?php namespace Books\Profile;
 
+use Event;
 use Config;
 use Backend;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 use Books\Profile\Behaviors\HasProfile;
 use Books\Profile\Behaviors\Profileable;
+use Books\Profile\Classes\ProfileManager;
 
 /**
  * Plugin Information File
@@ -51,6 +53,7 @@ class Plugin extends PluginBase
         User::extend(function (User $model) {
             $model->implementClassWith(HasProfile::class);
         });
+        Event::listen('rainlab.user.register',fn(User $user) => (new ProfileManager())->createProfile($user));
         foreach (config('profile.profileable') ?? [] as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Profileable::class);

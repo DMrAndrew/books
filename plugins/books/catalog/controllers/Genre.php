@@ -1,10 +1,11 @@
 <?php namespace Books\Catalog\Controllers;
 
+use Lang;
+use Flash;
 use BackendMenu;
 use Backend\Classes\Controller;
-use Flash;
-use Lang;
-use RainLab\User\Models\User;
+use Backend\Behaviors\ListController;
+use Backend\Behaviors\FormController;
 
 /**
  * Genre Backend Controller
@@ -12,8 +13,8 @@ use RainLab\User\Models\User;
 class Genre extends Controller
 {
     public $implement = [
-        \Backend\Behaviors\FormController::class,
-        \Backend\Behaviors\ListController::class
+        FormController::class,
+        ListController::class
     ];
 
     /**

@@ -1,8 +1,12 @@
 <?php namespace Books\Catalog;
 
+use Event;
 use Backend;
-use Books\Catalog\Components\Genres;
+use RainLab\User\Models\User;
 use System\Classes\PluginBase;
+use Books\Catalog\Components\Genres;
+use Books\Catalog\Classes\FavoritesManager;
+use Books\Catalog\Components\FavoriteGenres;
 
 /**
  * Plugin Information File
@@ -41,7 +45,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+        Event::listen('rainlab.user.register',fn(User $user) => (new FavoritesManager())->save($user));
     }
 
     /**
@@ -52,9 +56,9 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
 
-
         return [
                 Genres::class => 'genres',
+                FavoriteGenres::class => 'favorite_genres',
         ];
     }
 

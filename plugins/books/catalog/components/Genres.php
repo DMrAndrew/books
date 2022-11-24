@@ -1,13 +1,14 @@
 <?php namespace Books\Catalog\Components;
 
-use Books\Catalog\Models\Genre;
 use Cms\Classes\ComponentBase;
+use Books\Catalog\Models\Genre;
 
 /**
  * Genres Component
  */
 class Genres extends ComponentBase
 {
+
     public function componentDetails()
     {
         return [
@@ -21,12 +22,9 @@ class Genres extends ComponentBase
         return [];
     }
 
-    public function parented(){
-        return Genre::query()->parent()->active()->get();
-    }
-    public function favoriteGenres()
+    public function parented()
     {
-        return Genre::query()->active()->favorites()->select(['id', 'name'])->get()->split(4);
+        return Genre::query()->roots()->active()->get();
     }
 
     public function allGenres()
@@ -35,4 +33,5 @@ class Genres extends ComponentBase
         $all->load('children');
         return $all->split(4);
     }
+
 }
