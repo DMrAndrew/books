@@ -1,0 +1,17 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+    name:
+        label: Название
+        searchable: true
+    desc:
+        label: Описание
+        searchable: true
+    favorite:
+        label: Любимый жанр
+        type: switch
+    active:
+        label: Активный
+        type: switch

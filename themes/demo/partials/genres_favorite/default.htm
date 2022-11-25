@@ -1,0 +1,92 @@
+{% set genres = __SELF__.favoriteGenres %}
+
+<div class="ui-container-fluid">
+
+    {% flash error %}
+    <div class="alert alert-success">{{ message }}</div>
+    {% endflash %}
+
+    <div class="favorite-genres__container">
+        <div class="favorite-genres__header active">
+            <span class="ui-text-head--3 ui-text--bold">Любимые жанры</span>
+
+            <svg>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+            </svg>
+        </div>
+        <div class="favorite-genres__body">
+            <div class="favorite-genres__description">На основе ваших предпочтений, рекомендации сервиса будут точнее и
+                интереснее</div>
+            <div class="favorite-genres__actions ui-grid-container ui-grid-gap">
+                <div class="ui-col-sm-6">
+                    <div class="ui-grid-container ui-grid-gap">
+                        <div class="ui-col-lg-6 ui-col-sm-12">
+                            {% for item in genres[0] %}
+
+                            <label class="ui-checkbox">
+                                <input type="checkbox" {{ item.selected ? 'checked' : ''  }} hidden data-request="onToggleFavorite" data-request-data="id: {{item.id}}">
+                                <div class="ui-checkbox-checker">
+                                    <svg>
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                    </svg>
+
+                                </div>
+                                <span  class="ui-checkbox-text">{{item.name}}</span>
+                            </label>
+
+                            {% endfor %}
+                        </div>
+                        <div class="ui-col-lg-6 ui-col-sm-12">
+                            {% for item in genres[1] %}
+
+                            <label class="ui-checkbox">
+                                <input type="checkbox" {{ item.selected ? 'checked' : ''  }} hidden data-request="onToggleFavorite" data-request-data="id: {{item.id}}" >
+                                <div class="ui-checkbox-checker">
+                                    <svg>
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                    </svg>
+
+                                </div>
+                                <span class="ui-checkbox-text">{{item.name}}</span>
+                            </label>
+
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-col-sm-6">
+                    <div class="ui-grid-container ui-grid-gap">
+                        <div class="ui-col-lg-6 ui-col-sm-12">
+                            {% for item in genres[2] %}
+                            <label class="ui-checkbox">
+                                <input type="checkbox" {{ item.selected ? 'checked' : ''  }} hidden data-request="onToggleFavorite" data-request-data="id: {{item.id}}">
+                                <div class="ui-checkbox-checker">
+                                    <svg>
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                    </svg>
+
+                                </div>
+                                <span class="ui-checkbox-text">{{item.name}}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        <div class="ui-col-lg-6 ui-col-sm-12">
+                            {% for item in genres[3] %}
+                            <label class="ui-checkbox">
+                                <input type="checkbox" {{ item.selected ? 'checked' : ''  }} hidden data-request="onToggleFavorite" data-request-data="id: {{item.id}}">
+                                <div class="ui-checkbox-checker">
+                                    <svg>
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                    </svg>
+
+                                </div>
+                                <span class="ui-checkbox-text">{{item.name}}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

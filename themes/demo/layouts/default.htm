@@ -1,6 +1,22 @@
 description = "Default layout"
+[genres genres_parented]
+[account]
+paramCode = "code"
+forceSecure = 0
+requirePassword = 0
+
+[session]
+security = "all"
+
+[postregister]
+paramCode = "code"
+forceSecure = 0
+requirePassword = 0
 
 ==
+
+{% component 'session' %}
+{% component 'postregister' %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>

@@ -3,29 +3,19 @@ layout = "default"
 title = "Welcome"
 meta_title = "Welcome"
 
-[account]
-paramCode = "code"
-forceSecure = 0
-requirePassword = 0
-
-[session]
-security = "all"
-
-[postregister]
-paramCode = "code"
-forceSecure = 0
-requirePassword = 0
+[favorite_genres genres_favorite]
 ==
-{% component 'session' %}
-{% component 'postregister' %}
+
 <div>
+
+    {% if not user %}
     <div class="promo _indent">
         <div class="ui-container">
             <div class="promo__container">
                 <img class="promo__image" src="{{'assets/images/main/promo-main-image.svg' | theme}}" alt="">
                 <h1 class="promo__title ui-text-head--1 ui-text--bold">Уютное место для авторов и читателей</h1>
                 <div class="promo__actions">
-                    <a href="#" class="ui-button ui-button-view--1 ui-button-size--56 ui-button--full-mobile">
+                    <a onclick="registerPopup()" href="#" class="ui-button ui-button-view--1 ui-button-size--56 ui-button--full-mobile">
                         <span class="ui-text--medium">Присоединиться</span>
                     </a>
                     <a href="#" class="promo__actions-info">
@@ -39,7 +29,13 @@ requirePassword = 0
             </div>
         </div>
     </div>
+
     {% partial 'site/favorite' %}
+
+    {% else %}
+    <div style="margin-bottom: 16px"> </div>
+    {% endif %}
+
     {% partial 'site/thematic' %}
     {% partial 'site/desc' %}
     {% if user and ( user.required_post_register == 1) %}

@@ -1,0 +1,17 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+    name:
+        label: Название
+        searchable: true
+    desc:
+        label: Описание
+        searchable: true
+    active:
+        label: Активный
+        type: switch
+    icon:
+        label: Иконка
+        type: image

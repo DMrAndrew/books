@@ -1,20 +1,21 @@
-<?php namespace Books\Profile\Models;
+<?php namespace Books\Catalog\Models;
 
 use Model;
-use RainLab\User\Models\User;
+use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
 
 /**
- * Profile Model
+ * Type Model
  */
-class Profile extends Model
+class Type extends Model
 {
     use Validation;
+    use Sortable;
 
     /**
      * @var string table associated with the model
      */
-    public $table = 'books_profile_profiles';
+    public $table = 'books_catalog_types';
 
     /**
      * @var array guarded attributes aren't mass assignable
@@ -24,13 +25,16 @@ class Profile extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['username'];
+    protected $fillable = ['name', 'desc', 'active',];
 
     /**
      * @var array rules for validation
      */
     public $rules = [
-        'username' =>'required|between:2,255|unique:books_profile_profiles'
+        'name' => 'required|string|min:3',
+        'desc' => 'nullable|string',
+        'active' => 'boolean',
+        'icon' => 'nullable|image|mimes:png'
     ];
 
     /**
@@ -66,11 +70,28 @@ class Profile extends Model
      */
     public $hasOne = [];
     public $hasMany = [];
-    public $belongsTo = ['user' => User::class,'key' => 'id','otherKey' => 'user_id'];
+    public $belongsTo = [];
     public $belongsToMany = [];
     public $morphTo = [];
     public $morphOne = [];
     public $morphMany = [];
-    public $attachOne = [];
+    public $attachOne = [
+        'icon' => 'System\Models\File'
+    ];
     public $attachMany = [];
+
+    public function activate()
+    {
+        $this->active = 1;
+        $this->save();
+        return $this;
+    }
+
+    public function deactivate()
+    {
+        $this->active = 0;
+        $this->save();
+
+        return $this;
+    }
 }

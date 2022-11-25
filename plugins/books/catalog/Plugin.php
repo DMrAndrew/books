@@ -1,7 +1,12 @@
 <?php namespace Books\Catalog;
 
+use Event;
 use Backend;
+use RainLab\User\Models\User;
 use System\Classes\PluginBase;
+use Books\Catalog\Components\Genres;
+use Books\Catalog\Classes\FavoritesManager;
+use Books\Catalog\Components\FavoriteGenres;
 
 /**
  * Plugin Information File
@@ -40,7 +45,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+        Event::listen('rainlab.user.register',fn(User $user) => (new FavoritesManager())->save($user));
     }
 
     /**
@@ -50,10 +55,10 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
 
         return [
-            'Books\Catalog\Components\MyComponent' => 'myComponent',
+                Genres::class => 'genres',
+                FavoriteGenres::class => 'favorite_genres',
         ];
     }
 
@@ -81,15 +86,30 @@ class Plugin extends PluginBase
      */
     public function registerNavigation()
     {
-        return []; // Remove this line to activate
+
 
         return [
             'catalog' => [
-                'label'       => 'Catalog',
-                'url'         => Backend::url('books/catalog/mycontroller'),
+                'label'       => 'Каталог',
+                'url'         => Backend::url('books/catalog/catalog'),
                 'icon'        => 'icon-leaf',
                 'permissions' => ['books.catalog.*'],
                 'order'       => 500,
+
+                'sideMenu' => [
+                    'types' => [
+                        'label'       => 'Типы книг',
+                        'icon'        => 'icon-leaf',
+                        'url'         => Backend::url('books/catalog/type'),
+                        'permissions' => ['books.catalog.*']
+                    ],
+                    'genres' => [
+                        'label' => 'Жанры',
+                        'icon'        => 'icon-leaf',
+                        'url'         => Backend::url('books/catalog/genre'),
+                        'permissions' => ['books.catalog.*']
+                    ]
+                ]
             ],
         ];
     }

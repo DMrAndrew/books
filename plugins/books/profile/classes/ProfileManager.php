@@ -36,6 +36,8 @@ class ProfileManager
     public function switch(Profile|int $profile): bool
     {
         $profile = is_int($profile) ? Profile::find($profile) : $profile;
-        return $profile->user->update(['current_profile_id' => $profile->id]);
+        $user = $profile->user;
+        $user->current_profile_id = $profile->id;
+        return $user->save();
     }
 }
