@@ -1,21 +1,19 @@
-<?php namespace Books\Profile\Models;
+<?php namespace Books\User\Models;
 
 use Model;
-use System\Models\File;
-use RainLab\User\Models\User;
 use October\Rain\Database\Traits\Validation;
 
 /**
- * Profile Model
+ * Country Model
  */
-class Profile extends Model
+class Country extends Model
 {
     use Validation;
 
     /**
      * @var string table associated with the model
      */
-    public $table = 'books_profile_profiles';
+    public $table = 'books_user_countries';
 
     /**
      * @var array guarded attributes aren't mass assignable
@@ -25,35 +23,20 @@ class Profile extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = [
-        'username',
-        'status',
-        'about',
-        'avatar',
-        'banner',
+    protected $fillable = ['name','code'];
+
+    /**
+     * @var array rules for validation
+     */
+    public $rules = [
+        'name' => 'required|string',
+        'code' => 'required|string:max:3|unique:books_user_countries',
     ];
 
     /**
      * @var array Attributes to be cast to native types
      */
     protected $casts = [];
-
-    /**
-     * @var array rules for validation
-     */
-    public $rules = [
-        'username' => 'required|between:2,255|unique:books_profile_profiles',
-        'status' => 'string',
-        'about' => 'string',
-        'avatar' => 'bail|image|mimes:jpg,png|dimensions:min_width=168,min_height=168',
-        'banner' => 'bail|image|dimensions:min_width=1152,min_height=160',
-        'show_birthday' =>'boolean',
-        'website' => 'url',
-        'email' => 'email',
-        'phone' => 'string',
-        'tg' => 'string',
-        'ok' => 'url',
-    ];
 
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
@@ -83,14 +66,16 @@ class Profile extends Model
      */
     public $hasOne = [];
     public $hasMany = [];
-    public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
+    public $belongsTo = [];
     public $belongsToMany = [];
     public $morphTo = [];
     public $morphOne = [];
     public $morphMany = [];
-    public $attachOne = [
-        'avatar' => [File::class],
-        'banner' => [File::class],
-    ];
+    public $attachOne = [];
     public $attachMany = [];
+
+    public function scopeCode($q, $code)
+    {
+        return $q->where('code', '=', $code);
+    }
 }

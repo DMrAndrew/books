@@ -1,21 +1,20 @@
-<?php namespace Books\Profile\Models;
+<?php namespace Books\Book\Models;
 
-use Model;
-use System\Models\File;
-use RainLab\User\Models\User;
+use October\Rain\Database\Pivot;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Models\User;
 
 /**
- * Profile Model
+ * CoAuthor Model
  */
-class Profile extends Model
+class CoAuthor extends Pivot
 {
     use Validation;
 
     /**
      * @var string table associated with the model
      */
-    public $table = 'books_profile_profiles';
+    public $table = 'books_book_co_authors';
 
     /**
      * @var array guarded attributes aren't mass assignable
@@ -25,35 +24,21 @@ class Profile extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = [
-        'username',
-        'status',
-        'about',
-        'avatar',
-        'banner',
+    protected $fillable = ['book_id', 'author_id', 'percent',];
+
+    /**
+     * @var array rules for validation
+     */
+    public $rules = [
+        'book_id' => 'required|exists:books_book_books,id',
+        'author_id' => 'required|exists:users,id',
+        'percent' => 'integer|max:100',
     ];
 
     /**
      * @var array Attributes to be cast to native types
      */
     protected $casts = [];
-
-    /**
-     * @var array rules for validation
-     */
-    public $rules = [
-        'username' => 'required|between:2,255|unique:books_profile_profiles',
-        'status' => 'string',
-        'about' => 'string',
-        'avatar' => 'bail|image|mimes:jpg,png|dimensions:min_width=168,min_height=168',
-        'banner' => 'bail|image|dimensions:min_width=1152,min_height=160',
-        'show_birthday' =>'boolean',
-        'website' => 'url',
-        'email' => 'email',
-        'phone' => 'string',
-        'tg' => 'string',
-        'ok' => 'url',
-    ];
 
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
@@ -81,16 +66,24 @@ class Profile extends Model
     /**
      * @var array hasOne and other relations
      */
-    public $hasOne = [];
+    public $hasOne = [
+        'book' => [
+            Book::class,
+            'key' => 'book_id',
+            'otherKey' => 'id'
+        ],
+        'author' => [
+            User::class,
+            'key' => 'user_id',
+            'otherKey' => 'id'
+        ]
+    ];
     public $hasMany = [];
-    public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
+    public $belongsTo = [];
     public $belongsToMany = [];
     public $morphTo = [];
     public $morphOne = [];
     public $morphMany = [];
-    public $attachOne = [
-        'avatar' => [File::class],
-        'banner' => [File::class],
-    ];
+    public $attachOne = [];
     public $attachMany = [];
 }

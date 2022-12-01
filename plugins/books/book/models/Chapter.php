@@ -1,21 +1,23 @@
-<?php namespace Books\Profile\Models;
+<?php namespace Books\Book\Models;
 
 use Model;
-use System\Models\File;
-use RainLab\User\Models\User;
+use October\Rain\Database\Traits\Sortable;
+use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
 
 /**
- * Profile Model
+ * Chapter Model
  */
-class Profile extends Model
+class Chapter extends Model
 {
+    use Sortable;
     use Validation;
+    use SoftDelete;
 
     /**
      * @var string table associated with the model
      */
-    public $table = 'books_profile_profiles';
+    public $table = 'books_book_chapters';
 
     /**
      * @var array guarded attributes aren't mass assignable
@@ -26,34 +28,24 @@ class Profile extends Model
      * @var array fillable attributes are mass assignable
      */
     protected $fillable = [
-        'username',
-        'status',
-        'about',
-        'avatar',
-        'banner',
+        'title','book_id','content','published_at','length'
+    ];
+
+    /**
+     * @var array rules for validation
+     */
+    public $rules = [
+        'title' => 'required|string',
+        'book_id' => 'required|exists:books_book_books,id',
+        'content' => 'string',
+        'published_at' => 'date',
+        'length' => 'integer',
     ];
 
     /**
      * @var array Attributes to be cast to native types
      */
     protected $casts = [];
-
-    /**
-     * @var array rules for validation
-     */
-    public $rules = [
-        'username' => 'required|between:2,255|unique:books_profile_profiles',
-        'status' => 'string',
-        'about' => 'string',
-        'avatar' => 'bail|image|mimes:jpg,png|dimensions:min_width=168,min_height=168',
-        'banner' => 'bail|image|dimensions:min_width=1152,min_height=160',
-        'show_birthday' =>'boolean',
-        'website' => 'url',
-        'email' => 'email',
-        'phone' => 'string',
-        'tg' => 'string',
-        'ok' => 'url',
-    ];
 
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
@@ -83,14 +75,21 @@ class Profile extends Model
      */
     public $hasOne = [];
     public $hasMany = [];
-    public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
+    public $belongsTo = [];
     public $belongsToMany = [];
     public $morphTo = [];
     public $morphOne = [];
     public $morphMany = [];
-    public $attachOne = [
-        'avatar' => [File::class],
-        'banner' => [File::class],
-    ];
+    public $attachOne = [];
     public $attachMany = [];
+
+    public function getStatusAttribute($status): ?ChapterStatus
+    {
+        return ChapterStatus::tryFrom($status);
+    }
+
+    public function setStatusAttribute(string|ChapterStatus $status)
+    {
+        $this->attributes['status'] = is_string($status) ? $status : $status->value;
+    }
 }

@@ -17,6 +17,15 @@ class CreateProfilesTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned()->index();
             $table->string('username')->unique();
+            $table->string('username_clipboard')->nullable();
+            $table->string('status')->nullable();
+            $table->text('about')->nullable();
+            $table->string('website')->nullable();
+            $table->string('email')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('vk')->nullable();
+            $table->string('tg')->nullable();
+            $table->string('ok')->nullable();
             $table->timestamps();
         });
     }

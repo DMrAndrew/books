@@ -1,22 +1,18 @@
-<?php namespace Books\Profile;
+<?php namespace Books\Book;
 
-use Event;
-use Config;
 use Backend;
-use RainLab\User\Models\User;
-use System\Classes\PluginBase;
-use Books\Profile\Components\Profile;
-use Books\Profile\Behaviors\HasProfile;
+use Books\Book\Classes\CoAuthorManager;
+use Books\Book\Models\Book;
+use Books\Book\Models\Cycle;
 use Books\Profile\Behaviors\Profileable;
-use Books\Profile\Classes\ProfileManager;
+use October\Rain\Database\Model;
+use System\Classes\PluginBase;
 
 /**
  * Plugin Information File
  */
 class Plugin extends PluginBase
 {
-
-
     /**
      * Returns information about this plugin.
      *
@@ -25,7 +21,7 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name' => 'Profile',
+            'name' => 'Book',
             'description' => 'No description provided yet...',
             'author' => 'Books',
             'icon' => 'icon-leaf'
@@ -49,17 +45,13 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
+        //TODO extend
+//        collect([
+//            Book::class,
+//            Cycle::class
+//        ])->each(fn(Model $model) => $model->implementClassWith(Profileable::class));
 
-        Config::set('profile', Config::get('books.profile::config'));
-        User::extend(function (User $model) {
-            $model->implementClassWith(HasProfile::class);
-        });
-        Event::listen('rainlab.user.register',fn(User $user) => (new ProfileManager())->createProfile($user));
-        foreach (config('profile.profileable') ?? [] as $class) {
-            $class::extend(function ($model) {
-                $model->implementClassWith(Profileable::class);
-            });
-        }
+//        CoAuthorManager::bindOnInsertCoAuthorEvent();
 
     }
 
@@ -70,9 +62,10 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
+        return []; // Remove this line to activate
 
         return [
-            Profile::class => 'profile',
+            'Books\Book\Components\MyComponent' => 'myComponent',
         ];
     }
 
@@ -86,8 +79,8 @@ class Plugin extends PluginBase
         return []; // Remove this line to activate
 
         return [
-            'books.profile.some_permission' => [
-                'tab' => 'Profile',
+            'books.book.some_permission' => [
+                'tab' => 'Book',
                 'label' => 'Some permission'
             ],
         ];
@@ -103,11 +96,11 @@ class Plugin extends PluginBase
         return []; // Remove this line to activate
 
         return [
-            'profile' => [
-                'label' => 'Profile',
-                'url' => Backend::url('books/profile/mycontroller'),
+            'book' => [
+                'label' => 'Book',
+                'url' => Backend::url('books/book/mycontroller'),
                 'icon' => 'icon-leaf',
-                'permissions' => ['books.profile.*'],
+                'permissions' => ['books.book.*'],
                 'order' => 500,
             ],
         ];

@@ -1,21 +1,19 @@
-<?php namespace Books\Profile\Models;
+<?php namespace Books\Book\Models;
 
 use Model;
-use System\Models\File;
-use RainLab\User\Models\User;
 use October\Rain\Database\Traits\Validation;
 
 /**
- * Profile Model
+ * Tags Model
  */
-class Profile extends Model
+class Tags extends Model
 {
     use Validation;
 
     /**
      * @var string table associated with the model
      */
-    public $table = 'books_profile_profiles';
+    public $table = 'books_book_tags';
 
     /**
      * @var array guarded attributes aren't mass assignable
@@ -25,35 +23,20 @@ class Profile extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = [
-        'username',
-        'status',
-        'about',
-        'avatar',
-        'banner',
+    protected $fillable = ['name', 'author_id'];
+
+    /**
+     * @var array rules for validation
+     */
+    public $rules = [
+        'name' => 'required|string|max:32',
+        'author_id' => 'required|exists:users,id'
     ];
 
     /**
      * @var array Attributes to be cast to native types
      */
     protected $casts = [];
-
-    /**
-     * @var array rules for validation
-     */
-    public $rules = [
-        'username' => 'required|between:2,255|unique:books_profile_profiles',
-        'status' => 'string',
-        'about' => 'string',
-        'avatar' => 'bail|image|mimes:jpg,png|dimensions:min_width=168,min_height=168',
-        'banner' => 'bail|image|dimensions:min_width=1152,min_height=160',
-        'show_birthday' =>'boolean',
-        'website' => 'url',
-        'email' => 'email',
-        'phone' => 'string',
-        'tg' => 'string',
-        'ok' => 'url',
-    ];
 
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
@@ -83,14 +66,23 @@ class Profile extends Model
      */
     public $hasOne = [];
     public $hasMany = [];
-    public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
-    public $belongsToMany = [];
+    public $belongsTo = [];
+    public $belongsToMany = [
+        'books' => [
+            Book::class,
+            'table' => 'books_book_tag',
+            'key' => 'tag_id',
+            'otherKey' => 'book_id'
+        ]
+    ];
     public $morphTo = [];
     public $morphOne = [];
     public $morphMany = [];
-    public $attachOne = [
-        'avatar' => [File::class],
-        'banner' => [File::class],
-    ];
+    public $attachOne = [];
     public $attachMany = [];
+
+    public function scopeOrderByName($q)
+    {
+        return $q->orderBy('name');
+    }
 }

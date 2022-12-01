@@ -7,6 +7,7 @@ use Flash;
 use Request;
 use Exception;
 use RainLab\User\Facades\Auth;
+use Books\User\Models\Country;
 use RainLab\User\Components\Account;
 
 class PostRegister extends Account
@@ -22,7 +23,6 @@ class PostRegister extends Account
     public function onPostRegister()
     {
         try {
-
             $user = Auth::getUser();
             $data = array_diff(post(), $user->only($user->getFillable()));
             $user->addValidationRule('password', 'nullable');
@@ -30,6 +30,9 @@ class PostRegister extends Account
             $user->removeValidationRule('email', 'required');
             if ($user->username) {
                 $user->removeValidationRule('username', 'required');
+            }
+            if (!isset($data['country_id'])) {
+                $data['country_id'] = Country::code('ru')->first()->id;
             }
             Db::transaction(function () use ($user, $data) {
                 $user->update(array_merge($data, ['required_post_register' => 0]));
