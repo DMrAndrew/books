@@ -11,6 +11,7 @@ use Books\Reviews\Behaviors\PerformsReviews;
  */
 class Plugin extends PluginBase
 {
+    public $require = ['RainLab.User'];
     /**
      * Returns information about this plugin.
      *

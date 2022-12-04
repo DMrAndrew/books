@@ -4,7 +4,8 @@ use Backend;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 use Books\User\Behaviors\BookUser;
-use Books\User\Components\PostRegister;
+use Books\User\Components\BookAccount;
+use Books\User\Classes\UserEventHandler;
 
 /**
  * Plugin Information File
@@ -44,8 +45,12 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
+
         User::extend(function (User $model) {
             $model->implementClassWith(BookUser::class);
+            $model->bindEvent('model.afterCreate', function () use ($model) {
+                (new UserEventHandler())->afterCreate($model);
+            });
         });
     }
 
@@ -57,7 +62,7 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            PostRegister::class => 'postregister'
+            BookAccount::class => 'bookAccount'
         ];
     }
 

@@ -2,6 +2,9 @@
 
 namespace Books\User\Behaviors;
 
+use Books\User\Models\Country;
+use Carbon\Carbon;
+use October\Rain\Argon\Argon;
 use RainLab\User\Models\User;
 use October\Rain\Extension\ExtensionBase;
 
@@ -9,6 +12,7 @@ class BookUser extends ExtensionBase
 {
     public function __construct(protected User $parent)
     {
+        $this->parent->hasOne['country'] = [Country::class,'key' => 'id','otherKey' => 'country_id'];
         $this->parent->addValidationRule('birthday', 'nullable');
         $this->parent->addValidationRule('birthday', 'date');
         $this->parent->addValidationRule('show_birthday', 'nullable');
@@ -21,13 +25,15 @@ class BookUser extends ExtensionBase
             'country_id',
             'required_post_register',
             'favorite_genres',
-            'exclude_genres'
-        ]);
-        $this->parent->addCasts([
-            'favorite_genres' => 'array',
-            'exclude_genres' => 'array',
+            'exclude_genres',
+            'see_adult'
         ]);
 
+        $this->parent->addDateAttribute('birthday');
+        $this->parent->addJsonable([
+            'favorite_genres',
+            'exclude_genres'
+        ]);
         //TODO перевод для birthday
     }
 
@@ -37,5 +43,17 @@ class BookUser extends ExtensionBase
             return $query->where('username', '=', $name);
         });
     }
+
+    public function getBirthdayAttribute($value)
+    {
+        if ($value === '') return null;
+        return $value;
+    }
+
+    public function setBirthdayAttribute($value)
+    {
+        $this->parent->attributes['birthday'] = ($value === '' || null) ? null :  Carbon::parse($value);
+    }
+
 
 }

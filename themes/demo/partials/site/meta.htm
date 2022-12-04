@@ -11,8 +11,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+
+<script src="{{ [
+        '@jquery',
+        '@framework',
+        '@framework.extras',
+    ]|theme}}">
+</script>
+
 <!-- Подключение стилей свайпера -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
+
 <style>
     #login_popup, #register_popup, #register_form, #login_form, #auth_popup {
         display: none;
@@ -46,6 +56,9 @@
     let registerPopup = () => toForm('register_popup');
     let loginForm = () => toForm('login_form');
     let registerForm = () => toForm('register_form');
+
+    let openChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'flex'
+    let closeChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'none'
 </script>
 
 {% framework extras turbo %}

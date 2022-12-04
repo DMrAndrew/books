@@ -27,10 +27,17 @@ class Profile extends Model
      */
     protected $fillable = [
         'username',
+        'username_clipboard',
         'status',
         'about',
         'avatar',
         'banner',
+        'ok',
+        'phone',
+        'tg',
+        'vk',
+        'email',
+        'website',
     ];
 
     /**
@@ -43,16 +50,17 @@ class Profile extends Model
      */
     public $rules = [
         'username' => 'required|between:2,255|unique:books_profile_profiles',
-        'status' => 'string',
-        'about' => 'string',
-        'avatar' => 'bail|image|mimes:jpg,png|dimensions:min_width=168,min_height=168',
-        'banner' => 'bail|image|dimensions:min_width=1152,min_height=160',
-        'show_birthday' =>'boolean',
-        'website' => 'url',
-        'email' => 'email',
-        'phone' => 'string',
-        'tg' => 'string',
-        'ok' => 'url',
+        'username_clipboard' => 'nullable|between:2,255|unique:books_profile_profiles',
+        'status' => 'nullable|string',
+        'about' => 'nullable|string',
+        'avatar' => 'nullable|image|mimes:jpg,png|dimensions:min_width=168,min_height=168',
+        'banner' => 'nullable|image|mimes:jpg,png|dimensions:min_width=1152,min_height=160',
+        'website' => 'nullable|url',
+        'email' => 'nullable|email',
+        'phone' => 'nullable|string',
+        'tg' => 'nullable|string',
+        'ok' => 'nullable|url',
+        'vk' => 'nullable|url',
     ];
 
     /**
@@ -89,8 +97,8 @@ class Profile extends Model
     public $morphOne = [];
     public $morphMany = [];
     public $attachOne = [
-        'avatar' => [File::class],
         'banner' => [File::class],
+        'avatar' => [File::class],
     ];
     public $attachMany = [];
 }

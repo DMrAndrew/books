@@ -12,6 +12,7 @@
         Зарегистрироваться
     </button>
 </div>
+
 <div id="auth_popup" class="auth" style="display: none">
     <div id="login_popup" class="auth__container _small">
         <div class="auth__header _desktop">
@@ -81,7 +82,7 @@
     </div>
     {% partial 'auth/registerForm' %}
     <form id="login_form" class="auth__container _small"
-          data-request="account::onSignin"
+          data-request="bookAccount::onSignin"
           data-request-validate
           data-request-success="closeForm()"
     >
@@ -127,3 +128,4 @@
         </div>
     </form>
 </div>
+

@@ -282,12 +282,12 @@
             <div class="dropwdown-profile">
                 <ul class="dropwdown-profile__list">
                     <li class="dropwdown-profile__name">{{user.username}}</li>
-                    <li><a href="/lc-profile">Профиль</a></li>
+                    <li><a href="/author-page">Профиль</a></li>
                     <li><a href="/frontend/author-page.html">Книги</a></li>
                     <li><a href="/frontend/author-page.html">Магазин</a></li>
                     <li><a href="/frontend/author-page.html">Подписки</a></li>
                     <li class="dropwdown-profile__separator"></li>
-                    <li><a href="/frontend/lc-profile.html">Личный кабинет</a></li>
+                    <li><a href="/lc-profile">Личный кабинет</a></li>
                     <li><a href="">Заказы</a></li>
                     <li><a href="">Финансы</a></li>
                     <li class="dropwdown-profile__separator"></li>
@@ -306,7 +306,7 @@
                                     <a href="#" class="dropwdown-profile__link active">
                                         <svg class="square-16">
                                             <use
-                                                xlink:href="./assets/icon-sprite/svg-sprite.svg#check-stroked-16"></use>
+                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme }}"></use>
                                         </svg>
                                         <span>{{profile.username}} </span>
                                     </a>
@@ -316,7 +316,11 @@
                         </div>
                     </li>
                     <li class="dropwdown-profile__separator"></li>
-                    <li><a href="#" data-request="session::onLogout"  data-request-success="closeForm()" data-request-redirect="/">Выйти</a></li>
+                    <li>
+                        <a href="#" data-request="session::onLogout" data-request-data="redirect: '/'">
+                            Выйти
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -824,3 +828,8 @@
 <script>
     initFn();
 </script>
+
+{% if user and ( user.required_post_register == 1) %}
+{% partial "auth/postRegisterContainer" %}
+<script>registerForm()</script>
+{% endif %}

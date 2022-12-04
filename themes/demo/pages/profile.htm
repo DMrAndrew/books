@@ -1,11 +1,13 @@
 url = "/lc-profile"
 layout = "personalarea"
-title = "Профиль"
+title = "Личный кабинет"
 description = "Профиль"
 meta_title = "Профиль"
 meta_description = "Профиль"
 
 [profile]
+
+[Form]
 ==
 <div class="personal-area__subtitle">
     <span class="ui-text-head--3 ui-text--bold">Профиль</span>
@@ -14,112 +16,32 @@ meta_description = "Профиль"
     </svg>
 </div>
 
-<form class="personal-area__wrapper" data-request="onProfileUpdate" data-request-files data-request-validate>
-    <div class="personal-area__wrap _indent-large ui-text--bold ui-text-head--2">Основная информация</div>
-    <div class="personal-area__wrap _indent-small">Фото профиля</div>
-    <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">Загружайте изображение размером не менее 168x168 пикселей в формате JPG или PNG</div>
-    <label class="ui-input-file">
-        <input type="file" name="avatar" accept="image/*" hidden>
-        <div class="ui-input-file-item ui-text--medium">Загрузить</div>
-    </label>
-    <span class="validation-error" data-validate-for="avatar"></span>
-    <div class="personal-area__wrap _separator"></div>
-    <div class="personal-area__wrap _indent-small">Баннер</div>
-    <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">Это изображение показывается в верхней части вашего профиля. Чтобы фотография выглядела привлекательно на всех устройствах, загружайте изображение размером не менее 1152x160 пикселей.</div>
-    <label class="ui-input-file">
-        <input type="file"  name="banner" accept="image/*" hidden>
-        <div class="ui-input-file-item ui-text--medium">Загрузить</div>
-    </label>
-    <div class="personal-area__wrap _separator"></div>
-    <div class="personal-area__wrap _indent-small">Имя или псевдоним</div>
-    <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">Имя или псевдоним можно изменить через администратора. <a href="#" class="ui-link _violet">Изменить</a></div>
-    <div class="ui-input">
-        <input class="ui-input-item _size-32" type="text" value="Андрей Петров">
-        <span class="validation-error" data-validate-for="username"></span>
-    </div>
-    <div class="personal-area__wrap _separator"></div>
-
-    <div class="personal-area-profile__date">
-        <div class="ui-input">
-            <label class="ui-input-label">Дата рождения</label>
-            <input class="ui-input-item _size-32" type="text" value="11.02.1990">
-        </div>
-        <label class="ui-checkbox">
-            <input type="checkbox" hidden>
-            <div class="ui-checkbox-checker">
-                <svg>
-                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+<div id="change_username_form" class="buy-book-modal ui-modal" style="display: none">
+    <form  data-request="profile::onUpdateUsername"
+           data-request-validate
+           data-request-success="document.location.reload()"
+    >
+    <div class="ui-modal-container">
+        <div class="buy-book-modal__container _size-large ui-modal-content">
+            <div class="buy-book-modal__header">
+                <div class="square-16 "></div>
+                <div class="ui-text-head--2 ui-text--bold">Изменить имя или псевдоним</div>
+                <svg style="cursor: pointer"  onclick="closeChangerUserNameForm()" class="square-24">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
                 </svg>
-
             </div>
-            <span class="ui-checkbox-text">Показывать дату рождения</span>
-        </label>
+
+            <textarea name="username" class="ui-input-textarea" rows="3"></textarea>
+            <span class="validation-error" data-validate-for="username"></span>
+            <span class="validation-error" data-validate-for="username_clipboard"></span>
+
+            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                <span class="ui-text--medium">Отправить</span>
+            </button>
+        </div>
     </div>
-    <div class="personal-area__wrap _separator"></div>
+    </form>
+</div>
 
-    <div class="ui-input">
-        <label class="ui-input-label">Страна</label>
-        <input class="ui-input-item _size-32" type="text" value="Российская федерация">
-    </div>
-    <div class="personal-area__wrap _separator"></div>
-
-
-    <div class="personal-area__wrap _indent-small">Рекомендации</div>
-    <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">На основе ваших предпочтений, рекомендации сервиса будут точнее и интереснее.</div>
-    <div class="personal-area__wrap _indent-medium"><span class="personal-area__wrap _color-gray">Нравится:</span> Магическая фэнтези, Темное фэнтези, Фольклорное фэнтези</div>
-    <div class="personal-area__wrap _indent-medium"><span class="personal-area__wrap _color-gray">Не нравится: </span> Историческое фэнтези</div>
-    <button class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Изменить</button>
-    <div class="personal-area__wrap _separator"></div>
-
-    <div class="ui-input">
-        <label class="ui-input-label">Статус или жизненный девиз</label>
-        <input class="ui-input-item _size-32" type="text" >
-    </div>
-    <div class="personal-area__wrap _separator"></div>
-
-    <div class="ui-input">
-        <label class="ui-input-label">О себе</label>
-        <textarea class="ui-input-textarea"></textarea>
-    </div>
-    <div class="personal-area__wrap _separator"></div>
-
-    <button class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить</button>
-</form>
-
-<form class="personal-area__wrapper">
-    <div class="personal-area__wrap _indent-large ui-text--bold ui-text-head--2">Основная информация</div>
-    <div class="ui-input personal-area__wrap _indent-large">
-        <label class="ui-input-label">Сайт</label>
-        <input class="ui-input-item _size-32" type="text" >
-    </div>
-
-    <div class="ui-input personal-area__wrap _indent-large">
-        <label class="ui-input-label">Почта</label>
-        <input class="ui-input-item _size-32" type="text" >
-    </div>
-
-    <div class="ui-input personal-area__wrap _indent-large">
-        <label class="ui-input-label">Телефон</label>
-        <input class="ui-input-item _size-32" type="text" >
-    </div>
-
-    <div class="ui-input personal-area__wrap _indent-large">
-        <label class="ui-input-label">ВКонтакте</label>
-        <input class="ui-input-item _size-32" type="text" >
-        <div class="ui-input-hint ui-text-body--3">Адрес страницы, например https://vk.com/petrov</div>
-    </div>
-
-    <div class="ui-input personal-area__wrap _indent-large">
-        <label class="ui-input-label">Телеграм</label>
-        <input class="ui-input-item _size-32" type="text" >
-        <div class="ui-input-hint ui-text-body--3">Имя пользователя, например pertov</div>
-    </div>
-
-    <div class="ui-input personal-area__wrap _indent-large">
-        <label class="ui-input-label">Одноклассники</label>
-        <input class="ui-input-item _size-32" type="text" >
-        <div class="ui-input-hint ui-text-body--3">Адрес страницы, например https://ok.ru/petrov</div>
-    </div>
-
-    <button class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить</button>
-</form>
+{% partial "profile/primaryInformation" userdata=userdata %}
+{% partial "profile/profileSecondaryInformation" userdata=userdata %}

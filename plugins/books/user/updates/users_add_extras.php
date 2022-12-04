@@ -10,7 +10,7 @@ class UsersAddBirthday extends Migration
     public function up()
     {
         Schema::table('users', function ($table) {
-            $table->date('birthday')->nullable();
+            $table->timestamp('birthday')->nullable();
             $table->boolean('show_birthday')->default(true);
             $table->unsignedBigInteger('country_id')->nullable();
             $table->boolean('see_adult')->default(false);

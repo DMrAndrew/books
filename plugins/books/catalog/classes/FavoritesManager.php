@@ -19,7 +19,7 @@ class FavoritesManager
         $user ??= Auth::getUser();
         if ($user) {
             $user->favorite_genres = $array ?? (Cookie::has('favorite_genres') ? json_decode(Cookie::get('favorite_genres')) : $this->getDefaultGenres());
-            $user->save();
+            $user->save(['force' => true]);
         }
     }
 

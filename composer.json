@@ -20,7 +20,8 @@
         "mobecan/favorites-plugin": "*",
         "books/reviews-plugin": "*",
         "books/profile-plugin": "*",
-        "books/book-plugin": "*"
+        "books/book-plugin": "*",
+        "books/fileuploader-plugin": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -86,6 +87,11 @@
         "books/book-plugin": {
             "type": "path",
             "url": "plugins/books/book"
+        },
+        "books/fileuploader-plugin": {
+            "type": "path",
+            "url": "./plugins/books/fileuploader"
         }
+
     }
 }
