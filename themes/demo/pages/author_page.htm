@@ -1,20 +1,27 @@
 title = "Профиль"
 layout = "default"
 url = "/author-page"
+[session]
 ==
 <!-- Промо часть страницы -->
-
 <div style="margin-bottom: 16px"> </div>
 <div class="author ui-container-fluid">
     <div class="author__promo author-promo">
         <div class="author-promo__background">
-            <img class="author__background-image" src="{{'assets/images/author/bg-placeholder.png' | theme}}" alt="" loadong="lazy">
+            {% if user.profile.banner %}
+            <img class="author__background-image" src="{{user.profile.banner.path}}" alt="banner" loadong="lazy">
+            {% else %}
+            <img class="author__background-image" src="{{'assets/images/author/bg-placeholder.png' | theme}}" alt="banner" loadong="lazy">
+            {% endif %}
         </div>
         <div class="author-promo__info author-promo-info">
             <div class="author-promo-info__avatar-wrapper">
                 <!-- Показывается сообщение или плейсхолдер -->
-                <!-- <img src="./assets/images/author/avatar-placeholder.png" alt=""> -->
-                <span>A</span>
+                {% if user.profile.avatar %}
+                 <img style="width:168px;height:168px" src="{{user.profile.avatar.path}}" alt="avatar">
+                {% else %}
+                                <span>A</span>
+                {% endif %}
             </div>
             <div class="author-promo-info__info-wrapper">
                 <div class="author-promo-info__name ui-text-head--2 ui-text--bold">Александр Алексон</div>
