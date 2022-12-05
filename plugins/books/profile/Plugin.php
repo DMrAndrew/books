@@ -5,16 +5,18 @@ use Config;
 use Backend;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
+use Books\Profile\Components\Profile;
 use Books\Profile\Behaviors\HasProfile;
 use Books\Profile\Behaviors\Profileable;
-use Books\Profile\Classes\ProfileManager;
+use RainLab\User\Controllers\Users as UsersController;
+use ValidationException;
 
 /**
  * Plugin Information File
  */
 class Plugin extends PluginBase
 {
-
+    public $require = ['RainLab.User'];
 
     /**
      * Returns information about this plugin.
@@ -53,12 +55,31 @@ class Plugin extends PluginBase
         User::extend(function (User $model) {
             $model->implementClassWith(HasProfile::class);
         });
-        Event::listen('rainlab.user.register',fn(User $user) => (new ProfileManager())->createProfile($user));
         foreach (config('profile.profileable') ?? [] as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Profileable::class);
             });
         }
+
+        Event::listen('backend.form.extendFields', function ($widget) {
+            if (!$widget->getController() instanceof UsersController)
+                return;
+            if (!$widget->model instanceof User)
+                return;
+            if (!in_array($widget->getContext(), ['update', 'preview']))
+                return;
+
+            $widget->addFields([
+                'birthday' => [
+                    'label' => 'Дата рождения',
+                    'type' => 'datepicker',
+                    'mode' => 'date',
+                    'span' => 'auto',
+                    'tab' =>  'Профиль'
+                ],
+            ]);
+        });
+
 
     }
 
@@ -69,10 +90,9 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
 
         return [
-            'Books\Profile\Components\MyComponent' => 'myComponent',
+            Profile::class => 'profile',
         ];
     }
 
@@ -112,4 +132,5 @@ class Plugin extends PluginBase
             ],
         ];
     }
+
 }

@@ -1,4 +1,5 @@
 1.0.1:
-    - users_add_birthday.php
+    - create_countries_table.php
+    - seed_country.php
+    - users_add_extras.php
     - user_add_verified_after_social_connect_register.php
-    - users_add_favorite_genres.php

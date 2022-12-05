@@ -1,6 +1,7 @@
 <?php namespace Books\Catalog\Models;
 
 use Model;
+use Books\Book\Models\Book;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\NestedTree;
 use October\Rain\Database\Traits\Validation;
@@ -73,7 +74,14 @@ class Genre extends Model
     public $hasOne = [];
     public $hasMany = [];
     public $belongsTo = [];
-    public $belongsToMany = [];
+    public $belongsToMany = [
+        'books' => [
+            Book::class,
+            'table' => 'books_book_genre',
+            'key' => 'genre_id',
+            'otherKey' => 'book_id'
+        ]
+    ];
     public $morphTo = [];
     public $morphOne = [];
     public $morphMany = [];

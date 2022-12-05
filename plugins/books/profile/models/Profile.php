@@ -1,6 +1,7 @@
 <?php namespace Books\Profile\Models;
 
 use Model;
+use System\Models\File;
 use RainLab\User\Models\User;
 use October\Rain\Database\Traits\Validation;
 
@@ -24,19 +25,43 @@ class Profile extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['username'];
-
-    /**
-     * @var array rules for validation
-     */
-    public $rules = [
-        'username' =>'required|between:2,255|unique:books_profile_profiles'
+    protected $fillable = [
+        'username',
+        'username_clipboard',
+        'status',
+        'about',
+        'avatar',
+        'banner',
+        'ok',
+        'phone',
+        'tg',
+        'vk',
+        'email',
+        'website',
     ];
 
     /**
      * @var array Attributes to be cast to native types
      */
     protected $casts = [];
+
+    /**
+     * @var array rules for validation
+     */
+    public $rules = [
+        'username' => 'required|between:2,255|unique:books_profile_profiles',
+        'username_clipboard' => 'nullable|between:2,255|unique:books_profile_profiles',
+        'status' => 'nullable|string',
+        'about' => 'nullable|string',
+        'avatar' => 'nullable|image|mimes:jpg,png|dimensions:min_width=168,min_height=168',
+        'banner' => 'nullable|image|mimes:jpg,png|dimensions:min_width=1152,min_height=160',
+        'website' => 'nullable|url',
+        'email' => 'nullable|email',
+        'phone' => 'nullable|string',
+        'tg' => 'nullable|string',
+        'ok' => 'nullable|url',
+        'vk' => 'nullable|url',
+    ];
 
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
@@ -66,11 +91,14 @@ class Profile extends Model
      */
     public $hasOne = [];
     public $hasMany = [];
-    public $belongsTo = ['user' => User::class,'key' => 'id','otherKey' => 'user_id'];
+    public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
     public $belongsToMany = [];
     public $morphTo = [];
     public $morphOne = [];
     public $morphMany = [];
-    public $attachOne = [];
+    public $attachOne = [
+        'banner' => [File::class],
+        'avatar' => [File::class],
+    ];
     public $attachMany = [];
 }

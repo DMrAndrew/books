@@ -4,7 +4,7 @@
             <svg class="square-24">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-stroked-24' | theme}}"></use>
             </svg>
-            <div class="ui-label-number _red">412</div>
+<!--            <div class="ui-label-number _red">412</div>-->
         </div>
         <div class="popup-menu _message" data-header-content="message">
             <div class="popup-menu__content">
@@ -64,7 +64,7 @@
             <svg class="square-24">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme}}"></use>
             </svg>
-            <div class="ui-label-number _red">4</div>
+<!--            <div class="ui-label-number _red">4</div>-->
         </div>
         <div class="popup-menu _notifications" data-header-content="notifications">
             <div class="popup-menu__content">
@@ -91,7 +91,7 @@
                             <div class="notification-menu__icon-wrapper">
                                 <svg class="square-24">
                                     <use
-                                        xlink:href="./assets/icon-sprite/svg-sprite.svg#book-stroked-24"></use>
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
                                 </svg>
                             </div>
                             <div class="notification-menu__content">
@@ -109,7 +109,7 @@
                             <div class="notification-menu__icon-wrapper">
                                 <svg class="square-24">
                                     <use
-                                        xlink:href="./assets/icon-sprite/svg-sprite.svg#refresh-stroked-24"></use>
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#refresh-stroked-24' | theme}}"></use>
                                 </svg>
                             </div>
                             <div class="notification-menu__content">
@@ -127,7 +127,7 @@
                             <div class="notification-menu__icon-wrapper">
                                 <svg class="square-24">
                                     <use
-                                        xlink:href="./assets/icon-sprite/svg-sprite.svg#blog-stroked-32"></use>
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#blog-stroked-32' | theme}}"></use>
                                 </svg>
                             </div>
                             <div class="notification-menu__content">
@@ -230,7 +230,7 @@
                 <div class="popup-menu__body popup-menu__wrapper">
                     <div class="popup-menu__placeholder">
                         <svg class="square-32">
-                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#wallet-stroked-24"></use>
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme}}"></use>
                         </svg>
                         <span>Здесь пока ничего нет</span>
                     </div>
@@ -282,12 +282,12 @@
             <div class="dropwdown-profile">
                 <ul class="dropwdown-profile__list">
                     <li class="dropwdown-profile__name">{{user.username}}</li>
-                    <li><a href="/frontend/author-page.html">Профиль</a></li>
+                    <li><a href="/author-page">Профиль</a></li>
                     <li><a href="/frontend/author-page.html">Книги</a></li>
                     <li><a href="/frontend/author-page.html">Магазин</a></li>
                     <li><a href="/frontend/author-page.html">Подписки</a></li>
                     <li class="dropwdown-profile__separator"></li>
-                    <li><a href="/frontend/lc-profile.html">Личный кабинет</a></li>
+                    <li><a href="/lc-profile">Личный кабинет</a></li>
                     <li><a href="">Заказы</a></li>
                     <li><a href="">Финансы</a></li>
                     <li class="dropwdown-profile__separator"></li>
@@ -296,7 +296,7 @@
                             <span>Переключить аккаунт</span>
                             <svg class="square-16">
                                 <use
-                                    xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>
+                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
                             </svg>
                         </a>
                         <div class="dropwdown-profile _dropdown">
@@ -306,7 +306,7 @@
                                     <a href="#" class="dropwdown-profile__link active">
                                         <svg class="square-16">
                                             <use
-                                                xlink:href="./assets/icon-sprite/svg-sprite.svg#check-stroked-16"></use>
+                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme }}"></use>
                                         </svg>
                                         <span>{{profile.username}} </span>
                                     </a>
@@ -316,7 +316,11 @@
                         </div>
                     </li>
                     <li class="dropwdown-profile__separator"></li>
-                    <li><a href="#" data-request="session::onLogout"  data-request-success="closeForm()" data-request-redirect="/">Выйти</a></li>
+                    <li>
+                        <a href="#" data-request="session::onLogout" data-request-data="redirect: '/'">
+                            Выйти
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -330,7 +334,7 @@
             <div class="menu-mobile__link _indent-large" data-menu-link="2">
                 <span class="ui-text--medium">Книги</span>
                 <svg class="menu-mobile__link-chevron square-16">
-                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
                 </svg>
             </div>
             <a href="#" class="menu-mobile__link _indent-large">
@@ -357,7 +361,7 @@
                 <span class="ui-text--medium">Сообщения</span>
                 <div class="menu-mobile__link-label ui-label-number _red">10</div>
                 <svg class="menu-mobile__link-chevron square-16">
-                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
                 </svg>
             </div>
             <div class="menu-mobile__link _indent-small" data-menu-link="5">
@@ -369,7 +373,7 @@
                 <span class="ui-text--medium">Уведомления</span>
                 <div class="menu-mobile__link-label ui-label-number _red">4</div>
                 <svg class="menu-mobile__link-chevron square-16">
-                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
                 </svg>
             </div>
             <div class="menu-mobile__link _indent-small">
@@ -381,28 +385,28 @@
                 <span class="ui-text--medium">Корзина</span>
                 <div class="menu-mobile__link-label ui-label-number _red">5</div>
                 <svg class="menu-mobile__link-chevron square-16">
-                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
                 </svg>
             </div>
             <div class="menu-mobile__link _indent-small" data-menu-link="6">
                 <div class="menu-mobile__link-icon square-32">
                     <svg class="square-24">
-                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#wallet-stroked-24"></use>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme}}"></use>
                     </svg>
                 </div>
                 <span class="ui-text--medium">Баланс</span>
                 <div class="menu-mobile__link-price ui-text--medium">16 500 ₽</div>
                 <svg class="menu-mobile__link-chevron square-16">
-                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
                 </svg>
             </div>
             <div class="menu-mobile__link _indent-small" data-menu-link="3">
                 <div class="menu-mobile__link-avatar square-32">
-                    <img class="square-24" src="./assets/images/author/avatar-placeholder.png" alt="">
+                    <img class="square-24" src="{{'assets/images/author/avatar-placeholder.png' | theme}}" alt="">
                 </div>
                 <span class="ui-text--medium">Профиль</span>
                 <svg class="menu-mobile__link-chevron square-16">
-                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
                 </svg>
             </div>
         </div>
@@ -412,7 +416,7 @@
     <div class="menu-mobile__container " data-menu-item="2">
         <div class="menu-mobile__header" data-menu-link="1">
             <svg class="square-16">
-                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
             </svg>
             <span class="ui-text--bold">Книги</span>
             <div class="square-16"></div>
@@ -446,7 +450,7 @@
                 <a href="#" class="book-type__item">
                     <div class="book-type__icon-wrapper">
                         <svg class="square-24">
-                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#book-stroked-24"></use>
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
                         </svg>
                     </div>
                     <div class="book-type__text ui-text--medium">Бумажные</div>
@@ -504,7 +508,7 @@
     <div class="menu-mobile__container " data-menu-item="3">
         <div class="menu-mobile__header" data-menu-link="1">
             <svg class="square-16">
-                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
             </svg>
             <span class="ui-text--bold">Профиль</span>
             <div class="square-16"></div>
@@ -530,7 +534,7 @@
             <div class="menu-mobile__link _indent-large" data-menu-link="7">
                 <span class="ui-text--medium">Личный кабинет</span>
                 <svg class="menu-mobile__link-chevron square-16">
-                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
                 </svg>
             </div>
             <a href="#" class="menu-mobile__link _indent-large">
@@ -544,7 +548,7 @@
             <div class="menu-mobile__link _indent-large" data-menu-link="2">
                 <span class="ui-text--medium">Переключить аккаунт</span>
                 <svg class="menu-mobile__link-chevron square-16">
-                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
                 </svg>
             </div>
             <div class="menu-mobile__separator"></div>
@@ -558,7 +562,7 @@
     <div class="menu-mobile__container " data-menu-item="4">
         <div class="menu-mobile__header" data-menu-link="1">
             <svg class="square-16">
-                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
             </svg>
             <span class="ui-text--bold">Сообщения</span>
             <div class="square-16"></div>
@@ -566,7 +570,7 @@
         <div class="menu-mobile__body">
             <div class="menu-chat__item">
                 <div class="menu-chat__image-wrapper">
-                    <img class="menu-chat__image" src="./assets/images/main/girl.png" alt="">
+                    <img class="menu-chat__image" src="{{'assets/images/main/girl.png' | theme}}" alt="">
                 </div>
                 <div class="menu-chat__info">
                     <div class="menu-chat__info-up">
@@ -581,7 +585,7 @@
             </div>
             <div class="menu-chat__item">
                 <div class="menu-chat__image-wrapper">
-                    <img class="menu-chat__image" src="./assets/images/main/girl.png" alt="">
+                    <img class="menu-chat__image" src="{{'assets/images/main/girl.png' | theme}}" alt="">
                 </div>
                 <div class="menu-chat__info">
                     <div class="menu-chat__info-up">
@@ -601,7 +605,7 @@
     <div class="menu-mobile__container " data-menu-item="5">
         <div class="menu-mobile__header" data-menu-link="1">
             <svg class="square-16">
-                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
             </svg>
             <span class="ui-text--bold">Уведомления</span>
             <div class="square-16"></div>
@@ -611,7 +615,7 @@
                 <div class="notification-menu__detector active"></div>
                 <div class="notification-menu__icon-wrapper">
                     <svg class="square-24">
-                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#book-stroked-24"></use>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
                     </svg>
                 </div>
                 <div class="notification-menu__content">
@@ -628,7 +632,7 @@
                 <div class="notification-menu__detector active"></div>
                 <div class="notification-menu__icon-wrapper">
                     <svg class="square-24">
-                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#refresh-stroked-24"></use>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#refresh-stroked-24' | theme}}"></use>
                     </svg>
                 </div>
                 <div class="notification-menu__content">
@@ -645,7 +649,7 @@
                 <div class="notification-menu__detector "></div>
                 <div class="notification-menu__icon-wrapper">
                     <svg class="square-24">
-                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#blog-stroked-32"></use>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#blog-stroked-32' | theme}}"></use>
                     </svg>
                 </div>
                 <div class="notification-menu__content">
@@ -715,7 +719,7 @@
     <div class="menu-mobile__container " data-menu-item="6">
         <div class="menu-mobile__header" data-menu-link="1">
             <svg class="square-16">
-                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
             </svg>
             <span class="ui-text--bold">Баланс</span>
             <div class="square-16"></div>
@@ -753,7 +757,7 @@
     <div class="menu-mobile__container " data-menu-item="7">
         <div class="menu-mobile__header" data-menu-link="3">
             <svg class="square-16">
-                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
             </svg>
             <span class="ui-text--bold">Профиль</span>
             <div class="square-16"></div>
@@ -824,3 +828,8 @@
 <script>
     initFn();
 </script>
+
+{% if user and ( user.required_post_register == 1) %}
+{% partial "auth/postRegisterContainer" %}
+<script>registerForm()</script>
+{% endif %}

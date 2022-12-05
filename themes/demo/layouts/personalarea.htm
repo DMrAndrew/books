@@ -1,0 +1,66 @@
+description = "Personal area layout"
+[session]
+security = "all"
+[genres genres_parented]
+==
+{% component 'session' %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% partial 'site/meta' %}
+</head>
+<body class="{{ 'page-'~this.page.id }}">
+
+<!-- Header -->
+<header id="layout-header" class="header">
+    {% partial 'site/header' %}
+</header>
+
+<!-- Content -->
+<section id="layout-content">
+    <div style="margin-bottom: 16px"> </div>
+    <div class="ui-container">
+        <div class="personal-area__title ui-text-head--2 ui-text--bold">Личный кабинет</div>
+    </div>
+    <div class="personal-area">
+        <div class="ui-container-fluid">
+            <div class="personal-area__container ui-grid-container ui-grid-gap">
+                <div class="personal-area__sidebar ui-col-sm-3">
+                    <a class="personal-area__sidebar-link active" href="/frontend/lc-profile.html">Профиль</a>
+                    <a class="personal-area__sidebar-link " href="/frontend/lc-privacy.html">Приватность</a>
+                    <a class="personal-area__sidebar-link " href="/frontend/lc-notification.html">Уведомления</a>
+                    <a class="personal-area__sidebar-link " href="/frontend/lc-blacklist.html">Черный список</a>
+                    <div class="personal-area__sidebar-separator"></div>
+                    <a class="personal-area__sidebar-link" href="">Книги</a>
+                    <a class="personal-area__sidebar-link" href="">Магазин</a>
+                    <a class="personal-area__sidebar-link" href="">Блог</a>
+                    <a class="personal-area__sidebar-link" href="">Видеоблог</a>
+                    <a class="personal-area__sidebar-link" href="">Подписки</a>
+                    <a class="personal-area__sidebar-link" href="">Подписчики</a>
+                    <a class="personal-area__sidebar-link" href="">Награды</a>
+                    <a class="personal-area__sidebar-link" href="">Комментарии</a>
+                    <a class="personal-area__sidebar-link" href="">Репосты</a>
+                    <div class="personal-area__sidebar-separator"></div>
+                    <a class="personal-area__sidebar-link" href="">Коммерческий кабинет</a>
+                    <a class="personal-area__sidebar-link" href="">Статистика прочтений</a>
+                    <a class="personal-area__sidebar-link" href="">Реклама</a>
+                    <a class="personal-area__sidebar-link" href="">Заказы</a>
+                    <div class="personal-area__sidebar-separator"></div>
+                    <a class="personal-area__sidebar-link" href="/frontend/lc-security.html">Безопасность</a>
+                    <a class="personal-area__sidebar-link" href="">Общее</a>
+                </div>
+                <div class="ui-col-sm-9">
+                    {% page %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<!-- Footer -->
+<footer id="layout-footer">
+    {% partial 'site/footer' %}
+</footer>
+</body>
+</html>

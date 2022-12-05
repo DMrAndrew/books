@@ -1,0 +1,8 @@
+1.0.1:
+    - create_tags_table.php
+    - create_cycles_table.php
+    - create_books_table.php
+    - create_chapters_table.php
+    - create_co_authors_table.php
+    - create_book_genre_table.php
+    - create_book_tag_table.php

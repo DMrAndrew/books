@@ -1,115 +1,118 @@
 <div class="ui-container">
-        <div class="header__panel">
-            <svg class="header__menu-burger square-24 active" data-button-menu="mobile">
-                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#burger-24' | theme}}"></use>
-            </svg>
-            <svg class="header__menu-burger square-24" data-button-menu="mobile">
+    <div class="header__panel">
+        <svg class="header__menu-burger square-24 active" data-button-menu="mobile">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#burger-24' | theme}}"></use>
+        </svg>
+        <svg class="header__menu-burger square-24" data-button-menu="mobile">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+        </svg>
+        <a href="/" class="header__logo-wrapper">
+            <div class="header__logo"></div>
+            <div class="header__logo-text ui-text-body--1 ui-text--bold">Время книг</div>
+        </a>
+        <div class="header__search-wrapper header-search" data-search="item">
+            <svg class="header-search__button-close square-24" data-button-search="close">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
             </svg>
-            <a href="/" class="header__logo-wrapper">
-                <div class="header__logo"></div>
-                <div class="header__logo-text ui-text-body--1 ui-text--bold">Время книг</div>
-            </a>
-            <div class="header__search-wrapper header-search" data-search="item">
-                <svg class="header-search__button-close square-24" data-button-search="close">
+            <div class="header-search__search">
+                <svg class="header-search__icon square-16">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#search-stroked-24' | theme}}"></use>
+                </svg>
+                <input class="header-search__input" type="text" placeholder="Поиск" data-search="input">
+                <svg class="header-search__button-clear square-16" data-button-input="clear">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
                 </svg>
-                <div class="header-search__search">
-                    <svg class="header-search__icon square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#search-stroked-24' | theme}}"></use>
-                    </svg>
-                    <input class="header-search__input" type="text" placeholder="Поиск" data-search="input">
-                    <svg class="header-search__button-clear square-16" data-button-input="clear">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                    </svg>
-                </div>
             </div>
-            {% if not user %}
-            {% partial "site/header_unauthorized_section" %}
-            {% else %}
-            {% partial "site/header_authorized_section" %}
-            {% endif %}
         </div>
-        <nav class="header__nav nav">
-            <ul class="nav__list">
-                <li class="nav__list-item _dropdown">
-                    <a class="ui-text--medium nav__link _dropdown" href="#">
-                        <span>Книги</span>
-                        <svg class="square-16">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-                        </svg>
-                    </a>
+        {% if not user %}
+        {% partial "site/header_unauthorized_section" %}
+        {% else %}
+        {% partial "site/header_authorized_section" %}
+        {% endif %}
+    </div>
+    <nav class="header__nav nav">
+        <ul class="nav__list">
+            <li class="nav__list-item _dropdown">
+                <a class="ui-text--medium nav__link _dropdown" href="#">
+                    <span>Книги</span>
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                    </svg>
+                </a>
 
-                    <!-- dropdown -->
-                    <div class="dropdown-books">
-                        <div class="dropdown-books__content">
-                            <div class="book-type _separate">
-                                <a href="/frontend/listing.html" class="book-type__item">
-                                    <div class="book-type__icon-wrapper">
-                                        <svg class="square-24">
-                                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-lines-16' | theme}}"></use>
-                                        </svg>
-                                    </div>
-                                    <div class="book-type__text ui-text--medium">Все книги</div>
-                                </a>
-                                <a href="#" class="book-type__item">
-                                    <div class="book-type__icon-wrapper">
-                                        <svg class="square-24">
-                                            <use
-                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#phone-stroked-24' | theme}}"></use>
-                                        </svg>
-                                    </div>
-                                    <div class="book-type__text ui-text--medium">Электронные</div>
-                                </a>
-                                <a href="#" class="book-type__item">
-                                    <div class="book-type__icon-wrapper">
-                                        <svg class="square-24">
-                                            <use
-                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-stroked-24' | theme}}"></use>
-                                        </svg>
-                                    </div>
-                                    <div class="book-type__text ui-text--medium">Аудио</div>
-                                </a>
-                                <a href="#" class="book-type__item">
-                                    <div class="book-type__icon-wrapper">
-                                        <svg class="square-24">
-                                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
-                                        </svg>
-                                    </div>
-                                    <div class="book-type__text ui-text--medium">Бумажные</div>
-                                </a>
-                                <a href="#" class="book-type__item">
-                                    <div class="book-type__icon-wrapper">
-                                        <svg class="square-24">
-                                            <use
-                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#comics-stroked-24' | theme}}"></use>
-                                        </svg>
-                                    </div>
-                                    <div class="book-type__text ui-text--medium">Комиксы</div>
-                                </a>
-                            </div>
-                            <div class="menu-book-genres">
-                                <div class="menu-book-genres__title ui-text-head--3 ui-text--bold">Жанры</div>
-                                <ul class="menu-book-genres__list">
-                                    {% component 'genres_parented' %}
-
-                                </ul>
-                                <a href="/all-genres" class="menu-book-genres__more">
-                                    <svg class="square-16">
-                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-lines-16' | theme}}"></use>
+                <!-- dropdown -->
+                <div class="dropdown-books">
+                    <div class="dropdown-books__content" style="z-index: 10">
+                        <div class="book-type _separate">
+                            <a href="/frontend/listing.html" class="book-type__item">
+                                <div class="book-type__icon-wrapper">
+                                    <svg class="square-24">
+                                        <use
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-lines-16' | theme}}"></use>
                                     </svg>
-                                    <span class="ui-text--medium">Полный список жанров</span>
-                                </a>
-                            </div>
+                                </div>
+                                <div class="book-type__text ui-text--medium">Все книги</div>
+                            </a>
+                            <a href="#" class="book-type__item">
+                                <div class="book-type__icon-wrapper">
+                                    <svg class="square-24">
+                                        <use
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#phone-stroked-24' | theme}}"></use>
+                                    </svg>
+                                </div>
+                                <div class="book-type__text ui-text--medium">Электронные</div>
+                            </a>
+                            <a href="#" class="book-type__item">
+                                <div class="book-type__icon-wrapper">
+                                    <svg class="square-24">
+                                        <use
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-stroked-24' | theme}}"></use>
+                                    </svg>
+                                </div>
+                                <div class="book-type__text ui-text--medium">Аудио</div>
+                            </a>
+                            <a href="#" class="book-type__item">
+                                <div class="book-type__icon-wrapper">
+                                    <svg class="square-24">
+                                        <use
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
+                                    </svg>
+                                </div>
+                                <div class="book-type__text ui-text--medium">Бумажные</div>
+                            </a>
+                            <a href="#" class="book-type__item">
+                                <div class="book-type__icon-wrapper">
+                                    <svg class="square-24">
+                                        <use
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#comics-stroked-24' | theme}}"></use>
+                                    </svg>
+                                </div>
+                                <div class="book-type__text ui-text--medium">Комиксы</div>
+                            </a>
+                        </div>
+                        <div class="menu-book-genres">
+                            <div class="menu-book-genres__title ui-text-head--3 ui-text--bold">Жанры</div>
+                            <ul class="menu-book-genres__list">
+                                {% component 'genres_parented' %}
+
+                            </ul>
+                            <a href="/all-genres" class="menu-book-genres__more">
+                                <svg class="square-16">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-lines-16' | theme}}"></use>
+                                </svg>
+                                <span class="ui-text--medium">Полный список жанров</span>
+                            </a>
                         </div>
                     </div>
-                </li>
-                <li class="nav__list-item"><a href="" class="ui-text--medium nav__link">Конкурсы</a></li>
-                <li class="nav__list-item"><a href="/frontend/library.html" class="ui-text--medium nav__link">Моя
-                    библиотека</a></li>
-                <li class="nav__list-item"><a href="" class="ui-text--medium nav__link">Магазин</a></li>
-                <li class="nav__list-item"><a href="" class="ui-text--medium nav__link">Чат</a></li>
-                <li class="nav__list-item"><a href="" class="ui-text--medium nav__link">Реклама</a></li>
-            </ul>
-        </nav>
-    </div>
+                </div>
+            </li>
+            <li class="nav__list-item"><a href="" class="ui-text--medium nav__link">Конкурсы</a></li>
+            <li class="nav__list-item"><a href="/frontend/library.html" class="ui-text--medium nav__link">Моя
+                библиотека</a></li>
+            <li class="nav__list-item"><a href="" class="ui-text--medium nav__link">Магазин</a></li>
+            <li class="nav__list-item"><a href="" class="ui-text--medium nav__link">Чат</a></li>
+            <li class="nav__list-item"><a href="" class="ui-text--medium nav__link">Реклама</a></li>
+        </ul>
+    </nav>
+</div>

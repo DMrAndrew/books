@@ -14,7 +14,7 @@ class HasProfile extends ExtensionBase
         $this->model->addFillable(['current_profile_id']);
         $this->model->hasMany['profilers'] = [Profiler::class, 'key' => 'profile_id', 'otherKey' => 'current_profile_id'];
         $this->model->hasMany['profiles'] = [Profile::class];
-        $this->model->hasOne['currentProfile'] = [Profile::class, 'key' => 'id', 'otherKey' => 'current_profile_id'];
+        $this->model->hasOne['profile'] = [Profile::class, 'key' => 'id', 'otherKey' => 'current_profile_id'];
         $this->model->append(['profiles_list']);
     }
 
@@ -25,6 +25,9 @@ class HasProfile extends ExtensionBase
 
     public function setUserName(?string $username = null)
     {
-        return $this->model->currentProfile()->update(['username' => $username ?? $this->model->username]);
+        $profile = $this->model->profile;
+        $profile->username =  $username ?? $this->model->username;
+        return $profile->save();
     }
+
 }

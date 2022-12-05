@@ -19,7 +19,9 @@
         "mobecan/socialconnect-plugin": "*",
         "mobecan/favorites-plugin": "*",
         "books/reviews-plugin": "*",
-        "books/profile-plugin": "*"
+        "books/profile-plugin": "*",
+        "books/book-plugin": "*",
+        "books/fileuploader-plugin": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -55,7 +57,8 @@
     },
     "autoload": {
         "psr-4": {
-            "System\\Console\\": "modules/system/console"
+            "System\\Console\\": "modules/system/console",
+            "Tizis\\FB2\\": "plugins/books/book/classes/FB2-Parser"
         }
     },
     "minimum-stability": "dev",
@@ -80,6 +83,15 @@
         "books/profile-plugin": {
             "type": "path",
             "url": "./plugins/books/profile"
+        },
+        "books/book-plugin": {
+            "type": "path",
+            "url": "plugins/books/book"
+        },
+        "books/fileuploader-plugin": {
+            "type": "path",
+            "url": "./plugins/books/fileuploader"
         }
+
     }
 }

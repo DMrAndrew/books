@@ -13,6 +13,8 @@ use Books\Catalog\Components\FavoriteGenres;
  */
 class Plugin extends PluginBase
 {
+    public $require = ['RainLab.User'];
+
     /**
      * Returns information about this plugin.
      *
@@ -21,10 +23,10 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'Catalog',
+            'name' => 'Catalog',
             'description' => 'No description provided yet...',
-            'author'      => 'Books',
-            'icon'        => 'icon-leaf'
+            'author' => 'Books',
+            'icon' => 'icon-leaf'
         ];
     }
 
@@ -45,7 +47,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-        Event::listen('rainlab.user.register',fn(User $user) => (new FavoritesManager())->save($user));
+
     }
 
     /**
@@ -57,8 +59,8 @@ class Plugin extends PluginBase
     {
 
         return [
-                Genres::class => 'genres',
-                FavoriteGenres::class => 'favorite_genres',
+            Genres::class => 'genres',
+            FavoriteGenres::class => 'favorite_genres',
         ];
     }
 
@@ -90,23 +92,23 @@ class Plugin extends PluginBase
 
         return [
             'catalog' => [
-                'label'       => 'Каталог',
-                'url'         => Backend::url('books/catalog/catalog'),
-                'icon'        => 'icon-leaf',
+                'label' => 'Каталог',
+                'url' => Backend::url('books/catalog/catalog'),
+                'icon' => 'icon-leaf',
                 'permissions' => ['books.catalog.*'],
-                'order'       => 500,
+                'order' => 500,
 
                 'sideMenu' => [
                     'types' => [
-                        'label'       => 'Типы книг',
-                        'icon'        => 'icon-leaf',
-                        'url'         => Backend::url('books/catalog/type'),
+                        'label' => 'Типы книг',
+                        'icon' => 'icon-leaf',
+                        'url' => Backend::url('books/catalog/type'),
                         'permissions' => ['books.catalog.*']
                     ],
                     'genres' => [
                         'label' => 'Жанры',
-                        'icon'        => 'icon-leaf',
-                        'url'         => Backend::url('books/catalog/genre'),
+                        'icon' => 'icon-leaf',
+                        'url' => Backend::url('books/catalog/genre'),
                         'permissions' => ['books.catalog.*']
                     ]
                 ]
