@@ -14,6 +14,5 @@ class OnDeleteListener
     {
         $profiler = $this->model->profiler();
         $profiler->ids = array_values(array_diff($profiler->getIds(), [$this->model->id]));
-        $profiler->save();
     }
 }

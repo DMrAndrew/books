@@ -1,6 +1,9 @@
-<form id="secondary_profile_information" class="personal-area__wrapper" data-request="profile::onUpdateSecondaryData"
-      data-request-validate
-      data-request-update="profile/profileSecondaryInformation: '#secondary_profile_information'">
+{{ form_ajax('profile::onUpdateProfile',{
+id:'secondary_profile_information',
+class:'personal-area__wrapper',
+'data-request-validate':'true'
+}) }}
+
     <div class="personal-area__wrap _indent-large ui-text--bold ui-text-head--2">Основная информация</div>
     <div class="ui-input personal-area__wrap _indent-large">
         <label class="ui-input-label">Сайт</label>
@@ -36,4 +39,4 @@
         <span class="validation-error" data-validate-for="ok"></span>
     </div>
     <button class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить</button>
-</form>
+{{ form_close() }}

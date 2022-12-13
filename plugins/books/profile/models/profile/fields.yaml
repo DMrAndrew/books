@@ -3,6 +3,41 @@
 # ===================================
 
 fields:
-    id:
-        label: ID
-        disabled: true
+    username:
+        label: Псевдоним
+
+    username_clipboard:
+        type: partial
+        path: ~/plugins/books/profile/views/_username_form_control.htm
+
+    username_clipboard_comment:
+        label: Комментарий
+        type: hint
+        mode: tip
+
+    avatar:
+        label: Аватар
+        type: fileupload
+        mode: image
+
+    banner:
+        label: Баннер
+        type: fileupload
+        mode: image
+    status:
+        label: Статус
+    about:
+        label: О себе
+    website:
+        label: Вебсайт
+    email:
+        label: Почта
+    phone:
+        label: Телефон
+    tg:
+        label: Телеграм
+    ok:
+        label: Одноклассники
+    vk:
+        label: Вконтакте
+

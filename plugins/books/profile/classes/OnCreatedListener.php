@@ -13,8 +13,8 @@ class OnCreatedListener
 
     public function __invoke()
     {
+
         $profiler = $this->model->profiler();
         $profiler->update(['ids' => array_merge($profiler->getIds(), [$this->model->id])]);
-        $profiler->save();
     }
 }

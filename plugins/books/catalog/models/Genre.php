@@ -1,5 +1,6 @@
 <?php namespace Books\Catalog\Models;
 
+
 use Model;
 use Books\Book\Models\Book;
 use October\Rain\Database\Builder;
@@ -122,28 +123,40 @@ class Genre extends Model
      */
     public function getParentOptions(): array
     {
-        $options = [];
+        return static::lists('name','id');
+    }
 
-        foreach (static::all() as $genre) {
-            $options[$genre->id] = $genre->name;
+
+    public function scopeRoots(Builder $builder): Builder
+    {
+        return $builder->whereNull('parent_id');
+    }
+
+    public function scopeChild(Builder $builder): Builder
+    {
+        return $builder->whereNotNull('parent_id');
+    }
+
+    public function scopeFavorite(Builder $builder): Builder
+    {
+        return $builder->where('favorite', '=', 1);
+    }
+
+    public function scopeActive(Builder $builder): Builder
+    {
+        return $builder->where('active', '=', 1);
+    }
+
+    public function scopeName(Builder $builder, string $name): Builder
+    {
+        return $builder->where('name', 'like', "$name%");
+    }
+
+    public function scopeExclude(Builder $builder, $exclude = null): Builder
+    {
+        if (!$exclude) {
+            return $builder;
         }
-
-        return $options;
-    }
-
-
-    public function scopeRoots(Builder $query): Builder
-    {
-        return $query->whereNull('parent_id');
-    }
-
-    public function scopeFavorite(Builder $query): Builder
-    {
-        return $query->where('favorite', '=', 1);
-    }
-
-    public function scopeActive(Builder $query): Builder
-    {
-        return $query->where('active', '=', 1);
+        return $builder->whereNotIn('id', collect($exclude)->pluck('id'));
     }
 }

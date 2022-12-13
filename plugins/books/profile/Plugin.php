@@ -1,9 +1,15 @@
 <?php namespace Books\Profile;
 
+use Books\Profile\Classes\OnCreatedListener;
+use Books\Profile\Classes\OnDeleteListener;
+use Books\Profile\Classes\ProfileEventHandler;
+use Books\Profile\Classes\ProfileManager;
 use Event;
 use Config;
 use Backend;
+use Flash;
 use RainLab\User\Models\User;
+use Redirect;
 use System\Classes\PluginBase;
 use Books\Profile\Components\Profile;
 use Books\Profile\Behaviors\HasProfile;
@@ -40,7 +46,7 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-
+        Event::listen('books.profile.username.modify.requested', fn($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
     }
 
     /**
@@ -58,29 +64,47 @@ class Plugin extends PluginBase
         foreach (config('profile.profileable') ?? [] as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Profileable::class);
+                $model->bindEvent('model.afterCreate',fn() => (new OnCreatedListener($model))());
+                $model->bindEvent('model.afterDelete',fn() => (new OnDeleteListener($model))());
             });
         }
 
-        Event::listen('backend.form.extendFields', function ($widget) {
-            if (!$widget->getController() instanceof UsersController)
+        UsersController::extendFormFields(function ($form, $model, $context) {
+            if (!$model instanceof User) {
                 return;
-            if (!$widget->model instanceof User)
-                return;
-            if (!in_array($widget->getContext(), ['update', 'preview']))
-                return;
-
-            $widget->addFields([
-                'birthday' => [
-                    'label' => 'Дата рождения',
-                    'type' => 'datepicker',
-                    'mode' => 'date',
-                    'span' => 'auto',
-                    'tab' =>  'Профиль'
-                ],
+            }
+            $form->addTabFields([
+                'profiles' => [
+                    'type' => 'partial',
+                    'path' => '$/books/profile/views/profile_relation_form.htm',
+                    'tab' => 'Профили'
+                ]
             ]);
+            $form->removeField('avatar');
+
         });
+        UsersController::extend(function (UsersController $controller) {
+            $controller->formConfig = "$/books/user/config/config_form.yaml";
+            $controller->listConfig = "$/books/user/config/config_list.yaml";
+            $controller->relationConfig = "$/books/user/config/config_relation.yaml";
+            $controller->implementClassWith(Backend\Behaviors\RelationController::class);
 
+            $controller->addDynamicMethod('onChangeUsername', function ($recordId) use ($controller) {
+                $model = $controller->formFindModelObject($recordId);
+                $model->acceptClipboardUsername();
+                Flash::success('Псевдоним пользователя успешно обновлён');
 
+                return Redirect::refresh();
+            });
+
+            $controller->addDynamicMethod('onRejectUsername', function ($recordId) use ($controller) {
+                $model = $controller->formFindModelObject($recordId);
+                $model->rejectClipboardUsername();
+                Flash::success('Изменение псевдонима пользователя успешно отклонено');
+
+                return Redirect::refresh();
+            });
+        });
     }
 
     /**

@@ -2,17 +2,26 @@
 
 namespace Books\User\Behaviors;
 
-use Books\User\Models\Country;
-use Carbon\Carbon;
-use October\Rain\Argon\Argon;
+use Books\Profile\Models\ProfileSettings;
+use Books\User\Classes\BookUserSettingsEnum;
+use Books\User\Classes\PrivacySettingsEnum;
+use Books\User\Classes\SettingsRelationCast;
+use Books\User\Models\BookUserSettings;
+use October\Rain\Database\Collection;
 use RainLab\User\Models\User;
+use Books\User\Models\Country;
+use Books\Profile\Classes\ProfileManager;
 use October\Rain\Extension\ExtensionBase;
+use Books\User\Classes\ProfileAttributeCasts;
+use Books\User\Classes\BirthdayAttributeCasts;
 
 class BookUser extends ExtensionBase
 {
     public function __construct(protected User $parent)
     {
-        $this->parent->hasOne['country'] = [Country::class,'key' => 'id','otherKey' => 'country_id'];
+        $this->parent->hasOne['country'] = [Country::class, 'key' => 'id', 'otherKey' => 'country_id'];
+        $this->parent->hasMany['accountSettings'] = [BookUserSettings::class, 'key' => 'user_id', 'otherKey' => 'id'];
+        $this->parent->hasMany['profileSettings'] = [ProfileSettings::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->addValidationRule('birthday', 'nullable');
         $this->parent->addValidationRule('birthday', 'date');
         $this->parent->addValidationRule('show_birthday', 'nullable');
@@ -26,15 +35,24 @@ class BookUser extends ExtensionBase
             'required_post_register',
             'favorite_genres',
             'exclude_genres',
-            'see_adult'
+            'see_adult',
+        ]);
+        $this->parent->addDateAttribute('birthday');
+        $this->parent->addCasts([
+            'username' => ProfileAttributeCasts::class,
+            'birthday' => BirthdayAttributeCasts::class
         ]);
 
-        $this->parent->addDateAttribute('birthday');
         $this->parent->addJsonable([
             'favorite_genres',
             'exclude_genres'
         ]);
-        //TODO перевод для birthday
+    }
+
+
+    public function getNameAttribute()
+    {
+        return $this->parent->username;
     }
 
     public function scopeUsername($q, $name)
@@ -44,15 +62,19 @@ class BookUser extends ExtensionBase
         });
     }
 
-    public function getBirthdayAttribute($value)
+    public function acceptClipboardUsername()
     {
-        if ($value === '') return null;
-        return $value;
+        (new ProfileManager())->replaceUsernameFromClipboard($this->parent);
     }
 
-    public function setBirthdayAttribute($value)
+    public function rejectClipboardUsername()
     {
-        $this->parent->attributes['birthday'] = ($value === '' || null) ? null :  Carbon::parse($value);
+        (new ProfileManager())->replaceUsernameFromClipboard($this->parent, true);
+    }
+
+    public function getCountryOptions(): array
+    {
+        return Country::lists('name', 'id');
     }
 
 

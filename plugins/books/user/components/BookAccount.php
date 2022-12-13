@@ -24,12 +24,19 @@ class BookAccount extends Account
 
     public function onRegisterProxy()
     {
-        return Db::transaction(function () {
-            $redirect = $this->onRegister();
-            $user = Auth::getUser();
-            $user->update(['required_post_register' => 0], ['force' => true]);
-            return $redirect;
-        });
+        try {
+            return Db::transaction(function () {
+
+                $redirect = $this->onRegister();
+                $user = Auth::getUser();
+                $user->update(['required_post_register' => 0], ['force' => true]);
+
+                return $redirect;
+            });
+        } catch (Exception $ex) {
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
     }
 
     public function onPostRegister()
@@ -47,9 +54,8 @@ class BookAccount extends Account
 
             Db::transaction(function () use ($user, $data) {
                 $user->update(array_merge($data, ['required_post_register' => 0]));
-                $user->setUserName();
+                $user->profile->update(['username' => $data['username']]);
             });
-
 
             return $this->makeRedirection();
 

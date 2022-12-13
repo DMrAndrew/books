@@ -11,7 +11,9 @@ use October\Rain\Database\Traits\Validation;
  */
 class Book extends Model
 {
+
     use Validation;
+
 
     /**
      * @var string table associated with the model

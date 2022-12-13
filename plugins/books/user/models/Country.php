@@ -2,6 +2,7 @@
 
 use Model;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Models\User;
 
 /**
  * Country Model
@@ -23,7 +24,7 @@ class Country extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['name','code'];
+    protected $fillable = ['name', 'code'];
 
     /**
      * @var array rules for validation
@@ -67,7 +68,7 @@ class Country extends Model
     public $hasOne = [];
     public $hasMany = [];
     public $belongsTo = [];
-    public $belongsToMany = [];
+    public $belongsToMany = ['users' => [User::class, 'key' => 'country_id', 'otherKey' => 'id']];
     public $morphTo = [];
     public $morphOne = [];
     public $morphMany = [];

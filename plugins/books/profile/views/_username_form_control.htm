@@ -1,0 +1,12 @@
+<?php if ($value): ?>
+<div class="checkbox custom-checkbox" style="padding:0;padding-bottom: 23px">
+    <div class="scoreboard-item title-value">
+        <h4>Запрос на изменение псевдонима</h4>
+        <p class="oc-icon-info-circle"><?= $value?></p>
+        <p class="description">новое значение</p>
+    </div>
+</div>
+<button type="button" class="btn btn-primary p-t-md" data-request="onChangeUsername" >Принять</button>
+<button type="button" class="btn btn-link" data-request="onRejectUsername" >Отклонить</button>
+<?php endif ?>
+

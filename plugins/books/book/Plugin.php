@@ -2,6 +2,7 @@
 
 use Backend;
 use Books\Book\Classes\CoAuthorManager;
+use Books\Book\Components\Booker;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
 use Books\Profile\Behaviors\Profileable;
@@ -63,10 +64,9 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
 
         return [
-            'Books\Book\Components\MyComponent' => 'myComponent',
+           Booker::class => 'booker',
         ];
     }
 

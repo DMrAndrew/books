@@ -16,13 +16,14 @@ class Profileable extends ExtensionBase
 
     public function __construct(protected Model $model)
     {
+
         $this->class = get_class($this->model);
 
         $this->class::addGlobalScope(new ProfiledScope());
 
-        $this->model->belongsTo['user'] ??= [User::class, 'key' => 'id', 'otherKey' => 'user_id'];
+        $this->model->belongsTo['user'] ??= [User::class, 'key' => 'user_id', 'otherKey' => 'id'];
 
-        $this->bindEvents();
+        //$this->bindEvents();
     }
 
     /**
@@ -30,6 +31,7 @@ class Profileable extends ExtensionBase
      */
     protected function bindEvents(): void
     {
+
         $this->class::created(fn($model) => (new OnCreatedListener($model))());
         $this->class::deleted(fn($model) => (new OnDeleteListener($model))());
     }

@@ -1,13 +1,16 @@
 url = "/create-book"
 layout = "default"
 title = "Создать книгу"
+
+[booker]
 ==
+
 <div style="margin-bottom: 16px"> </div>
 <!-- Тело страницы -->
   <div class="ui-container">
     <div class="create-book__title ui-text-head--2 ui-text--bold">Создание книги</div>
   </div>
-
+{{ form_open() }}
   <div class="create-book__container ui-container-fluid wrapper">
     <div class="create-book__column-left">
       <img class="create-book__image" src="{{'assets/images/main/cover.png' | theme}}" alt="">
@@ -24,7 +27,16 @@ title = "Создать книгу"
 
       <div class="ui-input">
         <label class="ui-input-label">Соавтор</label>
-        <input class="ui-input-item _size-32" type="text" value="" placeholder="Введите соавтора">
+
+
+          <input class="ui-input-item _size-32"
+                 type="text"
+                 value=""
+                 name="searchCoauthor"
+                 data-request="booker::onSearchCoauthor"
+                 data-track-input="true"
+                 data-request-update=""
+                 placeholder="Введите соавтора"/>
       </div>
 
       <div class="create-book__co-author-container">
@@ -70,29 +82,20 @@ title = "Создать книгу"
         </div>
         <!-- <button href="#" class="ui-button ui-button-size--32 ui-button-view--3">Создать цикл</button> -->
         <div class="ui-multi-select-container">
-          <div class="ui-multi-select-item _size-32">
-            <div class="ui-multi-select-tag-wrapper">
-              <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
-                <span>Любовные романы</span>
-                <svg>
-                  <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                </svg>
+
+              <div id="genresInput">
+                  {% partial 'booker::genresInput'  %}
+
               </div>
-              <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
-                <span>Любовная фантастика</span>
-                <svg>
-                  <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                </svg>
-              </div>
-              <input class="ui-multi-select-item-input" type="text">
-            </div>
+
 
             <!-- <div class="ui-select-item-option">18+</div> -->
-            <svg class="ui-multi-select-item-icon">
-              <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-            </svg>
-          </div>
-          <div class="ui-dropdown">
+<!--            <svg class="ui-multi-select-item-icon">-->
+<!--              <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>-->
+<!--            </svg>-->
+
+
+          <div class="ui-dropdown" style="display:none;">
             <div class="ui-dropdown-container">
               <div class="ui-dropdown-item _placeholder">
                 <span>Тэг «Ян Курпатов» уже добавлен на страницу</span>
@@ -130,7 +133,7 @@ title = "Создать книгу"
                   <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
                 </svg>
               </div>
-              <div class="ui-dropdown">
+              <div class="ui-dropdown" style="display: none">
                 <div class="ui-dropdown-container">
                   <div class="ui-dropdown-item active">
                     <svg>
@@ -235,3 +238,4 @@ title = "Создать книгу"
       <button href="#" class="ui-button ui-button-size--32 ui-button-view--2">Сохранить</button>
     </div>
   </div>
+{{ form_close() }}

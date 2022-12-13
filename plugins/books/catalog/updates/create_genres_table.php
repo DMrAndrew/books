@@ -17,7 +17,7 @@ class CreateGenresTable extends Migration
 
         Schema::create('books_catalog_genres', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->index();
             $table->string('desc')->nullable();
             $table->boolean('active')->default(true);
             $table->boolean('favorite')->default(false);

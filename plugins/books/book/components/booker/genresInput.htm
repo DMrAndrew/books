@@ -1,0 +1,40 @@
+<div class="ui-multi-select-item _size-32">
+<div class="ui-multi-select-tag-wrapper">
+    {% for item in genres %}
+    <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
+        <span>{{item.name}}</span>
+        <svg
+            onclick="oc.request(this,'booker::onDeleteGenre')"
+             data-request-data="id:{{item.id}}">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+        </svg>
+    </div>
+    {% endfor %}
+
+    <input class="ui-multi-select-item-input"
+           data-request="booker::onSearchGenre"
+           data-track-input="500"
+           name="searchgenre"
+           type="text"
+           value="{{ searchgenrestring }}"
+    >
+
+</div>
+    <div  class="ui-dropdown">
+
+        <div class="ui-dropdown-container" id="genresDropdown">
+
+            {% for item in search %}
+            <div class="ui-dropdown-item"
+                 onclick="oc.request(this,'booker::onAddGenre')"
+                 data-request-data="id:{{item.id}}"
+            >
+            <span
+            >{{item.name}}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
