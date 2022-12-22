@@ -1,14 +1,11 @@
 <?php namespace Books\Book\Components;
 
-use Books\Book\Classes\FB2Manager;
 use Books\Book\Models\AgeRestrictionsEnum;
 use Books\Book\Models\Cycle;
-use Event;
 use Flash;
 use Illuminate\Support\Facades\Redirect;
 use Request;
 use Exception;
-use Session;
 use ValidationException;
 use Books\Book\Models\Book;
 use RainLab\User\Models\User;
@@ -39,6 +36,7 @@ class Booker extends ComponentBase
             ImageUploader::class,
             'coverUploader',
             [
+                'modelClass' => Book::class,
                 'deferredBinding' => true,
                 'imageWidth' => 168,
                 'imageHeight' => 243,
