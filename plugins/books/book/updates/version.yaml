@@ -6,3 +6,5 @@
     - create_co_authors_table.php
     - create_book_genre_table.php
     - create_book_tag_table.php
+1.0.2:
+    - chapters_content_to_longtext.php

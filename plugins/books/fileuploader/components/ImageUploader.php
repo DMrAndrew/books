@@ -1,12 +1,12 @@
 <?php namespace Books\FileUploader\Components;
 
-use System\Models\File;
+use Books\FileUploader\Traits\ComponentUtils;
 use Cms\Classes\ComponentBase;
 use ApplicationException;
 
 class ImageUploader extends ComponentBase
 {
-    use \Responsiv\Uploader\Traits\ComponentUtils;
+    use ComponentUtils;
 
     public $maxSize;
 

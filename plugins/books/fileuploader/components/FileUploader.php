@@ -1,11 +1,12 @@
 <?php namespace Books\FileUploader\Components;
 
+use Books\FileUploader\Traits\ComponentUtils;
 use Cms\Classes\ComponentBase;
 use ApplicationException;
 
 class FileUploader extends ComponentBase
 {
-    use \Responsiv\Uploader\Traits\ComponentUtils;
+    use ComponentUtils;
 
     /**
      * @var array fileTypes supported
