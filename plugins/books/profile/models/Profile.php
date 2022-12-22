@@ -69,8 +69,7 @@ class Profile extends Model
     ];
     //|dimensions:min_width=168,min_height=168
     //dimensions:min_width=1152,min_height=160
-    //TODO при сохранении профиля с уже прикреплёнными файлами, подгружает их при валидации и спотыкается на разрешении
-    //TODO sometimes не помогает
+    //TODO при сохранении профиля с уже прикреплёнными файлами, подгружает их при валидации и спотыкается на разрешении, sometimes не помогает
 
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database

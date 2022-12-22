@@ -1,0 +1,49 @@
+url = "/book-add-text/:book_id/:chapter_id?"
+layout = "default"
+title = "Добавление текста"
+[Chapterer]
+==
+<div style="margin-bottom: 16px"></div>
+<!-- Тело страницы -->
+<div class="ui-container">
+    <div class="create-book__title ui-text-head--2 ui-text--bold">Добавление текста </div>
+</div>
+
+<form class="lc-book-text ui-container-fluid wrapper">
+    <div class="personal-area__wrap _indent-large ui-input">
+        <label class="ui-input-label">Название части</label>
+        <input class="ui-input-item _size-32" value="{{chapter.title}}" name="title" type="text">
+    </div>
+
+    <div class="personal-area__wrap _indent-large">
+
+        <textarea name="editor1">{{chapter.content}}</textarea>
+
+    </div>
+
+    <div class="personal-area__wrap _indent-large">
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" hidden>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">Опубликовать сейчас</span>
+        </label>
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" hidden>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">Сохранить как черновик</span>
+        </label>
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" hidden>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">Назначить дату публикации</span>
+        </label>
+    </div>
+
+    <button href="#" class="ui-button ui-button-size--32 ui-button-view--2" disabled>Добавить</button>
+</form>
+
+<script>
+    if(!document.getElementById('cke_editor1')){
+        CKEDITOR.replace( 'editor1' );
+    }
+</script>

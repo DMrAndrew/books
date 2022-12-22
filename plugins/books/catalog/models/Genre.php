@@ -1,6 +1,7 @@
 <?php namespace Books\Catalog\Models;
 
 
+use Db;
 use Model;
 use Books\Book\Models\Book;
 use October\Rain\Database\Builder;
@@ -123,7 +124,7 @@ class Genre extends Model
      */
     public function getParentOptions(): array
     {
-        return static::lists('name','id');
+        return static::lists('name', 'id');
     }
 
 
@@ -149,14 +150,6 @@ class Genre extends Model
 
     public function scopeName(Builder $builder, string $name): Builder
     {
-        return $builder->where('name', 'like', "$name%");
-    }
-
-    public function scopeExclude(Builder $builder, $exclude = null): Builder
-    {
-        if (!$exclude) {
-            return $builder;
-        }
-        return $builder->whereNotIn('id', collect($exclude)->pluck('id'));
+        return $builder->where('name', 'like', "%$name%");
     }
 }

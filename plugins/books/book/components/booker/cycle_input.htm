@@ -1,0 +1,63 @@
+<div  class="ui-grid-container ui-grid-gap">
+    <div class="ui-col-sm-6">
+        <div class="create-book__input ui-select">
+            <div class="ui-select-header">
+                <label class="ui-select-label">Цикл</label>
+            </div>
+            <div class="ui-select-container">
+                <select class="ui-select-item _size-32" name="cycle_id">
+                    <option
+                        {{ not book.cycle_id? 'selected' : ''  }}
+                        value="">Без цикла</option>
+                    {% for cycle in cycles %}
+                    <option  value="{{cycle.id}}"
+                             {{ book.cycle_id == cycle.id ? 'selected' : ''  }}
+                    >{{cycle.name}}</option>
+                    {% endfor %}
+                    <!--                            <input class="ui-select-item-input" type="text">-->
+                    <!--                            <div class="ui-select-item-option">18+</div>-->
+                    <!--                            <svg class="ui-select-item-icon">-->
+                    <!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>-->
+                    <!--                            </svg>-->
+                </select>
+                <!--                        <div class="ui-dropdown" >-->
+                <!--                            <div class="ui-dropdown-container">-->
+                <!--                                <div class="ui-dropdown-item active">-->
+                <!--                                    <svg>-->
+                <!--                                        <use-->
+                <!--                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#plus-stroked-16' | theme}}"></use>-->
+                <!--                                    </svg>-->
+                <!--                                    <span>Создать цикл</span>-->
+                <!--                                </div>-->
+                <!--                                <div class="ui-dropdown-item active">-->
+                <!--                                    <svg>-->
+                <!--                                        <use-->
+                <!--                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
+                <!--                                    </svg>-->
+                <!--                                    <span>Без цикла</span>-->
+                <!--                                </div>-->
+                <!--                                <div class="ui-dropdown-item ">-->
+                <!--                                    <svg>-->
+                <!--                                        <use-->
+                <!--                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
+                <!--                                    </svg>-->
+                <!--                                    <span>Великое противостояние</span>-->
+                <!--                                </div>-->
+                <!--                                <div class="ui-dropdown-item ">-->
+                <!--                                    <svg>-->
+                <!--                                        <use-->
+                <!--                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
+                <!--                                    </svg>-->
+                <!--                                    <span>Романтические истории</span>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+            </div>
+
+            <div class="ui-select-hitn"></div>
+            <div class="ui-select-error"></div>
+
+            <button onclick="openCreateCycleForm()" type="button" href="#" class="ui-button ui-button-size--32 ui-button-view--3">Создать цикл</button>
+        </div>
+    </div>
+</div>

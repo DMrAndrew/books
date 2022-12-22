@@ -10,32 +10,9 @@ meta_description = "Профиль"
 [Form]
 ==
 
+
 <div class="personal-area__container ui-grid-container ui-grid-gap">
-    <div class="personal-area__sidebar ui-col-sm-3">
-        <a class="personal-area__sidebar-link active" href="/lc-profile">Профиль</a>
-        <a class="personal-area__sidebar-link " href="/lc-privacy">Приватность</a>
-        <a class="personal-area__sidebar-link " href="/lc-notification">Уведомления</a>
-        <a class="personal-area__sidebar-link " href="/lc-blacklist">Черный список</a>
-        <div class="personal-area__sidebar-separator"></div>
-        <a class="personal-area__sidebar-link" href="/frontend/lc-books.html">Книги</a>
-        <a class="personal-area__sidebar-link" href="">Магазин</a>
-        <a class="personal-area__sidebar-link" href="">Блог</a>
-        <a class="personal-area__sidebar-link" href="">Видеоблог</a>
-        <a class="personal-area__sidebar-link" href="">Подписки</a>
-        <a class="personal-area__sidebar-link" href="">Подписчики</a>
-        <a class="personal-area__sidebar-link" href="">Награды</a>
-        <a class="personal-area__sidebar-link" href="">Комментарии</a>
-        <a class="personal-area__sidebar-link" href="">Репосты</a>
-        <div class="personal-area__sidebar-separator"></div>
-        <a class="personal-area__sidebar-link" href="">Коммерческий кабинет</a>
-        <a class="personal-area__sidebar-link" href="">Статистика прочтений</a>
-        <a class="personal-area__sidebar-link" href="">Реклама</a>
-        <a class="personal-area__sidebar-link" href="">Промокоды</a>
-        <a class="personal-area__sidebar-link" href="">Скидки</a>
-        <div class="personal-area__sidebar-separator"></div>
-        <!-- <a class="personal-area__sidebar-link" href="/frontend/lc-security.html">Безопасность</a> -->
-        <a class="personal-area__sidebar-link" href="">Настройки</a>
-    </div>
+    {% partial "profile/sidebarmenu" %}
     <div class="ui-col-sm-9">
         <div class="personal-area__subtitle">
             <span class="ui-text-head--3 ui-text--bold">Профиль</span>
@@ -66,9 +43,7 @@ meta_description = "Профиль"
                             <span class="validation-error" data-validate-for="username_clipboard"></span>
                         </div>
                         <div class="personal-area__wrap _separator"></div>
-                        <textarea name="username_clipboard_comment" class="ui-input-textarea" rows="3" placeholder="Укажите причину изменения псевдонима">
-                            {{userdata.profile.username_clipboard_comment}}
-                        </textarea>
+                        <textarea name="username_clipboard_comment" class="ui-input-textarea" rows="3" placeholder="Укажите причину изменения псевдонима">{{ userdata.profile.username_clipboard_comment}}</textarea>
 
 
                         <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">

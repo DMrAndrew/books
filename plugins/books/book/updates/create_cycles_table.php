@@ -14,7 +14,7 @@ class CreateCyclesTable extends Migration
         Schema::create('books_book_cycles', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('author_id')->unsigned()->index();
+            $table->integer('user_id')->unsigned()->index();
             $table->timestamps();
         });
     }

@@ -11,9 +11,8 @@ fields:
         path: ~/plugins/books/profile/views/_username_form_control.htm
 
     username_clipboard_comment:
-        label: Комментарий
-        type: hint
-        mode: tip
+        type: partial
+        path: ~/plugins/books/profile/views/_username_clipboard_comment.htm
 
     avatar:
         label: Аватар

@@ -2,6 +2,9 @@
 
 namespace Books\Profile\Classes;
 
+use Books\Profile\Models\ProfileSettings;
+use Books\User\Classes\UserSettingsEnum;
+use Books\User\Models\AccountSettings;
 use Event;
 use ValidationException;
 use RainLab\User\Models\User;
@@ -40,10 +43,10 @@ class ProfileManager
     {
         if ($username_clipboard = $user->profile->username_clipboard) {
             if (!$reject) {
-                $user->profile->update(['username' => $username_clipboard, 'username_clipboard' => null]);
+                $user->profile->update(['username' => $username_clipboard, 'username_clipboard' => null, 'username_clipboard_comment' => null]);
                 Event::fire('books.profile.username.modified', [$user]);
             } else {
-                $user->profile->update(['username_clipboard' => null]);
+                $user->profile->update(['username_clipboard' => null, 'username_clipboard_comment' => null]);
                 Event::fire('books.profile.username.rejected', [$user]);
             }
         }
@@ -61,5 +64,22 @@ class ProfileManager
         $user->save();
         Event::fire('books.profile.switched', [$profile]);
         return true;
+    }
+
+    public static function initUserSettings($user, bool $refresh = false): void
+    {
+        if ($refresh) {
+            $user->profileSettings->each->delete();
+            $user->profileSettings->each->save();
+            $user->accountSettings->each->delete();
+            $user->accountSettings->each->save();
+        }
+        $accountable = collect(UserSettingsEnum::accountable())->map(fn($enum) => AccountSettings::fromEnum($enum));
+        $user->accountSettings()->addMany($accountable);
+
+        $profilable = collect(UserSettingsEnum::profilable())->map(fn($enum) => ProfileSettings::fromEnum($enum));
+        $user->profileSettings()->addMany($profilable);
+
+        Event::fire('books.user.settings.' . $refresh ? 'init' : 'refreshed', [$user]);
     }
 }

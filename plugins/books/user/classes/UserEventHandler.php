@@ -20,8 +20,9 @@ class UserEventHandler
         (new FavoritesManager())->save($user);
         if (!$user->country()->exists()) {
             if ($country = Country::code('ru')->first()) {
-                $user->update(['country_id' => $country->id],['force' => true]);
+                $user->update(['country_id' => $country->id], ['force' => true]);
             }
         }
+        ProfileManager::initUserSettings($user);
     }
 }

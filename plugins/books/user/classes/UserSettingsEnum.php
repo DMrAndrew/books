@@ -2,7 +2,8 @@
 
 namespace Books\User\Classes;
 
-enum BookUserSettingsEnum: int
+//TODO refactoring
+enum UserSettingsEnum: int
 {
     case NOTIFY_UPDATE_LIBRARY_ITEMS = 1;
     case NOTIFY_BOOK_DISCOUNT = 2;
@@ -21,7 +22,7 @@ enum BookUserSettingsEnum: int
             self::NOTIFY_UPDATE_LIBRARY_ITEMS => 'Обновление книг в моей библиотеке',
             self::NOTIFY_BOOK_DISCOUNT => 'Скидки на книги',
             self::NOTIFY_NEW_RECORD_BLOG => 'Новые записи в блоге',
-            self::NOTIFY_NEW_RECORD_VIDEO_BLOG => 'Новые записи в видеоблоке',
+            self::NOTIFY_NEW_RECORD_VIDEO_BLOG => 'Новые записи в видеоблоге',
             self::NOTIFY_UPDATE_STORE_ITEMS => 'Обновление товаров в магазине',
             self::PRIVACY_ALLOW_FIT_ACCOUNT_INDEX_PAGE => 'Кто может писать на моей странице',
             self::PRIVACY_ALLOW_PRIVATE_MESSAGING => 'Кто может писать мне личные сообщения',
@@ -31,16 +32,35 @@ enum BookUserSettingsEnum: int
         };
     }
 
-    public function isProfilable(): bool
+    public function defaultValue(): bool|string
     {
-        return in_array($this, BookUserSettingsEnum::profilable());
+        return match ($this) {
+            self::NOTIFY_UPDATE_LIBRARY_ITEMS, self::NOTIFY_BOOK_DISCOUNT, self::NOTIFY_NEW_RECORD_BLOG, self::NOTIFY_NEW_RECORD_VIDEO_BLOG, self::NOTIFY_UPDATE_STORE_ITEMS
+            => BoolOptionsEnum::default(),
+            self::PRIVACY_ALLOW_FIT_ACCOUNT_INDEX_PAGE, self::PRIVACY_ALLOW_PRIVATE_MESSAGING, self::PRIVACY_ALLOW_VIEW_COMMENT_FEED, self::PRIVACY_ALLOW_VIEW_BLOG, self::PRIVACY_ALLOW_VIEW_VIDEO_BLOG
+            => PrivacySettingsEnum::default(),
+        };
     }
 
-    public function isAccountable(): bool
+    public function tag()
     {
-        return in_array($this, BookUserSettingsEnum::accountable());
+        return match ($this) {
+            self::NOTIFY_UPDATE_LIBRARY_ITEMS, self::NOTIFY_BOOK_DISCOUNT, self::NOTIFY_NEW_RECORD_BLOG, self::NOTIFY_NEW_RECORD_VIDEO_BLOG, self::NOTIFY_UPDATE_STORE_ITEMS
+            => SettingsTagEnum::NOTIFICATION,
+            self::PRIVACY_ALLOW_FIT_ACCOUNT_INDEX_PAGE, self::PRIVACY_ALLOW_PRIVATE_MESSAGING, self::PRIVACY_ALLOW_VIEW_COMMENT_FEED, self::PRIVACY_ALLOW_VIEW_BLOG, self::PRIVACY_ALLOW_VIEW_VIDEO_BLOG
+            => SettingsTagEnum::PRIVACY,
+        };
     }
 
+    public function options()
+    {
+        return match ($this) {
+            self::NOTIFY_UPDATE_LIBRARY_ITEMS, self::NOTIFY_BOOK_DISCOUNT, self::NOTIFY_NEW_RECORD_BLOG, self::NOTIFY_NEW_RECORD_VIDEO_BLOG, self::NOTIFY_UPDATE_STORE_ITEMS
+            => BoolOptionsEnum::cases(),
+            self::PRIVACY_ALLOW_FIT_ACCOUNT_INDEX_PAGE, self::PRIVACY_ALLOW_PRIVATE_MESSAGING, self::PRIVACY_ALLOW_VIEW_COMMENT_FEED, self::PRIVACY_ALLOW_VIEW_BLOG, self::PRIVACY_ALLOW_VIEW_VIDEO_BLOG
+            => PrivacySettingsEnum::cases(),
+        };
+    }
 
     public static function profilable(): array
     {

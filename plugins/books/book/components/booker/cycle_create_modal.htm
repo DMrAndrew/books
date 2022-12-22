@@ -1,0 +1,28 @@
+<div id="create_cycle_form" class="buy-book-modal ui-modal" style="display: none">
+    <form data-request="booker::onCreateCycle"
+          data-request-validate
+          data-request-update="'@cycle_input':'#cycle_input', '@cycle_create_modal':'#create_cycle_form_partial'"
+    >
+        <div class="ui-modal-container">
+            <div class="buy-book-modal__container _size-large ui-modal-content">
+                <div class="buy-book-modal__header">
+                    <div class="square-16 "></div>
+                    <div class="ui-text-head--2 ui-text--bold">Создание нового цикла</div>
+                    <svg style="cursor: pointer" onclick="closeModal()" class="square-24">
+                        <use
+                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                    </svg>
+                </div>
+                <div class="ui-input">
+                    <input class="ui-input-item _size-32" name="name" placeholder="Введите название цикла"
+                           type="text">
+                    <span class="validation-error" data-validate-for="name"></span>
+                </div>
+
+                <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                    <span class="ui-text--medium">Создать</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

@@ -28,18 +28,18 @@ class Chapter extends Model
      * @var array fillable attributes are mass assignable
      */
     protected $fillable = [
-        'title','book_id','content','published_at','length'
+        'title', 'book_id', 'content', 'published_at', 'length','sort_order'
     ];
 
     /**
      * @var array rules for validation
      */
     public $rules = [
-        'title' => 'required|string',
+        'title' => 'nullable|string',
         'book_id' => 'required|exists:books_book_books,id',
-        'content' => 'string',
-        'published_at' => 'date',
-        'length' => 'integer',
+        'content' => 'nullable|string',
+        'published_at' => 'nullable|date',
+        'length' => 'nullable|integer',
     ];
 
     /**
@@ -67,7 +67,8 @@ class Chapter extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
+        'published_at'
     ];
 
     /**
@@ -75,7 +76,9 @@ class Chapter extends Model
      */
     public $hasOne = [];
     public $hasMany = [];
-    public $belongsTo = [];
+    public $belongsTo = [
+        'book' => [Book::class, 'key' => 'id', 'otherKey' => 'book_id']
+    ];
     public $belongsToMany = [];
     public $morphTo = [];
     public $morphOne = [];
@@ -88,8 +91,8 @@ class Chapter extends Model
         return ChapterStatus::tryFrom($status);
     }
 
-    public function setStatusAttribute(string|ChapterStatus $status)
+    public function setStatusAttribute(string|int|null|ChapterStatus $status)
     {
-        $this->attributes['status'] = is_string($status) ? $status : $status->value;
+        $this->attributes['status'] = $status ? ($status instanceof ChapterStatus ? $status->value : (int)$status) : $status;
     }
 }

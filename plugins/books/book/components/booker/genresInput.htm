@@ -20,9 +20,10 @@
     >
 
 </div>
+    {% if search %}
     <div  class="ui-dropdown">
 
-        <div class="ui-dropdown-container" id="genresDropdown">
+        <div class="ui-dropdown-container" >
 
             {% for item in search %}
             <div class="ui-dropdown-item"
@@ -35,6 +36,7 @@
             {% endfor %}
         </div>
     </div>
+    {% endif %}
 </div>
 
 

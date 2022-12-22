@@ -1,9 +1,11 @@
 <?php namespace Books\Book\Models;
 
-use Books\Catalog\Models\Genre;
 use Model;
 use System\Models\File;
 use RainLab\User\Models\User;
+use Books\Catalog\Models\Genre;
+use October\Rain\Database\Collection;
+use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
 
 /**
@@ -11,9 +13,8 @@ use October\Rain\Database\Traits\Validation;
  */
 class Book extends Model
 {
-
+    use Sortable;
     use Validation;
-
 
     /**
      * @var string table associated with the model
@@ -31,7 +32,16 @@ class Book extends Model
     protected $fillable = [
         'title',
         'annotation',
-        'author_id'
+        'user_id',
+        'cycle_id',
+        'age_restriction',
+        'download_allowed',
+        'comment_allowed',
+        'sales_free',
+        'sort_order',
+        'free_parts',
+        'status',
+        'price'
     ];
 
 
@@ -40,12 +50,14 @@ class Book extends Model
      */
     public $rules = [
         'title' => 'required|between:2,100',
-        'annotation' => 'string',
+        'annotation' => 'nullable|string',
         'cover' => 'nullable|image',
-        'author_id' => 'required|exists:users, id',
-        'price' => 'integer',
-        'sales_at' => 'date',
-        'free_parts' => 'integer'
+        'user_id' => 'required|exists:users,id',
+        'price' => 'nullable|integer',
+        'free_parts' => 'nullable|integer',
+        'download_allowed' => 'nullable|boolean',
+        'comment_allowed' => 'nullable|boolean',
+        'sales_free' => 'nullable|boolean'
     ];
 
     /**
@@ -73,18 +85,22 @@ class Book extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
+        'sales_at'
     ];
 
     /**
      * @var array hasOne and other relations
      */
     public $hasOne = [
-        'author' => [User::class, 'key' => 'id', 'otherKey' => 'author_id'],
-        'cycle' => [Cycle::class, 'key' => 'id', 'otherKey' => 'cycle_id']
+        'user' => [User::class, 'key' => 'id', 'otherKey' => 'user_id'],
     ];
-    public $hasMany = [];
-    public $belongsTo = [];
+    public $hasMany = [
+        'chapters' => [Chapter::class, 'key' => 'book_id', 'otherKey' => 'id']
+    ];
+    public $belongsTo = [
+        'cycle' => [Cycle::class, 'key' => 'id', 'otherKey' => 'cycle_id'],
+    ];
     public $belongsToMany = [
         'genres' => [
             Genre::class,
@@ -93,7 +109,7 @@ class Book extends Model
             'otherKey' => 'genre_id'
         ],
         'tags' => [
-            Tags::class,
+            Tag::class,
             'table' => 'books_book_tag',
             'key' => 'book_id',
             'otherKey' => 'tag_id',
@@ -102,8 +118,10 @@ class Book extends Model
         'coauthors' => [
             User::class,
             'pivotModel' => CoAuthor::class,
+            'table' => 'books_book_co_authors',
             'key' => 'book_id',
-            'otherKey' => 'author_id',
+            'otherKey' => 'user_id',
+            'pivot' => ['percent']
         ]
     ];
     public $morphTo = [];
@@ -112,14 +130,14 @@ class Book extends Model
     public $attachOne = ['cover' => File::class];
     public $attachMany = [];
 
-    public function getPriceAttribute(int $value): float|int
+    public function getPriceAttribute($value): float|int|null
     {
-        return $value / 1000;
+        return $value ? (int)$value / 1000 : (int)$value;
     }
 
-    public function setPriceAttribute(float|int $value): int
+    public function setPriceAttribute(int|string|null $value)
     {
-        $this->attributes['price'] = $value * 1000;
+        $this->attributes['price'] = $value ? (int)$value * 1000 : $value;
     }
 
     public function getStatusAttribute($status): ?BookStatus
@@ -130,5 +148,30 @@ class Book extends Model
     public function setStatusAttribute(string|BookStatus $status)
     {
         $this->attributes['status'] = is_string($status) ? $status : $status->value;
+    }
+
+    public function getDeffered($key): Collection
+    {
+        return $this->getDeferredBindingRecords($key);
+    }
+
+    public function getAgeRestrictionAttribute($value): ?AgeRestrictionsEnum
+    {
+        return AgeRestrictionsEnum::tryFrom($value) ?? AgeRestrictionsEnum::default();
+    }
+
+    public function setAgeRestrictionAttribute(string|int|AgeRestrictionsEnum $ageRestrictions)
+    {
+        $this->attributes['age_restriction'] = (is_string($ageRestrictions) || is_int($ageRestrictions)) ? $ageRestrictions : $ageRestrictions->value;
+    }
+
+    public function getSalesAtAttribute()
+    {
+        return $this->chapters()->first()?->published_at ?? null;
+    }
+
+    public function getRealPriceAttribute()
+    {
+        return !!$this->sales_free ? 0 : $this->price;
     }
 }

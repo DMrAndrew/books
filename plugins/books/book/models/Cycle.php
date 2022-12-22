@@ -23,14 +23,14 @@ class Cycle extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['name','author_id'];
+    protected $fillable = ['name', 'user_id'];
 
     /**
      * @var array rules for validation
      */
     public $rules = [
-        'name' => 'required|staring|max:64',
-        'author_id' => 'required|exists:users,id',
+        'name' => 'required|string|max:64',
+        'user_id' => 'required|exists:users,id',
     ];
 
     /**
@@ -73,4 +73,9 @@ class Cycle extends Model
     public $morphMany = [];
     public $attachOne = [];
     public $attachMany = [];
+
+    public function scopeName($q, string $name)
+    {
+        return $q->where('name', '=', $name);
+    }
 }

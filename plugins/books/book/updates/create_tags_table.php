@@ -13,7 +13,7 @@ class CreateTagsTable extends Migration
     {
         Schema::create('books_book_tags', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('author_id')->index();
+            $table->unsignedBigInteger('user_id')->index();
             $table->string('name');
             $table->timestamps();
         });

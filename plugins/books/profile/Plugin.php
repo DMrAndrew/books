@@ -1,21 +1,19 @@
 <?php namespace Books\Profile;
 
-use Books\Profile\Classes\OnCreatedListener;
-use Books\Profile\Classes\OnDeleteListener;
-use Books\Profile\Classes\ProfileEventHandler;
-use Books\Profile\Classes\ProfileManager;
+use Books\Profile\Components\ProfileNotification;
+use Books\Profile\Components\ProfilePrivacy;
 use Event;
+use Flash;
 use Config;
 use Backend;
-use Flash;
-use RainLab\User\Models\User;
 use Redirect;
+use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 use Books\Profile\Components\Profile;
 use Books\Profile\Behaviors\HasProfile;
 use Books\Profile\Behaviors\Profileable;
+use Books\Profile\Classes\ProfileEventHandler;
 use RainLab\User\Controllers\Users as UsersController;
-use ValidationException;
 
 /**
  * Plugin Information File
@@ -64,8 +62,8 @@ class Plugin extends PluginBase
         foreach (config('profile.profileable') ?? [] as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Profileable::class);
-                $model->bindEvent('model.afterCreate',fn() => (new OnCreatedListener($model))());
-                $model->bindEvent('model.afterDelete',fn() => (new OnDeleteListener($model))());
+                $model->bindEvent('model.afterCreate', fn() => (new ProfileEventHandler())->createdProfilableModel($model));
+                $model->bindEvent('model.afterDelete', fn() => (new ProfileEventHandler())->deletedProfilableModel($model));
             });
         }
 
@@ -100,7 +98,7 @@ class Plugin extends PluginBase
             $controller->addDynamicMethod('onRejectUsername', function ($recordId) use ($controller) {
                 $model = $controller->formFindModelObject($recordId);
                 $model->rejectClipboardUsername();
-                Flash::success('Изменение псевдонима пользователя успешно отклонено');
+                Flash::success('Изменение псевдонима пользователя отклонено');
 
                 return Redirect::refresh();
             });
@@ -117,6 +115,8 @@ class Plugin extends PluginBase
 
         return [
             Profile::class => 'profile',
+            ProfilePrivacy::class => 'profilePrivacy',
+            ProfileNotification::class => 'profileNotification',
         ];
     }
 

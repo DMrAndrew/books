@@ -14,13 +14,13 @@ class CreateChaptersTable extends Migration
         Schema::create('books_book_chapters', function (Blueprint $table) {
             $table->id();
             $table->integer('book_id')->unsigned()->index();
-            $table->string('title');
+            $table->string('title')->nullable();
             $table->text('content')->nullable();
-            $table->enum('status',['draft','published'])->default('draft');
+            $table->string('status')->default('draft');
             $table->timestamp('published_at')->nullable();
             $table->integer('length')->nullable();
             $table->integer('sort_order')->default(0);
-            $table->enum('edition',['free','pay'])->default('free');
+            $table->string('edition')->default('free');
             $table->softDeletes();
             $table->timestamps();
         });

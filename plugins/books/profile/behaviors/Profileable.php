@@ -7,43 +7,27 @@ use October\Rain\Database\Model;
 use Books\Profile\Models\Profiler;
 use Books\Profile\Classes\ProfiledScope;
 use October\Rain\Extension\ExtensionBase;
-use Books\Profile\Classes\OnDeleteListener;
-use Books\Profile\Classes\OnCreatedListener;
-//TODO refactor listeners
+use Books\Profile\Classes\ProfileEventHandler;
+
 class Profileable extends ExtensionBase
 {
-    protected string $class;
-
     public function __construct(protected Model $model)
     {
 
-        $this->class = get_class($this->model);
-
-        $this->class::addGlobalScope(new ProfiledScope());
-
         $this->model->belongsTo['user'] ??= [User::class, 'key' => 'user_id', 'otherKey' => 'id'];
 
-        //$this->bindEvents();
-    }
+        get_class($this->model)::addGlobalScope(new ProfiledScope());
 
-    /**
-     * @return void
-     */
-    protected function bindEvents(): void
-    {
-
-        $this->class::created(fn($model) => (new OnCreatedListener($model))());
-        $this->class::deleted(fn($model) => (new OnDeleteListener($model))());
     }
 
     public function attachToProfile()
     {
-        (new OnCreatedListener($this->model))();
+        (new ProfileEventHandler())->createdProfilableModel($this->model);
     }
 
     public function detachFromProfile()
     {
-        (new OnDeleteListener($this->model))();
+        (new ProfileEventHandler())->deletedProfilableModel($this->model);
     }
 
     public function profiler(): Profiler
@@ -51,9 +35,9 @@ class Profileable extends ExtensionBase
         return static::getProfiler($this->model);
     }
 
-    public static function getProfiler(Model $model, ?User $user = null): Profiler
+    public static function getProfiler(?Model $model = null, ?User $user = null): Profiler
     {
-        $builder = ($user ?? $model->user)->profilers()->where('entity_type', '=', get_class($model));
+        $builder = ($user ?? $model->user)->profilers()->where('entity_type', '=', get_class($model ?? get_called_class()));
         if (!$builder->exists()) {
             $builder->create(['entity_type' => get_class($model)]);
         }

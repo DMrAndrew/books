@@ -6,7 +6,7 @@ use October\Rain\Database\Traits\Validation;
 /**
  * Tags Model
  */
-class Tags extends Model
+class Tag extends Model
 {
     use Validation;
 
@@ -23,14 +23,14 @@ class Tags extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['name', 'author_id'];
+    protected $fillable = ['name', 'user_id'];
 
     /**
      * @var array rules for validation
      */
     public $rules = [
-        'name' => 'required|string|max:32',
-        'author_id' => 'required|exists:users,id'
+        'name' => 'required|string|max:50',
+        'user_id' => 'required|exists:users,id'
     ];
 
     /**
@@ -84,5 +84,10 @@ class Tags extends Model
     public function scopeOrderByName($q)
     {
         return $q->orderBy('name');
+    }
+
+    public function scopeNameLike($q, string $name)
+    {
+        return $q->where('name', 'like', "%$name%");
     }
 }

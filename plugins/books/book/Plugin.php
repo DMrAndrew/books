@@ -1,11 +1,17 @@
 <?php namespace Books\Book;
 
 use Backend;
+use Books\Book\Classes\BookManager;
 use Books\Book\Classes\CoAuthorManager;
 use Books\Book\Components\Booker;
+use Books\Book\Components\Chapterer;
+use Books\Book\Components\EBooker;
+use Books\Book\Components\ECommerceBooker;
+use Books\Book\Components\LCBooker;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
 use Books\Profile\Behaviors\Profileable;
+use Event;
 use October\Rain\Database\Model;
 use System\Classes\PluginBase;
 
@@ -15,6 +21,7 @@ use System\Classes\PluginBase;
 class Plugin extends PluginBase
 {
     public $require = ['RainLab.User'];
+
     /**
      * Returns information about this plugin.
      *
@@ -37,7 +44,7 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-
+        Event::listen('books.book.created', fn($book) => (new BookManager())->countContentLength($book));
     }
 
     /**
@@ -47,13 +54,6 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-        //TODO extend
-//        collect([
-//            Book::class,
-//            Cycle::class
-//        ])->each(fn(Model $model) => $model->implementClassWith(Profileable::class));
-
-//        CoAuthorManager::bindOnInsertCoAuthorEvent();
 
     }
 
@@ -66,7 +66,11 @@ class Plugin extends PluginBase
     {
 
         return [
-           Booker::class => 'booker',
+            Booker::class => 'booker',
+            LCBooker::class => 'LCBooker',
+            EBooker::class => 'Ebooker',
+            ECommerceBooker::class => 'ECommerceBooker',
+            Chapterer::class => 'Chapterer',
         ];
     }
 

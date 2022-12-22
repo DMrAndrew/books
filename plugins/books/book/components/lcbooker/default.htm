@@ -1,0 +1,117 @@
+{% if books.count() %}
+<div id="books_list_partial" class="lc-books__listing-container">
+    {% for book in books %}
+    <div class="book-card">
+        <div class="book-card__body">
+            <div class="book-card__column-left">
+                <a href="/about-book/{{book.id}}">
+                    <img class="book-card__image" src="{{book.cover.getThumb(104,150)}}" alt="" loading="lazy">
+                </a>
+            </div>
+            <div class="book-card__column-right">
+                <div class="book-card__action">
+                    <a href="/about-book/{{book.id}}" class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">
+                        <svg class="square-16">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>
+                        </svg>
+                        <span class="ui-button--text-hidden">Редактировать</span>
+                    </a>
+                    <div class="">
+                        <a href="#"
+                           data-request="LCBooker::onChangeOrder"
+                           data-request-data="book_id:{{book.id}},action:'up'"
+                           class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">
+                            <svg class="square-16">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme}}"></use>
+                            </svg>
+                        </a>
+                        <a href="#"
+                           data-request="LCBooker::onChangeOrder"
+                           data-request-data="book_id:{{book.id}},action:'down'"
+                           class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">
+                            <svg class="square-16">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <a href="/about-book/{{book.id}}" class="book-card__title ui-text-head--3 ui-text--bold">{{book.title}}</a>
+                <div class="book-card__info">
+                    <div class="book-card__info-wrapper">
+                        <div class="book-card__info-wrap _color-green ui-tooltip" data-tooltip="Электронная книга">
+                            <svg class="book-card__favorit-active">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>
+                            </svg>
+                            {% if book.realPrice %}
+                            <span class="ui-text--bold">{{ book.realPrice }} &thinsp;₽</span>
+                            {% else %}
+                            <span class="ui-text--bold">Бесплатно</span>
+                            {% endif %}
+
+                        </div>
+                        <div class="book-card__info-wrap">
+<!--                            <svg class="book-card__favorit-active">-->
+<!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>-->
+<!--                            </svg>-->
+                            <span>{{book.status.getLabel()}}</span>
+                        </div>
+                        <div class="book-card__info-dot"></div>
+                        <div class="book-card__info-wrap _text">{{ book.sales_at ? carbon(book.sales_at).format('d.m.y') : '-'}}</div>
+                        <div class="book-card__info-dot"></div>
+                        <div class="book-card__info-wrap _text">{{book.length}}&thinsp;зн.</div>
+                    </div>
+                </div>
+                <div class="book-card__description">
+                    {{book.annotation}}
+                </div>
+                <div class="book-card__body-footer">
+                    <div class="book-card__raiting">
+                        <svg>
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
+                        </svg>
+                        <span>0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="book-card__footer">
+            <div class="book-card__footer-wrapper ui-tooltip" data-tooltip="Количество прочтений">
+                <svg>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
+                </svg>
+                <span>0&thinsp;0</span>
+            </div>
+            <div class="book-card__footer-wrapper">
+                <svg>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-16' | theme}}"></use>
+                </svg>
+                <span>0&thinsp;0</span>
+            </div>
+            <div class="book-card__footer-wrapper">
+                <svg>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>
+                </svg>
+                <span>0</span>
+            </div>
+            <div class="book-card__footer-wrapper">
+                <svg>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-filled-16' | theme}}"></use>
+                </svg>
+                <span>0</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="author__placeholder _indent">
+    <svg class="square-32">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
+    </svg>
+    <div class="ui-text-head--3 ui-text--bold">У вас нет книг</div>
+    <span>Тут будет какой-нибудь привлекающий текст, как в литмаркете</span>
+    <a href="/create-book" >
+        <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile" >Добавить книгу</button>
+    </a>
+</div>
+{% endif %}

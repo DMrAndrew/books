@@ -20,10 +20,13 @@
     <div class="personal-area__wrap _separator"></div>
     <div class="personal-area__wrap _indent-small">Имя или псевдоним</div>
     <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">Имя или псевдоним можно изменить через администратора.
-        <a href="#" onclick="openChangerUserNameForm()" class="ui-link _violet">Изменить</a></div>
+        <a onclick="openChangerUserNameForm()" class="ui-link _violet" style="cursor: pointer">Изменить</a></div>
     <div class="personal-area__wrap">{{userdata.profile.username}}</div>
     {% if userdata.profile.username_clipboard %}
-    <div class="personal-area__wrap" style="color: darkred">{{userdata.profile.username_clipboard}}</div>
+    <div class="personal-area__wrap" > <span class="_color-gray ui-text-body--3">Новый псевдоним:</span> {{userdata.profile.username_clipboard}}</div>
+    {% endif %}
+    {% if userdata.profile.username_clipboard_comment %}
+    <div class="personal-area__wrap" > <span class="_color-gray ui-text-body--3"> Причина изменения: </span> {{userdata.profile.username_clipboard_comment}}</div>
     {% endif %}
     <div class="personal-area__wrap _separator"></div>
 

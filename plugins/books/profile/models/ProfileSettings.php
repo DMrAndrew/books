@@ -1,35 +1,14 @@
 <?php namespace Books\Profile\Models;
 
-use Books\User\Classes\BookUserSettingsEnum;
-use Books\User\Models\BookUserSettings;
-use Model;
 use October\Rain\Database\Builder;
-use October\Rain\Database\Traits\Validation;
+use Books\User\Models\Settings;
+use Books\User\Classes\UserSettingsEnum;
 
 /**
  * ProfileSettings Model
- *
- * @property BookUserSettingsEnum $declaration
  */
-class ProfileSettings extends Model
+class ProfileSettings extends Settings
 {
-    use Validation;
-
-    /**
-     * @var string table name
-     */
-    public $table = 'books_user_settings';
-
-    /**
-     * @var array rules for validation
-     */
-    public $rules = [];
-
-    protected $fillable = ['setting_id','value','user_id'];
-
-
-    protected $appends = ['declaration'];
-
     /**
      * The "booted" method of the model.
      *
@@ -39,19 +18,7 @@ class ProfileSettings extends Model
     {
 
         static::addGlobalScope('profilable', function (Builder $builder) {
-            $builder->whereIn('setting_id', collect(BookUserSettingsEnum::profilable())->pluck('value')->toArray());
+            $builder->whereIn('setting_id', collect(UserSettingsEnum::profilable())->pluck('value')->toArray());
         });
-    }
-
-    public static function fromEnum(BookUserSettingsEnum $enum): static
-    {
-        return new static([
-            'setting_id' => $enum->value,
-            'value' => null
-        ]);
-    }
-    public function getDeclarationAttribute(): ?BookUserSettingsEnum
-    {
-        return BookUserSettingsEnum::tryFrom($this->setting_id);
     }
 }

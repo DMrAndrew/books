@@ -2,14 +2,15 @@
 
 namespace Books\User\Behaviors;
 
-use Books\Profile\Models\ProfileSettings;
-use Books\User\Classes\BookUserSettingsEnum;
-use Books\User\Classes\PrivacySettingsEnum;
-use Books\User\Classes\SettingsRelationCast;
-use Books\User\Models\BookUserSettings;
-use October\Rain\Database\Collection;
+use Books\Book\Models\Book;
+use Books\Book\Models\CoAuthor;
+use Books\Book\Models\Cycle;
+use Books\Book\Models\Tag;
 use RainLab\User\Models\User;
 use Books\User\Models\Country;
+use Books\User\Models\AccountSettings;
+use Books\User\Models\Settings;
+use Books\Profile\Models\ProfileSettings;
 use Books\Profile\Classes\ProfileManager;
 use October\Rain\Extension\ExtensionBase;
 use Books\User\Classes\ProfileAttributeCasts;
@@ -20,8 +21,16 @@ class BookUser extends ExtensionBase
     public function __construct(protected User $parent)
     {
         $this->parent->hasOne['country'] = [Country::class, 'key' => 'id', 'otherKey' => 'country_id'];
-        $this->parent->hasMany['accountSettings'] = [BookUserSettings::class, 'key' => 'user_id', 'otherKey' => 'id'];
+        $this->parent->hasMany['tags'] = [Tag::class, 'key' => 'user_id', 'otherKey' => 'id'];
+        $this->parent->hasMany['cycles'] = [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'];
+        $this->parent->hasMany['settings'] = [Settings::class, 'key' => 'user_id', 'otherKey' => 'id'];
+        $this->parent->hasMany['accountSettings'] = [AccountSettings::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['profileSettings'] = [ProfileSettings::class, 'key' => 'user_id', 'otherKey' => 'id'];
+        $this->parent->hasMany['books'] = [
+            Book::class,
+            'key' => 'user_id',
+            'otherKey' => 'id',
+        ];
         $this->parent->addValidationRule('birthday', 'nullable');
         $this->parent->addValidationRule('birthday', 'date');
         $this->parent->addValidationRule('show_birthday', 'nullable');
@@ -55,6 +64,13 @@ class BookUser extends ExtensionBase
         return $this->parent->username;
     }
 
+    public function  scopeCoauthorsAutocomplite($q, $name)
+    {
+        return $q->whereHas('profiles', function ($query) use ($name) {
+            return $query->where('username','like',"%$name%");
+        });
+    }
+
     public function scopeUsername($q, $name)
     {
         return $q->whereHas('profiles', function ($query) use ($name) {
@@ -64,12 +80,12 @@ class BookUser extends ExtensionBase
 
     public function acceptClipboardUsername()
     {
-        (new ProfileManager())->replaceUsernameFromClipboard($this->parent);
+        (new ProfileManager())->replaceUsernameFromClipboard(user: $this->parent);
     }
 
     public function rejectClipboardUsername()
     {
-        (new ProfileManager())->replaceUsernameFromClipboard($this->parent, true);
+        (new ProfileManager())->replaceUsernameFromClipboard(user: $this->parent, reject: true);
     }
 
     public function getCountryOptions(): array

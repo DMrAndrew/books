@@ -1,0 +1,52 @@
+{{ form_ajax('profileNotification::onUpdateNotify',{
+id:'profile_privacy_form',
+'data-request-validate':'true',
+'class':'personal-area__wrapper',
+'data-request-update':"profile/notification: '#profile_privacy_form'"
+}) }}
+
+    <div class="personal-area__wrap _indent-large">Выберите типы событий, которые вас интересуют</div>
+
+    {% for setting in settings.accountable %}
+        <label class="ui-checkbox personal-area__wrap _indent-medium">
+            <input type="hidden" name="options[{{setting.declaration.value}}]" value="off">
+            <input type="checkbox" name="options[{{setting.declaration.value}}]"
+                   {{ setting.value == 'on' ? 'checked' : ''  }}
+                   hidden>
+            <div class="ui-checkbox-checker">
+                <svg>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                </svg>
+            </div>
+            <span class="ui-checkbox-text personal-area__checkbox-text">{{ setting.declaration.getLabel() }}
+                        <span class="ui-tooltip" data-tooltip="Уведомление относится к аккаунту, а не профилю">
+                          <svg class="square-16" >
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#questions-stroked-circle-16' | theme}}"></use>
+                          </svg>
+                        </span>
+                      </span>
+        </label>
+    {% endfor %}
+
+    {% for setting in settings.profilable %}
+        <label class="ui-checkbox personal-area__wrap _indent-medium">
+            <input type="hidden" name="options[{{setting.declaration.value}}]" value="off">
+            <input type="checkbox" name="options[{{setting.declaration.value}}]"
+                   {{ setting.value == 'on' ? 'checked' : ''  }}
+            hidden>
+            <div class="ui-checkbox-checker">
+                <svg>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                </svg>
+            </div>
+            <span class="ui-checkbox-text personal-area__checkbox-text">{{ setting.declaration.getLabel() }}
+
+                              </span>
+        </label>
+    {% endfor %}
+
+
+
+
+    <button class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить</button>
+{{ form_close() }}
