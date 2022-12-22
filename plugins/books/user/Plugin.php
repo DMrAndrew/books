@@ -1,6 +1,7 @@
 <?php namespace Books\User;
 
 use Backend;
+use Event;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 use Books\User\Behaviors\BookUser;

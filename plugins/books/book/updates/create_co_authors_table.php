@@ -13,9 +13,9 @@ class CreateCoAuthorsTable extends Migration
     {
         Schema::create('books_book_co_authors', function (Blueprint $table) {
             $table->integer('book_id')->unsigned()->index();
-            $table->integer('author_id')->unsigned();
+            $table->integer('user_id')->unsigned();
             $table->tinyInteger('percent')->default(0);
-            $table->primary(['book_id','author_id']);
+            $table->primary(['book_id','user_id']);
         });
     }
 

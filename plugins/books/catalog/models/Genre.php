@@ -1,5 +1,7 @@
 <?php namespace Books\Catalog\Models;
 
+
+use Db;
 use Model;
 use Books\Book\Models\Book;
 use October\Rain\Database\Builder;
@@ -122,28 +124,32 @@ class Genre extends Model
      */
     public function getParentOptions(): array
     {
-        $options = [];
-
-        foreach (static::all() as $genre) {
-            $options[$genre->id] = $genre->name;
-        }
-
-        return $options;
+        return static::lists('name', 'id');
     }
 
 
-    public function scopeRoots(Builder $query): Builder
+    public function scopeRoots(Builder $builder): Builder
     {
-        return $query->whereNull('parent_id');
+        return $builder->whereNull('parent_id');
     }
 
-    public function scopeFavorite(Builder $query): Builder
+    public function scopeChild(Builder $builder): Builder
     {
-        return $query->where('favorite', '=', 1);
+        return $builder->whereNotNull('parent_id');
     }
 
-    public function scopeActive(Builder $query): Builder
+    public function scopeFavorite(Builder $builder): Builder
     {
-        return $query->where('active', '=', 1);
+        return $builder->where('favorite', '=', 1);
+    }
+
+    public function scopeActive(Builder $builder): Builder
+    {
+        return $builder->where('active', '=', 1);
+    }
+
+    public function scopeName(Builder $builder, string $name): Builder
+    {
+        return $builder->where('name', 'like', "%$name%");
     }
 }

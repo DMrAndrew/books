@@ -1,0 +1,32 @@
+<div class="personal-area__sidebar ui-col-sm-3">
+    {% for link in collect([
+    {name:'Профиль',href:'/lc-profile'},
+    {name:'Приватность',href:'/lc-privacy'},
+    {name:'Уведомления',href:'/lc-notification'},
+    {name:'Черный список',href:''},
+    {separator:1},
+    {name:'Книги',href:'/lc-books'},
+    {name:'Магазин',href:''},
+    {name:'Блог',href:''},
+    {name:'Видеоблог',href:''},
+    {name:'Подписки',href:''},
+    {name:'Подписчики',href:''},
+    {name:'Награды',href:''},
+    {name:'Комментарии',href:''},
+    {name:'Репосты',href:''},
+    {separator:1},
+    {name:'Коммерческий кабинет',href:''},
+    {name:'Статистика прочтений',href:''},
+    {name:'Реклама',href:''},
+    {name:'Промокоды',href:''},
+    {name:'Скидки',href:''},
+    {separator:1},
+    {name:'Настройки',href:''},
+    ]) %}
+    {% if link.separator %}
+    <div class="personal-area__sidebar-separator"></div>
+    {% else %}
+    <a class="personal-area__sidebar-link {{this.page.url == link.href ? 'active' : ''}}" href="{{link.href}}">{{link.name}}</a>
+    {% endif %}
+    {% endfor %}
+</div>

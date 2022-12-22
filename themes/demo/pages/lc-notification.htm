@@ -1,0 +1,18 @@
+title = "Личный кабинет - Уведомления"
+layout = "personalarea"
+url = "/lc-notification"
+description = "Личный кабинет - Уведомления"
+[profileNotification]
+==
+<div class="personal-area__container ui-grid-container ui-grid-gap">
+    {% partial "profile/sidebarmenu" %}
+    <div class="ui-col-sm-9">
+        <div class="personal-area__subtitle">
+            <span class="ui-text-head--3 ui-text--bold">Уведомления</span>
+            <svg class="square-16">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+            </svg>
+        </div>
+        {% partial 'profile/notification' %}
+    </div>
+</div>

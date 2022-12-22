@@ -24,14 +24,14 @@ class CoAuthor extends Pivot
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['book_id', 'author_id', 'percent',];
+    protected $fillable = ['book_id', 'user_id', 'percent',];
 
     /**
      * @var array rules for validation
      */
     public $rules = [
         'book_id' => 'required|exists:books_book_books,id',
-        'author_id' => 'required|exists:users,id',
+        'user_id' => 'required|exists:users,id',
         'percent' => 'integer|max:100',
     ];
 
@@ -69,13 +69,13 @@ class CoAuthor extends Pivot
     public $hasOne = [
         'book' => [
             Book::class,
-            'key' => 'book_id',
-            'otherKey' => 'id'
+            'key' => 'id',
+            'otherKey' => 'book_id'
         ],
-        'author' => [
+        'user' => [
             User::class,
-            'key' => 'user_id',
-            'otherKey' => 'id'
+            'key' => 'id',
+            'otherKey' => 'user_id'
         ]
     ];
     public $hasMany = [];
@@ -86,4 +86,18 @@ class CoAuthor extends Pivot
     public $morphMany = [];
     public $attachOne = [];
     public $attachMany = [];
+
+    public function getPercentAttribute($value)
+    {
+        if (!$value) {
+            return 0;
+        }
+        return $value;
+    }
+
+    public function getOwnerAttribute()
+    {
+        return $this->attributes['owner'] ?? false
+        || $this->user_id === $this->book?->user_id ?? false;
+    }
 }

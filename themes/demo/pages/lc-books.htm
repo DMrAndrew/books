@@ -1,0 +1,41 @@
+url = "/lc-books"
+layout = "personalarea"
+title = "Личный кабинет - Книги"
+description = "Личный кабинет - Книги"
+[LCBooker]
+==
+<div class="personal-area__container ui-grid-container ui-grid-gap">
+    {% partial "profile/sidebarmenu" %}
+    <div class="ui-col-sm-9">
+        <div class="personal-area__subtitle">
+            <span class="ui-text-head--3 ui-text--bold">Книги</span>
+            <svg class="square-16">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+            </svg>
+        </div>
+        <div class="lc-books__action-wrapper">
+
+            <a href="/create-book" >
+                <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile"  >Добавить книгу</button>
+            </a>
+                {{ form_ajax('onUploadFile',{
+                id:'fb_input_form',
+                files:'true',
+                'data-request-validate':'true'
+                }) }}
+            <label class="ui-input-file">
+                <input id="fb_input" type="file" hidden name="fb2" accept=".fb2" >
+                <div class="ui-input-file-item ui-text--medium">Загрузить FB2</div>
+
+            </label>
+            <span class="validation-error" data-validate-for="fb2"></span>
+            {{ form_close() }}
+        </div>
+        {% component "LCBooker" %}
+    </div>
+</div>
+<script>
+    document.getElementById('fb_input').addEventListener('change',function (){
+        oc.request('#fb_input_form')
+    })
+</script>

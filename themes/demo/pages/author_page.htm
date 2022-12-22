@@ -4,6 +4,7 @@ url = "/author-page"
 [session]
 ==
 <!-- Промо часть страницы -->
+
 <div style="margin-bottom: 16px"> </div>
 <div class="author ui-container-fluid">
     <div class="author__promo author-promo">
@@ -24,8 +25,8 @@ url = "/author-page"
                 {% endif %}
             </div>
             <div class="author-promo-info__info-wrapper">
-                <div class="author-promo-info__name ui-text-head--2 ui-text--bold">Александр Алексон</div>
-                <div class="author-promo-info__description">😉 Жизнь, как красивая мелодия, только песни перепутались.</div>
+                <div class="author-promo-info__name ui-text-head--2 ui-text--bold">{{user.profile.username}}</div>
+                <div class="author-promo-info__description">{{user.profile.status}}</div>
                 <div class="author-promo-info__actions">
                     <button
                         class="author-promo-info__button _half ui-button ui-button-size--32 ui-button-view--2">Подписаться</button>
@@ -76,32 +77,35 @@ url = "/author-page"
               </svg>
               <div class="ui-text-head--3 ui-text--bold">Вы ничего не рассказали о себе</div>
               <span>Пожалуйста, заполните ваш профиль</span>
-              <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Настроить профиль</button>
+                <a href="/lc-profile">
+                    <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Настроить профиль</button>
+                </a>
             </div>
             <div class="author-profile__description author-profile-description">
               <div class="author-profile-description__title ui-text-head--3 ui-text--bold">Основная информация</div>
               <div class="author-profile-description__wrapper">
                 <div class="author-profile-description__label">Обо мне</div>
                 <div class="author-profile-description__info">
-                  Просто веселый парень. Приятно, граждане, наблюдать, как интерактивные прототипы набирают популярность среди определенных слоев населения, а значит, должны быть указаны как претенденты на роль ключевых факторов.
+                    {{user.profile.about}}
                 </div>
               </div>
               <div class="author-profile-description__wrapper">
                 <div class="author-profile-description__label">День рождения</div>
                 <div class="author-profile-description__info">
-                  02.12.90
+                    {{carbon(user.birthday).format('d.m.y')}}
                 </div>
               </div>
               <div class="author-profile-description__wrapper">
                 <div class="author-profile-description__label">Любимы жанры</div>
                 <div class="author-profile-description__info">
-                  <a class="ui-link _violet" href="#">ЛитРПГ</a>, <a class="ui-link _violet" href="#">РеалРПГ</a>
+                  <a class="ui-link _violet" href="#">ЛитРПГ</a>,
+                    <a class="ui-link _violet" href="#">РеалРПГ</a>
                 </div>
               </div>
               <div class="author-profile-description__wrapper">
                 <div class="author-profile-description__label">Регистрация</div>
                 <div class="author-profile-description__info">
-                  11.01.21
+                    {{carbon(user.created_at).format('d.m.y')}}
                 </div>
               </div>
             </div>
@@ -908,6 +912,4 @@ url = "/author-page"
             lastTab.parentNode.removeChild(lastTab)
         }
     })
-
-
 </script>

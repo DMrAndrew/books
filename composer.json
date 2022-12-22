@@ -59,7 +59,10 @@
         "psr-4": {
             "System\\Console\\": "modules/system/console",
             "Tizis\\FB2\\": "plugins/books/book/classes/FB2-Parser"
-        }
+        },
+        "files": [
+            "helpers.php"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

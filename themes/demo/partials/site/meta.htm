@@ -39,7 +39,7 @@
 <script defer src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="{{'assets/js/menu-mobile.js' | theme}}"></script>
 <script src="{{'assets/js/favorite-accordion.js' | theme}}"></script>
-
+<script  src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
 
 <script>
     let openForm = (id = 'auth_popup') => document.getElementById(id).style.display = 'flex'
@@ -59,8 +59,12 @@
 
     let openChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'flex'
     let closeChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'none'
-</script>
+    let closeModal = () => Array.from(document.getElementsByClassName('ui-modal')).forEach(e => e.style.display = 'none')
+    let openCreateCycleForm = () => document.getElementById('create_cycle_form').style.display = 'flex'
+    let closeDropDowns = () => Array.from(document.getElementsByClassName('ui-dropdown')).forEach(e => e.style.display = 'none')
 
+
+</script>
 {% framework extras turbo %}
 {% scripts %}
 

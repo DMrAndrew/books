@@ -129,17 +129,17 @@ trait ComponentUtils
             if (!empty($this->model->rules[$this->attribute])) {
                 $rules = $this->model->rules[$this->attribute];
                 if (is_string($rules)) {
-                    $validationRules + explode('|', $this->model->rules[$this->attribute]);
+                    $validationRules = $validationRules + explode('|', $this->model->rules[$this->attribute]);
                 }
                 if (is_array($rules)) {
-                    $validationRules + $rules;
+                    $validationRules = $validationRules + $rules;
                 }
             }
 
             $validation = Validator::make(
                 ['file_data' => $uploadedFile],
                 ['file_data' => $validationRules],
-                $this->model->customMessages ? $this->model->customMessages : []
+                $this->model->customMessages ?? []
             );
 
             if ($validation->fails()) {

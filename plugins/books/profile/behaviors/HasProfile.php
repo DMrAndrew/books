@@ -13,7 +13,7 @@ class HasProfile extends ExtensionBase
     {
         $this->model->addFillable(['current_profile_id']);
         $this->model->hasMany['profilers'] = [Profiler::class, 'key' => 'profile_id', 'otherKey' => 'current_profile_id'];
-        $this->model->hasMany['profiles'] = [Profile::class];
+        $this->model->hasMany['profiles'] = [Profile::class,'key' => 'user_id','otherKey' => 'id'];
         $this->model->hasOne['profile'] = [Profile::class, 'key' => 'id', 'otherKey' => 'current_profile_id'];
         $this->model->append(['profiles_list']);
     }

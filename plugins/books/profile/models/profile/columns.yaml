@@ -3,6 +3,16 @@
 # ===================================
 
 columns:
-    id:
-        label: ID
+    username:
+        label: Псевдоним
         searchable: true
+    iscurrent:
+        label: Текущий
+        type: switch
+    username_clipboard:
+        label: Запрос на изменение псевдонима
+        type: text
+        cssClass: success
+    created_at:
+        label: Дата создания
+

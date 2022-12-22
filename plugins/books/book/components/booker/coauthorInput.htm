@@ -1,0 +1,39 @@
+<div class="ui-input" style="position: relative">
+    <label class="ui-input-label">Соавтор</label>
+
+
+    <input class="ui-input-item _size-32"
+           type="text"
+           value="{{ search_string }}"
+           name="searchCoauthor"
+           data-request="booker::onSearchCoauthor"
+           data-track-input="200"
+           data-request-validate
+           placeholder="Введите соавтора"/>
+
+    {% if search_array %}
+    <div class="ui-dropdown">
+        <div class="ui-dropdown-container">
+
+            {% for item in search_array %}
+            <div class="ui-dropdown-item"
+                 onclick="oc.request(this,'booker::onAddCoauthor',{
+                     error:closeDropDowns()
+                 })"
+                 data-request-data="id:{{item.id}}"
+            >
+            <span
+            >{{item.profile.username}}</span>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+    {% endif %}
+</div>
+<div class="create-book__co-author-container">
+    {% for item in coauthors %}
+    {% partial 'booker::coauthorItem' item=item %}
+    {% endfor %}
+</div>
+<span class="validation-error" data-validate-for="coauthors"></span>

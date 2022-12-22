@@ -1,0 +1,136 @@
+{{ form_ajax('booker::onSaveBook',{
+'data-request-validate':'true'
+}) }}
+<div class="create-book__container ui-container-fluid wrapper">
+    <div class="create-book__column-left">
+        {% component 'coverUploader' %}
+    </div>
+    <div class="create-book__column-right">
+        <div class="create-book__input ui-input">
+            <label class="ui-input-label">Название</label>
+            <input class="ui-input-item _size-32"
+                   type="text"
+                   placeholder="Введите название"
+                   name="title"
+                   value="{{book.title}}"
+            >
+            <span class="validation-error" data-validate-for="title"></span>
+        </div>
+        <div id="coauthorInput">
+            {% partial 'booker::coauthorInput' coauthors=book.coauthors %}
+        </div>
+        <div class="create-book__input ui-multi-select">
+            <div class="ui-multi-select-header">
+                <label class="ui-select-label">Жанр</label>
+            </div>
+
+            <div class="ui-multi-select-container">
+
+                <div id="genresInput">
+                    {% partial 'booker::genresInput' genres=book.genres %}
+                </div>
+
+            </div>
+        </div>
+
+        <div id="cycle_input">
+            {% partial 'booker::cycle_input' %}
+        </div>
+
+
+
+        <textarea class="ui-input-textarea"
+                  name="annotation"
+                  cols="30"
+                  rows="7"
+                  placeholder="Пожалуйста, напишите о чем ваше произведение, но не сам текст. Текст произведения вы добавите следующим шагом."
+        >{{book.annotation}}</textarea>
+        <span class="validation-error" data-validate-for="annotation"></span>
+        <div id="tag_input_partial">
+        {% partial 'booker::tag_input' %}
+        </div>
+
+        <div class="ui-grid-container ui-grid-gap">
+            <div class="ui-col-sm-6">
+                <div class="create-book__input ui-select">
+                    <div class="ui-select-header">
+                        <label class="ui-select-label">Возрастной рейтинг</label>
+                    </div>
+                    <div class="ui-select-container">
+                    <select name="age_restriction" class="ui-select-item _size-32">
+                        {% for restriction in age_restrictions %}
+                        <option
+                            {{ book.age_restriction.value == restriction.value ? 'selected' : ''  }}
+                        value="{{restriction.value}}">{{restriction.getLabel()}}</option>
+                        {% endfor %}
+
+                    </select>
+                    </div>
+<!--                    <div class="ui-select-container">-->
+<!--                        <div class="ui-select-item _size-32">-->
+<!--                            <div class="ui-select-item-option">18+</div>-->
+<!--                            <div class="ui-select-item-count">5</div>-->
+<!--                            <svg class="ui-select-item-icon">-->
+<!--                                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>-->
+<!--                            </svg>-->
+<!--                        </div>-->
+<!--                        <div class="ui-dropdown" style="display:none;">-->
+<!--                            <div class="ui-dropdown-container">-->
+<!--                                <div class="ui-dropdown-item active">-->
+<!--                                    <svg>-->
+<!--                                        <use-->
+<!--                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
+<!--                                    </svg>-->
+<!--                                    <span>18+</span>-->
+<!--                                </div>-->
+<!--                                <div class="ui-dropdown-item ">-->
+<!--                                    <svg>-->
+<!--                                        <use-->
+<!--                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
+<!--                                    </svg>-->
+<!--                                    <span>12+</span>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="ui-select-hitn"></div>-->
+<!--                    <div class="ui-select-error"></div>-->
+                </div>
+            </div>
+        </div>
+
+        <div class="create-book__check">
+            <label class="ui-checkbox">
+                <input type="hidden" value="0" name="comment_allowed">
+                <input type="checkbox"
+                       {{ book.comment_allowed ? 'checked' : ''  }}
+                hidden name="comment_allowed">
+                <div class="ui-checkbox-checker">
+                    <svg>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                    </svg>
+                </div>
+                <span class="ui-checkbox-text">Разрешить комментарии</span>
+            </label>
+            <label class="ui-checkbox">
+                <input type="hidden" value="0" name="download_allowed">
+                <input type="checkbox"
+
+                       {{ book.download_allowed ? 'checked' : ''  }}
+                       hidden name="download_allowed">
+                <div class="ui-checkbox-checker">
+                    <svg>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                    </svg>
+                </div>
+                <span class="ui-checkbox-text">Разрешить скачивания</span>
+            </label>
+        </div>
+
+        <button href="#" class="ui-button ui-button-size--32 ui-button-view--2">Сохранить</button>
+    </div>
+</div>
+{{ form_close() }}
+<div id="create_cycle_form_partial">
+    {% partial 'booker::cycle_create_modal' %}
+</div>
