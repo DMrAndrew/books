@@ -43,13 +43,7 @@ title = "О книге"
                         <a href="#" class="ui-link _violet">{{tag.name}}</a>,
                         {% endfor %}
                     </div>
-                    <div class="book-card__info-wrap">
-
-<!--                        <svg class="book-card__favorit-active">-->
-<!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#~book.status.icon()' | theme}}"></use>-->
-<!--                        </svg>-->
-                        <span>{{book.status.getLabel()}}</span>
-                    </div>
+                    {% partial 'site/book-status' status=book.status %}
                 </div>
             </div>
         </div>

@@ -10,7 +10,7 @@ url = "/author-page"
     <div class="author__promo author-promo">
         <div class="author-promo__background">
             {% if user.profile.banner %}
-            <img class="author__background-image" src="{{user.profile.banner.path}}" alt="banner" loadong="lazy">
+            <img class="author__background-image" src="{{user.profile.banner.getThumb(1152,160)}}" alt="banner" loadong="lazy">
             {% else %}
             <img class="author__background-image" src="{{'assets/images/author/bg-placeholder.png' | theme}}" alt="banner" loadong="lazy">
             {% endif %}
@@ -19,7 +19,7 @@ url = "/author-page"
             <div class="author-promo-info__avatar-wrapper">
                 <!-- Показывается сообщение или плейсхолдер -->
                 {% if user.profile.avatar %}
-                 <img style="width:168px;height:168px" src="{{user.profile.avatar.path}}" alt="avatar">
+                 <img style="width:168px;height:168px" src="{{user.profile.avatar.getThumb(168,168)}}" alt="avatar">
                 {% else %}
                                 <span>A</span>
                 {% endif %}

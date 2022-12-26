@@ -1,0 +1,33 @@
+{% if status.value == 'complete' %}
+<div class="book-card__info-wrap">
+    <svg class="book-card__favorit-active">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>
+    </svg>
+    <span>Завершена</span>
+</div>
+{% endif %}
+
+{% if status.value == 'working' %}
+<div class="book-card__info-wrap">
+    <svg class="book-card__favorit-active">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>
+    </svg>
+    <span>В работе</span>
+</div>
+{% endif %}
+{% if status.value == 'hidden' %}
+<div class="book-card__info-wrap _color-gray">
+    <svg class="book-card__favorit-active">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-off-stroked-16' | theme}}"></use>
+    </svg>
+    <span>Скрыто</span>
+</div>
+{% endif %}
+{% if status.value == 'frozen' %}
+<div class="book-card__info-wrap _color-blue">
+    <svg class="book-card__favorit-active">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#snowflake-stroked-16' | theme}}"></use>
+    </svg>
+    <span>Заморожена</span>
+</div>
+{% endif %}

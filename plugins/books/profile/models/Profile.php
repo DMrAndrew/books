@@ -56,8 +56,8 @@ class Profile extends Model
         'username' => 'required|between:2,255|unique:books_profile_profiles',
         'username_clipboard' => 'nullable|between:2,255|unique:books_profile_profiles',
         'username_clipboard_comment' => 'nullable|string',
-//        'avatar' => 'nullable|image|mimes:jpg,png',
-//        'banner' => 'nullable|image|mimes:jpg,png',
+        'avatar' => 'nullable|image|mimes:jpg,png|dimensions:min_width=168,min_height=168',
+        'banner' => 'nullable|image|mimes:jpg,png|dimensions:min_width=1152,min_height=160',
         'status' => 'nullable|string',
         'about' => 'nullable|string',
         'website' => 'nullable|url',
@@ -67,10 +67,6 @@ class Profile extends Model
         'ok' => 'nullable|url',
         'vk' => 'nullable|url',
     ];
-    //|dimensions:min_width=168,min_height=168
-    //dimensions:min_width=1152,min_height=160
-    //TODO при сохранении профиля с уже прикреплёнными файлами, подгружает их при валидации и спотыкается на разрешении, sometimes не помогает
-
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
      */

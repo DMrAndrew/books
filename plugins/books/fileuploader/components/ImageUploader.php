@@ -57,8 +57,8 @@ class ImageUploader extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => 'responsiv.uploader::lang.component.image_uploader',
-            'description' => 'responsiv.uploader::lang.component.image_uploader_desc'
+            'name'        => 'books.fileuploader::lang.component.image_uploader',
+            'description' => 'books.fileuploader::lang.component.image_uploader_desc'
         ];
     }
 
@@ -66,50 +66,50 @@ class ImageUploader extends ComponentBase
     {
         return [
             'placeholderText' => [
-                'title'       => 'responsiv.uploader::lang.prop.placeholder',
-                'description' => 'responsiv.uploader::lang.prop.placeholder_img_desc',
+                'title'       => 'books.fileuploader::lang.prop.placeholder',
+                'description' => 'books.fileuploader::lang.prop.placeholder_img_desc',
                 'default'     => 'Click or drag images to upload',
                 'type'        => 'string',
             ],
             'maxSize' => [
-                'title'       => 'responsiv.uploader::lang.prop.maxSize',
-                'description' => 'responsiv.uploader::lang.prop.maxSize_desc',
+                'title'       => 'books.fileuploader::lang.prop.maxSize',
+                'description' => 'books.fileuploader::lang.prop.maxSize_desc',
                 'default'     => '5',
                 'type'        => 'string',
             ],
             'fileTypes' => [
-                'title'       => 'responsiv.uploader::lang.prop.fileTypes',
-                'description' => 'responsiv.uploader::lang.prop.fileTypes_desc',
+                'title'       => 'books.fileuploader::lang.prop.fileTypes',
+                'description' => 'books.fileuploader::lang.prop.fileTypes_desc',
                 'default'     => '.gif,.jpg,.jpeg,.png',
                 'type'        => 'string',
             ],
             'imageWidth' => [
-                'title'       => 'responsiv.uploader::lang.prop.imageWidth',
-                'description' => 'responsiv.uploader::lang.prop.imageWidth_desc',
+                'title'       => 'books.fileuploader::lang.prop.imageWidth',
+                'description' => 'books.fileuploader::lang.prop.imageWidth_desc',
                 'default'     => '100',
                 'type'        => 'string',
             ],
             'imageHeight' => [
-                'title'       => 'responsiv.uploader::lang.prop.imageHeight',
-                'description' => 'responsiv.uploader::lang.prop.imageHeight_desc',
+                'title'       => 'books.fileuploader::lang.prop.imageHeight',
+                'description' => 'books.fileuploader::lang.prop.imageHeight_desc',
                 'default'     => '100',
                 'type'        => 'string',
             ],
             'imageMode' => [
-                'title'       => 'responsiv.uploader::lang.prop.imageMode',
-                'description' => 'responsiv.uploader::lang.prop.imageMode_desc',
+                'title'       => 'books.fileuploader::lang.prop.imageMode',
+                'description' => 'books.fileuploader::lang.prop.imageMode_desc',
                 'default'     => 'crop',
                 'type'        => 'string',
             ],
             // 'previewFluid' => [
-            //     'title'       => 'responsiv.uploader::lang.prop.previewFluid',
-            //     'description' => 'responsiv.uploader::lang.prop.previewFluid_desc',
+            //     'title'       => 'books.fileuploader::lang.prop.previewFluid',
+            //     'description' => 'books.fileuploader::lang.prop.previewFluid_desc',
             //     'default'     => 0,
             //     'type'        => 'checkbox',
             // ],
             'deferredBinding' => [
-                'title'       => 'responsiv.uploader::lang.prop.deferredBinding',
-                'description' => 'responsiv.uploader::lang.prop.deferredBinding_desc',
+                'title'       => 'books.fileuploader::lang.prop.deferredBinding',
+                'description' => 'books.fileuploader::lang.prop.deferredBinding_desc',
                 'type'        => 'checkbox',
             ],
         ];

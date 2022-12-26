@@ -8,3 +8,5 @@
     - create_book_tag_table.php
 1.0.2:
     - chapters_content_to_longtext.php
+1.0.3:
+    - book_default_status_to_hidden.php

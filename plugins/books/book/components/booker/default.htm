@@ -134,3 +134,8 @@
 <div id="create_cycle_form_partial">
     {% partial 'booker::cycle_create_modal' %}
 </div>
+<script>
+    if(!document.getElementById('annotation')){
+        CKEDITOR.replace( 'annotation' );
+    }
+</script>

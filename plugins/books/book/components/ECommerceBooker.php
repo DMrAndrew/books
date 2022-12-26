@@ -28,7 +28,7 @@ class ECommerceBooker extends ComponentBase
 
     public function onRun()
     {
-        $this->page['bookStatusCases'] = BookStatus::cases();
+        $this->page['bookStatusCases'] = BookStatus::publicCases();
     }
 
     public function onUpdateEcommerce()

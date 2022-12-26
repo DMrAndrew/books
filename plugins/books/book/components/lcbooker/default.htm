@@ -49,12 +49,7 @@
                             {% endif %}
 
                         </div>
-                        <div class="book-card__info-wrap">
-<!--                            <svg class="book-card__favorit-active">-->
-<!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>-->
-<!--                            </svg>-->
-                            <span>{{book.status.getLabel()}}</span>
-                        </div>
+                        {% partial 'site/book-status' status=book.status %}
                         <div class="book-card__info-dot"></div>
                         <div class="book-card__info-wrap _text">{{ book.sales_at ? carbon(book.sales_at).format('d.m.y') : '-'}}</div>
                         <div class="book-card__info-dot"></div>
@@ -62,7 +57,7 @@
                     </div>
                 </div>
                 <div class="book-card__description">
-                    {{book.annotation}}
+                    {{book.annotation|raw}}
                 </div>
                 <div class="book-card__body-footer">
                     <div class="book-card__raiting">

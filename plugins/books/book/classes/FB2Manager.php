@@ -3,7 +3,6 @@
 namespace Books\Book\Classes;
 
 use Books\Book\Models\Book;
-use Books\Book\Models\BookStatus;
 use Books\Book\Models\Chapter;
 use Carbon\Carbon;
 use Db;
@@ -38,11 +37,10 @@ class FB2Manager
             $user = Auth::getUser() ?? User::query()->first();
 
             $book = new Book([
-                'title' => $info->getTitle(),
-                'annotation' => strip_tags($info->getAnnotation()),
+                'title' => strip_tags($info->getTitle()),
+                'annotation' => $info->getAnnotation(),
                 'user_id' => $user->id,
                 'price' => 0,
-                'status' => BookStatus::HIDDEN
             ]);
 
             $cover = (new File())->fromData(base64_decode($this->parsed->getBook()->getCover()), 'cover.jpg');
@@ -65,7 +63,7 @@ class FB2Manager
             }
 
             $chapters = collect($this->parsed->getBook()->getChapters())->map(fn($chapter, $key) => new Chapter([
-                'title' => $chapter->getTitle(),
+                'title' => $this->plainText($chapter->getTitle()),
                 'content' => $chapter->getContent(),
                 'published_at' => Carbon::now(),
                 'sort_order' => $key + 1
@@ -77,12 +75,19 @@ class FB2Manager
             }
             $words = $info->getKeywords();
             collect(explode(',', $words))->each(function ($i) use ($book, $user) {
-                $tag = $user->tags()->firstOrCreate(['name' => mb_ucfirst($i)]);
-                $book->tags()->add($tag);
+                if (!!$i) {
+                    $tag = $user->tags()->firstOrCreate(['name' => mb_ucfirst($i)]);
+                    $book->tags()->add($tag);
+                }
             });
             Event::fire('books.book.created', $book);
             return $book;
         });
     }
 
+    protected function plainText($text)
+    {
+        $text = strip_tags($text, '<br><p><li>');
+        return preg_replace('/<[^>]*>/', PHP_EOL, $text);
+    }
 }
