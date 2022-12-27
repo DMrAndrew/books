@@ -1,6 +1,7 @@
 <?php namespace Books\Book;
 
 use Backend;
+use Books\Book\Classes\BookEventHandler;
 use Books\Book\Classes\BookManager;
 use Books\Book\Classes\CoAuthorManager;
 use Books\Book\Components\Booker;
@@ -11,6 +12,7 @@ use Books\Book\Components\LCBooker;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
 use Books\Profile\Behaviors\Profileable;
+use Config;
 use Event;
 use October\Rain\Database\Model;
 use System\Classes\PluginBase;
@@ -44,7 +46,7 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-        Event::listen('books.book.created', fn($book) => (new BookManager())->countContentLength($book));
+        Event::listen('books.book.created', fn($book) => (new BookEventHandler())->afterCreate($book));
     }
 
     /**
@@ -54,7 +56,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+        Config::set('book', Config::get('books.book::config'));
     }
 
     /**

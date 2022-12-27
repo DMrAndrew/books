@@ -2,6 +2,7 @@
 
 use Books\Book\Models\AgeRestrictionsEnum;
 use Books\Book\Models\Cycle;
+use Event;
 use Flash;
 use Illuminate\Support\Facades\Redirect;
 use Request;
@@ -212,7 +213,7 @@ class Booker extends ComponentBase
             $book->age_restriction = $data['age_restriction'] ?? 0;
 
             $book->save(null, $this->getSessionKey());
-            //Event::fire('books.book.created', [$book]);
+            Event::fire('books.book.created', [$book]);
 
             return Redirect::to("/about-book/$book->id");
         } catch (Exception $ex) {

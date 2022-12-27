@@ -4,6 +4,7 @@ namespace Books\Book\Classes;
 
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
+use System\Models\File;
 
 class BookManager
 {
@@ -28,6 +29,20 @@ class BookManager
     {
         $chapter->length = strlen(strip_tags(preg_replace('/\s+/', '', $chapter->content)));
         $chapter->save();
+    }
 
+    public function setDefaultCover(Book $book)
+    {
+        if (!$book->cover) {
+            if ($dir = config('book.book_cover_blank_dir')) {
+                $file_src = collect(glob(base_path() . "/$dir/*.png"))->random();
+                if(file_exists($file_src)){
+                    $file = (new File())->fromFile($file_src);
+                    $file->is_public = true;
+                    $file->save();
+                    $book->cover()->add($file);
+                }
+            }
+        }
     }
 }
