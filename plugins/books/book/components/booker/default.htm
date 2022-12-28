@@ -34,7 +34,7 @@
         </div>
 
         <div id="cycle_input">
-            {% partial 'booker::cycle_input' %}
+            {% partial 'booker::cycle_input' cycle_id=book.cycle_id %}
         </div>
 
 
@@ -47,7 +47,7 @@
         >{{book.annotation}}</textarea>
         <span class="validation-error" data-validate-for="annotation"></span>
         <div id="tag_input_partial">
-        {% partial 'booker::tag_input' %}
+        {% partial 'booker::tag_input' tags=book.tags %}
         </div>
 
         <div class="ui-grid-container ui-grid-gap">

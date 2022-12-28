@@ -1,15 +1,28 @@
 <?php namespace Books\Book\Models;
 
 use Model;
+use October\Rain\Database\Relations\BelongsTo;
+use October\Rain\Database\Relations\HasMany;
+use October\Rain\Database\Relations\HasOne;
 use System\Models\File;
 use RainLab\User\Models\User;
 use Books\Catalog\Models\Genre;
 use October\Rain\Database\Collection;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
+use October\Rain\Database\Relations\AttachOne;
+use October\Rain\Database\Relations\BelongsToMany;
 
 /**
  * Book Model
+ *
+ * @method AttachOne cover
+ * @method HasOne user
+ * @method HasMany chapters
+ * @method BelongsTo cycle
+ * @method BelongsToMany tags
+ * @method BelongsToMany genres
+ * @method BelongsToMany coauthors
  */
 class Book extends Model
 {
@@ -93,13 +106,14 @@ class Book extends Model
      * @var array hasOne and other relations
      */
     public $hasOne = [
-        'user' => [User::class, 'key' => 'id', 'otherKey' => 'user_id'],
+
     ];
     public $hasMany = [
         'chapters' => [Chapter::class, 'key' => 'book_id', 'otherKey' => 'id']
     ];
     public $belongsTo = [
-        'cycle' => [Cycle::class, 'key' => 'id', 'otherKey' => 'cycle_id'],
+        'cycle' => [Cycle::class],
+        'user' => [User::class],
     ];
     public $belongsToMany = [
         'genres' => [
@@ -162,7 +176,7 @@ class Book extends Model
 
     public function setAgeRestrictionAttribute(string|int|AgeRestrictionsEnum $ageRestrictions)
     {
-        $this->attributes['age_restriction'] = (is_string($ageRestrictions) || is_int($ageRestrictions)) ? $ageRestrictions : $ageRestrictions->value;
+        $this->attributes['age_restriction'] = ((is_string($ageRestrictions) || is_int($ageRestrictions)) ? AgeRestrictionsEnum::tryFrom($ageRestrictions) ?? AgeRestrictionsEnum::default() : $ageRestrictions)->value;
     }
 
     public function getSalesAtAttribute()

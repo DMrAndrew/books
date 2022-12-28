@@ -41,7 +41,7 @@ class ECommerceBooker extends ComponentBase
                 $book->status = $data['status'];
                 $book->save();
             }
-            return Redirect::refresh();
+            return  ['#about-header' => $this->renderPartial('book/about-header', ['book' => $book])];
         } catch (Exception $ex) {
             if (Request::ajax()) throw $ex;
             else Flash::error($ex->getMessage());

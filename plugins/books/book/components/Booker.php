@@ -1,8 +1,11 @@
 <?php namespace Books\Book\Components;
 
+use ApplicationException;
+use Books\Book\Classes\Services\BookServiceInterface;
+use Books\Book\Classes\Services\CreateBookService;
+use Books\Book\Classes\Services\UpdateBookService;
 use Books\Book\Models\AgeRestrictionsEnum;
 use Books\Book\Models\Cycle;
-use Event;
 use Flash;
 use Illuminate\Support\Facades\Redirect;
 use Request;
@@ -13,7 +16,6 @@ use RainLab\User\Models\User;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use Books\Catalog\Models\Genre;
-use Books\Book\Models\CoAuthor;
 use October\Rain\Database\Collection;
 use Books\FileUploader\Components\ImageUploader;
 
@@ -26,13 +28,19 @@ class Booker extends ComponentBase
 {
     protected Book $book;
     protected User $user;
-    protected $book_id;
+    protected int $book_id;
+    protected BookServiceInterface $service;
 
     public function init()
     {
+
         $this->book_id = (int)$this->param('book_id');
         $this->user = Auth::getUser();
-        $this->book = $this->book_id ? $this->user?->books()->find($this->book_id) : new Book();
+        if (!$this->user) {
+            throw new ApplicationException('User required');
+        }
+        $this->book = $this->user?->books()->find($this->book_id) ?? new Book();
+        $this->service = new ($this->book_id ? UpdateBookService::class : CreateBookService::class)($this->getSessionKey(), $this->book, $this->user);
         $component = $this->addComponent(
             ImageUploader::class,
             'coverUploader',
@@ -46,10 +54,6 @@ class Booker extends ComponentBase
         $component->bindModel('cover', $this->book);
     }
 
-    public function onRefreshFiles()
-    {
-        $this->pageCycle();
-    }
 
     /**
      * componentDetails
@@ -74,55 +78,64 @@ class Booker extends ComponentBase
         ];
     }
 
+
     public function onRun()
     {
         $this->page['book'] = $this->book;
         $this->page['age_restrictions'] = AgeRestrictionsEnum::cases();
         $this->page['cycles'] = $this->getCycles();
-        $this->page['tags'] = $this->getTags();
+        $this->page['tags'] = $this->service->getTags();
     }
 
-    public function onCreateTag()
+
+    public function onRefreshFiles()
     {
-        $data = post();
-        $string = $data['create_tag_name'] ?? null;
+        $this->pageCycle();
+    }
+
+    public function onCreateTag(): array
+    {
+        $string = post('create_tag_name');
         $tag = $this->user?->tags()->create(['name' => $string]);
-        $this->book?->tags()->add($tag, $this->getSessionKey());
+        $this->service->addTag($tag);
         return $this->generateTagInput();
     }
 
-    public function onAddTag()
+    /**
+     * @throws ValidationException
+     */
+    public function onAddTag(): array
     {
-        $data = post();
-        $id = $data['create_tag_id'] ?? null;
-        if ($tag = $this->user?->tags()->find($id)) {
-            $this->book?->tags()->add($tag, $this->getSessionKey());
+        if ($tag = $this->user->tags()->find(post('create_tag_id'))) {
+            $this->service->addTag($tag);
             return $this->generateTagInput();
         }
         throw new ValidationException(['tag' => 'Тэг не найден']);
 
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function onRemoveTag()
     {
-        $data = post();
-        $id = $data['delete_tag_id'] ?? null;
-        if ($tag = $this->user?->tags()->find($id)) {
-            $this->book?->tags()->remove($tag, $this->getSessionKey());
+        if ($tag = $this->user->tags()->find(post('delete_tag_id'))) {
+            $this->service->removeTag($tag);
             return $this->generateTagInput();
         }
+        throw new ValidationException(['tag' => 'Тэг не найден']);
     }
 
     public function onSearchTag(): array
     {
-        $data = post();
-        $string = $data['tag_string'] ?? null;
+        $string = post('tag_string');
         if (!$string || strlen($string) < 2) {
             return $this->generateTagInput(['tagString' => $string]);
         }
         $like = $this->user?->tags()->nameLike($string)->get();
-        $array = $like->diff($this->getTags());
-        $already_has = !!$this->getTags()->first(fn($i) => $i->name === $string);
+        $exists = $this->service->getTags();
+        $array = $like->diff($exists);
+        $already_has = !!$exists->first(fn($i) => $i->name === $string);
         $can_create = !$already_has && !!!$like->first(fn($i) => $i->name === $string);
         return $this->generateTagInput([
             'search_result' => $array->toArray(),
@@ -132,48 +145,38 @@ class Booker extends ComponentBase
         ]);
     }
 
-    function generateTagInput(array $options = []): array
-    {
-        return [
-            '#tag_input_partial' => $this->renderPartial('@tag_input', ['tags' => $this->getTags(), ...$options])
-        ];
-    }
-
-    function getTags()
-    {
-        return $this->book?->tags()->withDeferred($this->getSessionKey())->get();
-    }
-
     public function onSearchCoauthor()
     {
-        $name = post('searchCoauthor');
-        if ($name && strlen($name) > 2) {
-            $array = User::coauthorsAutocomplite($name)?->get()
-                ?->diff($this->book->coauthors()->withDeferred($this->getSessionKey())->get())
-                ?->diff(Collection::make([Auth::getUser()]))
-                ->toArray()
-                ?? [];
-        } else {
-            $array = [];
-        }
+        try {
+            $name = post('searchCoauthor');
+            if ($name && strlen($name) > 2) {
+                $array = User::coauthorsAutocomplite($name)?->get()
+                    ?->diff($this->service->getCoAuthors())
+                    ?->diff(Collection::make([$this->user]))
+                    ->toArray()
+                    ?? [];
+            } else {
+                $array = [];
+            }
 
-        return $this->generateCoAuthorInput(['search_array' => $array, 'search_string' => $name]);
+            return $this->generateCoAuthorInput(['search_array' => $array, 'search_string' => $name]);
+
+        } catch (Exception $ex) {
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
 
     }
 
     public function onAddCoauthor()
     {
         try {
+            $count = $this->service->getCoAuthors()->count();
+            if ($count > 3) {
+                throw new ValidationException(['coauthors' => 'Вы можете добавить до 3 соавторов.']);
+            }
             if ($user = User::find(post('id'))) {
-
-                $count = $this->book->coauthors()->withDeferred($this->getSessionKey())->count();
-                if ($count === 4) {
-                    throw new ValidationException(['coauthors' => 'Вы можете добавить до 3 соавторов.']);
-                }
-                if (!$count) {
-                    $this->book->coauthors()->add(Auth::getUser(), $this->getSessionKey(), ['percent' => 100]);
-                }
-                $this->book->coauthors()->add($user, $this->getSessionKey(), ['percent' => 0]);
+                $this->service->addCoAuthor($user);
             }
 
             return $this->generateCoAuthorInput();
@@ -184,38 +187,27 @@ class Booker extends ComponentBase
         }
     }
 
-    function postCoauthors(): \October\Rain\Support\Collection|\Illuminate\Support\Collection
-    {
-        return collect(post('coauthors'))->map(function ($item) {
-            return new CoAuthor($item);
-        });
-    }
 
     public function onSaveBook()
     {
         try {
             $data = post();
-            $data['comment_allowed'] = !!$data['comment_allowed'];
-            $data['download_allowed'] = !!$data['download_allowed'];
-            $data['user_id'] = $this->user->id;
-
-            $book = new Book(collect($data)->only([
-                'title', 'annotation', 'comment_allowed', 'download_allowed', 'user_id'
-            ])->toArray());
             if ($coauthors = $data['coauthors'] ?? false) {
                 if (collect($coauthors)->pluck('percent_value')->sum() !== 100) {
-                    throw  new ValidationException(['coauthors' => 'Сумма распределения процентов от продаж должна быть равна 100']);
+                    throw  new ValidationException(['coauthors' => 'Сумма распределения процентов от продаж должна быть равна 100.']);
                 }
             }
-            if ($cycle = $this->user?->cycles()->find($data['cycle_id'] ?? null)) {
-                $book->cycle()->add($cycle, $this->getSessionKey());
-            }
-            $book->age_restriction = $data['age_restriction'] ?? 0;
+            $data['comment_allowed'] = !!$data['comment_allowed'];
+            $data['download_allowed'] = !!$data['download_allowed'];
+            $fillable = collect($data)->only([
+                'title', 'annotation', 'comment_allowed', 'download_allowed', 'cycle_id', 'age_restriction'
+            ])->toArray();
+            $book = $this->service->save($fillable);
 
-            $book->save(null, $this->getSessionKey());
-            Event::fire('books.book.created', [$book]);
+            return $this->book_id ?
+                ['#about-header' => $this->renderPartial('book/about-header', ['book' => $book])]
+                : Redirect::to("/about-book/$book->id");
 
-            return Redirect::to("/about-book/$book->id");
         } catch (Exception $ex) {
             if (Request::ajax()) throw $ex;
             else Flash::error($ex->getMessage());
@@ -224,27 +216,14 @@ class Booker extends ComponentBase
     }
 
     /**
-     * @throws ValidationException
+     * @throws ValidationException|Exception
      */
     public function onModifyPercentValue()
     {
         try {
-            $data = post();
-            foreach ($data['coauthors'] ?? [] as $datum) {
-                $user_id = (int)$datum['user_id'];
-                $value = (int)$datum['percent_value'] ?? 0;
-
-                if ($author = $this->book->getDeffered($this->getSessionKey())
-                    ->where('master_field', '=', 'coauthors')
-                    ->first(fn($bind) => $bind->slave_id === $user_id)) {
-                    $author->pivot_data = ['percent' => $value];
-                    $author->save();
-                }
-
+            foreach (post('coauthors') ?? [] as $datum) {
+                $this->service->modifyCoAuthorPercent((int)$datum['user_id'] ?? null, (int)$datum['percent_value'] ?? 0);
             }
-
-            return $this->book->getDeffered($this->getSessionKey())
-                ->where('master_field', '=', 'coauthors');
 
         } catch (Exception $ex) {
             if (Request::ajax()) throw $ex;
@@ -255,12 +234,7 @@ class Booker extends ComponentBase
     public function onDeleteCoAuthor()
     {
         try {
-            $data = post();
-            $user_id = $data['delete_user_id'];
-            $this->book->coauthors()->remove(User::find($user_id), $this->getSessionKey());
-            if ($this->book->coauthors()->withDeferred($this->getSessionKey())->count() === 1) {
-                $this->book->coauthors()->remove(Auth::getUser(), $this->getSessionKey());
-            }
+            $this->service->removeCoAuthor(User::find(post('delete_user_id')));
 
             return $this->generateCoAuthorInput();
 
@@ -270,29 +244,83 @@ class Booker extends ComponentBase
         }
     }
 
-    function getCoAuthors()
+    public function onCreateCycle(): array
     {
-        if ($this->getSessionKey()) {
-            $coauthors = $this->book->coauthors()->withDeferred($this->getSessionKey())->get();
-            $this->book->getDeffered($this->getSessionKey())
-                ->where('master_field', '=', 'coauthors')
-                ->each(function ($bind) use ($coauthors) {
-                    if ($author = $coauthors->first(fn($i) => $i->id === $bind->slave_id)) {
-                        $author->pivot = new CoAuthor(['user_id' => $author->id] + ($bind->pivot_data ?? []));
-                    }
-                    if ($bind->slave_id === Auth::getUser()->id) {
-                        $author->pivot->owner = true;
-                    }
-                });
-            return $coauthors;
-        }
-        return $this->book->coauthors;
+        try {
+            if ($this->user->cycles()->name(post('name'))->exists()) {
+                throw new ValidationException(['name' => 'Цикл уже существует.']);
+            }
+            $this->user->cycles()->add(new Cycle(post()));
+            $this->book->cycle = $this->user->cycles()->latest()->first();
 
+            return [
+                '#cycle_input' => $this->renderPartial('@cycle_input', ['cycles' => $this->getCycles(), 'cycle_id' => $this->book->cycle->id]),
+                '#create_cycle_form_partial' => $this->renderPartial('@cycle_create_modal')
+            ];
+
+        } catch (Exception $ex) {
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
     }
+
+    public function onSearchGenre()
+    {
+        $name = post('searchgenre');
+        if ($name && strlen($name) > 2) {
+            $array = Genre::active()
+                ->child()
+                ->name($name)
+                ->get()
+                ->diff($this->service->getGenres())
+                ->toArray();
+        } else {
+            $array = [];
+        }
+
+        return $this->generateGenresInput([
+            'search' => $array,
+            'searchgenrestring' => $name
+        ]);
+    }
+
+    function getCycles()
+    {
+        return $this->user?->cycles->toArray() ?? [];
+    }
+
+    public function onDeleteGenre(): array
+    {
+        if ($genre = Genre::find(post('id'))) {
+            $this->service->removeGenre($genre);
+        }
+
+        return $this->generateGenresInput();
+    }
+
+    public function onAddGenre(): array
+    {
+        if ($genre = Genre::find(post('id'))) {
+            $this->service->addGenre($genre);
+        }
+
+        return $this->generateGenresInput();
+    }
+
+    function generateTagInput(array $options = []): array
+    {
+        return ['#tag_input_partial' => $this->renderPartial('@tag_input', ['tags' => $this->service->getTags(), ...$options])];
+    }
+
 
     public function generateCoAuthorInput(array $options = []): array
     {
-        return ['#coauthorInput' => $this->renderPartial('@coauthorInput', ['coauthors' => $this->getCoAuthors(), ...$options])];
+        return ['#coauthorInput' => $this->renderPartial('@coauthorInput', ['coauthors' => $this->service->getCoAuthors(pivot: true), ...$options])];
+    }
+
+    protected function generateGenresInput(array $options = []): array
+    {
+        return ['#genresInput' => $this->renderPartial('@genresInput', ['genres' => $this->service->getGenres(), ...$options])];
     }
 
     /**
@@ -301,87 +329,6 @@ class Booker extends ComponentBase
     public function getSessionKey()
     {
         return post('_session_key', null);
-    }
-
-    public function onCreateCycle(): array
-    {
-        try {
-            if ($this->user->cycles()->name(post('name'))->exists()) {
-                throw new ValidationException(['name' => 'Цикл уже существует.']);
-            }
-            $this->user->cycles()->add(new Cycle(post()));
-        } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
-        }
-        return [
-            '#cycle_input' => $this->renderPartial('@cycle_input', ['cycles' => $this->getCycles()]),
-            '#create_cycle_form_partial' => $this->renderPartial('@cycle_create_modal')
-        ];
-    }
-
-    public function onSearchGenre()
-    {
-
-        $name = post('searchgenre');
-        if ($name && strlen($name) > 2) {
-            $array = Genre::active()
-                ->child()
-                ->name($name)
-                ->get()
-                ->diff($this->book->genres()->withDeferred($this->getSessionKey())->get())
-                ->toArray();
-        } else {
-            $array = [];
-        }
-        return [
-            '#genresInput' => $this->renderPartial('@genresInput',
-                ['genres' =>
-                    $this->book->genres()
-                        ->withDeferred($this->getSessionKey())
-                        ->get(),
-                    'search' => $array,
-                    'searchgenrestring' => $name
-                ])
-
-        ];
-    }
-
-    function getCycles()
-    {
-        return $this->user?->cycles->toArray() ?? [];
-    }
-
-
-    public function onDeleteGenre(): array
-    {
-        if ($genre = Genre::find(post('id'))) {
-            $this->book->genres()->remove($genre, $this->getSessionKey());
-        }
-
-        return $this->generateGenresInput();
-    }
-
-    public function onAddGenre(): array
-    {
-
-        if ($genre = Genre::find(post('id'))) {
-            $this->book->genres()->add($genre, $this->getSessionKey());
-        }
-
-        return $this->generateGenresInput();
-
-    }
-
-    protected function generateGenresInput(): array
-    {
-        return [
-            '#genresInput' => $this->renderPartial('@genresInput',
-                ['genres' =>
-                    $this->book->genres()
-                        ->withDeferred($this->getSessionKey())
-                        ->get()])
-        ];
     }
 
 }

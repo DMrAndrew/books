@@ -5,7 +5,6 @@ namespace Books\Book\Classes;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use System\Models\File;
-
 class BookManager
 {
     public function countContentLength(Chapter|Book $item): void
@@ -31,7 +30,13 @@ class BookManager
         $chapter->save();
     }
 
-    public function setDefaultCover(Book $book)
+    /**
+     * Try set default book cover if not exists one.
+     *
+     * @param Book $book
+     * @return void
+     */
+    public function setDefaultCover(Book $book): void
     {
         if (!$book->cover) {
             if ($dir = config('book.book_cover_blank_dir')) {

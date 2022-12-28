@@ -9,45 +9,7 @@ title = "О книге"
 
 <div style="margin-bottom: 16px"> </div>
 <div class="about-book">
-    <div class="about-book__header ui-container-fluid">
-        <div class="listing-book__book book-card">
-            <div class="book-card__body">
-                <div class="book-card__column-left">
-                    <a href="/book-card.html">
-                        <img class="book-card__image"
-                             src="{{ book.cover.getThumb(166,240) }}"
-                             alt=""
-                             loading="lazy"/>
-<!--                        <img class="book-card__image" src="{{book.cover.path|resize(166, 240, { mode: 'crop' }) }}" alt="" loading="lazy">-->
-                    </a>
-                </div>
-                <div class="book-card__column-right">
-                    <a href="/book-card.html" class="book-card__title ui-text-head--2 ui-text--bold">{{book.title}}</a>
-                    <div class="book-card__raiting">
-                        <svg>
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
-                        </svg>
-                        <span>0</span>
-                    </div>
-                    <div class="book-card__body-footer">
-
-                        <div class="book-card__book-list">
-                            {% for genre in book.genres %}
-                            <a href="#" class="ui-link _violet">#0 {{genre.name}}</a>,
-                            {% endfor %}
-
-                        </div>
-                    </div>
-                    <div class="book-card__genres">
-                        {% for tag in book.tags %}
-                        <a href="#" class="ui-link _violet">{{tag.name}}</a>,
-                        {% endfor %}
-                    </div>
-                    {% partial 'site/book-status' status=book.status %}
-                </div>
-            </div>
-        </div>
-    </div>
+    {% partial 'book/about-header' book=book %}
 
     <div class="about-book__body ui-container-fluid">
         <div class="ui-tabs">

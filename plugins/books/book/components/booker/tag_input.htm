@@ -7,6 +7,7 @@
         <div class="ui-multi-select-item _size-32">
             <div class="ui-multi-select-tag-wrapper">
                 {% for tag in tags %}
+                <input type="hidden" name="tags[{{tag.id}}][id]" value="{{tag.id}}"/>
                 <div class="ui-multi-select-tag ui-tag _size-24 _color-gray"
                      onclick="oc.request(this,'booker::onRemoveTag')"
                      data-request-data="delete_tag_id:'{{tag.id}}'"
