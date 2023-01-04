@@ -1,22 +1,23 @@
 <?php namespace Books\Book\Models;
 
 use Model;
-use October\Rain\Database\Relations\BelongsTo;
-use October\Rain\Database\Relations\HasMany;
-use October\Rain\Database\Relations\HasOne;
 use System\Models\File;
 use RainLab\User\Models\User;
 use Books\Catalog\Models\Genre;
 use October\Rain\Database\Collection;
 use October\Rain\Database\Traits\Sortable;
+use October\Rain\Database\Relations\HasOne;
+use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Database\Relations\AttachOne;
+use October\Rain\Database\Relations\BelongsTo;
 use October\Rain\Database\Relations\BelongsToMany;
 
 /**
  * Book Model
  *
  * @method AttachOne cover
+ * @method AttachOne fb2
  * @method HasOne user
  * @method HasMany chapters
  * @method BelongsTo cycle
@@ -70,7 +71,9 @@ class Book extends Model
         'free_parts' => 'nullable|integer',
         'download_allowed' => 'nullable|boolean',
         'comment_allowed' => 'nullable|boolean',
-        'sales_free' => 'nullable|boolean'
+        'sales_free' => 'nullable|boolean',
+        'fb2' => ['nullable','file', 'mimes:xml'],
+        'cycle_id' => 'nullable|integer'
     ];
 
     /**
@@ -141,7 +144,10 @@ class Book extends Model
     public $morphTo = [];
     public $morphOne = [];
     public $morphMany = [];
-    public $attachOne = ['cover' => File::class];
+    public $attachOne = [
+        'cover' => File::class,
+        'fb2' => File::class
+    ];
     public $attachMany = [];
 
     public function getPriceAttribute($value): float|int|null

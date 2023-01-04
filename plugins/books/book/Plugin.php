@@ -47,6 +47,7 @@ class Plugin extends PluginBase
     public function register()
     {
         Event::listen('books.book.created', fn($book) => (new BookEventHandler())->afterCreate($book));
+        Event::listen('books.book.chapters.parsed', fn($book) => (new BookEventHandler())->afterChaptersUpdate($book));
     }
 
     /**

@@ -175,6 +175,7 @@
             $preview.data('path', response.path);
             $('.upload-remove-button', $preview).data('request-data', { file_id: response.id });
             $img.attr('src', response.thumb);
+            $('.save-button').show();
         }
 
         /*
@@ -252,7 +253,9 @@
         if ($(ev.target).closest('.meta').length) {
             return;
         }
-
+        if ($(ev.target).closest('.personal-area-discount-modal__actions').length) {
+            return;
+        }
         var $target = $(ev.target).closest('.upload-object');
         window.open($target.data('path'));
     }

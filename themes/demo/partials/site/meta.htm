@@ -11,7 +11,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
+<head>
+    <meta name="turbo-cache-control" content="no-cache">
+</head>
 
 <script src="{{ [
         '@jquery',
@@ -31,6 +33,7 @@
     .validation-error {
         color: red;
         font-size: 12px;
+        margin: 8px 10px;
     }
 </style>
 {% styles %}
@@ -63,7 +66,7 @@
     let openCreateCycleForm = () => document.getElementById('create_cycle_form').style.display = 'flex'
     let closeDropDowns = () => Array.from(document.getElementsByClassName('ui-dropdown')).forEach(e => e.style.display = 'none')
 
-
+    let toggleModal = () => {$('#modal-container').toggle()}
 </script>
 {% framework extras turbo %}
 {% scripts %}

@@ -1,0 +1,83 @@
+<div class="buy-book-modal ui-modal personal-area-discount-modal overlay active" data-modal id="modal-container" style="display: none">
+    <div class="ui-modal-container">
+        <!-- Импорт книги -->
+        <div class="buy-book-modal__container ui-modal-content " id="import-modal-container">
+            <div class="buy-book-modal__header">
+                <div class="square-16 "></div>
+                <div class="ui-text-head--2 ui-text--bold">Импорт произведения</div>
+                <svg onclick="toggleModal()" style="cursor: pointer" class="square-24" data-modal="close">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                </svg>
+            </div>
+
+            <div class="personal-area-discount-modal__content-container">
+                <div class="personal-area-discount-modal__content">
+
+
+                    {{ form_ajax('onUploadFile',{
+                    'id':'fb_upload_form',
+                    'data-request-validate':'true',
+                    files:'true',
+                    'data-request-loading':'#loading-modal-container',
+                    }) }}
+                    <div class="buy-book-modal__text personal-area__wrap _indent-large ui-text-body--2">
+                        <p>В данный момент поддерживается импорт из файлов с расширением fb2.</p>
+                        <p>Загружая текст произведения, я подтверждаю, что у меня есть необходимые для его обработки
+                            права.</p>
+                    </div>
+                    <span class="validation-error" data-validate-for="fb2"></span>
+                    {% component 'fb_uploader' %}
+                    {{ form_close() }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Книгу загрузили -->
+        <div class="buy-book-modal__container ui-modal-content " id="loading-modal-container" style="display: none;">
+            <div class="buy-book-modal__header">
+                <div class="square-16 "></div>
+                <div class="ui-text-head--2 ui-text--bold"></div>
+            </div>
+            <div class="buy-book-modal__loading">
+                <div class="loading">
+                    <div class="loading__wrap">
+                        <div class="loading__icon">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div class="loading__title ui-text-head--3 ui-text--bold">Книга импортируется</div>
+                    <div class="loading__subtitle ui-text-body--2">После того, как книга загрузится, вы перенесетесь в
+                        следующий экран
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    document.querySelector('#fb_upload_form').addEventListener('ajax:request-error', function () {
+        $('#import-modal-container').show()
+    });
+
+    addEventListener('ajax:setup', function (event) {
+        let id = event.target.id;
+        if (id === 'fb_upload_form') {
+            $('#import-modal-container').hide()
+        }
+    });
+
+    addEventListener('ajax:done', function (event) {
+        let id = event.target.id;
+        if (id === 'fb_upload_form') {
+            toggleModal()
+        }
+    });
+</script>

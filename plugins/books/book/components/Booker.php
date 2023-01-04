@@ -33,14 +33,13 @@ class Booker extends ComponentBase
 
     public function init()
     {
-
         $this->book_id = (int)$this->param('book_id');
         $this->user = Auth::getUser();
         if (!$this->user) {
             throw new ApplicationException('User required');
         }
         $this->book = $this->user?->books()->find($this->book_id) ?? new Book();
-        $this->service = new ($this->book_id ? UpdateBookService::class : CreateBookService::class)($this->getSessionKey(), $this->book, $this->user);
+        $this->service = new ($this->book_id ? UpdateBookService::class : CreateBookService::class)(session_key: $this->getSessionKey(), book: $this->book, user: $this->user);
         $component = $this->addComponent(
             ImageUploader::class,
             'coverUploader',
@@ -199,6 +198,7 @@ class Booker extends ComponentBase
             }
             $data['comment_allowed'] = !!$data['comment_allowed'];
             $data['download_allowed'] = !!$data['download_allowed'];
+            $data['cycle_id'] = (int)$data['cycle_id'];
             $fillable = collect($data)->only([
                 'title', 'annotation', 'comment_allowed', 'download_allowed', 'cycle_id', 'age_restriction'
             ])->toArray();

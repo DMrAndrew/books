@@ -2,6 +2,9 @@
 
 use ApplicationException;
 use Books\Book\Classes\FB2Manager;
+use Books\Book\Models\Book;
+use Books\FileUploader\Components\FileUploader;
+use Books\FileUploader\Components\ImageUploader;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
@@ -36,6 +39,18 @@ class LCBooker extends ComponentBase
     public function init()
     {
         $this->user = Auth::getUser();
+
+//        $component = $this->addComponent(
+//            FileUploader::class,
+//            'fb2Uploader',
+//            [
+//                'modelClass' => Book::class,
+//                'deferredBinding' => true,
+//                'placeholderText' => 'Или перетащите в это окно',
+//                'fileTypes' => '.fb2'
+//            ]
+//        );
+//        $component->bindModel('fb2', new Book());
     }
 
     public function onRun()
@@ -91,26 +106,23 @@ class LCBooker extends ComponentBase
     public function onUploadFile()
     {
         try {
-
-            if (!Input::hasFile('fb2')) {
-                throw new ValidationException(['fb2' => 'Файл отсутствует в запросе']);
-            }
-            $uploadedFile = Input::file('fb2');
-            $validation = Validator::make(
-                ['fb2' => $uploadedFile],
-                ['fb2' => ['required', 'file', 'mimes:xml']]
-            );
-            if ($validation->fails()) {
-                throw new ValidationException($validation);
-            }
-
-            if (!$uploadedFile->isValid()) {
-                throw new ValidationException(['fb2' => sprintf('File %s is not valid.', $uploadedFile->getClientOriginalName())]);
+            $uploadedFile = (new Book())->fb2()->withDeferred($this->getSessionKey())->get()?->first();
+//            $validation = Validator::make(
+//                ['fb2' => $uploadedFile],
+//                ['fb2' => ['bail', 'required', 'file', 'mimes:xml']]
+//            );
+//            if ($validation->fails()) {
+//                throw new ValidationException($validation);
+//            }
+//
+            if (!$uploadedFile) {
+                throw new ValidationException(['fb2' => 'Файл не найден.']);
             }
 
-            $book = (new FB2Manager())->apply($uploadedFile);
+            $book = (new FB2Manager(session_key: $this->getSessionKey(), user: $this->user))->apply($uploadedFile);
 
             return Redirect::to("/about-book/$book->id");
+
         } catch (Exception $ex) {
             if (Request::ajax()) throw $ex;
             else Flash::error($ex->getMessage());
@@ -130,6 +142,12 @@ class LCBooker extends ComponentBase
 
     public function onRefreshFiles()
     {
+        $this->page['file'] = true;
         $this->pageCycle();
+    }
+
+    public function getSessionKey()
+    {
+        return post('_session_key', null);
     }
 }

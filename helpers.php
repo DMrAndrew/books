@@ -20,4 +20,17 @@ if (!function_exists('mb_ucfirst') && extension_loaded('mbstring'))
         return $str;
     }
 }
+
+/**
+ * @param $text
+ * @param $allowed_tags
+ * @return array|string|string[]|null
+ */
+function plainText($text,$allowed_tags = '<br><p><li>')
+{
+    $text = strip_tags($text, $allowed_tags);
+    return preg_replace('/<[^>]*>/', PHP_EOL, $text);
+}
+
 ?>
+
