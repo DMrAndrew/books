@@ -51,6 +51,11 @@
         {% endif %}
     </div>
 
+    <div class="personal-area-discount-modal__actions parse-fb2-button" style="padding-top: 16px;display: none" >
+        <div onclick="oc.request('#fb_upload_form')"
+             class="ui-input-file-item ui-input-file-item-view--2 ui-input-file-item--full ui-text--medium">Сохранить</div>
+    </div>
+
     <div class="upload-empty-message" style="padding: 0">
         <div class="buy-book-modal__upload">
             <p class="ui-text-body--2">Или перетащите в это окно</p>
@@ -62,7 +67,6 @@
 <!-- Template for new file -->
 <script type="text/template" id="uploaderTemplate{{ __SELF__ }}">
     <div class="upload-object dz-preview dz-file-preview" >
-        <div style="position: relative">
         <div class="icon-container">
             <img data-dz-thumbnail src="{{ 'plugins/books/fileuploader/assets/images/upload.png'|app }}" />
         </div>
@@ -71,7 +75,7 @@
                 <span data-dz-name></span>
             </h4>
             <p class="size" data-dz-size></p>
-            <p class="error"><span data-dz-errormessage></span></p>
+            <p class="error" style="display: block"><span data-dz-errormessage></span></p>
         </div>
         <div class="meta">
             <a
@@ -81,10 +85,6 @@
                 data-request-confirm="{{ 'books.fileuploader::lang.are_you_sure' | trans }}"
                 >&times;</a>
             <div class="progress-bar"><span class="upload-progress" data-dz-uploadprogress></span></div>
-        </div>
-        </div>
-        <div class="personal-area-discount-modal__actions save-button" style="padding-top: 32px;display: none" >
-            <div onclick="oc.request('#fb_upload_form')" class="ui-input-file-item ui-input-file-item-view--2 ui-input-file-item--full ui-text--medium">Сохранить</div>
         </div>
     </div>
 </script>

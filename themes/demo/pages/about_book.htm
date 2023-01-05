@@ -1,7 +1,7 @@
 url = "/about-book/:book_id"
 layout = "default"
 title = "О книге"
-is_hidden = 1
+
 
 [booker]
 deferredBinding = 1
@@ -12,10 +12,10 @@ deferredBinding = 1
 
 [Form]
 ==
+
 <div style="margin-bottom: 16px"> </div>
 <div class="about-book">
     {% partial 'book/about-header' book=book %}
-
     <div class="about-book__body ui-container-fluid">
         <div class="ui-tabs">
             <div class="ui-tabs-header js-container" >

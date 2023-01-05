@@ -2,12 +2,10 @@ url = "/lc-books"
 layout = "personalarea"
 title = "Личный кабинет - Книги"
 description = "Личный кабинет - Книги"
-is_hidden = 1
 
 [LCBooker]
 
 [fileUploader fb_uploader]
-placeholderText = "Click or drag files to upload"
 maxSize = 10
 fileTypes = ".fb2"
 deferredBinding = 1
@@ -17,8 +15,13 @@ function onInit()
 {
     $this->fb_uploader->bindModel('fb2', new Books\Book\Models\Book());
 }
+function onRefreshFiles()
+{
+$this->pageCycle();
+}
 ?>
 ==
+
 <div class="personal-area__container ui-grid-container ui-grid-gap">
     {% partial "profile/sidebarmenu" %}
     <div class="ui-col-sm-9">
@@ -30,7 +33,7 @@ function onInit()
         </div>
         <div class="lc-books__action-wrapper">
 
-            <a href="/create-book" >
+            <a href="/create-book" data-turbo="false">
                 <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Добавить книгу</button>
             </a>
 

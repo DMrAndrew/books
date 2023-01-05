@@ -37,7 +37,7 @@ class Chapter extends Parser
     $chapterDOM = $this->getXmlElement();
     if ($chapterDOM->has('title')) {
       $title = $chapterDOM->firstInDocument('title');
-      $this->getModel()->setTitle($title->text());
+      $this->getModel()->setTitle($title->innerHtml());
       $title->remove();
     }
   }

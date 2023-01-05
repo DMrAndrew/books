@@ -11,10 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<head>
-    <meta name="turbo-cache-control" content="no-cache">
-</head>
-
+<!--<meta name="turbo-cache-control" content="no-cache">-->
+<!--<meta name="turbo-visit-control" content="disable" />-->
 <script src="{{ [
         '@jquery',
         '@framework',
@@ -67,6 +65,16 @@
     let closeDropDowns = () => Array.from(document.getElementsByClassName('ui-dropdown')).forEach(e => e.style.display = 'none')
 
     let toggleModal = () => {$('#modal-container').toggle()}
+
+    addEventListener('page:before-cache', function() {
+        let annotation = document.getElementById('cke_annotation')
+        let chapter_content = document.getElementById('cke_chapter_content')
+        let editors = [annotation,chapter_content].filter(e => !!e)
+        if(editors[0] || false){
+            editors.forEach(editor => editor.remove())
+        }
+    });
+
 </script>
 {% framework extras turbo %}
 {% scripts %}

@@ -58,15 +58,17 @@ class FB2Manager
             }
 
             $keywords = collect(explode(',', $this->info->getKeywords()));
-            $keywords->filter(fn($i) => !!$i)->each(function ($i) {
+            $keywords->filter(fn($i) => !!$i)
+                ->each(function ($i) {
                 $tag = $this->user->tags()->firstOrCreate(['name' => mb_ucfirst($i)]);
                 $this->bookService->addTag($tag);
             });
 
             $this->book = $this->bookService->save($data);
 
-            $chapters = collect($this->parsed->getBook()->getChapters())->map(fn($chapter, $key) => new Chapter([
-                'title' => plainText($chapter->getTitle()),
+            $chapters = collect($this->parsed->getBook()->getChapters())
+                ->map(fn($chapter, $key) => new Chapter([
+                'title' => $chapter->getTitle(),
                 'content' => $chapter->getContent(),
                 'sort_order' => $key + 1
             ]));

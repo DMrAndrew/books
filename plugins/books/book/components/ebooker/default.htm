@@ -13,7 +13,7 @@
 
         <div class="chapter-book__body">
             <div class="chapter-book__title ui-text-head--3">
-                <span class="ui-text--bold">{{chapter.title}}</span>
+                <span class="ui-text--bold chapter-title">{{chapter.title|raw}}</span>
             </div>
             <div class="chapter-book__info-container">
                 <div class="chapter-book__status _waiting">
@@ -171,3 +171,11 @@
     </a>
 </div>
 {% endif %}
+<style>
+    .chapter-title{
+        display: inherit;
+    }
+    .chapter-title > p {
+        margin-inline-end: 3px;
+    }
+</style>

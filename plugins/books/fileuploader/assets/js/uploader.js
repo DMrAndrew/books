@@ -175,7 +175,7 @@
             $preview.data('path', response.path);
             $('.upload-remove-button', $preview).data('request-data', { file_id: response.id });
             $img.attr('src', response.thumb);
-            $('.save-button').show();
+            $('.parse-fb2-button').show();
         }
 
         /*
@@ -228,6 +228,7 @@
     FileUpload.prototype.onRemoveObject = function(ev) {
         var self = this,
             $object = $(ev.target).closest('.upload-object');
+        $('.parse-fb2-button').hide();
 
         $(ev.target)
             .closest('.upload-remove-button')

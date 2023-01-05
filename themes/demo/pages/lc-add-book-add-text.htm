@@ -1,7 +1,6 @@
 url = "/book-add-text/:book_id/:chapter_id?"
 layout = "default"
 title = "Добавление текста"
-is_hidden = 1
 
 [Chapterer]
 ==
@@ -19,7 +18,7 @@ is_hidden = 1
 
     <div class="personal-area__wrap _indent-large">
 
-        <textarea name="editor1">{{chapter.content}}</textarea>
+        <textarea name="cke_chapter_content">{{chapter.content}}</textarea>
 
     </div>
 
@@ -45,7 +44,7 @@ is_hidden = 1
 </form>
 
 <script>
-    if(!document.getElementById('cke_editor1')){
-        CKEDITOR.replace( 'editor1' );
+    if(!document.getElementById('cke_chapter_content')){
+        CKEDITOR.replace('cke_chapter_content');
     }
 </script>
