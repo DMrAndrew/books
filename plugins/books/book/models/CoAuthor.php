@@ -38,7 +38,9 @@ class CoAuthor extends Pivot
     /**
      * @var array Attributes to be cast to native types
      */
-    protected $casts = [];
+    protected $casts = [
+        'percent' => 'integer'
+    ];
 
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
@@ -78,6 +80,7 @@ class CoAuthor extends Pivot
             'otherKey' => 'user_id'
         ]
     ];
+
     public $hasMany = [];
     public $belongsTo = [];
     public $belongsToMany = [];
@@ -87,17 +90,11 @@ class CoAuthor extends Pivot
     public $attachOne = [];
     public $attachMany = [];
 
-    public function getPercentAttribute($value)
-    {
-        if (!$value) {
-            return 0;
-        }
-        return $value;
-    }
 
     public function getOwnerAttribute()
     {
         return $this->attributes['owner'] ?? false
         || $this->user_id === $this->book?->user_id ?? false;
     }
+
 }

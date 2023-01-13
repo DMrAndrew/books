@@ -52,6 +52,9 @@ class UpdateBookService extends BookService
     {
         Db::transaction(function () use ($data) {
 
+            if (isset($data['cycle_id'])) {
+                $data['cycle_id'] = $this->user->cycles()->find($data['cycle_id'] ?? null)?->id ?? null;
+            }
             $this->book->update($data);
 
             $this->book->coauthors()->sync($this->getCoAuthors()->pluck('id')->toArray());

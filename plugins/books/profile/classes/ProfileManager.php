@@ -82,4 +82,5 @@ class ProfileManager
 
         Event::fire('books.user.settings.' . $refresh ? 'init' : 'refreshed', [$user]);
     }
+
 }

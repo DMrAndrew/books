@@ -33,6 +33,7 @@ class Settings extends Model
         'value' => 'required',
     ];
 
+
     public function getDeclarationAttribute(): ?UserSettingsEnum
     {
         return UserSettingsEnum::tryFrom($this->setting_id);

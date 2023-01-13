@@ -1,7 +1,5 @@
 <?php namespace Books\Profile;
 
-use Books\Profile\Components\ProfileNotification;
-use Books\Profile\Components\ProfilePrivacy;
 use Event;
 use Flash;
 use Config;
@@ -10,9 +8,12 @@ use Redirect;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 use Books\Profile\Components\Profile;
+use Illuminate\Foundation\AliasLoader;
 use Books\Profile\Behaviors\HasProfile;
 use Books\Profile\Behaviors\Profileable;
+use Books\Profile\Components\ProfilePrivacy;
 use Books\Profile\Classes\ProfileEventHandler;
+use Books\Profile\Components\ProfileNotification;
 use RainLab\User\Controllers\Users as UsersController;
 
 /**
@@ -54,7 +55,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+        AliasLoader::getInstance()->alias('Profile', Models\Profile::class);
         Config::set('profile', Config::get('books.profile::config'));
         User::extend(function (User $model) {
             $model->implementClassWith(HasProfile::class);

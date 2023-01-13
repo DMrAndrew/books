@@ -1,0 +1,22 @@
+<a href="/author-page/{{author.id}}" class="author-card wrapper">
+    <div class="author-card__header">
+        <div class="author-card__avatar">
+            <img src="{{author.avatar.getThumb(40,40)}}" alt="">
+        </div>
+        <div class="author-card__name ui-text--bold">{{author.username}}</div>
+    </div>
+    <div class="author-card__footer">
+        <div class="wrapper-item _indent">
+            <svg class="square-16">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>
+            </svg>
+            <span>{{author.publicBooks.count}}</span>
+        </div>
+        <div class="wrapper-item _indent">
+            <svg class="square-16">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#user-filled-16' | theme}}"></use>
+            </svg>
+            <span>0</span>
+        </div>
+    </div>
+</a>

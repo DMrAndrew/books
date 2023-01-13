@@ -20,8 +20,11 @@ class CreateBookService extends BookService
      */
     public function save(array $data): Book
     {
-        $data['user_id'] = $this->user->id;
+        if(isset($data['cycle_id'])){
+            $data['cycle_id'] = $this->user->cycles()->find($data['cycle_id'])?->id ?? null;
+        }
         $book = new Book($data);
+        $book->user = $this->user;
         $book->save(null, $this->getSessionKey());
         Event::fire('books.book.created', [$book]);
 
@@ -33,7 +36,7 @@ class CreateBookService extends BookService
         if (!$user_id) {
             return;
         }
-        if ($author = $this->book->getDeffered($this->getSessionKey())
+        if ($author = $this->book->getDiffered($this->getSessionKey())
             ->where('master_field', '=', 'coauthors')
             ->first(fn($bind) => $bind->slave_id === $user_id)) {
             $author->pivot_data = ['percent' => $value];
@@ -79,7 +82,7 @@ class CreateBookService extends BookService
     {
         $coauthors = $this->book->coauthors()->withDeferred($this->getSessionKey())->get();
         if ($pivot) {
-            $this->book->getDeffered($this->getSessionKey())
+            $this->book->getDiffered($this->getSessionKey())
                 ->where('master_field', '=', 'coauthors')
                 ->each(function ($bind) use ($coauthors) {
                     if ($author = $coauthors->first(fn($i) => $i->id === $bind->slave_id)) {

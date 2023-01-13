@@ -9,15 +9,17 @@ use Books\Book\Models\Book;
 use Tizis\FB2\FB2Controller;
 use Tizis\FB2\Model\BookInfo;
 use RainLab\User\Models\User;
-use Books\Book\Models\Chapter;
+use Books\Book\Models\ChapterStatus;
 use Books\Book\Classes\Services\CreateBookService;
 
 class FB2Manager
 {
-    protected FB2Controller $parsed;
-
     protected BookInfo $info;
+
+    protected FB2Controller $parsed;
     protected CreateBookService $bookService;
+
+    protected ChapterManager $chapterManager;
 
     public function __construct(protected ?string $session_key, protected User $user, protected ?Book $book = null)
     {
@@ -60,24 +62,22 @@ class FB2Manager
             $keywords = collect(explode(',', $this->info->getKeywords()));
             $keywords->filter(fn($i) => !!$i)
                 ->each(function ($i) {
-                $tag = $this->user->tags()->firstOrCreate(['name' => mb_ucfirst($i)]);
-                $this->bookService->addTag($tag);
-            });
+                    $tag = $this->user->tags()->firstOrCreate(['name' => mb_ucfirst($i)]);
+                    $this->bookService->addTag($tag);
+                });
 
             $this->book = $this->bookService->save($data);
+            $this->chapterManager = new ChapterManager($this->book,false);
 
-            $chapters = collect($this->parsed->getBook()->getChapters())
-                ->map(fn($chapter, $key) => new Chapter([
-                'title' => $chapter->getTitle(),
-                'content' => $chapter->getContent(),
-                'sort_order' => $key + 1
-            ]));
+            collect($this->parsed->getBook()->getChapters())
+                ->map(fn($chapter, $key) => $this->chapterManager->create([
+                    'title' => $chapter->getTitle(),
+                    'content' => $chapter->getContent(),
+                    'sort_order' => $key + 1,
+                    'status' => ChapterStatus::PUBLISHED
+                ]));
 
-            foreach ($chapters as $chapter) {
-                $this->book->chapters()->add($chapter);
-            }
-
-            Event::fire('books.book.chapters.parsed', $this->book);
+            Event::fire('books.book.parsed', $this->book);
 
             return $this->book;
 

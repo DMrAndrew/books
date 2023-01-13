@@ -1,4 +1,4 @@
-{{ form_ajax('ECommerceBooker::onUpdateEcommerce') }}
+{{ form_ajax('ECommerceBooker::onUpdateEcommerce',{'data-request-validate':'true'})}}
 <div class="ui-grid-container ui-grid-gap">
     <div class="e-book-sale__wrapper ui-col-md-6">
         <div class="e-book-sale__title ui-text-head--2 ui-text--bold e-book-sale__inside-wrapper">Статус</div>
@@ -21,7 +21,7 @@
                     <!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>-->
                     <!--                            </svg>-->
                 </select>
-
+                <span class="validation-error" data-validate-for="status"></span>
 <!--                <div class="ui-select-item _size-32">-->
 <!--                    <input class="ui-select-item-input" type="text">-->
 <!--                    <div class="ui-select-item-option">В работе</div>-->
@@ -66,7 +66,7 @@
         <div class="e-book-sale__inside-wrapper">
             <label class="ui-checkbox _indent-medium">
                 <input type="hidden" name="sales_free" value="0">
-                <input type="checkbox" hidden name="sales_free" {{book.sales_free ? 'checked' : ''}}>
+                <input type="checkbox" value="1" hidden name="sales_free" {{book.sales_free ? 'checked' : ''}}>
                 <div class="ui-checkbox-checker">
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
@@ -74,15 +74,18 @@
                 </div>
                 <span class="ui-checkbox-text">Бесплатная книга</span>
             </label>
+            <span class="validation-error" data-validate-for="sales_free"></span>
         </div>
         <div class="ui-grid-container ui-grid-gap e-book-sale__inside-wrapper">
             <div class="ui-col-md-6 ui-input">
                 <label class="ui-input-label">Цена, ₽</label>
-                <input class="ui-input-item _size-32" type="text" name="price" value="{{book.price}}" >
+                <input class="ui-input-item _size-32" type="text" name="price" value="{{book.price}}">
+                <span class="validation-error" data-validate-for="price"></span>
             </div>
             <div class="ui-col-md-6 ui-input">
                 <label class="ui-input-label">Частей ознакомления</label>
                 <input class="ui-input-item _size-32" type="text" name="free_parts" value="{{book.free_parts}}">
+                <span class="validation-error" data-validate-for="free_parts"></span>
             </div>
         </div>
         <button href="#" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Сохранить</button>

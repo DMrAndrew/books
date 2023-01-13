@@ -2,15 +2,17 @@
 
 namespace Books\User\Components;
 
-use Books\User\Models\Country;
+
 use Db;
-use Exception;
 use Flash;
-use RainLab\User\Components\Account;
-use RainLab\User\Facades\Auth;
-use Redirect;
+use Cookie;
+use RainLab\User\Components\Session;
 use Request;
-use Session;
+use Response;
+use Exception;
+use Carbon\Carbon;
+use RainLab\User\Facades\Auth;
+use RainLab\User\Components\Account;
 
 class BookAccount extends Account
 {
@@ -22,15 +24,60 @@ class BookAccount extends Account
         ];
     }
 
+    public function onLogout(){
+        Cookie::queue(Cookie::forget(name: 'post_register_accepted'));
+        Cookie::queue(Cookie::forget(name: 'adult_agreement_accepted'));
+        return (new Session())->onLogout();
+
+    }
+    public function should_adult_agreement(): bool
+    {
+        $user = $this->user();
+        if ($user && $user->birthday && $user->asked_adult_agreement !== 1 && !$user->required_post_register) {
+            return abs(Carbon::now()->diffInYears($user->birthday)) > 17;
+        }
+        return false;
+    }
+
+    public function onAdultAgreementSave()
+    {
+        $action = post('action');
+        $val = $action === 'accept' ? 1 : 0;
+        $this->user()->update(['see_adult' => $val, 'asked_adult_agreement' => 1]);
+
+    }
+
+    public function onPageLoad()
+    {
+        $partials = [];
+        $cookies = [];
+
+        if($this->user()?->required_post_register){
+            $partials['#post_register_container'] =  $this->renderPartial('auth/postRegisterContainer', ['user' => $this->user()]);
+        }
+        else{
+            $cookies[] =  Cookie::make(name: 'post_register_accepted', value: 1, httpOnly: false);
+        }
+
+        if($this->should_adult_agreement()){
+            $partials['#adult_modal_spawn'] =  $this->renderPartial('auth/adult-modal');
+        }
+        else{
+            $cookies[] = Cookie::make(name: 'adult_agreement_accepted', value: 1, httpOnly: false);
+        }
+
+        $response = Response::make($partials);
+        collect($cookies)->each(fn($cookie) => $response->withCookie($cookie));
+        return $response;
+    }
+
     public function onRegisterProxy()
     {
         try {
             return Db::transaction(function () {
-
                 $redirect = $this->onRegister();
                 $user = Auth::getUser();
                 $user->update(['required_post_register' => 0], ['force' => true]);
-
                 return $redirect;
             });
         } catch (Exception $ex) {
@@ -54,7 +101,9 @@ class BookAccount extends Account
 
             Db::transaction(function () use ($user, $data) {
                 $user->update(array_merge($data, ['required_post_register' => 0]));
-                $user->profile->update(['username' => $data['username']]);
+                if ($data['username'] ?? false) {
+                    $user->profile->update(['username' => $data['username']]);
+                }
             });
 
             return $this->makeRedirection();

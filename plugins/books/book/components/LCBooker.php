@@ -55,6 +55,7 @@ class LCBooker extends ComponentBase
 
     public function onRun()
     {
+
         $this->page['books'] = $this->getBooks();
     }
 
@@ -65,6 +66,7 @@ class LCBooker extends ComponentBase
 
     public function onChangeOrder()
     {
+
         $id = post('book_id');
         $action = post('action');
         if (!in_array($action, ['up', 'down'])) {
@@ -107,14 +109,6 @@ class LCBooker extends ComponentBase
     {
         try {
             $uploadedFile = (new Book())->fb2()->withDeferred($this->getSessionKey())->get()?->first();
-//            $validation = Validator::make(
-//                ['fb2' => $uploadedFile],
-//                ['fb2' => ['bail', 'required', 'file', 'mimes:xml']]
-//            );
-//            if ($validation->fails()) {
-//                throw new ValidationException($validation);
-//            }
-//
             if (!$uploadedFile) {
                 throw new ValidationException(['fb2' => 'Файл не найден.']);
             }
@@ -124,8 +118,7 @@ class LCBooker extends ComponentBase
             return Redirect::to("/about-book/$book->id");
 
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            throw new ValidationException(['fb2' => 'Не удалось импортировать книгу.']);
         }
 
     }
@@ -148,6 +141,6 @@ class LCBooker extends ComponentBase
 
     public function getSessionKey()
     {
-        return post('_session_key', null);
+        return post('_session_key');
     }
 }

@@ -1,0 +1,95 @@
+<div class="book-card">
+    <div class="book-card__body">
+        <div class="book-card__column-left">
+            <a href="#">
+                <img class="book-card__image" src="{{book.cover.getThumb(104,150)}}" alt="" loading="lazy">
+            </a>
+
+            <button class="book-card__bookmark">
+                <svg class="book-card__bookmark-icon _color-violet active">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-check-16' | theme}}"></use>
+                </svg>
+                <svg class="book-card__bookmark-icon _color-black">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme}}"></use>
+                </svg>
+            </button>
+        </div>
+        <div class="book-card__column-right">
+            <a href="#" class="book-card__title ui-text-head--3 ui-text--bold">{{book.title}}</a>
+            <a href="#" class="book-card__author ui-link _violet">{{book.user.username}}</a>
+            <div class="book-card__info">
+                <div class="book-card__info-wrapper">
+                    <div class="book-card__info-wrap _color-green ui-tooltip" data-tooltip="Электронная книга">
+                        <svg class="book-card__favorit-active">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>
+                        </svg>
+                        {% if book.realPrice %}
+                        <span class="ui-text--bold">{{ book.realPrice }} &thinsp;₽</span>
+                        {% else %}
+                        <span class="ui-text--bold">Бесплатно</span>
+                        {% endif %}
+
+                    </div>
+                    {% partial 'site/book-status' status=book.status %}
+                    {% if book.sales_at %}
+                    <div class="book-card__info-dot"></div>
+                    <div class="book-card__info-wrap _text">{{ carbon(book.sales_at).format('d.m.y') }}</div>
+                    {% endif %}
+                    <div class="book-card__info-dot"></div>
+                    <div class="book-card__info-wrap _text">{{book.length}}&thinsp;зн.</div>
+                </div>
+            </div>
+            <div class="book-card__description">
+                {{book.annotation|raw}}
+            </div>
+            <div class="book-card__genres">
+                {% for tag in book.tags %}
+                <a href="#" class="ui-link _violet">{{tag.name}}</a>,
+                {% endfor %}
+            </div>
+            <div class="book-card__body-footer">
+                <div class="book-card__raiting">
+                    <svg>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
+                    </svg>
+                    <span>0</span>
+                </div>
+                <div class="book-card__book-list">
+                    {% for genre in book.genres %}
+                    <a href="#" class="ui-link _violet">#0 {{genre.name}}</a>,
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="book-card__footer">
+        {% if book.age_restriction.value != 0 %}
+        <div class="book-card__footer-label">{{ book.age_restriction.getLabel }}</div>
+        {% endif %}
+        <div class="book-card__footer-wrapper">
+            <svg>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
+            </svg>
+            <span>0</span>
+        </div>
+        <div class="book-card__footer-wrapper">
+            <svg>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-16' | theme}}"></use>
+            </svg>
+            <span>0</span>
+        </div>
+        <div class="book-card__footer-wrapper">
+            <svg>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>
+            </svg>
+            <span>0</span>
+        </div>
+        <div class="book-card__footer-wrapper">
+            <svg>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-filled-16' | theme}}"></use>
+            </svg>
+            <span>0</span>
+        </div>
+    </div>
+</div>

@@ -1,12 +1,12 @@
 url = "/lc-books"
-layout = "personalarea"
+layout = "default"
 title = "Личный кабинет - Книги"
 description = "Личный кабинет - Книги"
 
 [LCBooker]
 
 [fileUploader fb_uploader]
-maxSize = 10
+maxSize = 20
 fileTypes = ".fb2"
 deferredBinding = 1
 ==
@@ -22,28 +22,33 @@ $this->pageCycle();
 ?>
 ==
 
-<div class="personal-area__container ui-grid-container ui-grid-gap">
-    {% partial "profile/sidebarmenu" %}
-    <div class="ui-col-sm-9">
-        <div class="personal-area__subtitle">
-            <span class="ui-text-head--3 ui-text--bold">Книги</span>
-            <svg class="square-16">
-                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-            </svg>
+{% partial 'profile/personal_area_header' %}
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
+            {% partial "profile/sidebarmenu" %}
+            <div class="ui-col-sm-9">
+                <div class="personal-area__subtitle">
+                    <span class="ui-text-head--3 ui-text--bold">Книги</span>
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                    </svg>
+                </div>
+                <div class="lc-books__action-wrapper">
+
+                    <a href="/create-book" data-turbo="false">
+                        <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Добавить книгу</button>
+                    </a>
+
+                    <label class="ui-input-file">
+                        <div onclick="toggleModal()" class="ui-input-file-item ui-text--medium">Загрузить FB2</div>
+                    </label>
+
+
+                </div>
+                {% component "LCBooker" %}
+            </div>
         </div>
-        <div class="lc-books__action-wrapper">
-
-            <a href="/create-book" data-turbo="false">
-                <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Добавить книгу</button>
-            </a>
-
-            <label class="ui-input-file">
-                <div onclick="toggleModal()" class="ui-input-file-item ui-text--medium">Загрузить FB2</div>
-            </label>
-
-
-        </div>
-        {% component "LCBooker" %}
     </div>
 </div>
 {% partial 'LCBooker::import_fb_modal' %}

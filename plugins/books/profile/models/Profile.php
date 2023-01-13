@@ -3,6 +3,7 @@
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\SettingsRelationCast;
 use Model;
+use October\Rain\Database\Builder;
 use System\Models\File;
 use RainLab\User\Models\User;
 use October\Rain\Database\Traits\Validation;
@@ -24,6 +25,9 @@ class Profile extends Model
      * @var array guarded attributes aren't mass assignable
      */
     protected $guarded = ['*'];
+
+    public array $endingArray = ['Автор','Автора','Авторов'];
+
 
     /**
      * @var array fillable attributes are mass assignable
@@ -109,5 +113,17 @@ class Profile extends Model
     public function getIsCurrentAttribute(): bool
     {
         return !!$this->user->current_profile_id == $this->id;
+    }
+
+    public function getFirstLatterAttribute(){
+        return strtoupper($this->username ? mb_substr($this->username,0,1) : 'A');
+    }
+
+    public function scopeSearchByString(Builder $query, string $string){
+        return $query->where('username', 'like', "%$string%");
+    }
+
+    public function publicBooks(){
+        return $this->user->books()->public();
     }
 }

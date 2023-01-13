@@ -1,24 +1,24 @@
 <?php namespace Books\Book\Components;
 
 use ApplicationException;
-use Books\Book\Classes\Services\BookServiceInterface;
-use Books\Book\Classes\Services\CreateBookService;
-use Books\Book\Classes\Services\UpdateBookService;
-use Books\Book\Models\AgeRestrictionsEnum;
-use Books\Book\Models\Cycle;
+
 use Flash;
-use Illuminate\Support\Facades\Redirect;
 use Request;
 use Exception;
 use ValidationException;
 use Books\Book\Models\Book;
+use Books\Book\Models\Cycle;
 use RainLab\User\Models\User;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use Books\Catalog\Models\Genre;
 use October\Rain\Database\Collection;
+use Illuminate\Support\Facades\Redirect;
+use Books\Book\Models\AgeRestrictionsEnum;
 use Books\FileUploader\Components\ImageUploader;
-
+use Books\Book\Classes\Services\CreateBookService;
+use Books\Book\Classes\Services\UpdateBookService;
+use Books\Book\Classes\Services\BookServiceInterface;
 /**
  * Booker Component
  *
@@ -196,12 +196,11 @@ class Booker extends ComponentBase
                     throw  new ValidationException(['coauthors' => 'Сумма распределения процентов от продаж должна быть равна 100.']);
                 }
             }
-            $data['comment_allowed'] = !!$data['comment_allowed'];
-            $data['download_allowed'] = !!$data['download_allowed'];
-            $data['cycle_id'] = (int)$data['cycle_id'];
+
             $fillable = collect($data)->only([
                 'title', 'annotation', 'comment_allowed', 'download_allowed', 'cycle_id', 'age_restriction'
             ])->toArray();
+
             $book = $this->service->save($fillable);
 
             return $this->book_id ?

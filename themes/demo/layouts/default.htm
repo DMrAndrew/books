@@ -1,10 +1,9 @@
 description = "Default layout"
 
 [genres genres_parented]
-
 [session]
 security = "all"
-
+[searcher]
 [bookAccount]
 paramCode = "code"
 forceSecure = 0
@@ -19,12 +18,16 @@ requirePassword = 0
 </head>
 <body class="{{ 'page-'~this.page.id }}">
 
+<div id='post_register_container' ></div>
+<div id='adult_modal_spawn' ></div>
 <!-- Header -->
 <header id="layout-header" class="header">
     {% partial 'site/header' %}
 </header>
+
 <!-- Content -->
 <section id="layout-content">
+
     {% page %}
 </section>
 

@@ -93,12 +93,14 @@
             </div>
         </div>
 
+        <span class="validation-error" data-validate-for="download_allowed"></span>
+        <span class="validation-error" data-validate-for="comment_allowed"></span>
         <div class="create-book__check">
             <label class="ui-checkbox">
                 <input type="hidden" value="0" name="comment_allowed">
-                <input type="checkbox"
+                <input type="checkbox" value="1" hidden name="comment_allowed"
                        {{ book.comment_allowed ? 'checked' : ''  }}
-                hidden name="comment_allowed">
+                >
                 <div class="ui-checkbox-checker">
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
@@ -108,10 +110,10 @@
             </label>
             <label class="ui-checkbox">
                 <input type="hidden" value="0" name="download_allowed">
-                <input type="checkbox"
+                <input type="checkbox" value="1" hidden name="download_allowed"
 
                        {{ book.download_allowed ? 'checked' : ''  }}
-                       hidden name="download_allowed">
+                       >
                 <div class="ui-checkbox-checker">
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
@@ -119,6 +121,7 @@
                 </div>
                 <span class="ui-checkbox-text">Разрешить скачивания</span>
             </label>
+
         </div>
 
         <button href="#" class="ui-button ui-button-size--32 ui-button-view--2">Сохранить</button>

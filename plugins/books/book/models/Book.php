@@ -1,6 +1,8 @@
 <?php namespace Books\Book\Models;
 
+use Db;
 use Model;
+use October\Rain\Database\Builder;
 use System\Models\File;
 use RainLab\User\Models\User;
 use Books\Catalog\Models\Genre;
@@ -40,6 +42,8 @@ class Book extends Model
      */
     protected $guarded = ['*'];
 
+    public array $endingArray = ['Книга', 'Книги', 'Книг'];
+
     /**
      * @var array fillable attributes are mass assignable
      */
@@ -47,7 +51,6 @@ class Book extends Model
         'title',
         'annotation',
         'user_id',
-        'cycle_id',
         'age_restriction',
         'download_allowed',
         'comment_allowed',
@@ -55,9 +58,9 @@ class Book extends Model
         'sort_order',
         'free_parts',
         'status',
-        'price'
+        'price',
+        'cycle_id'
     ];
-
 
     /**
      * @var array rules for validation
@@ -67,19 +70,27 @@ class Book extends Model
         'annotation' => 'nullable|string',
         'cover' => 'nullable|image',
         'user_id' => 'required|exists:users,id',
-        'price' => 'nullable|integer',
-        'free_parts' => 'nullable|integer',
-        'download_allowed' => 'nullable|boolean',
-        'comment_allowed' => 'nullable|boolean',
-        'sales_free' => 'nullable|boolean',
-        'fb2' => ['nullable','file', 'mimes:xml'],
-        'cycle_id' => 'nullable|integer'
+        'price' => 'filled|integer|min:0',
+        'free_parts' => 'filled|integer|min:0',
+        'download_allowed' => 'boolean',
+        'comment_allowed' => 'boolean',
+        'sales_free' => 'boolean',
+        'fb2' => ['nullable', 'file', 'mimes:xml'],
+        'cycle_id' => 'nullable|integer|exists:books_book_cycles,id'
     ];
 
     /**
      * @var array Attributes to be cast to native types
      */
-    protected $casts = [];
+    protected $casts = [
+        'free_parts' => 'integer',
+        'price' => 'integer',
+        'sales_free' => 'boolean',
+        'download_allowed' => 'boolean',
+        'comment_allowed' => 'boolean',
+        'status' => BookStatus::class,
+        'age_restriction' => AgeRestrictionsEnum::class,
+    ];
 
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
@@ -150,48 +161,94 @@ class Book extends Model
     ];
     public $attachMany = [];
 
-    public function getPriceAttribute($value): float|int|null
-    {
-        return $value ? (int)$value / 1000 : (int)$value;
-    }
-
-    public function setPriceAttribute(int|string|null $value)
-    {
-        $this->attributes['price'] = $value ? (int)$value * 1000 : $value;
-    }
-
-    public function getStatusAttribute($status): ?BookStatus
-    {
-        return BookStatus::tryFrom($status);
-    }
-
-    public function setStatusAttribute(string|BookStatus $status)
-    {
-        $this->attributes['status'] = is_string($status) ? $status : $status->value;
-    }
-
-    public function getDeffered($key): Collection
-    {
-        return $this->getDeferredBindingRecords($key);
-    }
-
-    public function getAgeRestrictionAttribute($value): ?AgeRestrictionsEnum
-    {
-        return AgeRestrictionsEnum::tryFrom($value) ?? AgeRestrictionsEnum::default();
-    }
-
-    public function setAgeRestrictionAttribute(string|int|AgeRestrictionsEnum $ageRestrictions)
-    {
-        $this->attributes['age_restriction'] = ((is_string($ageRestrictions) || is_int($ageRestrictions)) ? AgeRestrictionsEnum::tryFrom($ageRestrictions) ?? AgeRestrictionsEnum::default() : $ageRestrictions)->value;
-    }
-
-    public function getSalesAtAttribute()
-    {
-        return $this->chapters()->first()?->published_at ?? null;
-    }
 
     public function getRealPriceAttribute()
     {
         return !!$this->sales_free ? 0 : $this->price;
     }
+
+    public function scopeSearchByString(Builder $query, string $string)
+    {
+        return $query->public()->where('title', 'like', "%$string%");
+    }
+
+    public function scopePublic(Builder $q)
+    {
+        return $q->whereNotIn('status', [BookStatus::FROZEN->value, BookStatus::HIDDEN->value]);
+    }
+
+
+    public function nextChapterSortOrder()
+    {
+        return ($this->chapters()->max('sort_order') ?? 0) + 1;
+    }
+
+    public function setSalesAt()
+    {
+        $this->sales_at = $this->chapters()->published(until_now: false)?->min('published_at') ?? null;
+        $this->save();
+    }
+
+    public function lengthRecount()
+    {
+        $this->length = (int)$this->chapters()->sum('length') ?? 0;
+        $this->save();
+    }
+
+    public function changeChaptersOrder(array $ids, ?array $order = null)
+    {
+        Db::transaction(function () use ($ids, $order) {
+            $order ??= $this->chapters()->pluck('sort_order')->toArray();
+            $this->chapters()->first()->setSortableOrder($ids, $order);
+            $this->setFreeParts();
+        });
+
+    }
+
+    public function setFreeParts()
+    {
+        Db::transaction(function () {
+            $this->chapters()->limit($this->free_parts ?? 0)->update(['edition' => ChapterEdition::FREE]);
+            $this->chapters->skip($this->free_parts ?? 0)->each(fn($i) => $i->update(['edition' => ChapterEdition::PAY]));
+        });
+    }
+
+    public function recompute()
+    {
+        $this->lengthRecount();
+        $this->setSalesAt();
+        $this->setFreeParts();
+    }
+
+    /**
+     * Try set default book cover if not exists one.
+     *
+     * @param Book $book
+     * @return void
+     */
+    protected function setDefaultCover(): void
+    {
+        if (!$this->cover) {
+            if ($dir = config('book.book_cover_blank_dir')) {
+                $file_src = collect(glob(base_path() . "/$dir/*.png"))->random();
+                if (file_exists($file_src)) {
+                    $file = (new File())->fromFile($file_src);
+                    $file->is_public = true;
+                    $file->save();
+                    $this->cover()->add($file);
+                }
+            }
+        }
+    }
+
+    protected function afterCreate()
+    {
+        $this->setDefaultCover();
+    }
+
+    public function getDiffered($key): Collection
+    {
+        return $this->getDeferredBindingRecords($key);
+    }
+
 }

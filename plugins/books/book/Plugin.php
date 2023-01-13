@@ -1,21 +1,18 @@
 <?php namespace Books\Book;
 
+use Event;
+use Config;
 use Backend;
-use Books\Book\Classes\BookEventHandler;
-use Books\Book\Classes\BookManager;
-use Books\Book\Classes\CoAuthorManager;
-use Books\Book\Components\Booker;
-use Books\Book\Components\Chapterer;
-use Books\Book\Components\EBooker;
-use Books\Book\Components\ECommerceBooker;
-use Books\Book\Components\LCBooker;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
-use Books\Profile\Behaviors\Profileable;
-use Config;
-use Event;
-use October\Rain\Database\Model;
 use System\Classes\PluginBase;
+use Books\Book\Models\Chapter;
+use Books\Book\Components\Booker;
+use Books\Book\Components\EBooker;
+use Books\Book\Components\LCBooker;
+use Books\Book\Components\Chapterer;
+use Illuminate\Foundation\AliasLoader;
+use Books\Book\Components\ECommerceBooker;
 
 /**
  * Plugin Information File
@@ -46,8 +43,6 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-        Event::listen('books.book.created', fn($book) => (new BookEventHandler())->afterCreate($book));
-        Event::listen('books.book.chapters.parsed', fn($book) => (new BookEventHandler())->afterChaptersUpdate($book));
     }
 
     /**
@@ -57,7 +52,11 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
+        AliasLoader::getInstance()->alias('Book', Book::class);
+        AliasLoader::getInstance()->alias('Chapter', Chapter::class);
+        AliasLoader::getInstance()->alias('Cycle', Cycle::class);
         Config::set('book', Config::get('books.book::config'));
+        Event::listen('books.book.parsed', fn(Book $book) => $book->recompute());
     }
 
     /**

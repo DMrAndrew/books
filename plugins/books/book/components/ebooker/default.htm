@@ -1,161 +1,58 @@
 {% if book.chapters.count() %}
 
 <a href="/book-add-text/{{book.id}}">
-<button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Добавить текст</button>
+    <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Добавить текст
+    </button>
 </a>
 <div class="about-book__chapter-container">
-    {% for chapter in book.chapters %}
+        <ul id="sortable">
+            {% for chapter in book.chapters %}
+            <li>
+                <input type="hidden" name="chapters[{{chapter.id}}]" value="{{chapter.id}}"/>
+                <div class="chapter-book">
 
-    <div class="chapter-book">
-        <svg class="chapter-book__drag square-24">
-            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#move-vertical-24' | theme}}"></use>
-        </svg>
-
-        <div class="chapter-book__body">
-            <div class="chapter-book__title ui-text-head--3">
-                <span class="ui-text--bold chapter-title">{{chapter.title|raw}}</span>
-            </div>
-            <div class="chapter-book__info-container">
-                <div class="chapter-book__status _waiting">
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#clock-stroked-24' | theme}}"></use>
+                    <svg class="chapter-book__drag square-24">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#move-vertical-24' | theme}}"></use>
                     </svg>
-                    <span>Опубликуется 24.06.21 в 12:00</span>
+
+                    <div class="chapter-book__body">
+                        <div class="chapter-book__title ui-text-head--3">
+                    <span class="ui-text--bold chapter-title">
+                      {{chapter.title|raw}}
+                    </span>
+                            {% if chapter.status.value == 'draft' %}
+                            <svg class="square-16">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#lock-filled-16' | theme}}"></use>
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="chapter-book__info-container">
+
+                            {% partial '@book-status' chapter=chapter %}
+
+                            <div class="chapter-book__status">
+                                <span>{{chapter.edition.getLabel()}}</span>
+                            </div>
+                            <div class="chapter-book__status">
+                                <span>{{carbon(chapter.created_at).format('d.m.y')}}</span>
+                            </div>
+                            <div class="chapter-book__status">
+                                <span>{{chapter.length}} зн.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter-book__action">
+                        <a data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">
+                            <svg class="square-16">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
-
-                <div class="chapter-book__status">
-                    <span>Бесплатная часть</span>
-                </div>
-                <div class="chapter-book__status">
-                    <span>01.02.90</span>
-                </div>
-                <div class="chapter-book__status">
-                    <span>{{chapter.length}} зн.</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="chapter-book__action">
-            <a href="/book-add-text/{{book.id}}/{{chapter.id}}">
-            <svg class="square-16">
-                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
-            </svg>
-            </a>
-        </div>
-    </div>
-
-    {% endfor %}
-<!--    <div class="chapter-book">-->
-<!--        <svg class="chapter-book__drag square-24">-->
-<!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#move-vertical-24' | theme}}"></use>-->
-<!--        </svg>-->
-
-<!--        <div class="chapter-book__body">-->
-<!--            <div class="chapter-book__title ui-text-head&#45;&#45;3">-->
-<!--                <span class="ui-text&#45;&#45;bold">Глава 1</span>-->
-<!--            </div>-->
-<!--            <div class="chapter-book__info-container">-->
-<!--                <div class="chapter-book__status _waiting">-->
-<!--                    <svg class="square-16">-->
-<!--                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#clock-stroked-24' | theme}}"></use>-->
-<!--                    </svg>-->
-<!--                    <span>Опубликуется 24.06.21 в 12:00</span>-->
-<!--                </div>-->
-
-<!--                <div class="chapter-book__status">-->
-<!--                    <span>Бесплатная часть</span>-->
-<!--                </div>-->
-<!--                <div class="chapter-book__status">-->
-<!--                    <span>01.02.90</span>-->
-<!--                </div>-->
-<!--                <div class="chapter-book__status">-->
-<!--                    <span>3256 зн.</span>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="chapter-book__action">-->
-<!--            <svg class="square-16">-->
-<!--                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>-->
-<!--            </svg>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    <div class="chapter-book">-->
-<!--        <svg class="chapter-book__drag square-24">-->
-<!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#move-vertical-24' | theme}}"></use>-->
-<!--        </svg>-->
-
-<!--        <div class="chapter-book__body">-->
-<!--            <div class="chapter-book__title ui-text-head&#45;&#45;3">-->
-<!--                    <span class="ui-text&#45;&#45;bold">-->
-<!--                      Какое-то очень длинное название части, но в любом случае в основном будет одна строчка, это еще надо постараться сделать в две строчки-->
-<!--                    </span>-->
-<!--            </div>-->
-<!--            <div class="chapter-book__info-container">-->
-<!--                <div class="chapter-book__status _success">-->
-<!--                    <svg class="square-16">-->
-<!--                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
-<!--                    </svg>-->
-<!--                    <span>Опубликовано</span>-->
-<!--                </div>-->
-
-<!--                <div class="chapter-book__status">-->
-<!--                    <span>Бесплатная часть</span>-->
-<!--                </div>-->
-<!--                <div class="chapter-book__status">-->
-<!--                    <span>01.02.90</span>-->
-<!--                </div>-->
-<!--                <div class="chapter-book__status">-->
-<!--                    <span>3256 зн.</span>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="chapter-book__action">-->
-<!--            <svg class="square-16">-->
-<!--                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>-->
-<!--            </svg>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    <div class="chapter-book">-->
-<!--        <svg class="chapter-book__drag square-24">-->
-<!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#move-vertical-24' | theme}}"></use>-->
-<!--        </svg>-->
-
-<!--        <div class="chapter-book__body">-->
-<!--            <div class="chapter-book__title ui-text-head&#45;&#45;3">-->
-<!--                    <span class="ui-text&#45;&#45;bold">-->
-<!--                      Глава 4-->
-<!--                    </span>-->
-<!--                <svg class="square-16">-->
-<!--                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#lock-filled-16' | theme}}"></use>-->
-<!--                </svg>-->
-<!--            </div>-->
-<!--            <div class="chapter-book__info-container">-->
-<!--                <div class="chapter-book__status _draft">-->
-<!--                    <svg class="square-16">-->
-<!--                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>-->
-<!--                    </svg>-->
-<!--                    <span>Опубликовано</span>-->
-<!--                </div>-->
-
-<!--                <div class="chapter-book__status">-->
-<!--                    <span>Бесплатная часть</span>-->
-<!--                </div>-->
-<!--                <div class="chapter-book__status">-->
-<!--                    <span>01.02.90</span>-->
-<!--                </div>-->
-<!--                <div class="chapter-book__status">-->
-<!--                    <span>3256 зн.</span>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="chapter-book__action">-->
-<!--            <svg class="square-16">-->
-<!--                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>-->
-<!--            </svg>-->
-<!--        </div>-->
-<!--    </div>-->
+            </li>
+            {% endfor %}
+        </ul>
 </div>
 
 {% else %}
@@ -166,16 +63,25 @@
     </svg>
     <div class="ui-text-head--3 ui-text--bold">У вас нет добавленных глав в книге</div>
     <span>Добавьте свою первую главу прямо сейчас</span>
-    <a href="/book-add-text/{{book.id}}" >
-        <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile" type="submit" >Добавить текст</button>
+    <a data-turbo="false" href="/book-add-text/{{book.id}}">
+        <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile" type="submit">Добавить
+            текст
+        </button>
     </a>
 </div>
 {% endif %}
 <style>
-    .chapter-title{
+    .chapter-title {
         display: inherit;
     }
+
     .chapter-title > p {
         margin-inline-end: 3px;
     }
 </style>
+
+<script>
+    if(initSortable){
+        initSortable()
+    }
+</script>

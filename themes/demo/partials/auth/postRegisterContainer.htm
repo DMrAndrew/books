@@ -1,3 +1,6 @@
-<div id="auth_popup" class="auth" style="display: none">
-    {% partial 'auth/registerForm' %}
+<div id="auth_popup" class="auth" >
+    {% partial 'auth/registerForm' user=user %}
 </div>
+<script>
+    registerForm()
+</script>
