@@ -7,12 +7,11 @@ use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
 use RainLab\User\Models\User;
 use Books\User\Models\Country;
-use Books\Book\Models\CoAuthor;
 use Books\User\Models\Settings;
 use Books\User\Models\AccountSettings;
+use October\Rain\Extension\ExtensionBase;
 use Books\Profile\Models\ProfileSettings;
 use Books\Profile\Classes\ProfileManager;
-use October\Rain\Extension\ExtensionBase;
 use Books\User\Classes\ProfileAttributeCasts;
 use Books\User\Classes\BirthdayAttributeCasts;
 
@@ -21,14 +20,7 @@ class BookUser extends ExtensionBase
     public function __construct(protected User $parent)
     {
         $this->parent->hasOne['country'] = [Country::class, 'key' => 'id', 'otherKey' => 'country_id'];
-        $this->parent->hasManyThrough['booksAsCoAuthor'] = [
-            Book::class,
-            'key' => 'user_id',
-            'through' => CoAuthor::class,
-            'throughKey' => 'id',
-            'otherKey' => 'id',
-            'secondOtherKey' => 'book_id'
-            ];
+
         $this->parent->hasMany['tags'] = [Tag::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['cycles'] = [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['settings'] = [Settings::class, 'key' => 'user_id', 'otherKey' => 'id'];
@@ -96,6 +88,10 @@ class BookUser extends ExtensionBase
     public function getCountryOptions(): array
     {
         return Country::lists('name', 'id');
+    }
+
+    public function books(){
+        return $this->profile->books();
     }
 
 

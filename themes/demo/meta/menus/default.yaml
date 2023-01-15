@@ -1,0 +1,65 @@
+items:
+    -
+        title: 'Моя страница'
+        type: cms-page
+        code: '1'
+        reference: author_page
+        viewBag:
+            isHidden: '0'
+            cssClass: ''
+            isExternal: '0'
+    -
+        title: Разделитель
+        type: header
+        code: ''
+        viewBag:
+            isHidden: '0'
+            cssClass: dropwdown-profile__separator
+            isExternal: '0'
+    -
+        title: 'Личный кабинет'
+        type: cms-page
+        code: ''
+        reference: profile
+        viewBag:
+            isHidden: '0'
+            cssClass: ''
+            isExternal: '0'
+        items:
+            -
+                title: Профиль
+                type: cms-page
+                code: ''
+                reference: profile
+                viewBag:
+                    isHidden: '0'
+                    cssClass: ''
+                    isExternal: '0'
+            -
+                title: Книги
+                type: cms-page
+                code: ''
+                reference: lc-books
+                viewBag:
+                    isHidden: '0'
+                    cssClass: ''
+                    isExternal: '0'
+    -
+        title: Книги
+        type: cms-page
+        code: ''
+        reference: lc-books
+        viewBag:
+            isHidden: '0'
+            cssClass: ''
+            isExternal: '0'
+    -
+        title: Магазин
+        type: url
+        url: /store
+        code: ''
+        viewBag:
+            isHidden: '0'
+            cssClass: ''
+            isExternal: '0'
+name: default

@@ -6,7 +6,7 @@ url = "/author-page/:profile_id?"
 ==
 <!-- Промо часть страницы -->
 
-<div style="margin-bottom: 16px"> </div>
+<div style="margin-bottom: 16px"></div>
 {% component 'author_space' %}
 
 <script>
@@ -15,16 +15,6 @@ url = "/author-page/:profile_id?"
     initTabs('[data-tabs="3"]');
 </script>
 <script>
-    const containerWidth = document.querySelector('.js-container')
-    const wrapperWidth = document.querySelector('.js-wrapper')
-    const tabElem = document.querySelectorAll('.js-wrapper > .ui-tabs-link')
-
-    tabElem.forEach(item => {
-        if(wrapperWidth.clientWidth > containerWidth.clientWidth) {
-
-            const lastTab = wrapperWidth.lastElementChild;
-            lastTab.parentNode.removeChild(lastTab)
-        }
-    })
+    tabElemInit()
 </script>
 

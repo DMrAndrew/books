@@ -1,17 +1,18 @@
-{% if book.chapters.count() %}
+<div id="ebooker-chapters">
+    {% if ebook.chapters.count() %}
 
-<a href="/book-add-text/{{book.id}}">
-    <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Добавить текст
-    </button>
-</a>
-<div class="about-book__chapter-container">
+    <a href="/book-add-text/{{book.id}}">
+        <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Добавить текст
+        </button>
+    </a>
+    <div class="about-book__chapter-container">
         <ul id="sortable">
-            {% for chapter in book.chapters %}
+            {% for chapter in ebook.chapters %}
             <li>
                 <input type="hidden" name="chapters[{{chapter.id}}]" value="{{chapter.id}}"/>
                 <div class="chapter-book">
 
-                    <svg class="chapter-book__drag square-24">
+                    <svg class="chapter-book__drag square-24 handle">
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#move-vertical-24' | theme}}"></use>
                     </svg>
 
@@ -28,10 +29,10 @@
                         </div>
                         <div class="chapter-book__info-container">
 
-                            {% partial '@book-status' chapter=chapter %}
+                            {% partial '@chapter-status' chapter=chapter %}
 
                             <div class="chapter-book__status">
-                                <span>{{chapter.edition.getLabel()}}</span>
+                                <span>{{chapter.sales_type.getLabel()}}</span>
                             </div>
                             <div class="chapter-book__status">
                                 <span>{{carbon(chapter.created_at).format('d.m.y')}}</span>
@@ -53,35 +54,37 @@
             </li>
             {% endfor %}
         </ul>
+    </div>
+
+    {% else %}
+
+    <div class="author__placeholder _indent">
+        <svg class="square-32">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
+        </svg>
+        <div class="ui-text-head--3 ui-text--bold">У вас нет добавленных глав в книге</div>
+        <span>Добавьте свою первую главу прямо сейчас</span>
+        <a data-turbo="false" href="/book-add-text/{{book.id}}">
+            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile" type="submit">Добавить
+                текст
+            </button>
+        </a>
+    </div>
+    {% endif %}
+    <style>
+        .chapter-title {
+            display: inherit;
+        }
+
+        .chapter-title > p {
+            margin-inline-end: 3px;
+        }
+    </style>
+
+    <script>
+        if(initSortable){
+            initSortable('#sortable','ebooker::onUpdateSortOrder')
+        }
+    </script>
+
 </div>
-
-{% else %}
-
-<div class="author__placeholder _indent">
-    <svg class="square-32">
-        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
-    </svg>
-    <div class="ui-text-head--3 ui-text--bold">У вас нет добавленных глав в книге</div>
-    <span>Добавьте свою первую главу прямо сейчас</span>
-    <a data-turbo="false" href="/book-add-text/{{book.id}}">
-        <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile" type="submit">Добавить
-            текст
-        </button>
-    </a>
-</div>
-{% endif %}
-<style>
-    .chapter-title {
-        display: inherit;
-    }
-
-    .chapter-title > p {
-        margin-inline-end: 3px;
-    }
-</style>
-
-<script>
-    if(initSortable){
-        initSortable()
-    }
-</script>

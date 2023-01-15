@@ -2,41 +2,39 @@
 
 namespace Books\User\Classes;
 
-use Illuminate\Support\Collection;
-use October\Rain\Database\Builder;
-use October\Rain\Support\Collection as OctoberCollection;
+use Books\Book\Models\Book;
+use Books\Profile\Models\Profile;
+use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 
 class SearchManager
 {
-    protected array $searchable = [];
+    protected int $active = 0;
+    protected array $classes = [
+        'Book' => Book::class,
+        'Profile' => Profile::class,
+    ];
 
-    public function __construct(protected string $query, protected ?string $needle)
+    public function apply(string $query): \October\Rain\Support\Collection|\Illuminate\Support\Collection
     {
-        $this->needle ??= 'books';
-        $this->searchable = config('searchable') ?? [];
+        $res = Search::add(Book::public()->defualtEager(), 'title')
+            ->add(Profile::with(['avatar','books' => fn($i) => $i->public()]), 'username')
+            ->includeModelType()
+            ->orderByModel([
+                Book::class, Profile::class])
+            ->search($query)
+            ->groupBy('type');
+
+        return $res->map(function ($grouped, $key) {
+            $class = $this->classes[$key];
+            $count = $grouped->count();
+            return [
+                'active' => !!!$this->active++,
+                'count' => $count,
+                'label' => getCorrectSuffix($count, $class::$endingArray),
+                'items' => $grouped,
+                'type' => $key
+            ];
+        });
     }
 
-    public function apply(): Collection|OctoberCollection
-    {
-
-        $queries = collect($this->searchable)
-            ->map(fn($model) => $model::query()->searchByString($this->query));
-        //TODO searchable behaviour
-
-        return $queries
-            ->filter(fn(Builder $query) => $query->exists())
-            ->map(function (Builder $query, $name) {
-
-                $count = $query->count();
-                $rows = $name === $this->needle ? $query->get() : new \October\Rain\Database\Collection();
-                $rows->load('user');
-
-                return [
-                    'name' => $name,
-                    'count' => $count,
-                    'rows' => $rows,
-                    'label' => getCorrectSuffix($count, ($rows?->first() ?? $query->first())->endingArray),
-                ];
-            });
-    }
 }

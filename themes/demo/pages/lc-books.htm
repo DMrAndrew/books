@@ -13,7 +13,7 @@ deferredBinding = 1
 <?php
 function onInit()
 {
-    $this->fb_uploader->bindModel('fb2', new Books\Book\Models\Book());
+    $this->fb_uploader->bindModel('fb2', new EbookEdition());
 }
 function onRefreshFiles()
 {
@@ -22,6 +22,10 @@ $this->pageCycle();
 ?>
 ==
 
+<head>
+    <meta name="turbo-cache-control" content="no-cache">
+</head>
+
 {% partial 'profile/personal_area_header' %}
 <div class="personal-area">
     <div class="ui-container-fluid">
@@ -29,7 +33,7 @@ $this->pageCycle();
             {% partial "profile/sidebarmenu" %}
             <div class="ui-col-sm-9">
                 <div class="personal-area__subtitle">
-                    <span class="ui-text-head--3 ui-text--bold">Книги</span>
+                    <span class="ui-text-head--3 ui-text--bold">Книги {{ authorships.count }}</span>
                     <svg class="square-16">
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
                     </svg>

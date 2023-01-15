@@ -6,39 +6,18 @@
             </a>
 
             <button class="book-card__bookmark">
-                <svg class="book-card__bookmark-icon _color-violet active">
+                <svg class="book-card__bookmark-icon _color-violet ">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-check-16' | theme}}"></use>
                 </svg>
-                <svg class="book-card__bookmark-icon _color-black">
+                <svg class="book-card__bookmark-icon _color-black active">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme}}"></use>
                 </svg>
             </button>
         </div>
         <div class="book-card__column-right">
             <a href="#" class="book-card__title ui-text-head--3 ui-text--bold">{{book.title}}</a>
-            <a href="#" class="book-card__author ui-link _violet">{{book.user.username}}</a>
-            <div class="book-card__info">
-                <div class="book-card__info-wrapper">
-                    <div class="book-card__info-wrap _color-green ui-tooltip" data-tooltip="Электронная книга">
-                        <svg class="book-card__favorit-active">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>
-                        </svg>
-                        {% if book.realPrice %}
-                        <span class="ui-text--bold">{{ book.realPrice }} &thinsp;₽</span>
-                        {% else %}
-                        <span class="ui-text--bold">Бесплатно</span>
-                        {% endif %}
-
-                    </div>
-                    {% partial 'site/book-status' status=book.status %}
-                    {% if book.sales_at %}
-                    <div class="book-card__info-dot"></div>
-                    <div class="book-card__info-wrap _text">{{ carbon(book.sales_at).format('d.m.y') }}</div>
-                    {% endif %}
-                    <div class="book-card__info-dot"></div>
-                    <div class="book-card__info-wrap _text">{{book.length}}&thinsp;зн.</div>
-                </div>
-            </div>
+            <a href="/author-page/{{book.author.profile.id}}" class="book-card__author ui-link _violet">{{book.author.profile.username}}</a>
+            {% partial 'book/ebook-card-info' book=book %}
             <div class="book-card__description">
                 {{book.annotation|raw}}
             </div>

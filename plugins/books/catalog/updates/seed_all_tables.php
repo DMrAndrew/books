@@ -2,18 +2,14 @@
 
 namespace Books\Catalog\Updates;
 
+use Books\Catalog\Classes\BookTypeEnum;
 use Books\Catalog\Models\Genre;
 use Illuminate\Support\Facades\DB;
 use October\Rain\Database\Updates\Seeder;
 
 class SeedAllTables extends Seeder
 {
-    private array $types = [
-        'Электронные книги',
-        'Аудио',
-        'Бумажные',
-        'Комиксы'
-    ];
+    private array $types = [];
 
     private array $genres = [
         'Фэнтези' => [
@@ -187,15 +183,13 @@ class SeedAllTables extends Seeder
 
     public function run()
     {
+        $this->types = collect(BookTypeEnum::cases())->pluck('value')->toArray();
         $data = $this->mapWithName($this->types);
         DB::table('books_catalog_types')->insert($data);
 
         foreach ($this->genres as $genre => $list) {
-
             $root = Genre::query()->create(['name' => $genre]);
-            foreach ($this->mapWithName($list) as $genreItem) {
-                $root->children()->create($genreItem);
-            }
+            $root->children()->createMany($this->mapWithName($list));
         }
         Genre::query()->whereIn('name', $this->favorites)->update(['favorite' => 1]);
     }

@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\RateLimiter;
 class Searcher extends ComponentBase
 {
     protected $query;
-    protected string $entity = 'books';
     protected bool $useCache = true;
 
     /**
@@ -58,7 +57,7 @@ class Searcher extends ComponentBase
 
     protected function hash(): string
     {
-        return hash('xxh3', strtolower($this->query . $this->entity));
+        return hash('xxh3', strtolower($this->query));
     }
 
     protected function isRedirectRequire(): bool
@@ -66,29 +65,20 @@ class Searcher extends ComponentBase
         return !starts_with($this->page->url, '/search');
     }
 
-    protected function find(): array
+    protected function find()
     {
+
         $attempts = Auth::getUser() ? 20 : 10;
         if (!RateLimiter::attempt('search' . request()->ip(), $attempts, fn() => 1, 20)) {
             $ex = new ValidationException(['rateLimiter' => 'Превышен лимит запросов. Подождите 20 сек.']);
             if (Request::ajax()) throw $ex;
             else Flash::error($ex->getMessage());
         }
-        if (!$this->query || strlen($this->query) < 2) {
-            return [];
-        }
+//        if (!$this->query || strlen($this->query) < 2) {
+//            return [];
+//        }
 
-        $results = (new SearchManager($this->query, $this->entity))->apply();
-        $entity = $results->first(fn($i) => $i['name'] === $this->entity) ?? $results->first() ?? null;
-        $this->page['search_query'] = $this->query;
-        if($name = $entity['name']??false){
-            $this->entity = $name;
-        }
-        return [
-            'query' => $this->query,
-            'entity' => $entity,
-            'found' => $results,
-        ];
+        return (new SearchManager())->apply($this->query);
     }
 
     protected function cached()
@@ -102,7 +92,7 @@ class Searcher extends ComponentBase
 
         $partial = $this->renderPartial('@default', ['results' => $this->find()]);
         if ($this->useCache) {
-            Cache::put($this->hash(), $partial, Carbon::now()->addMinutes(2));
+            Cache::put($this->hash(), $partial, Carbon::now()->addMinutes());
         }
 
         return $partial;
@@ -115,9 +105,8 @@ class Searcher extends ComponentBase
             return Redirect::to('/search/' . $q);
         }
         $this->query = $q;
-        if ($e = post('entity')) {
-            $this->entity = $e;
-        }
+        $this->page['search_query'] = $this->query;
+
 
         return [
             '#search_result' => $this->cached()

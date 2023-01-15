@@ -2,7 +2,7 @@
 
 namespace Books\Book\Models;
 
-enum ChapterEdition: string
+enum ChapterSalesType: string
 {
     case FREE = 'free';
     case PAY = 'pay';

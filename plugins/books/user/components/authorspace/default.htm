@@ -20,7 +20,7 @@
                 <div class="author-promo-info__name ui-text-head--2 ui-text--bold">{{profile.username}}</div>
                 <div class="author-promo-info__description">{{profile.status}}</div>
                 <div class="author-promo-info__actions">
-                    {% if isLogging %}
+                    {% if isLoggedIn %}
                     {% if isOwner %}
                     <!-- Кнопка для личного кабинета -->
                     <a href="/lc-profile" data-turbo="false">

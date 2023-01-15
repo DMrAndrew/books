@@ -2,30 +2,33 @@
 
 namespace Books\Book\Classes;
 
+
+use Books\Book\Models\Book;
+use Books\Book\Models\ChapterStatus;
+use Books\Profile\Models\Profile;
 use Db;
 use Event;
+use RainLab\User\Models\User;
 use System\Models\File;
-use Books\Book\Models\Book;
 use Tizis\FB2\FB2Controller;
 use Tizis\FB2\Model\BookInfo;
-use RainLab\User\Models\User;
-use Books\Book\Models\ChapterStatus;
-use Books\Book\Classes\Services\CreateBookService;
 
 class FB2Manager
 {
     protected BookInfo $info;
 
-    protected FB2Controller $parsed;
-    protected CreateBookService $bookService;
+    protected FB2Controller $parser;
 
-    protected ChapterManager $chapterManager;
-
-    public function __construct(protected ?string $session_key, protected User $user, protected ?Book $book = null)
+    public function __construct(protected User            $user,
+                                protected ?string         $session_key = null,
+                                protected ?Book           $book = null,
+                                protected ?BookService    $bookService = null,
+                                protected ?ChapterManager $chapterManager = null,
+    )
     {
         $this->session_key ??= uuid_create();
         $this->book ??= new Book();
-        $this->bookService = new CreateBookService($this->session_key, $this->book, $this->user);
+        $this->bookService ??= new BookService(user: $this->user, book: $this->book, session_key: $this->session_key);
     }
 
 
@@ -33,52 +36,52 @@ class FB2Manager
     {
         return Db::transaction(function () use ($fb2) {
 
-            $file = file_get_contents($fb2->getLocalPath());
-            $this->parsed = new FB2Controller($file);
-            $this->parsed->withNotes();
-            $this->parsed->startParse();
 
-            $this->info = $this->parsed->getBook()->getInfo();
+            $file = file_get_contents($fb2->getLocalPath());
+            $this->parser = new FB2Controller($file);
+            $this->parser->withNotes();
+            $this->parser->startParse();
+
+            $this->info = $this->parser->getBook()->getInfo();
 
             $data = [
                 'title' => strip_tags($this->info->getTitle()),
                 'annotation' => $this->info->getAnnotation(),
             ];
 
-            $cover = (new File())->fromData(base64_decode($this->parsed->getBook()->getCover()), 'cover.jpg');
+            $cover = (new File())->fromData(base64_decode($this->parser->getBook()->getCover()), 'cover.jpg');
             $cover->save();
             $this->book->cover()->add($cover, $this->session_key);
 
-            foreach ($this->parsed->getBook()->getAuthors() as $author) {
+            foreach ($this->parser->getBook()->getAuthors() as $author) {
                 //TODO улучшить поиск по пользователям
-                if ($coauthor = User::username($author->getFullName())->first()) {
-                    if ($coauthor->id === $this->user->id) {
-                        continue;
-                    }
-                    $this->bookService->addCoAuthor($coauthor);
+                if ($profile = Profile::username($author->getFullName())->first()) {
+                    $this->bookService->addProfile($profile);
                 }
             }
 
             $keywords = collect(explode(',', $this->info->getKeywords()));
-            $keywords->filter(fn($i) => !!$i)
-                ->each(function ($i) {
-                    $tag = $this->user->tags()->firstOrCreate(['name' => mb_ucfirst($i)]);
-                    $this->bookService->addTag($tag);
-                });
+            $keywords->each(function ($i) {
+                $this->bookService->addTag($i);
+            });
 
             $this->book = $this->bookService->save($data);
-            $this->chapterManager = new ChapterManager($this->book,false);
 
-            collect($this->parsed->getBook()->getChapters())
+            if(!$this->book->ebook){
+                throw new \ApplicationException('Электронное издание книги не найдено.');
+            }
+
+            $this->chapterManager = new ChapterManager($this->book->ebook, false);
+
+            collect($this->parser->getBook()->getChapters())
                 ->map(fn($chapter, $key) => $this->chapterManager->create([
                     'title' => $chapter->getTitle(),
                     'content' => $chapter->getContent(),
                     'sort_order' => $key + 1,
-                    'status' => ChapterStatus::PUBLISHED
+                    'status' => ChapterStatus::PUBLISHED,
                 ]));
 
-            Event::fire('books.book.parsed', $this->book);
-
+            Event::fire('books.book.parsed', [$this->book]);
             return $this->book;
 
         });

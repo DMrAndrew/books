@@ -1,55 +1,10 @@
 url = "/about-book/:book_id"
 layout = "default"
 title = "О книге"
-[booker]
-deferredBinding = 1
-[Ebooker]
-[ECommerceBooker]
-[Form]
+[AboutBook]
 ==
-
-
 <div style="margin-bottom: 16px"> </div>
-<div class="about-book">
-    {% partial 'book/about-header' book=book %}
-    <div class="about-book__body ui-container-fluid">
-        <div class="ui-tabs">
-            <div class="ui-tabs-header js-container" >
-                <div class="ui-tabs-line"></div>
-                <div class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
-                    <div class="ui-tabs-link active" data-tab="1" data-tab-name="about">О книге</div>
-                    <div class="ui-tabs-link " data-tab="2" data-tab-name="electronic">Электронная</div>
-                    <div class="ui-tabs-link " data-tab="3" data-tab-name="ecommerce">Продажи электронной книги</div>
-<!--                    <div class="ui-tabs-link " data-tab="4">Аудиокнига</div>-->
-<!--                    <div class="ui-tabs-link " data-tab="5">Продажи аудиокниги</div>-->
-                </div>
-            </div>
-
-            <div class="ui-tabs-body" data-tabs="1">
-                <div class=" ui-tabs-content active" data-tab-content="1" >
-                    {% component 'booker' %}
-                </div>
-
-                <div class="author-books ui-tabs-content wrapper" id="ebooker-content" data-tab-content="2" >
-                    {% component 'Ebooker' %}
-                </div>
-
-                <div class="e-book-sale ui-tabs-content wrapper" data-tab-content="3" >
-                    {% component 'ECommerceBooker' %}
-                </div>
-
-                <div class="ui-tabs-content" data-tab-content="4">
-                    4
-                </div>
-
-                <div class="ui-tabs-content" data-tab-content="5">
-                    5
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+{% component 'AboutBook' %}
 <script>
     initTabs('[data-tabs="1"]');
     openTab('about')

@@ -32,7 +32,7 @@ class   Chapter extends Model
      * @var array fillable attributes are mass assignable
      */
     protected $fillable = [
-        'title', 'book_id', 'content', 'published_at', 'length', 'sort_order', 'status', 'edition'
+        'title', 'edition_id', 'content', 'published_at', 'length', 'sort_order', 'status', 'sales_type'
     ];
 
     /**
@@ -40,7 +40,7 @@ class   Chapter extends Model
      */
     public $rules = [
         'title' => 'nullable|string',
-        'book_id' => 'required|exists:books_book_books,id',
+        'edition_id' => 'required|exists:books_book_ebook_editions,id',
         'content' => 'nullable|string',
         'published_at' => 'nullable|date',
         'length' => 'nullable|integer',
@@ -52,13 +52,17 @@ class   Chapter extends Model
      */
     protected $casts = [
         'status' => ChapterStatus::class,
-        'edition' => ChapterEdition::class,
+        'sales_type' => ChapterSalesType::class,
     ];
 
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
      */
     protected $jsonable = [];
+
+    public $belongsTo = [
+        'edition' => [EbookEdition::class, 'key' => 'id', 'otherKey' => 'edition_id']
+    ];
 
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
@@ -84,9 +88,6 @@ class   Chapter extends Model
      */
     public $hasOne = [];
     public $hasMany = [];
-    public $belongsTo = [
-        'book' => [Book::class, 'key' => 'id', 'otherKey' => 'book_id']
-    ];
     public $belongsToMany = [];
     public $morphTo = [];
     public $morphOne = [];
@@ -112,7 +113,7 @@ class   Chapter extends Model
 
     public static function countChapterLength(string $string): int
     {
-        return strlen(strip_tags(preg_replace('/\s+/', '', $string)));
+        return strlen(strip_tags(preg_replace('/\s+/', '', $string))) ?? 0;
     }
 
 

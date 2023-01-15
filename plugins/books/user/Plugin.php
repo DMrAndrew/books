@@ -1,11 +1,13 @@
 <?php namespace Books\User;
 
 use Backend;
+use Books\User\Classes\SearchManager;
 use Books\User\Components\AuthorSpace;
 use Books\User\Components\Searcher;
 use Config;
 use Event;
 use Illuminate\Foundation\AliasLoader;
+use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 use Books\User\Behaviors\BookUser;
@@ -51,10 +53,9 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
-        Config::set('user', Config::get('books.user::config'));
-        Config::set('searchable', config('user.searchable') ?? []);
         AliasLoader::getInstance()->alias('User', User::class);
+        AliasLoader::getInstance()->alias('Search', Search::class);
+        AliasLoader::getInstance()->alias('SearchManager', SearchManager::class);
         User::extend(function (User $model) {
             $model->implementClassWith(BookUser::class);
             $model->bindEvent('model.afterCreate', function () use ($model) {

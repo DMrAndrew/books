@@ -6,42 +6,42 @@ use Db;
 use Html;
 use Event;
 use Carbon\Carbon;
-use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Illuminate\Support\Collection;
+use Books\Book\Models\EbookEdition;
 use Books\Book\Models\ChapterStatus;
-use Books\Book\Models\ChapterEdition;
 use Illuminate\Database\Eloquent\Model;
+use Books\Book\Models\ChapterSalesType;
 
 class ChapterManager
 {
     /**
-     * @param Book $book
-     * @param bool $should_recompute_book
+     * @param EbookEdition $ebook
+     * @param bool $should_recompute_ebook
      */
-    public function __construct(protected Book $book, protected bool $should_recompute_book = true)
+    public function __construct(protected EbookEdition $ebook, protected bool $should_recompute_ebook = true)
     {
     }
 
     /**
-     * @param bool $should_recompute_book
+     * @param bool $should_recompute_ebook
      */
-    public function setShouldRecomputeBook(bool $should_recompute_book): void
+    public function setShouldRecomputeEbook(bool $should_recompute_ebook): void
     {
-        $this->should_recompute_book = $should_recompute_book;
+        $this->should_recompute_ebook = $should_recompute_ebook;
     }
 
     public function create(array $data): Model
     {
         return Db::transaction(function () use ($data) {
             $data = $this->dataPrepare($data);
-            $data['edition'] ??= ChapterEdition::PAY;
+            $data['sales_type'] ??= ChapterSalesType::PAY;
             if (!isset($data['sort_order'])) {
-                $data['sort_order'] = $this->book->nextChapterSortOrder();
+                $data['sort_order'] = $this->ebook->nextChapterSortOrder();
             }
-            $chapter = $this->book->chapters()->create($data);
-            if ($this->should_recompute_book) {
-                $this->book->recompute();
+            $chapter = $this->ebook->chapters()->create($data);
+            if ($this->should_recompute_ebook) {
+                $this->ebook->recompute();
             }
             Event::fire('books.chapter.created', [$chapter]);
 
@@ -54,8 +54,8 @@ class ChapterManager
         return Db::transaction(function () use ($chapter, $data) {
             $data = $this->dataPrepare($data);
             $chapter->update($data);
-            if ($this->should_recompute_book) {
-                $this->book->recompute();
+            if ($this->should_recompute_ebook) {
+                $this->ebook->recompute();
             }
             Event::fire('books.chapter.updated', [$chapter]);
 
@@ -87,8 +87,8 @@ class ChapterManager
 
         if ($data->has('content')) {
             $data['content'] = Html::clean($data['content']);
-            $data['length'] = Chapter::countChapterLength($data['content']);
         }
+        $data['length'] = Chapter::countChapterLength($data['content']??'');
 
         return $data->toArray();
     }

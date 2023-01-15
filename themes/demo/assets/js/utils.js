@@ -1,4 +1,3 @@
-
 let openForm = (id = 'auth_popup') => document.getElementById(id).style.display = 'flex'
 let closeForm = (id = 'auth_popup') => {
     $('#' + id).hide()
@@ -19,10 +18,10 @@ let closeModal = () => Array.from(document.getElementsByClassName('ui-modal')).f
 let openCreateCycleForm = () => document.getElementById('create_cycle_form').style.display = 'flex'
 let closeDropDowns = () => Array.from(document.getElementsByClassName('ui-dropdown')).forEach(e => e.style.display = 'none')
 
-let openTab = function (default_tab){
+let openTab = function (default_tab) {
     let needle = document.location.hash?.split('#')?.find(e => e.startsWith('tab-'))?.split('-')?.pop() || default_tab;
-    let tab =  $("div[data-tab-name='" + needle +"']");
-    if(tab){
+    let tab = $("div[data-tab-name='" + needle + "']");
+    if (tab) {
         tab.click()
     }
 }
@@ -40,21 +39,38 @@ addEventListener('page:before-cache', function () {
     }
 });
 let initUserStuff = function () {
-    if(['post_register_accepted','adult_agreement_accepted']
-        .some(e => !document.cookie.includes(e)))
-    {
+    if (['post_register_accepted', 'adult_agreement_accepted']
+        .some(e => !document.cookie.includes(e))) {
         oc.ajax('bookAccount::onPageLoad')
     }
 }
-let initSortable =  () => {
+let initSortable = (container, handler) => {
     $(function () {
-        $("#sortable").sortable({
+        $(container).sortable({
+            scrollSpeed: 10,
+            axis: "y",
+            dropOnEmpty: false,
+            handle: ".handle",
             update: function () {
-                let arr = $('#sortable').find('input').map(function () {
+                let arr = $(container).find('input').map(function () {
                     return $(this).val();
                 }).get()
-                oc.ajax('onUpdateSortOrder', {data: {sequence: arr}})
+                oc.ajax(handler, {data: {sequence: arr}})
             }
         });
     })
 };
+
+let tabElemInit = function () {
+    const containerWidth = document.querySelector('.js-container')
+    const wrapperWidth = document.querySelector('.js-wrapper')
+    const tabElem = document.querySelectorAll('.js-wrapper > .ui-tabs-link')
+
+    tabElem.forEach(item => {
+        if (wrapperWidth.clientWidth > containerWidth.clientWidth) {
+
+            const lastTab = wrapperWidth.lastElementChild;
+            lastTab.parentNode.removeChild(lastTab)
+        }
+    })
+}

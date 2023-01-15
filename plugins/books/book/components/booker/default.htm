@@ -16,8 +16,8 @@
             >
             <span class="validation-error" data-validate-for="title"></span>
         </div>
-        <div id="coauthorInput">
-            {% partial 'booker::coauthorInput' coauthors=book.coauthors %}
+        <div id="authorInput">
+            {% partial 'booker::authorInput' authors=book.profiles %}
         </div>
         <div class="create-book__input ui-multi-select">
             <div class="ui-multi-select-header">
@@ -36,7 +36,6 @@
         <div id="cycle_input">
             {% partial 'booker::cycle_input' cycle_id=book.cycle_id %}
         </div>
-
 
         {% partial 'booker::annotation' %}
 
@@ -99,7 +98,7 @@
             <label class="ui-checkbox">
                 <input type="hidden" value="0" name="comment_allowed">
                 <input type="checkbox" value="1" hidden name="comment_allowed"
-                       {{ book.comment_allowed ? 'checked' : ''  }}
+                       {{ book.ebook.comment_allowed ? 'checked' : ''  }}
                 >
                 <div class="ui-checkbox-checker">
                     <svg>
@@ -112,7 +111,7 @@
                 <input type="hidden" value="0" name="download_allowed">
                 <input type="checkbox" value="1" hidden name="download_allowed"
 
-                       {{ book.download_allowed ? 'checked' : ''  }}
+                       {{ book.ebook.download_allowed ? 'checked' : ''  }}
                        >
                 <div class="ui-checkbox-checker">
                     <svg>

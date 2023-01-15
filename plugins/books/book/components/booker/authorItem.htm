@@ -1,9 +1,9 @@
 <div class="create-co-author-card">
     <div class="create-co-author-card__header">
-        <span class="ui-text--bold">{{ item.pivot.owner ? 'Вы' : item.profile.username }}</span>
-        {% if not item.pivot.owner %}
-        <a data-request="booker::onDeleteCoAuthor"
-              data-request-data="delete_user_id:{{item.id}}">
+        <span class="ui-text--bold">{{ item.pivot.profile_id == user.profile.id ? 'Вы' : item.username }} {{ item.pivot.is_owner ? '(Автор)' : '' }}</span>
+        {% if not item.pivot.is_owner %}
+        <a data-request="booker::onDeleteAuthor"
+              data-request-data="delete_profile_id:{{item.id}}">
             <svg class="square-16">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
             </svg>
@@ -13,11 +13,11 @@
     </div>
     <div class="ui-input">
         <label class="ui-input-label">Процент от продаж,%</label>
-        <input type="hidden" name="coauthors[{{item.id}}][user_id]" value="{{item.id}}"/>
+        <input type="hidden" name="authors[{{item.id}}][profile_id]" value="{{item.id}}"/>
         <input class="ui-input-item _size-32"
                type="number" list="percents"
                min="0" max="100"
-               name="coauthors[{{item.id}}][percent_value]"
+               name="authors[{{item.id}}][percent_value]"
                value="{{item.pivot.percent}}"
                placeholder="Введите процент от продаж"
                data-track-input="500"
@@ -39,7 +39,3 @@
         </datalist>
     </div>
 </div>
-<!--data-request="booker::onModifyPercentValue"-->
-<!--data-track-input="500"-->
-<!--data-request-validate-->
-<!--data-request-data="user_id:{{item.id}}"-->

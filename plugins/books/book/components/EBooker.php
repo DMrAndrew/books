@@ -1,9 +1,16 @@
 <?php namespace Books\Book\Components;
 
 
+use ApplicationException;
 use Books\Book\Models\Book;
+use Books\Book\Models\BookStatus;
+use Books\Book\Models\EbookEdition;
 use Cms\Classes\ComponentBase;
+use Exception;
+use Flash;
 use RainLab\User\Facades\Auth;
+use Redirect;
+use Request;
 
 /**
  * EBooker Component
@@ -12,8 +19,7 @@ use RainLab\User\Facades\Auth;
  */
 class EBooker extends ComponentBase
 {
-    protected int $book_id;
-    protected Book $book;
+    protected EbookEdition $ebook;
     /**
      * componentDetails
      */
@@ -27,9 +33,13 @@ class EBooker extends ComponentBase
 
     public function init()
     {
-        $this->book_id = (int)$this->param('book_id');
-        $this->book = Auth::getUser()->books()->find($this->book_id);
-        parent::init();
+
+        $this->ebook = Auth::getUser()->profile->books()->find($this->property('book_id'))?->ebook;
+        if(!$this->ebook){
+            throw new ApplicationException('Электронное издание книги не найден.');
+        }
+        $this->page['ebook'] = $this->ebook;
+        $this->page['bookStatusCases'] = BookStatus::publicCases();
     }
 
     /**
@@ -39,15 +49,45 @@ class EBooker extends ComponentBase
      */
     public function defineProperties()
     {
-        return [];
+        return [
+            'book_id' => [
+                'title' => 'Book',
+                'description' => 'Книга пользователя',
+                'type' => 'string',
+                'default' => null,
+            ]
+        ];
     }
 
     public function onUpdateSortOrder()
     {
-        $sequence = post('sequence');
-        $this->book->changeChaptersOrder($sequence);
-        return [
-            '#ebooker-content' => $this->renderPartial('@default',['book' => $this->book])
-        ];
+        try {
+            $this->ebook->changeChaptersOrder(post('sequence'));
+            return [
+                '#ebooker-chapters' => $this->renderPartial('@chapters',['ebook' => $this->ebook])
+            ];
+        }
+        catch (Exception $ex) {
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
+
+    }
+    public function onUpdate()
+    {
+        try {
+            $this->ebook->update(collect(post())->only(['price','status','free_parts','sales_free'])->toArray());
+            $this->ebook->setFreeParts();
+
+            return [
+                '#about-header' => $this->renderPartial('book/about-header', ['book' => $this->ebook->book]),
+                '#ebooker-chapters' => $this->renderPartial('@chapters',['ebook' => $this->ebook]),
+                '#ebook-settings' => $this->renderPartial('@settings',['ebook' => $this->ebook]),
+            ];
+
+        } catch (Exception $ex) {
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
     }
 }

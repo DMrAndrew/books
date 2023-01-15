@@ -1,11 +1,11 @@
 <?php namespace Books\Catalog;
 
+use Books\Catalog\Models\Genre;
 use Event;
 use Backend;
-use RainLab\User\Models\User;
+use Illuminate\Foundation\AliasLoader;
 use System\Classes\PluginBase;
 use Books\Catalog\Components\Genres;
-use Books\Catalog\Classes\FavoritesManager;
 use Books\Catalog\Components\FavoriteGenres;
 
 /**
@@ -47,7 +47,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+        AliasLoader::getInstance()->alias('Genre', Genre::class);
     }
 
     /**

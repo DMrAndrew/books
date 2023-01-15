@@ -3,6 +3,7 @@
 
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
+use Books\Book\Models\EbookEdition;
 use Exception;
 use Flash;
 use RainLab\User\Models\User;
@@ -25,6 +26,7 @@ class Chapterer extends ComponentBase
 {
     protected User $user;
     protected Book $book;
+    protected EbookEdition $ebook;
     protected ?Chapter $chapter;
     protected ChapterManager $chapterManager;
 
@@ -52,9 +54,10 @@ class Chapterer extends ComponentBase
     public function init()
     {
         $this->user = Auth::getUser();
-        $this->book = $this->user?->books()->find($this->param('book_id'));
-        $this->chapter = $this->book?->chapters()->find($this->param('chapter_id')) ?? null;
-        $this->chapterManager = new ChapterManager($this->book);
+        $this->book = $this->user->profile->books()->find($this->param('book_id'));
+        $this->ebook = $this->book->ebook;
+        $this->chapter = $this->ebook->chapters()->find($this->param('chapter_id')) ?? null;
+        $this->chapterManager = new ChapterManager($this->ebook);
     }
 
     public function onRun()
@@ -64,7 +67,7 @@ class Chapterer extends ComponentBase
 
     public function prepareVals()
     {
-        $this->page['book'] = $this->book;
+        $this->page['ebook'] = $this->ebook;
         $this->page['chapter'] = $this->chapter;
     }
 

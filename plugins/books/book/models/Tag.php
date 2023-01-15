@@ -9,7 +9,7 @@ use October\Rain\Database\Traits\Validation;
 class Tag extends Model
 {
     use Validation;
-
+    public  const NAME = 'name';
     /**
      * @var string table associated with the model
      */

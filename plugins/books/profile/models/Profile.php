@@ -1,9 +1,12 @@
 <?php namespace Books\Profile\Models;
 
-use Books\User\Classes\PrivacySettingsEnum;
-use Books\User\Classes\SettingsRelationCast;
+use Books\Book\Models\Author;
+use Books\Book\Models\Book;
 use Model;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Relations\AttachOne;
+use October\Rain\Database\Relations\BelongsToMany;
+use October\Rain\Database\Relations\HasMany;
 use System\Models\File;
 use RainLab\User\Models\User;
 use October\Rain\Database\Traits\Validation;
@@ -11,6 +14,11 @@ use October\Rain\Database\Traits\Validation;
 
 /**
  * Profile Model
+ *
+ * @method BelongsToMany books
+ * @method HasMany authorships
+ * @method AttachOne banner
+ * @method AttachOne avatar
  */
 class Profile extends Model
 {
@@ -26,7 +34,7 @@ class Profile extends Model
      */
     protected $guarded = ['*'];
 
-    public array $endingArray = ['Автор','Автора','Авторов'];
+    public static array $endingArray = ['Автор', 'Автора', 'Авторов'];
 
 
     /**
@@ -97,10 +105,24 @@ class Profile extends Model
     /**
      * @var array hasOne and other relations
      */
-    public $hasOne = [];
+    public $hasOne = [
+
+    ];
+    public $hasMany = [
+        'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id']
+    ];
 
     public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
-    public $belongsToMany = [];
+    public $belongsToMany = [
+        'books' => [
+            Book::class,
+            'table' => 'books_book_authors',
+            'key' => 'profile_id',
+            'otherKey' => 'book_id',
+            'pivot' => ['percent', 'sort_order', 'is_owner']
+        ]
+    ];
+
     public $morphTo = [];
     public $morphOne = [];
     public $morphMany = [];
@@ -115,15 +137,36 @@ class Profile extends Model
         return !!$this->user->current_profile_id == $this->id;
     }
 
-    public function getFirstLatterAttribute(){
-        return strtoupper($this->username ? mb_substr($this->username,0,1) : 'A');
+    public function authorshipsAs(?bool $is_owner): HasMany
+    {
+       return $this->authorships()->when(!is_null($is_owner), fn(Builder $builder) => $is_owner ? $builder->owner() : $builder->notOwner());
     }
 
-    public function scopeSearchByString(Builder $query, string $string){
+    public function getFirstLatterAttribute(): string
+    {
+        return strtoupper(mb_substr($this->attributes['username'], 0, 1));
+    }
+
+    public function scopeSearchByString(Builder $query, string $string): Builder
+    {
         return $query->where('username', 'like', "%$string%");
     }
 
-    public function publicBooks(){
-        return $this->user->books()->public();
+    public function scopeUsername(Builder $builder, string $username): Builder
+    {
+        return $builder->where('username', '=', $username);
     }
+
+    public function isEmpty(): bool
+    {
+        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => !!$i);
+    }
+
+    public function isContactsEmpty(): bool
+    {
+        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website',]))->some(fn($i) => !!$i);
+    }
+
+
+
 }

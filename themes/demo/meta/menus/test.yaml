@@ -1,0 +1,11 @@
+items:
+    -
+        title: Профиль
+        type: cms-page
+        code: ''
+        reference: author_page
+        viewBag:
+            isHidden: '0'
+            cssClass: ''
+            isExternal: '0'
+name: test

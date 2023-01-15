@@ -37,16 +37,17 @@ class AuthorSpace extends ComponentBase
 
     protected function prepareVals()
     {
-        $authorized = Auth::getUser();
-        $props = $this->profile;
-        $this->page['isLogging'] = !!$authorized;
-        $this->page['user'] = $this->profile->user;
+        $authUser = Auth::getUser();
+        $isOwner = !!$authUser && $this->profile->id === $authUser->profile->id;
+        $this->page['isLoggedIn'] = !!$authUser;
         $this->page['profile'] = $this->profile;
-        $this->page['isOwner'] = !!$authorized && $this->profile->id === $authorized->profile->id;
-        $this->page['hasContacts'] = collect($props->only(['ok', 'phone', 'tg', 'vk', 'email', 'website',]))->some(fn($i) => !!$i);
-        $this->page['should_call_fit_profile'] = $authorized && !collect($props->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => !!$i);
-        $books = $this->profile->publicBooks()->get();
-        $books->load('user');
+        $this->page['isOwner'] = $isOwner;
+        $this->page['hasContacts'] = !$this->profile->isContactsEmpty();
+        $this->page['should_call_fit_profile'] = $isOwner && $this->profile->isEmpty();
+        $books = $this->profile->books()
+            ->when(!$isOwner, fn($q) => $q->public())
+            ->defualtEager()
+            ->get();
         $this->page['books'] = $books;
         $this->page['books_count'] = $books->count();
     }
