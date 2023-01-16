@@ -14,4 +14,11 @@ class UserAddAdultAgreement extends Migration
             $table->boolean('asked_adult_agreement')->default(0);
         });
     }
+
+    public function down()
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('asked_adult_agreement');
+        });
+    }
 }
