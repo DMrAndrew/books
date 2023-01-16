@@ -1,8 +1,10 @@
 1.0.1:
+    - 'Расширение пользователей'
     - create_countries_table.php
     - seed_country.php
     - users_add_extras.php
     - user_add_verified_after_social_connect_register.php
     - create_books_user_settings_table.php
 1.0.2:
+    - 'Соглашение 18+'
     - user_add_adult_agreement.php

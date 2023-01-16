@@ -1,4 +1,5 @@
 1.0.1:
+    - 'Каталог книг'
     - create_genres_table.php
     - create_types_table.php
     - seed_all_tables.php

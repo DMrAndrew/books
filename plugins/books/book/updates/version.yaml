@@ -1,4 +1,5 @@
 1.0.1:
+    - 'Книги'
     - create_tags_table.php
     - create_cycles_table.php
     - create_books_table.php
@@ -8,5 +9,3 @@
     - create_book_tag_table.php
     - create_editions_table.php
     - create_ebook_editions_table.php
-
-
