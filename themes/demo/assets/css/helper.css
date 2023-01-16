@@ -1,0 +1,16 @@
+#login_popup, #register_popup, #register_form, #login_form, #auth_popup {
+    display: none;
+}
+
+.validation-error {
+    color: red;
+    font-size: 12px;
+    margin: 8px 10px;
+}
+.tags-list a {
+    text-decoration: none;
+}
+.tags-list a:not(:last-child):after {
+    content: ', ';
+
+}
