@@ -7,11 +7,11 @@
             <div class="ui-select-container">
                 <select class="ui-select-item _size-32" name="cycle_id">
                     <option
-                        {{ not book.cycle_id? 'selected' : ''  }}
+                        {{ not cycle_id ? 'selected' : ''  }}
                         value="">Без цикла</option>
                     {% for cycle in cycles %}
                     <option  value="{{cycle.id}}"
-                             {{ book.cycle_id == cycle.id ? 'selected' : ''  }}
+                             {{ cycle_id == cycle.id ? 'selected' : ''  }}
                     >{{cycle.name}}</option>
                     {% endfor %}
                     <!--                            <input class="ui-select-item-input" type="text">-->

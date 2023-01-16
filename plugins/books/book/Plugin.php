@@ -1,18 +1,23 @@
 <?php namespace Books\Book;
 
 use Backend;
-use Books\Book\Classes\BookManager;
-use Books\Book\Classes\CoAuthorManager;
+use Books\Book\Classes\BookService;
+use Books\Book\Classes\FB2Manager;
+use Books\Book\Components\AboutBook;
 use Books\Book\Components\Booker;
 use Books\Book\Components\Chapterer;
 use Books\Book\Components\EBooker;
-use Books\Book\Components\ECommerceBooker;
 use Books\Book\Components\LCBooker;
+use Books\Book\Models\Author;
 use Books\Book\Models\Book;
+use Books\Book\Models\Chapter;
 use Books\Book\Models\Cycle;
-use Books\Profile\Behaviors\Profileable;
+use Books\Book\Models\EbookEdition;
+use Books\Book\Models\Edition;
+use Books\Book\Models\Tag;
+use Config;
 use Event;
-use October\Rain\Database\Model;
+use Illuminate\Foundation\AliasLoader;
 use System\Classes\PluginBase;
 
 /**
@@ -44,7 +49,6 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-        Event::listen('books.book.created', fn($book) => (new BookManager())->countContentLength($book));
     }
 
     /**
@@ -54,7 +58,20 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
+        Config::set('book', Config::get('books.book::config'));
 
+        AliasLoader::getInstance()->alias('Book', Book::class);
+        AliasLoader::getInstance()->alias('Chapter', Chapter::class);
+        AliasLoader::getInstance()->alias('Cycle', Cycle::class);
+        AliasLoader::getInstance()->alias('Tag', Tag::class);
+        AliasLoader::getInstance()->alias('Edition', Edition::class);
+        AliasLoader::getInstance()->alias('EbookEdition', EbookEdition::class);
+        AliasLoader::getInstance()->alias('Author', Author::class);
+        AliasLoader::getInstance()->alias('FB2Manager', FB2Manager::class);
+        AliasLoader::getInstance()->alias('BookService', BookService::class);
+
+        Event::listen('books.book.created', fn(Book $book) => $book->setSortOrder());
+        Event::listen('books.book.parsed', fn(Book $book) => $book->ebook?->recompute());
     }
 
     /**
@@ -66,10 +83,10 @@ class Plugin extends PluginBase
     {
 
         return [
+            AboutBook::class => 'AboutBook',
             Booker::class => 'booker',
+            EBooker::class => 'ebooker',
             LCBooker::class => 'LCBooker',
-            EBooker::class => 'Ebooker',
-            ECommerceBooker::class => 'ECommerceBooker',
             Chapterer::class => 'Chapterer',
         ];
     }

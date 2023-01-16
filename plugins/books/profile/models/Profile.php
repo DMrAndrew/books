@@ -1,8 +1,12 @@
 <?php namespace Books\Profile\Models;
 
-use Books\User\Classes\PrivacySettingsEnum;
-use Books\User\Classes\SettingsRelationCast;
+use Books\Book\Models\Author;
+use Books\Book\Models\Book;
 use Model;
+use October\Rain\Database\Builder;
+use October\Rain\Database\Relations\AttachOne;
+use October\Rain\Database\Relations\BelongsToMany;
+use October\Rain\Database\Relations\HasMany;
 use System\Models\File;
 use RainLab\User\Models\User;
 use October\Rain\Database\Traits\Validation;
@@ -10,6 +14,11 @@ use October\Rain\Database\Traits\Validation;
 
 /**
  * Profile Model
+ *
+ * @method BelongsToMany books
+ * @method HasMany authorships
+ * @method AttachOne banner
+ * @method AttachOne avatar
  */
 class Profile extends Model
 {
@@ -24,6 +33,9 @@ class Profile extends Model
      * @var array guarded attributes aren't mass assignable
      */
     protected $guarded = ['*'];
+
+    public static array $endingArray = ['Автор', 'Автора', 'Авторов'];
+
 
     /**
      * @var array fillable attributes are mass assignable
@@ -56,8 +68,8 @@ class Profile extends Model
         'username' => 'required|between:2,255|unique:books_profile_profiles',
         'username_clipboard' => 'nullable|between:2,255|unique:books_profile_profiles',
         'username_clipboard_comment' => 'nullable|string',
-//        'avatar' => 'nullable|image|mimes:jpg,png',
-//        'banner' => 'nullable|image|mimes:jpg,png',
+        'avatar' => 'nullable|image|mimes:jpg,png|dimensions:min_width=168,min_height=168',
+        'banner' => 'nullable|image|mimes:jpg,png|dimensions:min_width=1152,min_height=160',
         'status' => 'nullable|string',
         'about' => 'nullable|string',
         'website' => 'nullable|url',
@@ -67,10 +79,6 @@ class Profile extends Model
         'ok' => 'nullable|url',
         'vk' => 'nullable|url',
     ];
-    //|dimensions:min_width=168,min_height=168
-    //dimensions:min_width=1152,min_height=160
-    //TODO при сохранении профиля с уже прикреплёнными файлами, подгружает их при валидации и спотыкается на разрешении, sometimes не помогает
-
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
      */
@@ -97,10 +105,24 @@ class Profile extends Model
     /**
      * @var array hasOne and other relations
      */
-    public $hasOne = [];
+    public $hasOne = [
+
+    ];
+    public $hasMany = [
+        'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id']
+    ];
 
     public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
-    public $belongsToMany = [];
+    public $belongsToMany = [
+        'books' => [
+            Book::class,
+            'table' => 'books_book_authors',
+            'key' => 'profile_id',
+            'otherKey' => 'book_id',
+            'pivot' => ['percent', 'sort_order', 'is_owner']
+        ]
+    ];
+
     public $morphTo = [];
     public $morphOne = [];
     public $morphMany = [];
@@ -114,4 +136,37 @@ class Profile extends Model
     {
         return !!$this->user->current_profile_id == $this->id;
     }
+
+    public function authorshipsAs(?bool $is_owner): HasMany
+    {
+       return $this->authorships()->when(!is_null($is_owner), fn(Builder $builder) => $is_owner ? $builder->owner() : $builder->notOwner());
+    }
+
+    public function getFirstLatterAttribute(): string
+    {
+        return strtoupper(mb_substr($this->attributes['username'], 0, 1));
+    }
+
+    public function scopeSearchByString(Builder $query, string $string): Builder
+    {
+        return $query->where('username', 'like', "%$string%");
+    }
+
+    public function scopeUsername(Builder $builder, string $username): Builder
+    {
+        return $builder->where('username', '=', $username);
+    }
+
+    public function isEmpty(): bool
+    {
+        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => !!$i);
+    }
+
+    public function isContactsEmpty(): bool
+    {
+        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website',]))->some(fn($i) => !!$i);
+    }
+
+
+
 }

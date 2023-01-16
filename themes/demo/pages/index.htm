@@ -1,10 +1,14 @@
 url = "/"
 layout = "default"
-title = "Welcome"
-meta_title = "Welcome"
+title = "Главная"
+meta_title = "Главная"
 
 [favorite_genres genres_favorite]
 ==
+<head>
+    <meta name="turbo-cache-control" content="no-preview">
+</head>
+
 <div>
     {% if not user %}
     <div class="promo _indent">
@@ -34,7 +38,12 @@ meta_title = "Welcome"
     <div style="margin-bottom: 16px"> </div>
     {% endif %}
 
+
     {% partial 'site/thematic' %}
     {% partial 'site/desc' %}
 
 </div>
+
+<!--<script>-->
+<!--    $('#search_input').val('')-->
+<!--</script>-->

@@ -1,6 +1,7 @@
 <?php namespace Books\FileUploader\Traits;
 
 use Input;
+use October\Rain\Database\Model;
 use Request;
 use Response;
 use Validator;
@@ -13,9 +14,7 @@ use Exception;
 
 trait ComponentUtils
 {
-    /**
-     * @var Model
-     */
+
     public $model;
 
     /**

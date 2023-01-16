@@ -1,0 +1,52 @@
+<div id="search_result">
+    <div class="personal-area">
+        <div class="ui-container">
+            <div class="personal-area__title ui-text-head--2 ui-text--bold">Результаты поиска</div>
+            <div class="personal-area__subtitle ui-text-body--1">Поиск по фразе: {{search_query}}</div>
+        </div>
+    </div>
+
+    <div class="search">
+        <div class="ui-container-fluid">
+            <div class="search-tabs ui-tabs">
+
+
+                <ul class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
+
+                    {% if results.count != 0 %}
+                    {% for key,tab in results %}
+                    <li class="ui-tabs-link {{tab.active ? 'active' : ''}}" data-tab="{{key}}">{{tab.count}}
+                        {{tab.label}}
+                    </li>
+                    {% endfor %}
+                    {% else %}
+                    <span class="ui-tabs-link">Ничего не найдено</span>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="ui-tabs-body" data-tabs="1">
+                {% for key,tab in results %}
+                <div class="search-results ui-tabs-content {{tab.active ? 'active' : ''}}" data-tab-content="{{key}}">
+
+                    {% for item in tab.items %}
+                    {% if item.type == 'Book' %}
+                    {% partial 'book/book' book=item %}
+                    {% endif %}
+                    {% if tab.type == 'Profile' %}
+                    {% partial '@author' author=item %}
+                    {% endif %}
+                    {% endfor %}
+
+                </div>
+                {% endfor %}
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<script>
+    initTabs('[data-tabs="1"]');
+</script>

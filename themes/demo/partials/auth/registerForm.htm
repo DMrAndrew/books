@@ -4,14 +4,10 @@
 {% else %}
 {% set action = 'bookAccount::onRegisterProxy' %}
 {% endif %}
-
-
-
-
 <form id="register_form" class="auth__container _large"
       data-request="{{action}}"
       data-request-validate
-      data-request-success="document.location.reload()"
+
 >
     <div class="auth__header _desktop">
         <svg class="square-24 auth__button-back active">
@@ -46,9 +42,7 @@
                 <div class="ui-input-wrapper">
                     <div class="ui-input-label">Дата рождения</div>
                     <input name="birthday"  class="ui-input-item _size-32" type="date"
-                           value="{{ user and userdata.birthday ? carbon(userdata.birthday).format('Y-m-d') : ''}}"
-
-
+                           value="{{ user and user.birthday ? carbon(userdata.birthday).format('Y-m-d') : ''}}"
                     >
                     <span class="validation-error" data-validate-for="birthday"></span>
                 </div>

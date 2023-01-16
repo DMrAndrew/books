@@ -22,4 +22,13 @@ enum BookStatus:string
         };
     }
 
+    public static function publicCases(): array
+    {
+        return [
+            self::WORKING,
+            self::COMPLETE,
+            self::HIDDEN,
+        ];
+    }
+
 }

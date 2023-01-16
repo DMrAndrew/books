@@ -2,17 +2,16 @@
 
 namespace Books\User\Behaviors;
 
-use Books\Book\Models\Book;
-use Books\Book\Models\CoAuthor;
-use Books\Book\Models\Cycle;
 use Books\Book\Models\Tag;
+use Books\Book\Models\Book;
+use Books\Book\Models\Cycle;
 use RainLab\User\Models\User;
 use Books\User\Models\Country;
-use Books\User\Models\AccountSettings;
 use Books\User\Models\Settings;
+use Books\User\Models\AccountSettings;
+use October\Rain\Extension\ExtensionBase;
 use Books\Profile\Models\ProfileSettings;
 use Books\Profile\Classes\ProfileManager;
-use October\Rain\Extension\ExtensionBase;
 use Books\User\Classes\ProfileAttributeCasts;
 use Books\User\Classes\BirthdayAttributeCasts;
 
@@ -21,16 +20,13 @@ class BookUser extends ExtensionBase
     public function __construct(protected User $parent)
     {
         $this->parent->hasOne['country'] = [Country::class, 'key' => 'id', 'otherKey' => 'country_id'];
+
         $this->parent->hasMany['tags'] = [Tag::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['cycles'] = [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['settings'] = [Settings::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['accountSettings'] = [AccountSettings::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['profileSettings'] = [ProfileSettings::class, 'key' => 'user_id', 'otherKey' => 'id'];
-        $this->parent->hasMany['books'] = [
-            Book::class,
-            'key' => 'user_id',
-            'otherKey' => 'id',
-        ];
+        $this->parent->hasMany['books'] = [Book::class, 'key' => 'user_id', 'otherKey' => 'id',];
         $this->parent->addValidationRule('birthday', 'nullable');
         $this->parent->addValidationRule('birthday', 'date');
         $this->parent->addValidationRule('show_birthday', 'nullable');
@@ -45,6 +41,7 @@ class BookUser extends ExtensionBase
             'favorite_genres',
             'exclude_genres',
             'see_adult',
+            'asked_adult_agreement'
         ]);
         $this->parent->addDateAttribute('birthday');
         $this->parent->addCasts([
@@ -64,10 +61,10 @@ class BookUser extends ExtensionBase
         return $this->parent->username;
     }
 
-    public function  scopeCoauthorsAutocomplite($q, $name)
+    public function scopeCoauthorsAutocomplite($q, $name)
     {
         return $q->whereHas('profiles', function ($query) use ($name) {
-            return $query->where('username','like',"%$name%");
+            return $query->where('username', 'like', "%$name%");
         });
     }
 
@@ -91,6 +88,10 @@ class BookUser extends ExtensionBase
     public function getCountryOptions(): array
     {
         return Country::lists('name', 'id');
+    }
+
+    public function books(){
+        return $this->profile->books();
     }
 
 

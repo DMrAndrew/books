@@ -1,11 +1,15 @@
 <?php namespace Books\Catalog\Models;
 
 use Model;
+use Books\Catalog\Classes\BookTypeEnum;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
 
 /**
  * Type Model
+ *
+ * @property string label
+ * @property BookTypeEnum enum
  */
 class Type extends Model
 {
@@ -40,7 +44,9 @@ class Type extends Model
     /**
      * @var array Attributes to be cast to native types
      */
-    protected $casts = [];
+    protected $casts = [
+        'enum' => BookTypeEnum::class
+    ];
 
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
@@ -50,7 +56,9 @@ class Type extends Model
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
      */
-    protected $appends = [];
+    protected $appends = [
+        'enum'
+    ];
 
     /**
      * @var array hidden attributes removed from the API representation of the model (ex. toArray())
@@ -80,6 +88,9 @@ class Type extends Model
     ];
     public $attachMany = [];
 
+   public function getLabelAttribute(){
+       return $this->enum->getLabel();
+   }
     public function activate()
     {
         $this->active = 1;

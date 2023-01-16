@@ -22,7 +22,7 @@ tabs:
             label: Страна
             tab: rainlab.user::lang.user.account
             span: auto
-            type: relation
+            type: dropdown
 
         send_invite:
             type: checkbox

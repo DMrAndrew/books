@@ -1,11 +1,11 @@
 <div class="personal-area__sidebar ui-col-sm-3">
     {% for link in collect([
-    {name:'Профиль',href:'/lc-profile'},
+    {name:'Профиль',href:'/lc-profile',turbo:'false'},
     {name:'Приватность',href:'/lc-privacy'},
     {name:'Уведомления',href:'/lc-notification'},
     {name:'Черный список',href:''},
     {separator:1},
-    {name:'Книги',href:'/lc-books'},
+    {name:'Книги',href:'/lc-books',turbo:'false'},
     {name:'Магазин',href:''},
     {name:'Блог',href:''},
     {name:'Видеоблог',href:''},
@@ -26,7 +26,7 @@
     {% if link.separator %}
     <div class="personal-area__sidebar-separator"></div>
     {% else %}
-    <a class="personal-area__sidebar-link {{this.page.url == link.href ? 'active' : ''}}" href="{{link.href}}">{{link.name}}</a>
+    <a class="personal-area__sidebar-link {{this.page.url == link.href ? 'active' : ''}}" data-turbo="{{link.turbo|default('true')}}" href="{{link.href}}">{{link.name}}</a>
     {% endif %}
     {% endfor %}
 </div>

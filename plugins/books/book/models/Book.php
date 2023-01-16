@@ -1,19 +1,39 @@
 <?php namespace Books\Book\Models;
 
+
 use Model;
 use System\Models\File;
-use RainLab\User\Models\User;
 use Books\Catalog\Models\Genre;
+use Books\Profile\Models\Profile;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Collection;
-use October\Rain\Database\Traits\Sortable;
+use October\Rain\Database\Relations\HasOne;
+use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\Validation;
+use October\Rain\Database\Relations\AttachOne;
+use October\Rain\Database\Relations\BelongsTo;
+use October\Rain\Database\Relations\BelongsToMany;
+use October\Rain\Database\Relations\HasOneThrough;
 
 /**
  * Book Model
+ *
+ * @method HasOne author
+ * @method HasOne ebookEdition
+ * @method HasMany editions
+ * @method BelongsTo cycle
+ * @method BelongsToMany tags
+ * @method BelongsToMany genres
+ * @method HasMany authors
+ * @method BelongsToMany coauthors
+ * @method BelongsToMany profiles
+ * @method HasOneThrough profile
+ * @method HasOneThrough ebook
+ * @method AttachOne cover
  */
 class Book extends Model
 {
-    use Sortable;
+
     use Validation;
 
     /**
@@ -26,24 +46,17 @@ class Book extends Model
      */
     protected $guarded = ['*'];
 
+    public static array $endingArray = ['Книга', 'Книги', 'Книг'];
+
     /**
      * @var array fillable attributes are mass assignable
      */
     protected $fillable = [
         'title',
         'annotation',
-        'user_id',
-        'cycle_id',
         'age_restriction',
-        'download_allowed',
-        'comment_allowed',
-        'sales_free',
-        'sort_order',
-        'free_parts',
-        'status',
-        'price'
+        'cycle_id'
     ];
-
 
     /**
      * @var array rules for validation
@@ -52,18 +65,15 @@ class Book extends Model
         'title' => 'required|between:2,100',
         'annotation' => 'nullable|string',
         'cover' => 'nullable|image',
-        'user_id' => 'required|exists:users,id',
-        'price' => 'nullable|integer',
-        'free_parts' => 'nullable|integer',
-        'download_allowed' => 'nullable|boolean',
-        'comment_allowed' => 'nullable|boolean',
-        'sales_free' => 'nullable|boolean'
+        'cycle_id' => 'nullable|integer|exists:books_book_cycles,id'
     ];
 
     /**
      * @var array Attributes to be cast to native types
      */
-    protected $casts = [];
+    protected $casts = [
+        'age_restriction' => AgeRestrictionsEnum::class,
+    ];
 
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
@@ -93,14 +103,38 @@ class Book extends Model
      * @var array hasOne and other relations
      */
     public $hasOne = [
-        'user' => [User::class, 'key' => 'id', 'otherKey' => 'user_id'],
+        'author' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'owner'],
+        'ebookEdition' => [Edition::class, 'key' => 'book_id', 'id', 'scope' => 'ebook'],
     ];
     public $hasMany = [
-        'chapters' => [Chapter::class, 'key' => 'book_id', 'otherKey' => 'id']
+        'authors' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id'],
+        'coauthors' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'notOwner'],
+        'editions' => [Edition::class, 'key' => 'book_id', 'id']
     ];
     public $belongsTo = [
-        'cycle' => [Cycle::class, 'key' => 'id', 'otherKey' => 'cycle_id'],
+        'cycle' => [Cycle::class],
     ];
+
+    public $hasOneThrough = [
+        'ebook' => [
+            EbookEdition::class,
+            'key' => 'book_id',
+            'through' => Edition::class,
+            'throughKey' => 'id',
+            'otherKey' => 'id',
+            'secondOtherKey' => 'editionable_id'
+        ],
+        'profile' => [
+            Profile::class,
+            'key' => 'book_id',
+            'through' => Author::class,
+            'throughKey' => 'id',
+            'otherKey' => 'id',
+            'secondOtherKey' => 'profile_id'
+        ]
+    ];
+
+
     public $belongsToMany = [
         'genres' => [
             Genre::class,
@@ -115,63 +149,106 @@ class Book extends Model
             'otherKey' => 'tag_id',
             'scope' => 'orderByName'
         ],
-        'coauthors' => [
-            User::class,
-            'pivotModel' => CoAuthor::class,
-            'table' => 'books_book_co_authors',
+        'profiles' => [
+            Profile::class,
+            'table' => 'books_book_authors',
             'key' => 'book_id',
-            'otherKey' => 'user_id',
-            'pivot' => ['percent']
-        ]
+            'otherKey' => 'profile_id',
+            'pivot' => ['percent', 'sort_order', 'is_owner'],
+            'pivotSortable' => 'is_owner'
+        ],
+
     ];
     public $morphTo = [];
     public $morphOne = [];
     public $morphMany = [];
-    public $attachOne = ['cover' => File::class];
+    public $attachOne = [
+        'cover' => File::class,
+
+    ];
     public $attachMany = [];
 
-    public function getPriceAttribute($value): float|int|null
+
+    public function scopeSearchByString(Builder $query, string $string)
     {
-        return $value ? (int)$value / 1000 : (int)$value;
+        return $query->public()->where('title', 'like', "%$string%");
     }
 
-    public function setPriceAttribute(int|string|null $value)
+    public function scopePublic(Builder $q)
     {
-        $this->attributes['price'] = $value ? (int)$value * 1000 : $value;
+        return $q->whereHas('editions', function ($query) {
+            return $query->whereHasMorph('editionable', EbookEdition::class, function (Builder $builder) {
+                return $builder->whereNotIn('status', [BookStatus::HIDDEN->value]);
+            });
+        });
     }
 
-    public function getStatusAttribute($status): ?BookStatus
+    public function scopeDefualtEager(Builder $q)
     {
-        return BookStatus::tryFrom($status);
+        return $q->with(['cover', 'tags', 'genres', 'ebook', 'author.profile']);
     }
 
-    public function setStatusAttribute(string|BookStatus $status)
+
+    /**
+     * Try set default book cover if not exists one.
+     *
+     * @return void
+     */
+    protected function setDefaultCover(): void
     {
-        $this->attributes['status'] = is_string($status) ? $status : $status->value;
+        if (!$this->cover) {
+            if ($dir = config('book.book_cover_blank_dir')) {
+                $file_src = collect(glob(base_path() . "/$dir/*.png"))->random();
+                if (file_exists($file_src)) {
+                    $file = (new File())->fromFile($file_src, 'cover.png');
+                    $file->is_public = true;
+                    $file->save();
+                    $this->cover()->add($file);
+                }
+            }
+        }
     }
 
-    public function getDeffered($key): Collection
+    protected function setDefaultEdition(): void
+    {
+        if (!$this->ebook()->exists()) {
+            $edition = new Edition();
+            $edition->editionable = EbookEdition::create();
+            $this->editions()->save($edition);
+        }
+    }
+
+    public function setSortOrder()
+    {
+        $this->authors()->each(function ($author) {
+            if (!$author->sort_order) {
+                $author->update(['sort_order' => ($author->profile->authorships()->max('sort_order') ?? 0) + 1]);
+            }
+        });
+    }
+
+
+    protected function afterCreate()
+    {
+        $this->setDefaultCover();
+        $this->setDefaultEdition();
+
+    }
+
+    public function getDeferred($key): Collection
     {
         return $this->getDeferredBindingRecords($key);
     }
 
-    public function getAgeRestrictionAttribute($value): ?AgeRestrictionsEnum
+    public function getDeferredAuthors($key): Collection
     {
-        return AgeRestrictionsEnum::tryFrom($value) ?? AgeRestrictionsEnum::default();
+        return $this->getDeferred($key)->where('master_field', '=', 'profiles');
     }
 
-    public function setAgeRestrictionAttribute(string|int|AgeRestrictionsEnum $ageRestrictions)
+    public function getDeferredAuthor($key, int|Profile $profile)
     {
-        $this->attributes['age_restriction'] = (is_string($ageRestrictions) || is_int($ageRestrictions)) ? $ageRestrictions : $ageRestrictions->value;
+        return $this->getDeferredAuthors($key)?->first(fn($bind) => $bind->slave_id === (is_int($profile) ? $profile : $profile->id)) ?? null;
     }
 
-    public function getSalesAtAttribute()
-    {
-        return $this->chapters()->first()?->published_at ?? null;
-    }
 
-    public function getRealPriceAttribute()
-    {
-        return !!$this->sales_free ? 0 : $this->price;
-    }
 }

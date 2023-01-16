@@ -5,11 +5,14 @@ use Db;
 use Model;
 use Books\Book\Models\Book;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\NestedTree;
 use October\Rain\Database\Traits\Validation;
 
 /**
  * Genre Model
+ *
+ * @method HasMany children
  */
 class Genre extends Model
 {

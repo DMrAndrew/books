@@ -1,60 +1,63 @@
 url = "/lc-profile"
-layout = "personalarea"
+layout = "default"
 title = "Личный кабинет - профиль"
 description = "Профиль"
 meta_title = "Профиль"
 meta_description = "Профиль"
-
 [profile]
-
-[Form]
 ==
+{% partial 'profile/personal_area_header' %}
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
 
-
-<div class="personal-area__container ui-grid-container ui-grid-gap">
-    {% partial "profile/sidebarmenu" %}
-    <div class="ui-col-sm-9">
-        <div class="personal-area__subtitle">
-            <span class="ui-text-head--3 ui-text--bold">Профиль</span>
-            <svg class="square-16">
-                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-            </svg>
-        </div>
-
-        <div id="change_username_form" class="buy-book-modal ui-modal" style="display: none">
-            <form data-request="profile::onUpdateUsername"
-                  data-request-validate
-                  data-request-success="document.location.reload()"
-            >
-                <div class="ui-modal-container">
-                    <div class="buy-book-modal__container _size-large ui-modal-content">
-                        <div class="buy-book-modal__header">
-                            <div class="square-16 "></div>
-                            <div class="ui-text-head--2 ui-text--bold">Изменить псевдоним</div>
-                            <svg style="cursor: pointer" onclick="closeChangerUserNameForm()" class="square-24">
-                                <use
-                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                            </svg>
-                        </div>
-                        <div class="ui-input">
-                            <input class="ui-input-item _size-32" name="username" placeholder="Псевдоним" value="{{userdata.profile.username}}"
-                                   type="text">
-                            <span class="validation-error" data-validate-for="username"></span>
-                            <span class="validation-error" data-validate-for="username_clipboard"></span>
-                        </div>
-                        <div class="personal-area__wrap _separator"></div>
-                        <textarea name="username_clipboard_comment" class="ui-input-textarea" rows="3" placeholder="Укажите причину изменения псевдонима">{{ userdata.profile.username_clipboard_comment}}</textarea>
-
-
-                        <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
-                            <span class="ui-text--medium">Отправить</span>
-                        </button>
-                    </div>
+            {% partial "profile/sidebarmenu" %}
+            <div class="ui-col-sm-9">
+                <div class="personal-area__subtitle">
+                    <span class="ui-text-head--3 ui-text--bold">Профиль</span>
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                    </svg>
                 </div>
-            </form>
-        </div>
 
-        {% partial "profile/primaryInformation" userdata=userdata %}
-        {% partial "profile/profileSecondaryInformation" userdata=userdata %}
+                <div id="change_username_form" class="buy-book-modal ui-modal" style="display: none">
+                    <form data-request="profile::onUpdateUsername"
+                          data-request-validate
+                          data-request-success="document.location.reload()"
+                    >
+                        <div class="ui-modal-container">
+                            <div class="buy-book-modal__container _size-large ui-modal-content">
+                                <div class="buy-book-modal__header">
+                                    <div class="square-16 "></div>
+                                    <div class="ui-text-head--2 ui-text--bold">Изменить псевдоним</div>
+                                    <svg style="cursor: pointer" onclick="closeChangerUserNameForm()" class="square-24">
+                                        <use
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                                    </svg>
+                                </div>
+                                <div class="ui-input">
+                                    <input class="ui-input-item _size-32" name="username" placeholder="Псевдоним"
+                                           value="{{userdata.profile.username}}"
+                                           type="text">
+                                    <span class="validation-error" data-validate-for="username"></span>
+                                    <span class="validation-error" data-validate-for="username_clipboard"></span>
+                                </div>
+                                <div class="personal-area__wrap _separator"></div>
+                                <textarea name="username_clipboard_comment" class="ui-input-textarea" rows="3"
+                                          placeholder="Укажите причину изменения псевдонима">{{ userdata.profile.username_clipboard_comment}}</textarea>
+
+
+                                <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                                    <span class="ui-text--medium">Отправить</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                {% partial "profile/primaryInformation" userdata=userdata %}
+                {% partial "profile/profileSecondaryInformation" userdata=userdata %}
+            </div>
+        </div>
     </div>
 </div>

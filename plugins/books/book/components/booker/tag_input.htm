@@ -7,6 +7,7 @@
         <div class="ui-multi-select-item _size-32">
             <div class="ui-multi-select-tag-wrapper">
                 {% for tag in tags %}
+                <input type="hidden" name="tags[{{tag.id}}][id]" value="{{tag.id}}"/>
                 <div class="ui-multi-select-tag ui-tag _size-24 _color-gray"
                      onclick="oc.request(this,'booker::onRemoveTag')"
                      data-request-data="delete_tag_id:'{{tag.id}}'"
@@ -45,7 +46,7 @@
                 {% for tag in search_result %}
                 <div class="ui-dropdown-item"
                      onclick="oc.request(this,'booker::onAddTag')"
-                     data-request-data="create_tag_id:'{{tag.id}}'"
+                     data-request-data="tag_name:'{{tag.name}}'"
                 >
                     <span>{{ tag.name }}</span>
                 </div>
@@ -55,8 +56,8 @@
                 {% if can_create %}
                 <div class="ui-dropdown-separate"></div>
                 <div class="ui-dropdown-item active"
-                     onclick="oc.request(this,'booker::onCreateTag')"
-                     data-request-data="create_tag_name:'{{tagString}}'"
+                     onclick="oc.request(this,'booker::onAddTag')"
+                     data-request-data="tag_name:'{{tagString}}'"
                 >
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#plus-stroked-16' | theme}}"></use>

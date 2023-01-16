@@ -1,0 +1,12 @@
+<textarea class="ui-input-textarea"
+          name="annotation"
+          cols="30"
+          rows="7"
+          placeholder="Пожалуйста, напишите о чем ваше произведение, но не сам текст. Текст произведения вы добавите следующим шагом."
+>{{book.annotation}}</textarea>
+<span class="validation-error" data-validate-for="annotation"></span>
+<script>
+    if(!document.getElementById('cke_annotation')){
+        CKEDITOR.replace( 'annotation' );
+    }
+</script>

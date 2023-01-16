@@ -1,0 +1,74 @@
+<div class="book-card">
+    <div class="book-card__body">
+        <div class="book-card__column-left">
+            <a href="#">
+                <img class="book-card__image" src="{{book.cover.getThumb(104,150)}}" alt="" loading="lazy">
+            </a>
+
+            <button class="book-card__bookmark">
+                <svg class="book-card__bookmark-icon _color-violet ">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-check-16' | theme}}"></use>
+                </svg>
+                <svg class="book-card__bookmark-icon _color-black active">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme}}"></use>
+                </svg>
+            </button>
+        </div>
+        <div class="book-card__column-right">
+            <a href="#" class="book-card__title ui-text-head--3 ui-text--bold">{{book.title}}</a>
+            <a href="/author-page/{{book.author.profile.id}}" class="book-card__author ui-link _violet">{{book.author.profile.username}}</a>
+            {% partial 'book/ebook-card-info' book=book %}
+            <div class="book-card__description">
+                {{book.annotation|raw}}
+            </div>
+            <div class="book-card__genres">
+                {% for tag in book.tags %}
+                <a href="#" class="ui-link _violet">{{tag.name}}</a>,
+                {% endfor %}
+            </div>
+            <div class="book-card__body-footer">
+                <div class="book-card__raiting">
+                    <svg>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
+                    </svg>
+                    <span>0</span>
+                </div>
+                <div class="book-card__book-list">
+                    {% for genre in book.genres %}
+                    <a href="#" class="ui-link _violet">#0 {{genre.name}}</a>,
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="book-card__footer">
+        {% if book.age_restriction.value != 0 %}
+        <div class="book-card__footer-label">{{ book.age_restriction.getLabel }}</div>
+        {% endif %}
+        <div class="book-card__footer-wrapper">
+            <svg>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
+            </svg>
+            <span>0</span>
+        </div>
+        <div class="book-card__footer-wrapper">
+            <svg>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-16' | theme}}"></use>
+            </svg>
+            <span>0</span>
+        </div>
+        <div class="book-card__footer-wrapper">
+            <svg>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>
+            </svg>
+            <span>0</span>
+        </div>
+        <div class="book-card__footer-wrapper">
+            <svg>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-filled-16' | theme}}"></use>
+            </svg>
+            <span>0</span>
+        </div>
+    </div>
+</div>

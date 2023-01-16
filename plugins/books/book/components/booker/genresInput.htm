@@ -1,6 +1,7 @@
 <div class="ui-multi-select-item _size-32">
 <div class="ui-multi-select-tag-wrapper">
     {% for item in genres %}
+    <input type="hidden" name="genres[{{item.id}}][id]" value="{{item.id}}"/>
     <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
         <span>{{item.name}}</span>
         <svg

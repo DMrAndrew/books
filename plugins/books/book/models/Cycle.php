@@ -2,6 +2,7 @@
 
 use Model;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Models\User;
 
 /**
  * Cycle Model
@@ -64,9 +65,15 @@ class Cycle extends Model
     /**
      * @var array hasOne and other relations
      */
-    public $hasOne = [];
-    public $hasMany = [];
-    public $belongsTo = [];
+    public $hasOne = [
+
+    ];
+    public $hasMany = [
+        'books' => [Book::class]
+    ];
+    public $belongsTo = [
+        'user' => [User::class]
+    ];
     public $belongsToMany = [];
     public $morphTo = [];
     public $morphOne = [];

@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>October CMS - {{ this.page.meta_title ?: placeholder('pageTitle') }}</title>
+<title>Время книг - {{ this.page.meta_title ?: placeholder('pageTitle') }}</title>
 <meta name="description" content="{{ this.page.meta_description }}">
 <meta name="title" content="{{ this.page.meta_title }}">
 <meta name="author" content="Mobecan">
@@ -11,18 +11,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-
-<script src="{{ [
-        '@jquery',
-        '@framework',
-        '@framework.extras',
-    ]|theme}}">
-</script>
-
+<link rel="stylesheet"   href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
 <!-- Подключение стилей свайпера -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
-
+<script src="{{ ['@jquery','@framework','@framework.extras',]|theme}}"></script>
+<script  src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script  src="{{ 'assets/js/jquery-ui.min.js'|theme }}"></script>
+<script  src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
+<script src="{{'assets/js/menu-mobile.js' | theme}}"></script>
+<script src="{{'assets/js/favorite-accordion.js' | theme}}"></script>
+<script src="{{ 'assets/js/tabs.js'|theme }}"></script>
+<script src="{{ 'assets/js/utils.js'|theme }}"></script>
 <style>
     #login_popup, #register_popup, #register_form, #login_form, #auth_popup {
         display: none;
@@ -31,40 +29,10 @@
     .validation-error {
         color: red;
         font-size: 12px;
+        margin: 8px 10px;
     }
 </style>
 {% styles %}
-<script src="{{ 'assets/js/tabs.js'|theme }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-<script defer src="https://unpkg.com/@popperjs/core@2"></script>
-<script src="{{'assets/js/menu-mobile.js' | theme}}"></script>
-<script src="{{'assets/js/favorite-accordion.js' | theme}}"></script>
-<script  src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
-
-<script>
-    let openForm = (id = 'auth_popup') => document.getElementById(id).style.display = 'flex'
-    let closeForm = (id = 'auth_popup') => {
-        const c = document.getElementById(id)
-        c ? c.style.display = 'none' : null
-    }
-    let closeContainers = () => Array.from(document.getElementsByClassName('auth__container')).forEach(e => e.style.display = 'none')
-    let openContainer = (id) => document.getElementById(id).style.display = 'block'
-    let toForm = (id) => {
-        openForm(), closeContainers(), openContainer(id)
-    }
-    let loginPopup = () => toForm('login_popup');
-    let registerPopup = () => toForm('register_popup');
-    let loginForm = () => toForm('login_form');
-    let registerForm = () => toForm('register_form');
-
-    let openChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'flex'
-    let closeChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'none'
-    let closeModal = () => Array.from(document.getElementsByClassName('ui-modal')).forEach(e => e.style.display = 'none')
-    let openCreateCycleForm = () => document.getElementById('create_cycle_form').style.display = 'flex'
-    let closeDropDowns = () => Array.from(document.getElementsByClassName('ui-dropdown')).forEach(e => e.style.display = 'none')
-
-
-</script>
 {% framework extras turbo %}
 {% scripts %}
 

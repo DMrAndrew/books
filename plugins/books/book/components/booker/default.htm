@@ -16,8 +16,8 @@
             >
             <span class="validation-error" data-validate-for="title"></span>
         </div>
-        <div id="coauthorInput">
-            {% partial 'booker::coauthorInput' coauthors=book.coauthors %}
+        <div id="authorInput">
+            {% partial 'booker::authorInput' authors=book.profiles %}
         </div>
         <div class="create-book__input ui-multi-select">
             <div class="ui-multi-select-header">
@@ -34,20 +34,13 @@
         </div>
 
         <div id="cycle_input">
-            {% partial 'booker::cycle_input' %}
+            {% partial 'booker::cycle_input' cycle_id=book.cycle_id %}
         </div>
 
+        {% partial 'booker::annotation' %}
 
-
-        <textarea class="ui-input-textarea"
-                  name="annotation"
-                  cols="30"
-                  rows="7"
-                  placeholder="Пожалуйста, напишите о чем ваше произведение, но не сам текст. Текст произведения вы добавите следующим шагом."
-        >{{book.annotation}}</textarea>
-        <span class="validation-error" data-validate-for="annotation"></span>
         <div id="tag_input_partial">
-        {% partial 'booker::tag_input' %}
+        {% partial 'booker::tag_input' tags=book.tags %}
         </div>
 
         <div class="ui-grid-container ui-grid-gap">
@@ -99,12 +92,14 @@
             </div>
         </div>
 
+        <span class="validation-error" data-validate-for="download_allowed"></span>
+        <span class="validation-error" data-validate-for="comment_allowed"></span>
         <div class="create-book__check">
             <label class="ui-checkbox">
                 <input type="hidden" value="0" name="comment_allowed">
-                <input type="checkbox"
-                       {{ book.comment_allowed ? 'checked' : ''  }}
-                hidden name="comment_allowed">
+                <input type="checkbox" value="1" hidden name="comment_allowed"
+                       {{ book.ebook.comment_allowed ? 'checked' : ''  }}
+                >
                 <div class="ui-checkbox-checker">
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
@@ -114,10 +109,10 @@
             </label>
             <label class="ui-checkbox">
                 <input type="hidden" value="0" name="download_allowed">
-                <input type="checkbox"
+                <input type="checkbox" value="1" hidden name="download_allowed"
 
-                       {{ book.download_allowed ? 'checked' : ''  }}
-                       hidden name="download_allowed">
+                       {{ book.ebook.download_allowed ? 'checked' : ''  }}
+                       >
                 <div class="ui-checkbox-checker">
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
@@ -125,6 +120,7 @@
                 </div>
                 <span class="ui-checkbox-text">Разрешить скачивания</span>
             </label>
+
         </div>
 
         <button href="#" class="ui-button ui-button-size--32 ui-button-view--2">Сохранить</button>

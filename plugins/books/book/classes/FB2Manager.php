@@ -2,87 +2,88 @@
 
 namespace Books\Book\Classes;
 
+
 use Books\Book\Models\Book;
-use Books\Book\Models\BookStatus;
-use Books\Book\Models\Chapter;
-use Carbon\Carbon;
+use Books\Book\Models\ChapterStatus;
+use Books\Profile\Models\Profile;
 use Db;
 use Event;
-use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use System\Models\File;
 use Tizis\FB2\FB2Controller;
+use Tizis\FB2\Model\BookInfo;
 
 class FB2Manager
 {
-    public FB2Controller $parsed;
-    protected string $session_key;
+    protected BookInfo $info;
 
-    public function __construct()
+    protected FB2Controller $parser;
+
+    public function __construct(protected User            $user,
+                                protected ?string         $session_key = null,
+                                protected ?Book           $book = null,
+                                protected ?BookService    $bookService = null,
+                                protected ?ChapterManager $chapterManager = null,
+    )
     {
-        $this->session_key = uuid_create();
+        $this->session_key ??= uuid_create();
+        $this->book ??= new Book();
+        $this->bookService ??= new BookService(user: $this->user, book: $this->book, session_key: $this->session_key);
     }
 
 
-    public function apply($fb2)
+    public function apply(File $fb2)
     {
         return Db::transaction(function () use ($fb2) {
 
-            $file = file_get_contents($fb2);
-            $this->parsed = new FB2Controller($file);
-            $this->parsed->withNotes();
-            $this->parsed->startParse();
 
+            $file = file_get_contents($fb2->getLocalPath());
+            $this->parser = new FB2Controller($file);
+            $this->parser->withNotes();
+            $this->parser->startParse();
 
-            $info = $this->parsed->getBook()->getInfo();
-            $user = Auth::getUser() ?? User::query()->first();
+            $this->info = $this->parser->getBook()->getInfo();
 
-            $book = new Book([
-                'title' => $info->getTitle(),
-                'annotation' => strip_tags($info->getAnnotation()),
-                'user_id' => $user->id,
-                'price' => 0,
-                'status' => BookStatus::HIDDEN
-            ]);
+            $data = [
+                'title' => strip_tags($this->info->getTitle()),
+                'annotation' => $this->info->getAnnotation(),
+            ];
 
-            $cover = (new File())->fromData(base64_decode($this->parsed->getBook()->getCover()), 'cover.jpg');
+            $cover = (new File())->fromData(base64_decode($this->parser->getBook()->getCover()), 'cover.jpg');
             $cover->save();
-            $book->cover()->add($cover, $this->session_key);
+            $this->book->cover()->add($cover, $this->session_key);
 
-            $at_least_one_author_in_the_app_is_found = false;
-            foreach ($this->parsed->getBook()->getAuthors() as $author) {
+            foreach ($this->parser->getBook()->getAuthors() as $author) {
                 //TODO улучшить поиск по пользователям
-                if ($coauthor = User::username($author->getFullName())->first()) {
-                    if ($coauthor->id === $user->id) {
-                        continue;
-                    }
-                    if (!$at_least_one_author_in_the_app_is_found) {
-                        $book->coauthors()->add($user, $this->session_key, ['percent' => 100]);
-                    }
-                    $book->coauthors()->add($coauthor, $this->session_key, ['percent' => 0]);
-                    $at_least_one_author_in_the_app_is_found = true;
+                if ($profile = Profile::username($author->getFullName())->first()) {
+                    $this->bookService->addProfile($profile);
                 }
             }
 
-            $chapters = collect($this->parsed->getBook()->getChapters())->map(fn($chapter, $key) => new Chapter([
-                'title' => $chapter->getTitle(),
-                'content' => $chapter->getContent(),
-                'published_at' => Carbon::now(),
-                'sort_order' => $key + 1
-            ]));
-            $book->save(null, $this->session_key);
-
-            foreach ($chapters as $chapter) {
-                $book->chapters()->add($chapter);
-            }
-            $words = $info->getKeywords();
-            collect(explode(',', $words))->each(function ($i) use ($book, $user) {
-                $tag = $user->tags()->firstOrCreate(['name' => mb_ucfirst($i)]);
-                $book->tags()->add($tag);
+            $keywords = collect(explode(',', $this->info->getKeywords()));
+            $keywords->each(function ($i) {
+                $this->bookService->addTag($i);
             });
-            Event::fire('books.book.created', $book);
-            return $book;
+
+            $this->book = $this->bookService->save($data);
+
+            if(!$this->book->ebook){
+                throw new \ApplicationException('Электронное издание книги не найдено.');
+            }
+
+            $this->chapterManager = new ChapterManager($this->book->ebook, false);
+
+            collect($this->parser->getBook()->getChapters())
+                ->map(fn($chapter, $key) => $this->chapterManager->create([
+                    'title' => $chapter->getTitle(),
+                    'content' => $chapter->getContent(),
+                    'sort_order' => $key + 1,
+                    'status' => ChapterStatus::PUBLISHED,
+                ]));
+
+            Event::fire('books.book.parsed', [$this->book]);
+            return $this->book;
+
         });
     }
-
 }

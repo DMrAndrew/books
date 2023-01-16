@@ -15,4 +15,5 @@ columns:
         cssClass: success
     created_at:
         label: Дата создания
+        type: timetense
 
