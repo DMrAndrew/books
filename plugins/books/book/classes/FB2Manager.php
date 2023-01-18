@@ -3,11 +3,13 @@
 namespace Books\Book\Classes;
 
 
+use Books\Book\Classes\Exceptions\FBParserException;
 use Books\Book\Models\Book;
 use Books\Book\Models\ChapterStatus;
 use Books\Profile\Models\Profile;
 use Db;
 use Event;
+use League\Csv\Exception;
 use RainLab\User\Models\User;
 use System\Models\File;
 use Tizis\FB2\FB2Controller;
@@ -38,9 +40,16 @@ class FB2Manager
 
 
             $file = file_get_contents($fb2->getLocalPath());
-            $this->parser = new FB2Controller($file);
-            $this->parser->withNotes();
-            $this->parser->startParse();
+
+            try {
+                $this->parser = new FB2Controller($file);
+                $this->parser->withNotes();
+                $this->parser->startParse();
+            }
+            catch (\Exception $exception){
+                throw new FBParserException();
+            }
+
 
             $this->info = $this->parser->getBook()->getInfo();
 
@@ -68,7 +77,7 @@ class FB2Manager
             $this->book = $this->bookService->save($data);
 
             if(!$this->book->ebook){
-                throw new \ApplicationException('Электронное издание книги не найдено.');
+                throw new \Exception('Электронное издание книги не найдено. Обратитесь к администратору.');
             }
 
             $this->chapterManager = new ChapterManager($this->book->ebook, false);

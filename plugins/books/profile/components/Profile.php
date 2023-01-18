@@ -41,7 +41,8 @@ class Profile extends ComponentBase
                     'modelClass' => UserProfile::class,
                     'modelKeyColumn' => 'avatar',
                     'deferredBinding' => false,
-                    'imageWidth' => 150
+                    'imageWidth' => 168,
+                    'imageHeight' => 168,
                 ]
             );
             $component->bindModel('avatar', $profile);
@@ -53,8 +54,9 @@ class Profile extends ComponentBase
                     'modelClass' => UserProfile::class,
                     'modelKeyColumn' => 'banner',
                     'deferredBinding' => false,
-                    'imageWidth' => 250,
-                    'imageHeight' => 150
+                    'imageWidth' => 1152,
+                    'imageHeight' => 168,
+
                 ]
             );
             $component->bindModel('banner', $profile);
