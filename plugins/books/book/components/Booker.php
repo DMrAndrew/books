@@ -3,8 +3,10 @@
 use ApplicationException;
 use Books\Book\Classes\BookService;
 use Books\Book\Models\AgeRestrictionsEnum;
+use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
+use Books\Book\Models\Tag;
 use Books\Catalog\Models\Genre;
 use Books\FileUploader\Components\ImageUploader;
 use Books\Profile\Models\Profile;
@@ -96,90 +98,6 @@ class Booker extends ComponentBase
         $this->pageCycle();
     }
 
-    /**
-     */
-    public function onAddTag(): array
-    {
-        $this->service->addTag(post('tag_name'));
-        return $this->generateTagInput();
-    }
-
-    /**
-     * @throws ValidationException
-     */
-    public function onRemoveTag()
-    {
-        if ($tag = $this->user->tags()->find(post('delete_tag_id'))) {
-            $this->service->removeTag($tag);
-            return $this->generateTagInput();
-        }
-        throw new ValidationException(['tag' => 'Тэг не найден']);
-    }
-
-    public function onSearchTag(): array
-    {
-        $string = post('tag_string');
-        if (!$string || strlen($string) < 2) {
-            return $this->generateTagInput(['tagString' => $string]);
-        }
-        $like = $this->user?->tags()->nameLike($string)->get();
-        $exists = $this->service->getTags();
-        $array = $like->diff($exists);
-        $already_has = !!$exists->first(fn($i) => $i->name === $string);
-        $can_create = !$already_has && !!!$like->first(fn($i) => $i->name === $string);
-        return $this->generateTagInput([
-            'search_result' => $array->toArray(),
-            'already_has' => $already_has,
-            'can_create' => $can_create,
-            'tagString' => $string,
-        ]);
-    }
-
-    public function onSearchAuthor()
-    {
-        try {
-            $name = post('searchAuthor');
-            if ($name && strlen($name) > 2) {
-                $array = Profile::searchByString($name)?->get()
-                    ?->diff($this->service->getProfiles())
-                    ?->diff(Collection::make([$this->user->profile]))
-                    ->toArray()
-                    ?? [];
-            } else {
-                $array = [];
-            }
-
-
-            return $this->generateAuthorInput(['search_array' => $array, 'search_string' => $name]);
-
-        } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
-        }
-
-    }
-
-    public function onAddAuthor()
-    {
-
-        try {
-            $count = $this->service->getProfiles()->count();
-            if ($count > 3) {
-                throw new ValidationException(['authors' => 'Вы можете добавить до 3 соавторов.']);
-            }
-            if ($profile = Profile::find(post('id'))) {
-                $this->service->addProfile($profile);
-            }
-
-            return $this->generateAuthorInput();
-
-        } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
-        }
-    }
-
-
     public function onSaveBook()
     {
         try {
@@ -203,26 +121,16 @@ class Booker extends ComponentBase
     {
         try {
             collect(post('authors'))
+                ->whereNotNull('profile_id')
+                ->whereBetween('percent_value',[0,100])
                 ->map(fn($i) => [
-                    'profile' => Profile::find($i['profile_id'] ?? null),
-                    'value' => $i['percent_value']])
-                ->filter(fn($i) => !!$i['profile'])
+                    'profile' => Profile::find($i['profile_id']),
+                    'value' => $i['percent_value']
+                ])
                 ->each(function ($i) {
                     $this->service->setPercent(...$i);
                 });
 
-
-        } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
-        }
-    }
-
-    public function onDeleteAuthor()
-    {
-        try {
-            $this->service->removeProfile(Profile::find(post('delete_profile_id')));
-            return $this->generateAuthorInput();
 
         } catch (Exception $ex) {
             if (Request::ajax()) throw $ex;
@@ -250,28 +158,164 @@ class Booker extends ComponentBase
         }
     }
 
-    public function onSearchGenre()
-    {
-        $name = post('searchgenre');
-        if ($name && strlen($name) > 2) {
-            $array = Genre::active()
-                ->name($name)
-                ->get()
-                ->diff($this->service->getGenres())
-                ->toArray();
-        } else {
-            $array = [];
-        }
-
-        return $this->generateGenresInput([
-            'search' => $array,
-            'searchgenrestring' => $name
-        ]);
-    }
-
     function getCycles()
     {
         return $this->user?->cycles->toArray() ?? [];
+    }
+
+    public function onSearchTag()
+    {
+        $term = post('term');
+        if (!$term || strlen($term) < 3) {
+            return [];
+        }
+        $like = $this->user?->tags()->nameLike($term)->get();
+        $exists = $this->service->getTags();
+        $array = $like->diff($exists);
+        $already_has = !!$exists->first(fn($i) => $i->name === $term);
+        $can_create = !$already_has && !!!$like->first(fn($i) => $i->name === $term);
+
+        $res = [];
+
+        if ($already_has) {
+            $res[] = [
+                'disabled' => true,
+                'htm' => $this->renderPartial('select/option', ['placeholder' => "Тэг «" . $term . "» уже добавлен на страницу",])
+            ];
+        }
+        $res = array_merge($res, collect($array)->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'label' => $item->name,
+                'htm' => $this->renderPartial('select/option', ['label' => $item->name]),
+                'handler' => $this->alias . '::onAddTag'
+            ];
+        })->toArray());
+
+        if ($can_create) {
+            $res[] = [
+                'label' => $term,
+                'handler' => $this->alias . '::onAddTag',
+                'htm' => $this->renderPartial('select/option', [
+                    'prepend_icon' => '#plus-stroked-16',
+                    'text' => "Создать новый тэг «" . $term . "»",
+                    'active' => true,
+                    'prepend_separator' => $array[0] ?? false,
+                ])
+            ];
+        }
+
+        return $res;
+    }
+
+
+    public function onSearchGenre()
+    {
+        $term = post('term');
+        if (!$term && strlen($term) < 3) {
+            return [];
+        }
+
+
+        $array = Genre::active()
+            ->name($term)
+            ->get()
+            ->diff($this->service->getGenres());
+
+        return collect($array)->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'label' => $item->name,
+                'htm' => $this->renderPartial('select/option', ['label' => $item->name]),
+                'handler' => $this->alias . '::onAddGenre'
+            ];
+        })->toArray();
+    }
+
+    public function onSearchAuthor()
+    {
+        try {
+            $name = post('term');
+            if (!$name && strlen($name) < 3) {
+                return [];
+            }
+
+            $array = Profile::searchByString($name)?->get()
+                ?->diff($this->service->getProfiles())
+                ?->diff($this->user->profiles()->get());
+
+            return $array->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'label' => $item->username,
+                    'htm' => $this->renderPartial('select/option', ['label' => $item->username]),
+                    'handler' => $this->alias . '::onAddAuthor'
+                ];
+            })->toArray();
+
+        } catch (Exception $ex) {
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
+
+    }
+
+    public function onAddAuthor()
+    {
+
+        try {
+            if ($this->service->getProfiles()->count() > 3) {
+                throw new ValidationException(['authors' => 'Вы можете добавить до 3 соавторов.']);
+            }
+            if ($profile = Profile::find(post('item')['id'] ?? null)) {
+                $this->service->addProfile($profile);
+            }
+
+            return $this->generateAuthorInput(['autofocus' => true]);
+
+        } catch (Exception $ex) {
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
+    }
+
+    /**
+     */
+    public function onAddTag(): array
+    {
+        $this->service->addTag(Tag::find(post('item')['id'] ?? null) ?? post('item')['value'] ?? null);
+        return $this->generateTagInput(['autofocus' => true]);
+    }
+
+    public function onAddGenre()
+    {
+        try {
+            if ($this->service->getGenres()->count() > 3) {
+                throw new ValidationException(['genres' => 'Вы можете добавить до 4 жанров.']);
+            }
+            if ($genre = Genre::find(post('item')['id'] ?? null)) {
+                $this->service->addGenre($genre);
+            }
+
+            return $this->generateGenresInput(['autofocus' => true]);
+        } catch (Exception $ex) {
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
+
+
+    }
+
+    public function onDeleteAuthor()
+    {
+        try {
+            $this->service->removeProfile(Profile::find(post('delete_profile_id')));
+            return $this->generateAuthorInput();
+
+        } catch (Exception $ex) {
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
     }
 
     public function onDeleteGenre(): array
@@ -283,29 +327,32 @@ class Booker extends ComponentBase
         return $this->generateGenresInput();
     }
 
-    public function onAddGenre(): array
+    /**
+     * @throws ValidationException
+     */
+    public function onRemoveTag()
     {
-        if ($genre = Genre::find(post('id'))) {
-            $this->service->addGenre($genre);
+        if ($tag = $this->user->tags()->find(post('delete_tag_id'))) {
+            $this->service->removeTag($tag);
+            return $this->generateTagInput();
         }
-
-        return $this->generateGenresInput();
+        throw new ValidationException(['tag' => 'Тэг не найден']);
     }
 
     function generateTagInput(array $options = []): array
     {
-        return ['#tag_input_partial' => $this->renderPartial('@tag_input', ['tags' => $this->service->getTags(), ...$options])];
+        return ['#input-tags' => $this->renderPartial('@input-tags', ['tags' => $this->service->getTags(), ...$options])];
     }
 
 
     public function generateAuthorInput(array $options = []): array
     {
-        return ['#authorInput' => $this->renderPartial('@authorInput', ['authors' => $this->service->getProfiles(pivot: true), 'user' => $this->user, ...$options])];
+        return ['#input-authors' => $this->renderPartial('@input-authors', ['authors' => $this->service->getProfiles(pivot: true), 'user' => $this->user, ...$options])];
     }
 
     protected function generateGenresInput(array $options = []): array
     {
-        return ['#genresInput' => $this->renderPartial('@genresInput', ['genres' => $this->service->getGenres(), ...$options])];
+        return ['#input-genres' => $this->renderPartial('@input-genres', ['genres' => $this->service->getGenres(), ...$options])];
     }
 
     /**

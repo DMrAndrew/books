@@ -31,27 +31,8 @@ $this->pageCycle();
     <div class="ui-container-fluid">
         <div class="personal-area__container ui-grid-container ui-grid-gap">
             {% partial "profile/sidebarmenu" %}
-            <div class="ui-col-sm-9">
-                <div class="personal-area__subtitle">
-                    <span class="ui-text-head--3 ui-text--bold">Книги {{ authorships.count }}</span>
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-                    </svg>
-                </div>
-                <div class="lc-books__action-wrapper">
 
-                    <a href="/create-book" data-turbo="false">
-                        <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Добавить книгу</button>
-                    </a>
-
-                    <label class="ui-input-file">
-                        <div onclick="toggleModal()" class="ui-input-file-item ui-text--medium">Загрузить FB2</div>
-                    </label>
-
-
-                </div>
-                {% component "LCBooker" %}
-            </div>
+            {% component "LCBooker" %}
         </div>
     </div>
 </div>

@@ -35,7 +35,8 @@
                 <div class="ui-input-wrapper">
                     <div class="ui-input-label">Имя или псевдоним*</div>
                     <input name="username" class="ui-input-item _size-32" type="text" value="{{ user.username }}">
-                    <span class="validation-error" data-validate-for="username"></span>
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="username"></div>
                 </div>
             </div>
             <div class="ui-col-sm-6">
@@ -44,14 +45,19 @@
                     <input name="birthday"  class="ui-input-item _size-32" type="date"
                            value="{{ user and user.birthday ? carbon(userdata.birthday).format('Y-m-d') : ''}}"
                     >
-                    <span class="validation-error" data-validate-for="birthday"></span>
+
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="birthday"></div>
                 </div>
             </div>
             <div class="ui-col-sm-12">
                 <div class="ui-input-wrapper">
                     <div class="ui-input-label">Любимые жанры</div>
                     <input name="favorite" class="ui-input-item _size-32" type="text" value="{{ user.favorite }}">
-                    <span class="validation-error" data-validate-for="favorite"></span>
+
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="favorite"></div>
+
                 </div>
                 <div class="ui-input-hint ui-text-body--3">
                     Не обязательно для заполнения. Жанры в любой момент можно выбрать в настройках профиля.
@@ -61,7 +67,9 @@
                 <div class="ui-input-wrapper">
                     <div class="ui-input-label">Электронная почта*</div>
                     <input name="email" class="ui-input-item _size-32" type="text" value="{{ user.email }}">
-                    <span class="validation-error" data-validate-for="email"></span>
+
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="email"></div>
                 </div>
             </div>
             <div class="ui-col-sm-6">
@@ -72,7 +80,9 @@
                         {% endif %}
                     </div>
                     <input name="password" class="ui-input-item _size-32" type="password">
-                    <span class="validation-error" data-validate-for="password"></span>
+
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="password"></div>
                 </div>
             </div>
             <div class="ui-col-sm-6">
@@ -83,7 +93,9 @@
                         {% endif %}
                     </div>
                     <input name="password_confirmation" class="ui-input-item _size-32" type="password">
-                    <span class="validation-error" data-validate-for="password_confirmation"></span>
+
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="password_confirmation"></div>
                 </div>
             </div>
             <div class="ui-col-sm-12">

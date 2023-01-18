@@ -54,7 +54,7 @@ class ProfilePrivacy extends ComponentBase
         }
 
         return [
-            'profile/privacy' => $this->renderPartial('profile/privacy', ['settings' => $this->getPrivactSettings()])
+            '#profile_privacy_form' => $this->renderPartial('profile/privacy', ['settings' => $this->getPrivactSettings()])
         ];
 
     }

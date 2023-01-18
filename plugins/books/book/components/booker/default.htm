@@ -1,5 +1,6 @@
 {{ form_ajax('booker::onSaveBook',{
-'data-request-validate':'true'
+'data-request-validate':'true',
+'data-request-complete':'iniSelect()'
 }) }}
 <div class="create-book__container ui-container-fluid wrapper">
     <div class="create-book__column-left">
@@ -14,34 +15,16 @@
                    name="title"
                    value="{{book.title}}"
             >
-            <span class="validation-error" data-validate-for="title"></span>
-        </div>
-        <div id="authorInput">
-            {% partial 'booker::authorInput' authors=book.profiles %}
-        </div>
-        <div class="create-book__input ui-multi-select">
-            <div class="ui-multi-select-header">
-                <label class="ui-select-label">Жанр</label>
-            </div>
-
-            <div class="ui-multi-select-container">
-
-                <div id="genresInput">
-                    {% partial 'booker::genresInput' genres=book.genres %}
-                </div>
-
-            </div>
+            <div class="ui-select-hitn"></div>
+            <div class="ui-select-error" data-validate-for="title"></div>
         </div>
 
-        <div id="cycle_input">
-            {% partial 'booker::cycle_input' cycle_id=book.cycle_id %}
-        </div>
-
+        {% partial 'booker::input-authors' authors=book.profiles %}
+        {% partial 'booker::input-genres' genres=book.genres %}
+        {% partial 'booker::cycle_input' cycle_id=book.cycle_id %}
         {% partial 'booker::annotation' %}
+        {% partial 'booker::input-tags' tags=book.tags %}
 
-        <div id="tag_input_partial">
-        {% partial 'booker::tag_input' tags=book.tags %}
-        </div>
 
         <div class="ui-grid-container ui-grid-gap">
             <div class="ui-col-sm-6">
@@ -49,8 +32,8 @@
                     <div class="ui-select-header">
                         <label class="ui-select-label">Возрастной рейтинг</label>
                     </div>
-                    <div class="ui-select-container">
-                    <select name="age_restriction" class="ui-select-item _size-32">
+                    <div class="ui-select-container ui-select-item _size-32">
+                    <select name="age_restriction" class=" book-select " style="display: none">
                         {% for restriction in age_restrictions %}
                         <option
                             {{ book.age_restriction.value == restriction.value ? 'selected' : ''  }}
@@ -58,42 +41,22 @@
                         {% endfor %}
 
                     </select>
+                        <svg class="ui-select-item-icon chevron_up">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme }}"></use>
+                        </svg>
+                        <svg class="ui-select-item-icon chevron_down" >
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme }}"></use>
+                        </svg>
                     </div>
-<!--                    <div class="ui-select-container">-->
-<!--                        <div class="ui-select-item _size-32">-->
-<!--                            <div class="ui-select-item-option">18+</div>-->
-<!--                            <div class="ui-select-item-count">5</div>-->
-<!--                            <svg class="ui-select-item-icon">-->
-<!--                                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>-->
-<!--                            </svg>-->
-<!--                        </div>-->
-<!--                        <div class="ui-dropdown" style="display:none;">-->
-<!--                            <div class="ui-dropdown-container">-->
-<!--                                <div class="ui-dropdown-item active">-->
-<!--                                    <svg>-->
-<!--                                        <use-->
-<!--                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
-<!--                                    </svg>-->
-<!--                                    <span>18+</span>-->
-<!--                                </div>-->
-<!--                                <div class="ui-dropdown-item ">-->
-<!--                                    <svg>-->
-<!--                                        <use-->
-<!--                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
-<!--                                    </svg>-->
-<!--                                    <span>12+</span>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="ui-select-hitn"></div>-->
-<!--                    <div class="ui-select-error"></div>-->
                 </div>
             </div>
         </div>
 
-        <span class="validation-error" data-validate-for="download_allowed"></span>
-        <span class="validation-error" data-validate-for="comment_allowed"></span>
+
+        <div class="ui-select-hitn"></div>
+        <div class="ui-select-error" data-validate-for="download_allowed"></div>
+        <div class="ui-select-hitn"></div>
+        <div class="ui-select-error" data-validate-for="comment_allowed"></div>
         <div class="create-book__check">
             <label class="ui-checkbox">
                 <input type="hidden" value="0" name="comment_allowed">

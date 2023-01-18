@@ -54,7 +54,7 @@ class LCBooker extends ComponentBase
 
     function getAuthorships(): Collection
     {
-        return $this->user->profile->authorshipsAs($this->getOwnerFilter())
+        return $this->user->profile->authorshipsAs($this->getIsOwner())
             ->orderByDesc('sort_order')
             ->with(['book', 'book.profile', 'book.ebook', 'book.cover'])
             ->get();
@@ -68,8 +68,18 @@ class LCBooker extends ComponentBase
         $newsequence = (collect([$sequence, $authorships->pluck('sort_order')])->map->reverse()->map->values()->map->toArray())->toArray();
         $authorships->first()->setSortableOrder(...$newsequence);
 
+        return $this->generateList();
+    }
+
+    public function onFilter()
+    {
+        return $this->generateList();
+    }
+
+    public function generateList(?array $options = [])
+    {
         return [
-            '#books_list_partial' => $this->renderPartial('@default', ['authorships' => $this->getAuthorships()])
+            '#books_list_partial' => $this->renderPartial('@default', ['authorships' => $this->getAuthorships(), 'is_owner' => $this->getOwnerFilter(), ...$options])
         ];
     }
 
@@ -112,8 +122,24 @@ class LCBooker extends ComponentBase
         return post('_session_key');
     }
 
-    public function getOwnerFilter()
+    public function getOwnerFilter(): bool|string|null
     {
-        return post('is_owner') ?? $this->is_owner;
+        return match ($this->getIsOwner()) {
+            true => 'owner',
+            false => 'coauthor',
+            default => null,
+        };
     }
+
+    public function getIsOwner(): ?bool
+    {
+        $this->is_owner = match (post('is_owner')) {
+            'owner' => true,
+            'coauthor' => false,
+            default => null,
+        };
+        return $this->is_owner;
+    }
+
+
 }

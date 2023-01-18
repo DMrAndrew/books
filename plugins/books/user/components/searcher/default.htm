@@ -2,26 +2,24 @@
     <div class="personal-area">
         <div class="ui-container">
             <div class="personal-area__title ui-text-head--2 ui-text--bold">Результаты поиска</div>
-            <div class="personal-area__subtitle ui-text-body--1">Поиск по фразе: {{search_query}}</div>
+            <div class="personal-area__wrap _indent-large ui-text-body--1">Поиск по фразе: <span class="ui-text--bold">{{search_query}}</span></div>
+            {% if results.count == 0 %}
+            <div class="personal-area__wrap _indent-large ui-text-body--1">Ничего не найдено</div>
+            {% endif %}
         </div>
     </div>
-
+    {% if results.count != 0 %}
     <div class="search">
         <div class="ui-container-fluid">
             <div class="search-tabs ui-tabs">
-
-
                 <ul class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
 
-                    {% if results.count != 0 %}
                     {% for key,tab in results %}
                     <li class="ui-tabs-link {{tab.active ? 'active' : ''}}" data-tab="{{key}}">{{tab.count}}
                         {{tab.label}}
                     </li>
                     {% endfor %}
-                    {% else %}
-                    <span class="ui-tabs-link">Ничего не найдено</span>
-                    {% endif %}
+
                 </ul>
             </div>
 
@@ -42,10 +40,9 @@
                 {% endfor %}
 
             </div>
-
-
         </div>
     </div>
+    {% endif %}
 </div>
 <script>
     initTabs('[data-tabs="1"]');

@@ -1,0 +1,6 @@
+{% if icon %}
+{% set iconSrc = icon ? 'assets/icon-sprite/svg-sprite.svg'~icon  : '' %}
+<svg>
+    <use xlink:href="{{ iconSrc | theme }}"></use>
+</svg>
+{% endif %}

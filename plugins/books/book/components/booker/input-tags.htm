@@ -1,0 +1,44 @@
+<div id="input-tags" style="margin-top: 16px">
+    <div class="create-book__input ui-multi-select">
+        <div class="ui-multi-select-header">
+            <label class="ui-select-label">Тэги</label>
+        </div>
+
+        <div class="ui-multi-select-container">
+            <div class="ui-multi-select-item _size-32">
+                <div class="ui-multi-select-tag-wrapper">
+                    {% for tag in tags %}
+
+                    <div class="ui-multi-select-tag ui-tag _size-24 _color-gray"
+                         onclick="oc.request(this,'booker::onRemoveTag')"
+                         data-request-data="delete_tag_id:'{{tag.id}}'"
+                    >
+                        <span>{{tag.name}}</span>
+                        <svg>
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                        </svg>
+                    </div>
+                    {% endfor %}
+
+                    <input class="ui-multi-select-item-input books-autocomplete {{ autofocus ? 'should-focus' : ''}}"
+                           type="text">
+                </div>
+
+                <svg class="ui-multi-select-item-icon chevron_down">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                </svg>
+                <svg class="ui-multi-select-item-icon chevron_up" style="display: none">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme}}"></use>
+                </svg>
+            </div>
+            <div class="ui-select-hitn"></div>
+            <div class="ui-select-error" data-validate-for="tag"></div>
+        </div>
+    </div>
+</div>
+<script>
+    initAutocomplete({
+        container: '#input-tags',
+        onRequestHandler: 'booker::onSearchTag',
+    })
+</script>

@@ -20,16 +20,16 @@
                 </div>
                 <div class="book-card__body-footer">
 
-                    <div class="book-card__book-list">
+                    <div class="book-card__book-list tags-list">
                         {% for genre in book.genres %}
-                        <a href="#" class="ui-link _violet">#0 {{genre.name}}</a>,
+                        <a href="#" class="ui-link _violet">#0 {{genre.name}}</a>
                         {% endfor %}
 
                     </div>
                 </div>
                 <div class="book-card__genres">
                     {% for tag in book.tags %}
-                    <a href="#" class="ui-link _violet">{{tag.name}}</a>,
+                    <a href="#" class="ui-link _violet">{{tag.name}}</a>
                     {% endfor %}
                 </div>
                 {% partial 'site/book-status' status=book.ebook.status %}

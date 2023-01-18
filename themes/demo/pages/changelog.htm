@@ -2,47 +2,154 @@ title = "Изменения"
 layout = "default"
 url = "/changelog"
 meta_title = "Изменения"
+[Ajaxer]
 ==
 <style>
-    .changelog-item{
-        list-style: disc;padding-left: 24px
+    .changelog-item {
+        list-style: disc;
+        padding-left: 24px
     }
-    .changelog-row{
+
+    .changelog-row {
         padding: 12px 4px;
     }
+
 </style>
 <div class="reader">
     <div class="ui-container-fluid">
         <!-- Хлебные крошки -->
 
-
         <!-- Тело страницы -->
         <div class="ui-grid-container ui-grid-gap" style="padding-top: 16px">
-            <div class="ui-col-sm-9 ui-col-md-10">
-                <div class="reader__body">
-                    <h2 class="ui-text-head--3 ui-text--bold" >12.01.23</h2>
-                    <ul class="changelog-item" >
-                        <li class="changelog-row">Через три недели после благополучного побега из академии тело достаточно окрепло, позволив мне прорастить следующую часть каналов маны и подняться на четвёртый круг.</li>
-                        <li class="changelog-row">Четвёртый круг магии в современном мире — это уровень какого-нибудь губернатора или генерала, только за счёт этого я могла получить власть и влияние.</li>
-                        <li class="changelog-row">Меня пока устраивала жизнь обычной наёмницы: это привычное занятие успокаивало, создавало ощущение приятной</li>
-                        <li class="changelog-row">Меня пока устраивала жизнь обычной наёмницы: это привычное занятие успокаивало, создавало ощущение приятной
 
-                        </li>
-                    </ul>
-                    <li class="dropwdown-profile__separator" style="list-style: none"></li>
-                    <h2 class="ui-text-head--3 ui-text--bold" >12.01.23</h2>
-                    <ul class="changelog-item" >
-                        <li class="changelog-row">Через три недели после благополучного побега из академии тело достаточно окрепло, позволив мне прорастить следующую часть каналов маны и подняться на четвёртый круг.</li>
-                        <li class="changelog-row">Четвёртый круг магии в современном мире — это уровень какого-нибудь губернатора или генерала, только за счёт этого я могла получить власть и влияние.</li>
-                        <li class="changelog-row">Меня пока устраивала жизнь обычной наёмницы: это привычное занятие успокаивало, создавало ощущение приятной</li>
-                        <li class="changelog-row">Меня пока устраивала жизнь обычной наёмницы: это привычное занятие успокаивало, создавало ощущение приятной</li>
-                    </ul>
+
+            <div class="ui-col-sm-9 ui-col-md-10" style="padding-top: 16px">
+                <div class="create-book__container wrapper">
+
+                    <div class="create-book__column-right">
+                        <div class="create-book__input ui-multi-select" id="input-genres">
+                            <div class="ui-multi-select-header">
+                                <label class="ui-select-label">Жанр</label>
+                            </div>
+                            <!-- <button href="#" class="ui-button ui-button-size--32 ui-button-view--3">Создать цикл</button> -->
+                            <div class="ui-multi-select-container">
+
+                                <div class="ui-multi-select-item _size-32">
+
+                                    <div class="ui-multi-select-tag-wrapper">
+                                        <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
+                                            <span>Любовные романы</span>
+                                            <svg>
+                                                <use
+                                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                                            </svg>
+                                        </div>
+                                        <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
+                                            <span>Любовная фантастика</span>
+                                            <svg>
+                                                <use
+                                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                                            </svg>
+                                        </div>
+                                        <input class="ui-multi-select-item-input books-autocomplete " type="text">
+                                    </div>
+
+                                    <!-- <div class="ui-select-item-option">18+</div> -->
+                                    <svg class="ui-multi-select-item-icon chevron">
+                                        <use
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                                    </svg>
+                                </div>
+                                <div class="ui-select-hitn"></div>
+                                <div class="ui-select-error">Так не пойдёт</div>
+                            </div>
+
+
+                            <button href="#" class="ui-button ui-button-size--32 ui-button-view--2">Сохранить</button>
+                        </div>
+                        <div class="create-book__input ui-multi-select" id="input-genres2">
+                            <div class="ui-multi-select-header">
+                                <label class="ui-select-label">Жанр</label>
+                            </div>
+                            <!-- <button href="#" class="ui-button ui-button-size--32 ui-button-view--3">Создать цикл</button> -->
+                            <div class="ui-multi-select-container">
+
+                                <div class="ui-multi-select-item _size-32">
+
+                                    <div class="ui-multi-select-tag-wrapper">
+                                        <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
+                                            <span>Любовные романы</span>
+                                            <svg>
+                                                <use
+                                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                                            </svg>
+                                        </div>
+                                        <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
+                                            <span>Любовная фантастика</span>
+                                            <svg>
+                                                <use
+                                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                                            </svg>
+                                        </div>
+                                        <input class="ui-multi-select-item-input books-autocomplete" type="text">
+                                    </div>
+
+                                    <!-- <div class="ui-select-item-option">18+</div> -->
+                                    <svg class="ui-multi-select-item-icon chevron">
+                                        <use
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                                    </svg>
+                                </div>
+
+                                <!--                                <div class="ui-dropdown" >-->
+
+                                <!--                                    <div class="ui-dropdown-container">-->
+                                <!--                                        <div class="ui-dropdown-item _placeholder">-->
+                                <!--                                            <span>Тэг «Ян Курпатов» уже добавлен на страницу</span>-->
+                                <!--                                        </div>-->
+                                <!--                                        <div class="ui-dropdown-item">-->
+                                <!--                                            <span>Александр Алексон</span>-->
+                                <!--                                        </div>-->
+                                <!--                                        <div class="ui-dropdown-item ">-->
+                                <!--                                            <span>Александр Александроский</span>-->
+                                <!--                                        </div>-->
+                                <!--                                        <div class="ui-dropdown-separate"></div>-->
+                                <!--                                        <div class="ui-dropdown-item active">-->
+                                <!--                                            <svg>-->
+                                <!--                                                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#plus-stroked-16"></use>-->
+                                <!--                                            </svg>-->
+                                <!--                                            <span>Создать новый тэг «Фантаст»</span>-->
+                                <!--                                        </div>-->
+                                <!--                                    </div>-->
+                                <!--                                </div>-->
+                                <!--                            </div>-->
+                                <div class="ui-select-hitn"></div>
+                                <div class="ui-select-error"></div>
+                            </div>
+
+
+                            <button href="#" class="ui-button ui-button-size--32 ui-button-view--2">Сохранить</button>
+                        </div>
+                    </div>
+
 
                 </div>
 
-
             </div>
-
         </div>
     </div>
+
+
 </div>
+
+
+<style>
+
+</style>
+
+<script>
+    initAutocomplete( {
+        container:'#input-genres',
+        onRequestHandler:'Ajaxer::onRequest',
+    })
+</script>

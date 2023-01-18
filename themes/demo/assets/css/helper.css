@@ -1,0 +1,81 @@
+#login_popup, #register_popup, #register_form, #login_form, #auth_popup {
+    display: none;
+}
+
+.validation-error {
+    color: red;
+    font-size: 12px;
+    margin: 8px 10px;
+}
+
+.tags-list a {
+    text-decoration: none;
+}
+
+.tags-list a:not(:last-child):after {
+    content: ', ';
+}
+
+.ui-menu-item:not(._placeholder):has(.ui-state-active) {
+    background-color: var(--color-background-gray) !important;
+}
+.ui-dropdown-item:has(.ui-state-active) svg {
+    opacity: 1;
+}
+.ui-select-container:has(.ui-selectmenu-button-open) > .chevron {
+    display: none;
+}
+.ui-selectmenu-button-open ~ .chevron_up {
+    display: flex;
+}
+.ui-selectmenu-button-open ~ .chevron_down {
+    display: none;
+}
+.ui-selectmenu-button-closed ~ .chevron_down {
+    display: flex;
+}
+.ui-selectmenu-button-closed ~ .chevron_up {
+    display: none;
+}
+
+.ui-menu-opened  .chevron_down{
+    display: none!important;
+}
+.ui-menu-opened  .chevron_up{
+    display: flex!important;
+}
+.ui-helper-hidden-accessible {
+    border: 0;
+    display: none;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+.books-autocomplete {
+    padding: 0 8px;
+}
+
+.ui-multi-select-item-input {
+    color: var(--color-black);
+    margin-bottom: 4px;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.ui-dropdown {
+    display: none;
+}
+
+.ui-dropdown.ui-selectmenu-open {
+    display: block;
+}
+.ui-button{
+    font-weight: inherit;
+}

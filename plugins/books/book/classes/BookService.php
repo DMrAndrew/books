@@ -26,8 +26,9 @@ class BookService
 
     public function __construct(protected User $user, protected ?Book $book = null, protected ?string $session_key = null)
     {
+
         $this->proxy = new Book();
-        $this->book ??= $this->proxy;
+        $this->book ??= new Book();
     }
 
     /**
