@@ -1,5 +1,5 @@
 <div id="ebook-settings">
-    {{ form_ajax('ebooker::onUpdate',{'data-request-validate':'true'})}}
+    {{ form_ajax('ebooker::onUpdate',{'data-request-validate':'true','data-request-complete':'iniSelect()'})}}
     <div class="ui-grid-container ui-grid-gap">
         <div class="e-book-sale__wrapper ui-col-md-6">
             <div class="e-book-sale__title ui-text-head--2 ui-text--bold e-book-sale__inside-wrapper">Статус</div>
@@ -8,50 +8,23 @@
                 <div class="ui-select-header">
                     <label class="ui-select-label">Изменить статус книги</label>
                 </div>
-                <div class="ui-select-container">
-                    <select class="ui-select-item _size-32" name="status">
+                <div class="ui-select-container ui-select-item _size-32">
+                    <select  class="book-select " name="status">
 
                         {% for status in bookStatusCases %}
                         <option  value="{{status.value}}"
                                  {{ status.value == ebook.status.value ? 'selected' : ''  }}
                         >{{status.getLabel()}}</option>
                         {% endfor %}
-                        <!--                            <input class="ui-select-item-input" type="text">-->
-                        <!--                            <div class="ui-select-item-option">18+</div>-->
-                        <!--                            <svg class="ui-select-item-icon">-->
-                        <!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>-->
-                        <!--                            </svg>-->
                     </select>
-                    <span class="validation-error" data-validate-for="status"></span>
-                    <!--                <div class="ui-select-item _size-32">-->
-                    <!--                    <input class="ui-select-item-input" type="text">-->
-                    <!--                    <div class="ui-select-item-option">В работе</div>-->
-                    <!--                    <svg class="ui-select-item-icon">-->
-                    <!--                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>-->
-                    <!--                    </svg>-->
-                    <!--                </div>-->
-                    <!--                <div class="ui-dropdown" style="display: none">-->
-                    <!--                    <div class="ui-dropdown-container">-->
-                    <!--                        <div class="ui-dropdown-item active">-->
-                    <!--                            <svg>-->
-                    <!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
-                    <!--                            </svg>-->
-                    <!--                            <span>В работе</span>-->
-                    <!--                        </div>-->
-                    <!--                        <div class="ui-dropdown-item">-->
-                    <!--                            <svg>-->
-                    <!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
-                    <!--                            </svg>-->
-                    <!--                            <span>Опубликовано</span>-->
-                    <!--                        </div>-->
-                    <!--                        <div class="ui-dropdown-item ">-->
-                    <!--                            <svg>-->
-                    <!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
-                    <!--                            </svg>-->
-                    <!--                            <span>Романтические истории</span>-->
-                    <!--                        </div>-->
-                    <!--                    </div>-->
-                    <!--                </div>-->
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="status"></div>
+                    <svg class="ui-select-item-icon chevron_up">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme }}"></use>
+                    </svg>
+                    <svg class="ui-select-item-icon chevron_down">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme }}"></use>
+                    </svg>
                 </div>
             </div>
         </div>
@@ -75,18 +48,24 @@
                     </div>
                     <span class="ui-checkbox-text">Бесплатная книга</span>
                 </label>
-                <span class="validation-error" data-validate-for="sales_free"></span>
+                <div class="ui-select-hitn"></div>
+                <div class="ui-select-error" data-validate-for="sales_free"></div>
+
             </div>
             <div class="ui-grid-container ui-grid-gap e-book-sale__inside-wrapper">
                 <div class="ui-col-md-6 ui-input">
                     <label class="ui-input-label">Цена, ₽</label>
                     <input class="ui-input-item _size-32" type="text" name="price" value="{{ebook.price}}">
-                    <span class="validation-error" data-validate-for="price"></span>
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="price"></div>
+
                 </div>
                 <div class="ui-col-md-6 ui-input">
                     <label class="ui-input-label">Частей ознакомления</label>
                     <input class="ui-input-item _size-32" type="text" name="free_parts" value="{{ebook.free_parts}}">
-                    <span class="validation-error" data-validate-for="free_parts"></span>
+
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="free_parts"></div>
                 </div>
             </div>
             <button href="#" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Сохранить</button>

@@ -13,18 +13,35 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet"   href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
 <!-- Подключение стилей свайпера -->
 <script src="{{ ['@jquery','@framework','@framework.extras',]|theme}}"></script>
-<script  src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-<script  src="{{ 'assets/js/jquery-ui.min.js'|theme }}"></script>
-<script  src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script src="{{ 'assets/js/jquery-ui.js'|theme }}"></script>
+<script src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
 <script src="{{'assets/js/menu-mobile.js' | theme}}"></script>
 <script src="{{'assets/js/favorite-accordion.js' | theme}}"></script>
 <script src="{{ 'assets/js/tabs.js'|theme }}"></script>
-<script src="{{ 'assets/js/utils.js'|theme }}"></script>
+
+<script src="{{ 'assets/js/dropdown.js'|theme }}"></script>
 {% styles %}
 {% framework extras turbo %}
 {% scripts %}
+<script>
 
-
+    const buildIcon = function (options) {
+        let {className, src} = options
+        return $(`<svg class=\"${className} chevron\"><use xlink:href=\"{{'assets/icon-sprite/svg-sprite.svg#${src}' | theme}}\"></use></svg>`)
+    }
+    const multiSelectChevronDown = buildIcon({
+        className:`ui-multi-select-item-icon `,
+        src:`chevron-down-16`
+    });
+    const multiSelectChevronUp = buildIcon({
+        className:`ui-multi-select-item-icon `,
+        src:`chevron-up-16`
+    });
+    const checkedIcon = "<svg><use xlink:href=\"{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}\"></use></svg>";
+</script>
+<script src="{{ 'assets/js/autocomplete.js'|theme }}"></script>
+<script src="{{ 'assets/js/utils.js'|theme }}"></script>

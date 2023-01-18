@@ -55,7 +55,7 @@ let initSortable = (container, handler) => {
                 let arr = $(container).find('input').map(function () {
                     return $(this).val();
                 }).get()
-                oc.ajax(handler, {data: {sequence: arr}})
+                oc.ajax(handler, {data: {sequence: arr, is_owner:$(`input[name=is_owner]`).val()}})
             }
         });
     })
@@ -74,3 +74,6 @@ let tabElemInit = function () {
         }
     })
 }
+addEventListener('page:loaded', function () {
+    iniSelect()
+});

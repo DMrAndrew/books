@@ -1,7 +1,7 @@
 <div id="create_cycle_form" class="buy-book-modal ui-modal" style="display: none">
     <form data-request="booker::onCreateCycle"
           data-request-validate
-          data-request-update="'@cycle_input':'#cycle_input', '@cycle_create_modal':'#create_cycle_form_partial'"
+          data-request-complete="iniSelect()"
     >
         <div class="ui-modal-container">
             <div class="buy-book-modal__container _size-large ui-modal-content">
@@ -16,7 +16,8 @@
                 <div class="ui-input">
                     <input class="ui-input-item _size-32" name="name" placeholder="Введите название цикла"
                            type="text">
-                    <span class="validation-error" data-validate-for="name"></span>
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="name"></div>
                 </div>
 
                 <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">

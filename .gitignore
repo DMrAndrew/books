@@ -27,6 +27,6 @@ nbproject
 # Project
 /bootstrap/compiled.php
 /vendor
-/themes/demo/front_src/
 /plugins/mobecan/
 /frontend
+/themes/jquery-ui-1.13.2/

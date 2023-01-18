@@ -42,14 +42,33 @@
                             </div>
                         </div>
                     </div>
+                    <div class="chapter-book__action dropdown-menu">
+                        <svg class="square-16" data-dropdown="button">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
+                        </svg>
 
-                    <div class="chapter-book__action">
-                        <a data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">
-                            <svg class="square-16">
-                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
-                            </svg>
-                        </a>
+                        <div class="dropdown-menu__container" data-dropdown="menu">
+                            <div class="dropdown-menu__wrapper">
+                                <a data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">
+                                    <button class="dropdown-menu__item">Редактировать</button>
+                                </a>
+                                <button disabled class="dropdown-menu__item">Удалить</button>
+                            </div>
+                        </div>
                     </div>
+<!--                    <div class="chapter-book__action">-->
+<!--                        <a data-dropdown="button" >-->
+<!--                            <svg class="square-16">-->
+<!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>-->
+<!--                            </svg>-->
+<!--                            <div class="dropdown-menu__container" data-dropdown="menu">-->
+<!--                                <div class="dropdown-menu__wrapper">-->
+<!--                                    <div class="dropdown-menu__item"  data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">Редактировать</div>-->
+<!--                                    <div class="dropdown-menu__item">Удалить</div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </a>-->
+<!--                    </div>-->
                 </div>
             </li>
             {% endfor %}
@@ -85,6 +104,7 @@
         if(initSortable){
             initSortable('#sortable','ebooker::onUpdateSortOrder')
         }
+        openDropdown();
     </script>
 
 </div>

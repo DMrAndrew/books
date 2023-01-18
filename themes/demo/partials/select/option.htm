@@ -1,0 +1,16 @@
+{% if prepend_separator %}
+{% partial 'select/separate' %}
+{% endif %}
+<div class="
+            ui-dropdown-item
+            {{ placeholder ? '_placeholder _disabled' : ''}}
+             {{ disabled ? '_disabled' : ''}}
+              {{active ? 'active' : ''}}
+">
+    {% partial 'select/icon' icon=prepend_icon %}
+    <span>{{ placeholder ? placeholder : ( text ? text : label) }}</span>
+    {% partial 'select/icon' icon=append_icon %}
+</div>
+{% if append_separator %}
+{% partial 'select/separate' %}
+{% endif %}
