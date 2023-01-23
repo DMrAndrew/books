@@ -1,163 +1,58 @@
-<div id="books_list_partial" class="ui-col-sm-9">
-    <div class="personal-area__subtitle">
-        <span class="ui-text-head--3 ui-text--bold">Книги</span>
-        <svg class="square-16">
-            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-        </svg>
-    </div>
+<div class="personal-area__subtitle">
+    <span class="ui-text-head--3 ui-text--bold">Книги</span>
+    <svg class="square-16">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+    </svg>
+</div>
 
 
+<div class="personal-area__wrap _indent-large lc-books__action-container">
+    <div class="lc-books__action-wrapper">
 
-
-    <div class="personal-area__wrap _indent-large lc-books__action-container">
-        <div class="lc-books__action-wrapper">
-
-            <a href="/create-book" data-turbo="false">
-                <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Добавить книгу
-                </button>
-            </a>
-
-            <label class="ui-input-file">
-                <div onclick="toggleModal()" class="ui-input-file-item ui-text--medium">Загрузить FB2</div>
-            </label>
-
-
-        </div>
-
-        <div class="lc-books__tabs">
-            <input hidden name="is_owner" value="{{is_owner}}">
-            <a  onclick="oc.ajax('onFilter',{data:{is_owner:null}})" class="lc-books__tab {{ not is_owner ? 'active' : ''}}  cursor-pointer">Все</a>
-            <a  onclick="oc.ajax('onFilter',{data:{is_owner:'owner'}})" class="lc-books__tab cursor-pointer {{ is_owner == 'owner' ? 'active' : ''}} ">Мои</a>
-            <a onclick="oc.ajax('onFilter',{data:{is_owner:'coauthor'}})" class="lc-books__tab cursor-pointer {{ is_owner == 'coauthor' ? 'active' : ''}}">Соавторство</a>
-        </div>
-    </div>
-    {% if authorships.count() %}
-    <div  class="lc-books__listing-container">
-        <ul id="sortable_books">
-            {% for authorship in authorships %}
-            <div class="book-card">
-                <li>
-                    <input type="hidden" name="authorships[{{authorship.id}}]" value="{{authorship.id}}"/>
-                    <div class="book-card__body">
-                        <div class="book-card__column-left">
-                            <a data-turbo="false" href="/about-book/{{authorship.book.id}}">
-                                <img class="book-card__image" src="{{authorship.book.cover.getThumb(104,150)}}" alt=""
-                                     loading="lazy">
-                            </a>
-                        </div>
-                        <div class="book-card__column-right">
-                            <div class="book-card__action">
-                                <a data-turbo="false" href="/about-book/{{authorship.book.id}}"
-                                   class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">
-                                    <svg class="square-16">
-                                        <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>
-                                    </svg>
-                                    <span class="ui-button--text-hidden">Редактировать</span>
-                                </a>
-                                <div class="">
-                                    <svg class="chapter-book__drag square-24 handle">
-                                        <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#move-vertical-24' | theme}}"></use>
-                                    </svg>
-
-                                    <!--                                <a href="#"-->
-                                    <!--                                   data-request="LCBooker::onChangeOrder"-->
-                                    <!--                                   data-request-data="authorship_id:{{authorship.id}},action:'up'"-->
-                                    <!--                                   class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3 ui-text&#45;&#45;medium">-->
-                                    <!--                                    <svg class="square-16">-->
-                                    <!--                                        <use-->
-                                    <!--                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme}}"></use>-->
-                                    <!--                                    </svg>-->
-                                    <!--                                </a>-->
-                                    <!--                                <a href="#"-->
-                                    <!--                                   data-request="LCBooker::onChangeOrder"-->
-                                    <!--                                   data-request-data="authorship_id:{{authorship.id}},action:'down'"-->
-                                    <!--                                   class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3 ui-text&#45;&#45;medium">-->
-                                    <!--                                    <svg class="square-16">-->
-                                    <!--                                        <use-->
-                                    <!--                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>-->
-                                    <!--                                    </svg>-->
-                                    <!--                                </a>-->
-                                </div>
-                            </div>
-                            <a data-turbo="false" href="/about-book/{{authorship.book.id}}"
-                               class="book-card__title ui-text-head--3 ui-text--bold">{{authorship.book.title}}</a>
-                            <a href="/author-page/{{authorship.book.profile.id}}"
-                               class="book-card__author ui-link _violet">{{authorship.book.profile.username}}</a>
-                            {% partial 'book/ebook-card-info' book=authorship.book %}
-                            <div class="book-card__description">
-                                {{authorship.book.annotation|raw}}
-                            </div>
-                            <div class="book-card__body-footer">
-                                <div class="book-card__raiting">
-                                    <svg>
-                                        <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
-                                    </svg>
-                                    <span>0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="book-card__footer">
-                        <div class="book-card__footer-wrapper ui-tooltip" data-tooltip="Количество прочтений">
-                            <svg>
-                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
-                            </svg>
-                            <span>0&thinsp;0</span>
-                        </div>
-                        <div class="book-card__footer-wrapper">
-                            <svg>
-                                <use
-                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-16' | theme}}"></use>
-                            </svg>
-                            <span>0&thinsp;0</span>
-                        </div>
-                        <div class="book-card__footer-wrapper">
-                            <svg>
-                                <use
-                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>
-                            </svg>
-                            <span>0</span>
-                        </div>
-                        <div class="book-card__footer-wrapper">
-                            <svg>
-                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-filled-16' | theme}}"></use>
-                            </svg>
-                            <span>0</span>
-                        </div>
-                    </div>
-                </li>
-            </div>
-
-            {% endfor %}
-        </ul>
-    </div>
-
-    {% else %}
-    <div class="author__placeholder _indent">
-        <svg class="square-32">
-            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
-        </svg>
-        <div class="ui-text-head--3 ui-text--bold">У вас нет книг {{ is_owner == 'coauthor' ? 'в соавторстве' : ''}} </div>
-        <span>Тут будет какой-нибудь привлекающий текст, как в литмаркете</span>
-
-        {% if is_owner != 'coauthor' %}
         <a href="/create-book" data-turbo="false">
             <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Добавить книгу
             </button>
         </a>
-        {% endif %}
+
+        <label class="ui-input-file">
+            {% partial '@import_fb_modal' %}
+            <div id="fb-upload-modal-open-btn" class="ui-input-file-item ui-text--medium">Загрузить FB2
+            </div>
+
+        </label>
+
+
     </div>
 
-    {% endif %}
-
-
-
-    <script>
-        initSortable('#sortable_books', 'LCBooker::onChangeOrder')
-    </script>
+    <div class="lc-books__tabs">
+        <input hidden name="is_owner" value="{{is_owner}}">
+        <a data-filter-value=""
+           class="lc-books__tab cursor-pointer active">Все</a>
+        <a data-filter-value="owner"
+           class="lc-books__tab cursor-pointer">Мои</a>
+        <a data-filter-value="coauthor"
+           class="lc-books__tab cursor-pointer">Соавторство</a>
+    </div>
 </div>
+<div id="books_list_partial">
+    {% partial '@list' authorships=authorships %}
+</div>
+
+<script>
+    openModal('#modal-container', '#fb-upload-modal-open-btn')
+    $('[data-filter-value]').bind('click', function () {
+        let that = $(this)
+        oc.ajax('onFilter', {
+            data: {
+                is_owner: that.data('filter-value')
+            },
+            afterUpdate: function () {
+                $('[data-filter-value]').removeClass(`active`)
+                that.addClass(`active`)
+            }
+        })
+    })
+</script>
+
 
 

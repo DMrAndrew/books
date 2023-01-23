@@ -1,20 +1,19 @@
-<div class="buy-book-modal ui-modal personal-area-discount-modal overlay active" data-modal id="modal-container"
-     style="display: none">
+<div class="buy-book-modal ui-modal personal-area-discount-modal overlay" data-modal id="modal-container"
+>
     <div class="ui-modal-container">
         <!-- Импорт книги -->
         <div class="buy-book-modal__container ui-modal-content " id="import-modal-container">
             <div class="buy-book-modal__header">
                 <div class="square-16 "></div>
                 <div class="ui-text-head--2 ui-text--bold">Импорт произведения</div>
-                <svg onclick="toggleModal()" style="cursor: pointer" class="square-24" data-modal="close">
+                <svg class="square-24"
+                     data-modal="close">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
                 </svg>
             </div>
 
             <div class="personal-area-discount-modal__content-container">
                 <div class="personal-area-discount-modal__content">
-
-
                     {{ form_ajax('onUploadFile',{
                     'id':'fb_upload_form',
                     'data-request-validate':'true',
@@ -27,7 +26,7 @@
                             права.</p>
                         <p>Загрузка книг работает только с корректными fb2 файлами. Если при загрузке fb2 файла
                             возникает ошибка, то файл поврежден или некорректно сформирован.</p>
-                        <p >Максимальный размер файла - <span style="color: darkred">20МБ.</span></p>
+                        <p>Максимальный размер файла - <span style="color: darkred;font-weight: 500">20МБ.</span></p>
                     </div>
                     <div class="ui-select-hitn"></div>
                     <div class="ui-select-error" data-validate-for="fb2"></div>
@@ -67,25 +66,15 @@
                 </div>
             </div>
         </div>
-
     </div>
-</div>
-<script>
-    document.querySelector('#fb_upload_form').addEventListener('ajax:request-error', function () {
-        $('#import-modal-container').show()
-    });
+    <script>
+        $(`#fb_upload_form`).bind('ajax:request-error', function () {
+            $('#import-modal-container').show()
+        });
 
-    addEventListener('ajax:setup', function (event) {
-        let id = event.target.id;
-        if (id === 'fb_upload_form') {
+        $(`#fb_upload_form`).bind('ajax:setup', function () {
             $('#import-modal-container').hide()
-        }
-    });
+        });
+    </script>
+</div>
 
-    addEventListener('ajax:done', function (event) {
-        let id = event.target.id;
-        if (id === 'fb_upload_form') {
-            toggleModal()
-        }
-    });
-</script>

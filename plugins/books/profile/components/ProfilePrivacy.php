@@ -3,6 +3,7 @@
 use Books\User\Classes\SettingsTagEnum;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 
 /**
  * ProfilePrivacy Component
@@ -11,6 +12,8 @@ use RainLab\User\Facades\Auth;
  */
 class ProfilePrivacy extends ComponentBase
 {
+    protected User $user;
+
     /**
      * componentDetails
      */
@@ -22,17 +25,18 @@ class ProfilePrivacy extends ComponentBase
         ];
     }
 
-    public function onRun()
+    public function init()
     {
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
+        }
+        $this->user = Auth::getUser();
         $this->page['settings'] = $this->getPrivactSettings();
     }
 
     function getPrivactSettings()
     {
-        if ($user = Auth::getUser()) {
-            return $user->profileSettings->filter->hasTag(SettingsTagEnum::PRIVACY);
-        }
-        return [];
+        return $this->user->profileSettings->filter->hasTag(SettingsTagEnum::PRIVACY);
     }
 
     /**
@@ -44,15 +48,14 @@ class ProfilePrivacy extends ComponentBase
     {
         return [];
     }
+
     public function onUpdatePrivacy()
     {
 
-        if ($user = Auth::getUser()) {
-            collect(post('options'))->each(function ($option, $key) use ($user) {
-                $user->profileSettings()->updateOrCreate(['setting_id' => $key], ['value' => $option]);
-            });
-        }
-
+        collect(post('options'))->each(function ($option, $key) {
+            $this->user->profileSettings()->updateOrCreate(['setting_id' => $key], ['value' => $option]);
+            $this->user->refresh();
+        });
         return [
             '#profile_privacy_form' => $this->renderPartial('profile/privacy', ['settings' => $this->getPrivactSettings()])
         ];

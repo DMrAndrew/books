@@ -31,29 +31,6 @@ class Booker extends ComponentBase
     protected User $user;
     protected BookService $service;
 
-    public function init()
-    {
-
-        $this->user = User::find($this->property('user_id')) ?? Auth::getUser();
-        if (!$this->user) {
-            throw new ApplicationException('User required');
-        }
-        $this->book = $this->user->profile->books()->find($this->property('book_id')) ?? new Book();
-
-        $this->service = new BookService(user: $this->user, book: $this->book, session_key: $this->getSessionKey());
-
-        $component = $this->addComponent(
-            ImageUploader::class,
-            'coverUploader',
-            [
-                'modelClass' => Book::class,
-                'deferredBinding' => !!!$this->book->id,
-                'imageWidth' => 168,
-                'imageHeight' => 243,
-            ]
-        );
-        $component->bindModel('cover', $this->book);
-    }
 
     /**
      * componentDetails
@@ -85,8 +62,30 @@ class Booker extends ComponentBase
     }
 
 
-    public function onRun()
+    public function init()
     {
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
+        }
+        $this->user = User::find($this->property('user_id')) ?? Auth::getUser();
+        if (!$this->user) {
+            throw new ApplicationException('User required');
+        }
+        $this->book = $this->user->profile->books()->find($this->property('book_id')) ?? new Book();
+
+        $this->service = new BookService(user: $this->user, book: $this->book, session_key: $this->getSessionKey());
+
+        $component = $this->addComponent(
+            ImageUploader::class,
+            'coverUploader',
+            [
+                'modelClass' => Book::class,
+                'deferredBinding' => !!!$this->book->id,
+                'imageWidth' => 168,
+                'imageHeight' => 243,
+            ]
+        );
+        $component->bindModel('cover', $this->book);
         $this->page['ebook'] = $this->book->ebook;
         $this->page['age_restrictions'] = AgeRestrictionsEnum::cases();
         $this->page['cycles'] = $this->getCycles();
@@ -122,7 +121,7 @@ class Booker extends ComponentBase
         try {
             collect(post('authors'))
                 ->whereNotNull('profile_id')
-                ->whereBetween('percent_value',[0,100])
+                ->whereBetween('percent_value', [0, 100])
                 ->map(fn($i) => [
                     'profile' => Profile::find($i['profile_id']),
                     'value' => $i['percent_value']

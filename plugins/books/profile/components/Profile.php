@@ -7,16 +7,16 @@ use Request;
 use Exception;
 use Validator;
 use ValidationException;
+use RainLab\User\Models\User;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use Books\FileUploader\Components\ImageUploader;
 use Books\Profile\Models\Profile as UserProfile;
-use function Clue\StreamFilter\fun;
 
 class Profile extends ComponentBase
 {
 
-    protected $user;
+    protected User $user;
 
     /**
      * @return mixed
@@ -32,6 +32,9 @@ class Profile extends ComponentBase
 
     public function init()
     {
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
+        }
         $this->user = Auth::getUser();
         if ($profile = $this->user?->profile) {
             $component = $this->addComponent(
@@ -61,10 +64,6 @@ class Profile extends ComponentBase
             );
             $component->bindModel('banner', $profile);
         }
-    }
-
-    public function onRun()
-    {
         $this->page['userdata'] = $this->user;
     }
 
@@ -92,6 +91,7 @@ class Profile extends ComponentBase
             }
 
             $profile->update($validation->validated(), ['force' => true]);
+            $this->user->refresh();
 
             return [
                 'profile/primaryInformation' => $this->renderPartial('profile/primaryInformation', ['userdata' => $this->user]),

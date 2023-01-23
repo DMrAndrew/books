@@ -20,6 +20,7 @@ use Request;
 class EBooker extends ComponentBase
 {
     protected EbookEdition $ebook;
+
     /**
      * componentDetails
      */
@@ -33,9 +34,11 @@ class EBooker extends ComponentBase
 
     public function init()
     {
-
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
+        }
         $this->ebook = Auth::getUser()->profile->books()->find($this->property('book_id'))?->ebook;
-        if(!$this->ebook){
+        if (!$this->ebook) {
             throw new ApplicationException('Электронное издание книги не найден.');
         }
         $this->page['ebook'] = $this->ebook;
@@ -64,25 +67,25 @@ class EBooker extends ComponentBase
         try {
             $this->ebook->changeChaptersOrder(post('sequence'));
             return [
-                '#ebooker-chapters' => $this->renderPartial('@chapters',['ebook' => $this->ebook])
+                '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook])
             ];
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             if (Request::ajax()) throw $ex;
             else Flash::error($ex->getMessage());
         }
 
     }
+
     public function onUpdate()
     {
         try {
-            $this->ebook->update(collect(post())->only(['price','status','free_parts','sales_free'])->toArray());
+            $this->ebook->update(collect(post())->only(['price', 'status', 'free_parts', 'sales_free'])->toArray());
             $this->ebook->setFreeParts();
 
             return [
                 '#about-header' => $this->renderPartial('book/about-header', ['book' => $this->ebook->book]),
-                '#ebooker-chapters' => $this->renderPartial('@chapters',['ebook' => $this->ebook]),
-                '#ebook-settings' => $this->renderPartial('@settings',['ebook' => $this->ebook]),
+                '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
+                '#ebook-settings' => $this->renderPartial('@settings', ['ebook' => $this->ebook]),
             ];
 
         } catch (Exception $ex) {
