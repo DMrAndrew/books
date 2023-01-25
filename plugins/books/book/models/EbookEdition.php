@@ -13,10 +13,10 @@ use October\Rain\Database\Traits\Validation;
 /**
  * EbookEdition Model
  *
- *  @method AttachOne fb2
- *  @method HasMany chapters
- *  @method MorphOne edition
- *  @method HasOneThrough book
+ * @method AttachOne fb2
+ * @method HasMany chapters
+ * @method MorphOne edition
+ * @method HasOneThrough book
  */
 class EbookEdition extends Model
 {

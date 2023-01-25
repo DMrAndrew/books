@@ -79,7 +79,8 @@ class EBooker extends ComponentBase
     public function onUpdate()
     {
         try {
-            $this->ebook->update(collect(post())->only(['price', 'status', 'free_parts', 'sales_free'])->toArray());
+            $data = collect(post())->only(['price', 'status', 'free_parts', 'sales_free'])->toArray();
+            $this->ebook->update($data);
             $this->ebook->setFreeParts();
 
             return [

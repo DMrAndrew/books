@@ -107,11 +107,11 @@
                             </div>
                         </div>
                         {% endif %}
-                        {% if user.birthday %}
+                        {% if profile.user.birthday %}
                         <div class="author-profile-description__wrapper">
                             <div class="author-profile-description__label">День рождения</div>
                             <div class="author-profile-description__info">
-                                {{carbon(user.birthday).format('d.m.Y')}}
+                                {{carbon(profile.user.birthday).format('d.m.Y')}}
                             </div>
                         </div>
                         {% endif %}
@@ -125,7 +125,7 @@
                         <div class="author-profile-description__wrapper">
                             <div class="author-profile-description__label">Регистрация</div>
                             <div class="author-profile-description__info">
-                                {{carbon(user.created_at).format('d.m.Y')}}
+                                {{carbon(profile.user.created_at).format('d.m.Y')}}
                             </div>
                         </div>
                     </div>

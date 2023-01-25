@@ -62,6 +62,7 @@ function redirectIfUnauthorized()
     if (!Auth::getUser()) {
         return Redirect::to('/');
     }
+    return false;
 }
 
 ?>

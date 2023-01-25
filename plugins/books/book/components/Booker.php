@@ -261,9 +261,8 @@ class Booker extends ComponentBase
 
     public function onAddAuthor()
     {
-
         try {
-            if ($this->service->getProfiles()->count() > 3) {
+            if ($this->service->getProfiles()->count() > 2) {
                 throw new ValidationException(['authors' => 'Вы можете добавить до 3 соавторов.']);
             }
             if ($profile = Profile::find(post('item')['id'] ?? null)) {
@@ -282,6 +281,9 @@ class Booker extends ComponentBase
      */
     public function onAddTag(): array
     {
+        if ($this->service->getTags()->count() > 7) {
+            throw new ValidationException(['tags' => 'Вы можете добавить до 8 тэгов.']);
+        }
         $this->service->addTag(Tag::find(post('item')['id'] ?? null) ?? post('item')['value'] ?? null);
         return $this->generateTagInput(['autofocus' => true]);
     }
@@ -301,8 +303,6 @@ class Booker extends ComponentBase
             if (Request::ajax()) throw $ex;
             else Flash::error($ex->getMessage());
         }
-
-
     }
 
     public function onDeleteAuthor()

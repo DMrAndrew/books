@@ -21,6 +21,7 @@ class Edition extends Model
      */
     public $table = 'books_book_editions';
 
+    protected $fillable = ['editionable_id'];
     /**
      * @var array rules for validation
      */

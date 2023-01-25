@@ -2,6 +2,9 @@ url = "/lc-notification"
 layout = "default"
 title = "Личный кабинет - Уведомления"
 description = "Личный кабинет - Уведомления"
+[session]
+security = "user"
+redirect = "/"
 [profileNotification]
 ==
 {% partial 'profile/personal_area_header' %}

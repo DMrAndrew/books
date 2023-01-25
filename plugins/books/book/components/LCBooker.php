@@ -37,10 +37,6 @@ class LCBooker extends ComponentBase
             return $redirect;
         }
         $this->user = Auth::getUser();
-    }
-
-    public function onRender()
-    {
         $this->page['authorships'] = $this->getAuthorships();
     }
 
