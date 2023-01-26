@@ -169,7 +169,7 @@
                     {% endif %}
 
                     {% for book in books %}
-                    {% partial 'book/book' book=book %}
+                    {% partial 'book/book' book=book author=profile %}
                     {% endfor %}
                 </div>
 
