@@ -26,7 +26,13 @@
     {% if link.separator %}
     <div class="personal-area__sidebar-separator"></div>
     {% else %}
-    <a class="personal-area__sidebar-link {{this.page.url == link.href ? 'active' : ''}}" data-turbo="{{link.turbo|default('true')}}" href="{{link.href}}">{{link.name}}</a>
+    {% if link.href %}
+    <a class="personal-area__sidebar-link {{this.page.url == link.href ? 'active' : '' }} "
+       data-turbo="{{link.turbo|default('true')}}" href="{{link.href}}">{{link.name}}</a>
+    {% else %}
+    <a class="personal-area__sidebar-link disabled">{{link.name}}</a>
+    {% endif %}
+
     {% endif %}
     {% endfor %}
 </div>

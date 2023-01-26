@@ -3,6 +3,7 @@
 use Books\User\Classes\SettingsTagEnum;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 
 /**
  * ProfileNotification Component
@@ -11,6 +12,8 @@ use RainLab\User\Facades\Auth;
  */
 class ProfileNotification extends ComponentBase
 {
+    protected User $user;
+
     /**
      * componentDetails
      */
@@ -23,23 +26,21 @@ class ProfileNotification extends ComponentBase
     }
 
 
-    public function onRun()
+    public function init()
     {
-        if ($user = Auth::getUser()) {
-            $this->page['settings'] = $this->getNotifySettings();
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
         }
+        $this->user = Auth::getUser();
+        $this->page['settings'] = $this->getNotifySettings();
     }
 
     function getNotifySettings()
     {
-        if ($user = Auth::getUser()) {
-            return [
-                'profilable' => $user->profileSettings->filter->hasTag(SettingsTagEnum::NOTIFICATION),
-                'accountable' => $user->accountSettings->filter->hasTag(SettingsTagEnum::NOTIFICATION),
-            ];
-
-        }
-        return [];
+        return [
+            'profilable' => $this->user->profileSettings->filter->hasTag(SettingsTagEnum::NOTIFICATION),
+            'accountable' => $this->user->accountSettings->filter->hasTag(SettingsTagEnum::NOTIFICATION),
+        ];
     }
 
     /**
@@ -54,13 +55,10 @@ class ProfileNotification extends ComponentBase
 
     public function onUpdateNotify()
     {
-
-        if ($user = Auth::getUser()) {
-            collect(post('options'))->each(function ($option, $key) use ($user) {
-                $user->settings()->updateOrCreate(['setting_id' => $key], ['value' => $option]);
-            });
-        }
-
+        collect(post('options'))->each(function ($option, $key) {
+            $this->user->settings()->updateOrCreate(['setting_id' => $key], ['value' => $option]);
+            $this->user->refresh();
+        });
         return [
             'profile/notification' => $this->renderPartial('profile/notification', ['settings' => $this->getNotifySettings()])
         ];

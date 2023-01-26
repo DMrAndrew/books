@@ -2,16 +2,18 @@
     <div class="author__promo author-promo">
         <div class="author-promo__background">
             {% if profile.banner %}
-            <img class="author__background-image" src="{{profile.banner.getThumb(1152,160)}}" alt="banner" loadong="lazy">
+            <img class="author__background-image" src="{{profile.banner.getThumb(1152,160)}}" alt="banner"
+                 loadong="lazy">
             {% else %}
-            <img class="author__background-image" src="{{'assets/images/author/bg-placeholder.png' | theme}}" alt="banner" loadong="lazy">
+            <img class="author__background-image" src="{{'assets/images/author/bg-placeholder.png' | theme}}"
+                 alt="banner" loadong="lazy">
             {% endif %}
         </div>
         <div class="author-promo__info author-promo-info">
             <div class="author-promo-info__avatar-wrapper">
                 <!-- Показывается сообщение или плейсхолдер -->
                 {% if profile.avatar %}
-                <img style="width:168px;height:168px" src="{{profile.avatar.getThumb(168,168)}}" alt="avatar">
+                <img class="profile-avatar-image" src="{{profile.avatar.getThumb(168,168)}}" alt="avatar">
                 {% else %}
                 <span>{{ profile.firstLatter }}</span>
                 {% endif %}
@@ -24,15 +26,19 @@
                     {% if isOwner %}
                     <!-- Кнопка для личного кабинета -->
                     <a href="/lc-profile" data-turbo="false">
-                    <button class="author-promo-info__button ui-button ui-button-size--32 ui-button-view--3">Личный кабинет</button>
+                        <button class="author-promo-info__button ui-button ui-button-size--32 ui-button-view--3">Личный
+                            кабинет
+                        </button>
                     </a>
                     {% else %}
                     <button
-                        class="author-promo-info__button _half ui-button ui-button-size--32 ui-button-view--2">Подписаться</button>
-<!--                    <button-->
-<!--                        class="author-promo-info__button _half ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3">Сообщение</button>-->
-<!--                    <button class="author-promo-info__button _full ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3">Поддержать-->
-<!--                        автора</button>-->
+                        class="author-promo-info__button _half ui-button ui-button-size--32 ui-button-view--2">
+                        Подписаться
+                    </button>
+                    <!--                    <button-->
+                    <!--                        class="author-promo-info__button _half ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3">Сообщение</button>-->
+                    <!--                    <button class="author-promo-info__button _full ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3">Поддержать-->
+                    <!--                        автора</button>-->
                     {% endif %}
                     {% endif %}
 
@@ -42,21 +48,23 @@
         </div>
 
         <div class="author-promo__tabs">
-            <div class="ui-tabs" >
-                <div class="ui-tabs-header js-container" >
+            <div class="ui-tabs">
+                <div class="ui-tabs-header js-container">
                     <div class="ui-tabs-line"></div>
                     <div class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
                         <div class="ui-tabs-link active" data-tab="1">Профиль</div>
-                        <div class="ui-tabs-link " data-tab="2">Книги <span> {{ books_count|default(' ') }} </span></div>
-<!--                        <div class="ui-tabs-link " data-tab="3">Магазин<span>12</span></div>-->
-<!--                        <div class="ui-tabs-link " data-tab="4">Циклы</div>-->
-<!--                        <div class="ui-tabs-link " data-tab="5">Блог</div>-->
-<!--                        <div class="ui-tabs-link " data-tab="6">Видеоблог</div>-->
-<!--                        <div class="ui-tabs-link " data-tab="7">Подписки</div>-->
-<!--                        <div class="ui-tabs-link " data-tab="8">Подписчики</div>-->
-<!--                        <div class="ui-tabs-link " data-tab="9">Награды</div>-->
-<!--                        <div class="ui-tabs-link " data-tab="10">Комментарии</div>-->
-<!--                        <div class="ui-tabs-link " data-tab="11">Репосты</div>-->
+                        <div class="ui-tabs-link " data-tab="2">Книги <span> {{ books_count|default(' ') }} </span>
+                        </div>
+
+                        <!--                        <div class="ui-tabs-link " data-tab="3">Магазин<span>12</span></div>-->
+                        <!--                        <div class="ui-tabs-link " data-tab="4">Циклы</div>-->
+                        <!--                        <div class="ui-tabs-link " data-tab="5">Блог</div>-->
+                        <!--                        <div class="ui-tabs-link " data-tab="6">Видеоблог</div>-->
+                        <!--                        <div class="ui-tabs-link " data-tab="7">Подписки</div>-->
+                        <!--                        <div class="ui-tabs-link " data-tab="8">Подписчики</div>-->
+                        <!--                        <div class="ui-tabs-link " data-tab="9">Награды</div>-->
+                        <!--                        <div class="ui-tabs-link " data-tab="10">Комментарии</div>-->
+                        <!--                        <div class="ui-tabs-link " data-tab="11">Репосты</div>-->
                     </div>
                 </div>
             </div>
@@ -74,17 +82,22 @@
                     {% if should_call_fit_profile %}
                     <div class="author__placeholder _indent">
                         <svg class="square-32">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#smile-stroked-sad-32' | theme}}"></use>
+                            <use
+                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#smile-stroked-sad-32' | theme}}"></use>
                         </svg>
                         <div class="ui-text-head--3 ui-text--bold">Вы ничего не рассказали о себе</div>
                         <span>Пожалуйста, заполните ваш профиль</span>
                         <a href="/lc-profile" data-turbo="false">
-                            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Настроить профиль</button>
+                            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">
+                                Настроить профиль
+                            </button>
                         </a>
                     </div>
                     {% endif %}
                     <div class="author-profile__description author-profile-description">
-                        <div class="author-profile-description__title ui-text-head--3 ui-text--bold">Основная информация</div>
+                        <div class="author-profile-description__title ui-text-head--3 ui-text--bold">Основная
+                            информация
+                        </div>
 
                         {% if profile.about %}
                         <div class="author-profile-description__wrapper">
@@ -94,46 +107,47 @@
                             </div>
                         </div>
                         {% endif %}
-                        {% if user.birthday %}
+                        {% if profile.user.birthday %}
                         <div class="author-profile-description__wrapper">
                             <div class="author-profile-description__label">День рождения</div>
                             <div class="author-profile-description__info">
-                                {{carbon(user.birthday).format('d.m.y')}}
+                                {{carbon(profile.user.birthday).format('d.m.Y')}}
                             </div>
                         </div>
                         {% endif %}
-<!--                        <div class="author-profile-description__wrapper">-->
-<!--                            <div class="author-profile-description__label">Любимы жанры</div>-->
-<!--                            <div class="author-profile-description__info">-->
-<!--                                <a class="ui-link _violet" href="#">ЛитРПГ</a>,-->
-<!--                                <a class="ui-link _violet" href="#">РеалРПГ</a>-->
-<!--                            </div>-->
-<!--                        </div>-->
+                        <!--                        <div class="author-profile-description__wrapper">-->
+                        <!--                            <div class="author-profile-description__label">Любимы жанры</div>-->
+                        <!--                            <div class="author-profile-description__info">-->
+                        <!--                                <a class="ui-link _violet" href="#">ЛитРПГ</a>,-->
+                        <!--                                <a class="ui-link _violet" href="#">РеалРПГ</a>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
                         <div class="author-profile-description__wrapper">
                             <div class="author-profile-description__label">Регистрация</div>
                             <div class="author-profile-description__info">
-                                {{carbon(user.created_at).format('d.m.y')}}
+                                {{carbon(profile.user.created_at).format('d.m.Y')}}
                             </div>
                         </div>
                     </div>
-<!--                    <div class="author-profile__comments comments">-->
-<!--                        <form class="comments-form _indent">-->
-<!--                            <h3 class="comments-form__title ui-text&#45;&#45;bold"><span class="ui-text-head&#45;&#45;3">Комментарии</span></h3>-->
+                    <!--                    <div class="author-profile__comments comments">-->
+                    <!--                        <form class="comments-form _indent">-->
+                    <!--                            <h3 class="comments-form__title ui-text&#45;&#45;bold"><span class="ui-text-head&#45;&#45;3">Комментарии</span></h3>-->
 
-<!--                            <div class="comments-form__auth">-->
-<!--                                <span>Авторизуйтесь, чтобы оставлять комментарии</span>-->
-<!--                                <button class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3 ui-text&#45;&#45;medium">Войти</button>-->
-<!--                            </div>-->
-<!--                        </form>-->
+                    <!--                            <div class="comments-form__auth">-->
+                    <!--                                <span>Авторизуйтесь, чтобы оставлять комментарии</span>-->
+                    <!--                                <button class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3 ui-text&#45;&#45;medium">Войти</button>-->
+                    <!--                            </div>-->
+                    <!--                        </form>-->
 
 
-<!--                    </div>-->
+                    <!--                    </div>-->
                 </div>
 
 
                 <!-- Книги -->
                 <div class="author-books ui-tabs-content" data-tab-content="2">
-                    <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Книги <span class="ui-text-body--2"> {{ books_count|default('') }}</span></div>
+                    <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Книги <span
+                        class="ui-text-body--2"> {{ books_count|default('') }}</span></div>
 
                     {% if books_count == 0 %}
                     <div class="author__placeholder _indent">
@@ -143,8 +157,10 @@
                         {% if isOwner %}
                         <div class="ui-text-head--3 ui-text--bold">У вас нет книг</div>
                         <span>Тут будет какой-нибудь привлекающий текст, как в литмаркете</span>
-                        <a href="/create-book" data-turbo="false" >
-                            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile" type="submit" >Добавить книгу</button>
+                        <a href="/create-book" data-turbo="false">
+                            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile"
+                                    type="submit">Добавить книгу
+                            </button>
                         </a>
                         {% else %}
                         <div class="ui-text-head--3 ui-text--bold">У автора нет книг</div>
@@ -153,575 +169,574 @@
                     {% endif %}
 
                     {% for book in books %}
-                        {% partial 'book/book' book=book %}
+                    {% partial 'book/book' book=book %}
                     {% endfor %}
                 </div>
 
 
-<!--                &lt;!&ndash; Магазин &ndash;&gt;-->
-<!--                <div class="author-profile ui-tabs-content" data-tab-content="3">-->
-<!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Магазин</div>-->
-<!--                    <div class="author__placeholder _indent">-->
-<!--                        <svg class="square-32">-->
-<!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#shop-stroked-32' | theme }}"></use>-->
-<!--                        </svg>-->
-<!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">В вашем магазине еще нет товаров</div>-->
-<!--                        <span>Размещайте свои товары и зарабатывайте вместе с Время книг</span>-->
-<!--                        <button class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full-mobile">Добавить товар</button>-->
-<!--                    </div>-->
-<!--                </div>-->
+                <!--                &lt;!&ndash; Магазин &ndash;&gt;-->
+                <!--                <div class="author-profile ui-tabs-content" data-tab-content="3">-->
+                <!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Магазин</div>-->
+                <!--                    <div class="author__placeholder _indent">-->
+                <!--                        <svg class="square-32">-->
+                <!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#shop-stroked-32' | theme }}"></use>-->
+                <!--                        </svg>-->
+                <!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">В вашем магазине еще нет товаров</div>-->
+                <!--                        <span>Размещайте свои товары и зарабатывайте вместе с Время книг</span>-->
+                <!--                        <button class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full-mobile">Добавить товар</button>-->
+                <!--                    </div>-->
+                <!--                </div>-->
 
 
-<!--                &lt;!&ndash; Циклы &ndash;&gt;-->
-<!--                <div class="author-cycles ui-tabs-content" data-tab-content="4">-->
-<!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Циклы <span class="ui-text-body&#45;&#45;2">2</span></div>-->
-<!--                    <div class="author-cycles__container">-->
-<!--                        <div class="author-cycles__wrapper">-->
+                <!--                &lt;!&ndash; Циклы &ndash;&gt;-->
+                <!--                <div class="author-cycles ui-tabs-content" data-tab-content="4">-->
+                <!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Циклы <span class="ui-text-body&#45;&#45;2">2</span></div>-->
+                <!--                    <div class="author-cycles__container">-->
+                <!--                        <div class="author-cycles__wrapper">-->
 
-<!--                            <div class="author-cycles__header">-->
-<!--                                <div class="author-cycles__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">История бессмертного</div>-->
-<!--                                <a class="author-cycles__link ui-link _violet" href="#">Подробнее</a>-->
-<!--                            </div>-->
-<!--                            <div class="author-cycles__stage">-->
-<!--                                <svg class="square-16">-->
-<!--                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>-->
-<!--                                </svg>-->
-<!--                                <span>В работе</span>-->
-<!--                            </div>-->
-<!--                            <div class="thematic-section__container swiper">-->
-<!--                                <div class="thematic-section__card-container swiper-wrapper">-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                </div>-->
-<!--                                <div class="thematic-section__nav _left">-->
-<!--                                    <svg>-->
-<!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>-->
-<!--                                    </svg>-->
-<!--                                </div>-->
-<!--                                <div class="thematic-section__nav _right">-->
-<!--                                    <svg>-->
-<!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>-->
-<!--                                    </svg>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="author-cycles__wrapper">-->
+                <!--                            <div class="author-cycles__header">-->
+                <!--                                <div class="author-cycles__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">История бессмертного</div>-->
+                <!--                                <a class="author-cycles__link ui-link _violet" href="#">Подробнее</a>-->
+                <!--                            </div>-->
+                <!--                            <div class="author-cycles__stage">-->
+                <!--                                <svg class="square-16">-->
+                <!--                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>-->
+                <!--                                </svg>-->
+                <!--                                <span>В работе</span>-->
+                <!--                            </div>-->
+                <!--                            <div class="thematic-section__container swiper">-->
+                <!--                                <div class="thematic-section__card-container swiper-wrapper">-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                </div>-->
+                <!--                                <div class="thematic-section__nav _left">-->
+                <!--                                    <svg>-->
+                <!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>-->
+                <!--                                    </svg>-->
+                <!--                                </div>-->
+                <!--                                <div class="thematic-section__nav _right">-->
+                <!--                                    <svg>-->
+                <!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>-->
+                <!--                                    </svg>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                        <div class="author-cycles__wrapper">-->
 
-<!--                            <div class="author-cycles__header">-->
-<!--                                <div class="author-cycles__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">История бессмертного</div>-->
-<!--                                <a class="author-cycles__link ui-link _violet" href="#">Подробнее</a>-->
-<!--                            </div>-->
-<!--                            <div class="author-cycles__stage">-->
-<!--                                <svg class="square-16">-->
-<!--                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
-<!--                                </svg>-->
-<!--                                <span>Закончено</span>-->
-<!--                            </div>-->
-<!--                            <div class="thematic-section__container swiper">-->
-<!--                                <div class="thematic-section__card-container swiper-wrapper">-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
-<!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
-<!--                                             loading="lazy"></img>-->
-<!--                                        <div class="book-mini-card__title">-->
-<!--                                            Влезает только три строчки. Влезает только три строчки-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                </div>-->
-<!--                                <div class="thematic-section__nav _left">-->
-<!--                                    <svg>-->
-<!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>-->
-<!--                                    </svg>-->
-<!--                                </div>-->
-<!--                                <div class="thematic-section__nav _right">-->
-<!--                                    <svg>-->
-<!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>-->
-<!--                                    </svg>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-
-
-<!--                &lt;!&ndash; Блог &ndash;&gt;-->
-<!--                <div class="author-blog ui-tabs-content" data-tab-content="5">-->
-<!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Блог <span class="ui-text-body&#45;&#45;2">2</span></div>-->
-
-<!--                    <div class="author__placeholder _indent">-->
-<!--                        <svg class="square-32">-->
-<!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#blog-stroked-32' | theme}}"></use>-->
-<!--                        </svg>-->
-<!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">У вас еще нет ни одного блога</div>-->
-<!--                        <span>Создайте свой потрясающий блог прямо сейчас</span>-->
-<!--                        <button class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full-mobile">Создать блог</button>-->
-<!--                    </div>-->
-
-<!--                    <div class="author-blog__container">-->
-<!--                        <a href="#" class="blog-card wrapper _hover _indent">-->
-<!--                            <div class="blog-card__header">-->
-<!--                                <img src="{{'assets/images/author/avatar-placeholder.png' | theme}}" alt="">-->
-<!--                                <div class="">-->
-<!--                                    <div class="ui-text&#45;&#45;bold">Александр Алексон</div>-->
-<!--                                    <span>Вчера</span>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div class="blog-card__body">-->
-<!--                                <div class="blog-card__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold _indent-small">Творческое перегорание или затишье перед бурей</div>-->
-<!--                                <p class="blog-card__text _crop">-->
-<!--                                    Привет мои хорошие, Писательство — это ежедневный кропотливый труд, на который не всегда хватает времени, а иногда и вдохновения. Особенно, если у тебя параллельно другая, кормящая тебя работа. Но на всех свадьбах не станцуешь, как и не поймаешь двух зайцев...-->
-<!--                                </p>-->
-<!--                            </div>-->
-<!--                            <div class="blog-card__footer">-->
-<!--                                <svg class="square-16">-->
-<!--                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>-->
-<!--                                </svg>-->
-<!--                                <span>2</span>-->
-<!--                            </div>-->
-<!--                        </a>-->
-<!--                        <a href="#" class="blog-card wrapper _hover">-->
-<!--                            <div class="blog-card__header">-->
-<!--                                <img src="{{'assets/images/author/avatar-placeholder.png' | theme}}" alt="">-->
-<!--                                <div class="">-->
-<!--                                    <div class="ui-text&#45;&#45;bold">Александр Алексон</div>-->
-<!--                                    <span>Вчера</span>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div class="blog-card__body">-->
-<!--                                <div class="blog-card__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold _indent-small">Творческое перегорание или затишье перед бурей</div>-->
-<!--                                <p class="blog-card__text _crop">-->
-<!--                                    Привет мои хорошие, Писательство — это ежедневный кропотливый труд, на который не всегда хватает времени, а иногда и вдохновения. Особенно, если у тебя параллельно другая, кормящая тебя работа. Но на всех свадьбах не станцуешь, как и не поймаешь двух зайцев...-->
-<!--                                </p>-->
-<!--                            </div>-->
-<!--                            <div class="blog-card__footer">-->
-<!--                                <svg class="square-16">-->
-<!--                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>-->
-<!--                                </svg>-->
-<!--                                <span>2</span>-->
-<!--                            </div>-->
-<!--                        </a>-->
-<!--                    </div>-->
-<!--                </div>-->
+                <!--                            <div class="author-cycles__header">-->
+                <!--                                <div class="author-cycles__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">История бессмертного</div>-->
+                <!--                                <a class="author-cycles__link ui-link _violet" href="#">Подробнее</a>-->
+                <!--                            </div>-->
+                <!--                            <div class="author-cycles__stage">-->
+                <!--                                <svg class="square-16">-->
+                <!--                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
+                <!--                                </svg>-->
+                <!--                                <span>Закончено</span>-->
+                <!--                            </div>-->
+                <!--                            <div class="thematic-section__container swiper">-->
+                <!--                                <div class="thematic-section__card-container swiper-wrapper">-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">-->
+                <!--                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""-->
+                <!--                                             loading="lazy"></img>-->
+                <!--                                        <div class="book-mini-card__title">-->
+                <!--                                            Влезает только три строчки. Влезает только три строчки-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                </div>-->
+                <!--                                <div class="thematic-section__nav _left">-->
+                <!--                                    <svg>-->
+                <!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>-->
+                <!--                                    </svg>-->
+                <!--                                </div>-->
+                <!--                                <div class="thematic-section__nav _right">-->
+                <!--                                    <svg>-->
+                <!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>-->
+                <!--                                    </svg>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
 
 
-<!--                &lt;!&ndash; Видеоблог &ndash;&gt;-->
-<!--                <div class="author-blog ui-tabs-content" data-tab-content="6">-->
-<!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Видеоблог <span class="ui-text-body&#45;&#45;2">2</span></div>-->
+                <!--                &lt;!&ndash; Блог &ndash;&gt;-->
+                <!--                <div class="author-blog ui-tabs-content" data-tab-content="5">-->
+                <!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Блог <span class="ui-text-body&#45;&#45;2">2</span></div>-->
 
-<!--                    <div class="author__placeholder _indent">-->
-<!--                        <svg class="square-32">-->
-<!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#video-blog-stroked-32' | theme}}"></use>-->
-<!--                        </svg>-->
-<!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">У вас еще нет ни одного видеоблога</div>-->
-<!--                        <span>Заведи свой видеоблог на платформе Время книг</span>-->
-<!--                        <button class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full-mobile">Создать видеоблог</button>-->
-<!--                    </div>-->
+                <!--                    <div class="author__placeholder _indent">-->
+                <!--                        <svg class="square-32">-->
+                <!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#blog-stroked-32' | theme}}"></use>-->
+                <!--                        </svg>-->
+                <!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">У вас еще нет ни одного блога</div>-->
+                <!--                        <span>Создайте свой потрясающий блог прямо сейчас</span>-->
+                <!--                        <button class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full-mobile">Создать блог</button>-->
+                <!--                    </div>-->
 
-<!--                    <div class="ui-grid-container ui-grid-gap">-->
-<!--                        <a href="#" class="blog-card wrapper _video-blog _hover ui-col-sm-6">-->
-<!--                            <div class="blog-card__header">-->
-<!--                                <img src="{{'assets/images/author/avatar-placeholder.png' | theme}}" alt="">-->
-<!--                                <div class="">-->
-<!--                                    <div class="ui-text&#45;&#45;bold">Александр Алексон</div>-->
-<!--                                    <span>Вчера</span>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div class="blog-card__body">-->
-<!--                                <div class="blog-card__video-wrapper">-->
-<!--                                    <img src="{{'assets/images/author/bg-placeholder.png' | theme}}" alt="">-->
-<!--                                    <span class="ui-label-number _black">1:03</span>-->
-<!--                                </div>-->
-<!--                                <div class="blog-card__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold _indent-small">Творческое перегорание или затишье перед бурей Творческое перегорание или затишье перед бурей Творческое перегорание или затишье перед бурей</div>-->
-<!--                            </div>-->
-<!--                            <div class="blog-card__footer">-->
-<!--                                <svg class="square-16">-->
-<!--                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>-->
-<!--                                </svg>-->
-<!--                                <span>2</span>-->
-<!--                            </div>-->
-<!--                        </a>-->
-<!--                        <a href="#" class="blog-card wrapper _video-blog _hover ui-col-sm-6">-->
-<!--                            <div class="blog-card__header">-->
-<!--                                <img src="{{'assets/images/author/avatar-placeholder.png' | theme}}" alt="">-->
-<!--                                <div class="">-->
-<!--                                    <div class="ui-text&#45;&#45;bold">Александр Алексон</div>-->
-<!--                                    <span>Вчера</span>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div class="blog-card__body">-->
-<!--                                <div class="blog-card__video-wrapper">-->
-<!--                                    <img src="{{'assets/images/author/bg-placeholder.png' | theme}}" alt="">-->
-<!--                                    <span class="ui-label-number _black">1:03</span>-->
-<!--                                </div>-->
-<!--                                <div class="blog-card__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold _indent-small">Творческое перегорание или затишье перед бурей </div>-->
-<!--                            </div>-->
-<!--                            <div class="blog-card__footer">-->
-<!--                                <svg class="square-16">-->
-<!--                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>-->
-<!--                                </svg>-->
-<!--                                <span>2</span>-->
-<!--                            </div>-->
-<!--                        </a>-->
-<!--                    </div>-->
-<!--                </div>-->
+                <!--                    <div class="author-blog__container">-->
+                <!--                        <a href="#" class="blog-card wrapper _hover _indent">-->
+                <!--                            <div class="blog-card__header">-->
+                <!--                                <img src="{{'assets/images/author/avatar-placeholder.png' | theme}}" alt="">-->
+                <!--                                <div class="">-->
+                <!--                                    <div class="ui-text&#45;&#45;bold">Александр Алексон</div>-->
+                <!--                                    <span>Вчера</span>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                            <div class="blog-card__body">-->
+                <!--                                <div class="blog-card__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold _indent-small">Творческое перегорание или затишье перед бурей</div>-->
+                <!--                                <p class="blog-card__text _crop">-->
+                <!--                                    Привет мои хорошие, Писательство — это ежедневный кропотливый труд, на который не всегда хватает времени, а иногда и вдохновения. Особенно, если у тебя параллельно другая, кормящая тебя работа. Но на всех свадьбах не станцуешь, как и не поймаешь двух зайцев...-->
+                <!--                                </p>-->
+                <!--                            </div>-->
+                <!--                            <div class="blog-card__footer">-->
+                <!--                                <svg class="square-16">-->
+                <!--                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>-->
+                <!--                                </svg>-->
+                <!--                                <span>2</span>-->
+                <!--                            </div>-->
+                <!--                        </a>-->
+                <!--                        <a href="#" class="blog-card wrapper _hover">-->
+                <!--                            <div class="blog-card__header">-->
+                <!--                                <img src="{{'assets/images/author/avatar-placeholder.png' | theme}}" alt="">-->
+                <!--                                <div class="">-->
+                <!--                                    <div class="ui-text&#45;&#45;bold">Александр Алексон</div>-->
+                <!--                                    <span>Вчера</span>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                            <div class="blog-card__body">-->
+                <!--                                <div class="blog-card__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold _indent-small">Творческое перегорание или затишье перед бурей</div>-->
+                <!--                                <p class="blog-card__text _crop">-->
+                <!--                                    Привет мои хорошие, Писательство — это ежедневный кропотливый труд, на который не всегда хватает времени, а иногда и вдохновения. Особенно, если у тебя параллельно другая, кормящая тебя работа. Но на всех свадьбах не станцуешь, как и не поймаешь двух зайцев...-->
+                <!--                                </p>-->
+                <!--                            </div>-->
+                <!--                            <div class="blog-card__footer">-->
+                <!--                                <svg class="square-16">-->
+                <!--                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>-->
+                <!--                                </svg>-->
+                <!--                                <span>2</span>-->
+                <!--                            </div>-->
+                <!--                        </a>-->
+                <!--                    </div>-->
+                <!--                </div>-->
 
 
-<!--                &lt;!&ndash; Подписки &ndash;&gt;-->
-<!--                <div class="author-blog ui-tabs-content" data-tab-content="7">-->
-<!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Подписки <span class="ui-text-body&#45;&#45;2">2</span></div>-->
+                <!--                &lt;!&ndash; Видеоблог &ndash;&gt;-->
+                <!--                <div class="author-blog ui-tabs-content" data-tab-content="6">-->
+                <!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Видеоблог <span class="ui-text-body&#45;&#45;2">2</span></div>-->
 
-<!--                    <div class="author__placeholder _indent">-->
-<!--                        <svg class="square-32">-->
-<!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#users-stroked-32' | theme}}"></use>-->
-<!--                        </svg>-->
-<!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">У вас пока нет ни одной подписки</div>-->
-<!--                        <span>Когда они появятся, вы увидите их здесь</span>-->
-<!--                        <button class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full-mobile">Создать видеоблог</button>-->
-<!--                    </div>-->
+                <!--                    <div class="author__placeholder _indent">-->
+                <!--                        <svg class="square-32">-->
+                <!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#video-blog-stroked-32' | theme}}"></use>-->
+                <!--                        </svg>-->
+                <!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">У вас еще нет ни одного видеоблога</div>-->
+                <!--                        <span>Заведи свой видеоблог на платформе Время книг</span>-->
+                <!--                        <button class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full-mobile">Создать видеоблог</button>-->
+                <!--                    </div>-->
 
-<!--                    <div class="ui-grid-container ui-grid-gap">-->
-<!--                        <a href="#" class="subscribe-card wrapper ui-col-sm-6">-->
-<!--                            <div class="subscribe-card__header">-->
-<!--                                <div class="subscribe-card__avatar">-->
-<!--                                    <span class="ui-text-body&#45;&#45;1 ui-text&#45;&#45;medium">A</span>-->
-<!--                                </div>-->
-<!--                                <div class="subscribe-card__name ui-text&#45;&#45;bold">Викторов Роман</div>-->
-<!--                            </div>-->
-<!--                            <div class="subscribe-card__footer">-->
-<!--                                <div class="wrapper-item _indent">-->
-<!--                                    <svg class="square-16">-->
-<!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>-->
-<!--                                    </svg>-->
-<!--                                    <span>19</span>-->
-<!--                                </div>-->
-<!--                                <div class="wrapper-item _indent">-->
-<!--                                    <svg class="square-16">-->
-<!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#user-filled-16' | theme}}"></use>-->
-<!--                                    </svg>-->
-<!--                                    <span>142</span>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </a>-->
-<!--                        <a href="#" class="subscribe-card wrapper ui-col-sm-6">-->
-<!--                            <div class="subscribe-card__header">-->
-<!--                                <div class="subscribe-card__avatar">-->
-<!--                                    <img src="{{'assets/images/author/avatar-placeholder.png' | theme}}" alt="">-->
-<!--                                </div>-->
-<!--                                <div class="subscribe-card__name ui-text&#45;&#45;bold">Викторов Роман</div>-->
-<!--                            </div>-->
-<!--                            <div class="subscribe-card__footer">-->
-<!--                                <div class="wrapper-item _indent">-->
-<!--                                    <svg class="square-16">-->
-<!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>-->
-<!--                                    </svg>-->
-<!--                                    <span>19</span>-->
-<!--                                </div>-->
-<!--                                <div class="wrapper-item _indent">-->
-<!--                                    <svg class="square-16">-->
-<!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#user-filled-16' | theme}}"></use>-->
-<!--                                    </svg>-->
-<!--                                    <span>142</span>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </a>-->
-<!--                    </div>-->
-
-
-
-<!--                </div>-->
+                <!--                    <div class="ui-grid-container ui-grid-gap">-->
+                <!--                        <a href="#" class="blog-card wrapper _video-blog _hover ui-col-sm-6">-->
+                <!--                            <div class="blog-card__header">-->
+                <!--                                <img src="{{'assets/images/author/avatar-placeholder.png' | theme}}" alt="">-->
+                <!--                                <div class="">-->
+                <!--                                    <div class="ui-text&#45;&#45;bold">Александр Алексон</div>-->
+                <!--                                    <span>Вчера</span>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                            <div class="blog-card__body">-->
+                <!--                                <div class="blog-card__video-wrapper">-->
+                <!--                                    <img src="{{'assets/images/author/bg-placeholder.png' | theme}}" alt="">-->
+                <!--                                    <span class="ui-label-number _black">1:03</span>-->
+                <!--                                </div>-->
+                <!--                                <div class="blog-card__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold _indent-small">Творческое перегорание или затишье перед бурей Творческое перегорание или затишье перед бурей Творческое перегорание или затишье перед бурей</div>-->
+                <!--                            </div>-->
+                <!--                            <div class="blog-card__footer">-->
+                <!--                                <svg class="square-16">-->
+                <!--                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>-->
+                <!--                                </svg>-->
+                <!--                                <span>2</span>-->
+                <!--                            </div>-->
+                <!--                        </a>-->
+                <!--                        <a href="#" class="blog-card wrapper _video-blog _hover ui-col-sm-6">-->
+                <!--                            <div class="blog-card__header">-->
+                <!--                                <img src="{{'assets/images/author/avatar-placeholder.png' | theme}}" alt="">-->
+                <!--                                <div class="">-->
+                <!--                                    <div class="ui-text&#45;&#45;bold">Александр Алексон</div>-->
+                <!--                                    <span>Вчера</span>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                            <div class="blog-card__body">-->
+                <!--                                <div class="blog-card__video-wrapper">-->
+                <!--                                    <img src="{{'assets/images/author/bg-placeholder.png' | theme}}" alt="">-->
+                <!--                                    <span class="ui-label-number _black">1:03</span>-->
+                <!--                                </div>-->
+                <!--                                <div class="blog-card__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold _indent-small">Творческое перегорание или затишье перед бурей </div>-->
+                <!--                            </div>-->
+                <!--                            <div class="blog-card__footer">-->
+                <!--                                <svg class="square-16">-->
+                <!--                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>-->
+                <!--                                </svg>-->
+                <!--                                <span>2</span>-->
+                <!--                            </div>-->
+                <!--                        </a>-->
+                <!--                    </div>-->
+                <!--                </div>-->
 
 
-<!--                &lt;!&ndash; Подписчики &ndash;&gt;-->
-<!--                <div class="author-subscribers ui-tabs-content" data-tab-content="8">-->
-<!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Подписчики <span class="ui-text-body&#45;&#45;2">2</span></div>-->
+                <!--                &lt;!&ndash; Подписки &ndash;&gt;-->
+                <!--                <div class="author-blog ui-tabs-content" data-tab-content="7">-->
+                <!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Подписки <span class="ui-text-body&#45;&#45;2">2</span></div>-->
 
-<!--                    <div class="ui-tabs" >-->
-<!--                        <div class="ui-tabs-header">-->
-<!--                            <div class="ui-tabs-line"></div>-->
-<!--                            <div class="ui-tabs-header-wrapper" data-tabs="2">-->
-<!--                                <div class="ui-tabs-link active" data-tab="1">Авторы <span>2</span></div>-->
-<!--                                <div class="ui-tabs-link " data-tab="2">Читатели <span>2</span></div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="ui-tabs-body" data-tabs="2">-->
-<!--                            <div class="ui-tabs-content active" data-tab-content="1">-->
-<!--                                <div class="ui-grid-container ui-grid-gap">-->
-<!--                                    <a href="#" class="subscribe-card wrapper ui-col-sm-6">-->
-<!--                                        <div class="subscribe-card__header">-->
-<!--                                            <div class="subscribe-card__avatar">-->
-<!--                                                <span class="ui-text-body&#45;&#45;1 ui-text&#45;&#45;medium">A</span>-->
-<!--                                            </div>-->
-<!--                                            <div class="subscribe-card__name ui-text&#45;&#45;bold">Викторов Роман</div>-->
-<!--                                        </div>-->
-<!--                                        <div class="subscribe-card__footer">-->
-<!--                                            <div class="wrapper-item _indent">-->
-<!--                                                <svg class="square-16">-->
-<!--                                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>-->
-<!--                                                </svg>-->
-<!--                                                <span>19</span>-->
-<!--                                            </div>-->
-<!--                                            <div class="wrapper-item _indent">-->
-<!--                                                <svg class="square-16">-->
-<!--                                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#user-filled-16' | theme}}"></use>-->
-<!--                                                </svg>-->
-<!--                                                <span>142</span>-->
-<!--                                            </div>-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div class="ui-tabs-content" data-tab-content="2">-->
-<!--                                <div class="ui-grid-container ui-grid-gap">-->
-<!--                                    <a href="#" class="subscribe-card wrapper ui-col-sm-6">-->
-<!--                                        <div class="subscribe-card__header">-->
-<!--                                            <div class="subscribe-card__avatar">-->
-<!--                                                <span class="ui-text-body&#45;&#45;1 ui-text&#45;&#45;medium">A</span>-->
-<!--                                            </div>-->
-<!--                                            <div class="subscribe-card__name ui-text&#45;&#45;bold">Викторов Роман</div>-->
-<!--                                        </div>-->
-<!--                                    </a>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
+                <!--                    <div class="author__placeholder _indent">-->
+                <!--                        <svg class="square-32">-->
+                <!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#users-stroked-32' | theme}}"></use>-->
+                <!--                        </svg>-->
+                <!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">У вас пока нет ни одной подписки</div>-->
+                <!--                        <span>Когда они появятся, вы увидите их здесь</span>-->
+                <!--                        <button class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full-mobile">Создать видеоблог</button>-->
+                <!--                    </div>-->
 
-
-<!--                &lt;!&ndash; Награды &ndash;&gt;-->
-<!--                <div class="author-awards ui-tabs-content" data-tab-content="9">-->
-<!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Награды <span class="ui-text-body&#45;&#45;2">2</span></div>-->
-
-<!--                    <div class="author__placeholder _indent">-->
-<!--                        <svg class="square-32">-->
-<!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#feather-stroked-24' | theme}}"></use>-->
-<!--                        </svg>-->
-<!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">У вас пока нет ни одной награды</div>-->
-<!--                        <span>Когда они появятся, вы увидите их здесь</span>-->
-<!--                    </div>-->
-
-<!--                    <div class="author-awards__container">-->
-<!--                        <div class="ui-tabs" >-->
-<!--                            <div class="ui-tabs-header">-->
-<!--                                <div class="ui-tabs-line"></div>-->
-<!--                                <div class="ui-tabs-header-wrapper" data-tabs="3">-->
-<!--                                    <div class="ui-tabs-link active" data-tab="1">Получил наград <span>12</span></div>-->
-<!--                                    <div class="ui-tabs-link " data-tab="2">Подарил наград <span>2</span></div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div class="ui-tabs-body" data-tabs="3">-->
-<!--                                <div class="ui-tabs-content active" data-tab-content="1">-->
-<!--                                    <div class="cb-mini-card _book">-->
-<!--                                        <div class="cb-mini-card__image-wrapper">-->
-<!--                                            <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" alt="">-->
-<!--                                        </div>-->
-<!--                                        <div class="cb-mini-card__wrapper">-->
-<!--                                            <div class="">от <a class="ui-link _violet" href="">Александр Кошкин</a> за книгу <a href="" class="ui-link _violet">Увлекательная история про Алексона</a>  </div>-->
-<!--                                            <div class="cb-mini-card__date">Сегодня</div>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                    <div class="cb-mini-card _book">-->
-<!--                                        <div class="cb-mini-card__image-wrapper">-->
-<!--                                            <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" alt="">-->
-<!--                                        </div>-->
-<!--                                        <div class="cb-mini-card__wrapper">-->
-<!--                                            <div class="">от <a class="ui-link _violet" href="">Александр Кошкин</a> за книгу <a href="" class="ui-link _violet">Увлекательная история про Алексона</a>  </div>-->
-<!--                                            <div class="cb-mini-card__date">Сегодня</div>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                                <div class="ui-tabs-content" data-tab-content="2">-->
-<!--                                    <div class="cb-mini-card _book">-->
-<!--                                        <div class="cb-mini-card__image-wrapper">-->
-<!--                                            <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" alt="">-->
-<!--                                        </div>-->
-<!--                                        <div class="cb-mini-card__wrapper">-->
-<!--                                            <div class="">за книгу <a class="ui-link _violet" href="">Сапер. Том III</a></div>-->
-<!--                                            <div class="cb-mini-card__date">Сегодня</div>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
+                <!--                    <div class="ui-grid-container ui-grid-gap">-->
+                <!--                        <a href="#" class="subscribe-card wrapper ui-col-sm-6">-->
+                <!--                            <div class="subscribe-card__header">-->
+                <!--                                <div class="subscribe-card__avatar">-->
+                <!--                                    <span class="ui-text-body&#45;&#45;1 ui-text&#45;&#45;medium">A</span>-->
+                <!--                                </div>-->
+                <!--                                <div class="subscribe-card__name ui-text&#45;&#45;bold">Викторов Роман</div>-->
+                <!--                            </div>-->
+                <!--                            <div class="subscribe-card__footer">-->
+                <!--                                <div class="wrapper-item _indent">-->
+                <!--                                    <svg class="square-16">-->
+                <!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>-->
+                <!--                                    </svg>-->
+                <!--                                    <span>19</span>-->
+                <!--                                </div>-->
+                <!--                                <div class="wrapper-item _indent">-->
+                <!--                                    <svg class="square-16">-->
+                <!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#user-filled-16' | theme}}"></use>-->
+                <!--                                    </svg>-->
+                <!--                                    <span>142</span>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </a>-->
+                <!--                        <a href="#" class="subscribe-card wrapper ui-col-sm-6">-->
+                <!--                            <div class="subscribe-card__header">-->
+                <!--                                <div class="subscribe-card__avatar">-->
+                <!--                                    <img src="{{'assets/images/author/avatar-placeholder.png' | theme}}" alt="">-->
+                <!--                                </div>-->
+                <!--                                <div class="subscribe-card__name ui-text&#45;&#45;bold">Викторов Роман</div>-->
+                <!--                            </div>-->
+                <!--                            <div class="subscribe-card__footer">-->
+                <!--                                <div class="wrapper-item _indent">-->
+                <!--                                    <svg class="square-16">-->
+                <!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>-->
+                <!--                                    </svg>-->
+                <!--                                    <span>19</span>-->
+                <!--                                </div>-->
+                <!--                                <div class="wrapper-item _indent">-->
+                <!--                                    <svg class="square-16">-->
+                <!--                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#user-filled-16' | theme}}"></use>-->
+                <!--                                    </svg>-->
+                <!--                                    <span>142</span>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </a>-->
+                <!--                    </div>-->
 
 
-<!--                &lt;!&ndash; Комментарии &ndash;&gt;-->
-<!--                <div class="ui-tabs-content" data-tab-content="10">-->
-<!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Комментарии <span class="ui-text-body&#45;&#45;2">2</span></div>-->
-
-<!--                    <div class="author__placeholder _indent">-->
-<!--                        <svg class="square-32">-->
-<!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-stroked-24' | theme}}"></use>-->
-<!--                        </svg>-->
-<!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">У вас пока нет ни одной награды</div>-->
-<!--                        <span>Когда они появятся, вы увидите их здесь</span>-->
-<!--                    </div>-->
-
-<!--                    <div class="author-awards__container">-->
-<!--                        <div class="cb-mini-card _avatar">-->
-<!--                            <div class="cb-mini-card__image-wrapper">-->
-<!--                                <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" alt="">-->
-<!--                            </div>-->
-<!--                            <div class="cb-mini-card__wrapper">-->
-<!--                                <div class="">Написал комментарий к книге <a class="ui-link _violet" href="">Группа крови на рукаве</a></div>-->
-<!--                                <div class="cb-mini-card__date">Сегодня</div>-->
-<!--                                <div class="cb-mini-card__text">-->
-<!--                                    Будет вам скоро аж две главы сразу. Допиливаем, бэты смотрят. Но потом пауза в неделю.-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="cb-mini-card _avatar">-->
-<!--                            <div class="cb-mini-card__image-wrapper">-->
-<!--                                <span class="ui-text-body&#45;&#45;1 ui-text&#45;&#45;medium">M</span>-->
-<!--                            </div>-->
-<!--                            <div class="cb-mini-card__wrapper">-->
-<!--                                <div class="">Написал комментарий к книге <a class="ui-link _violet" href="">Группа крови на рукаве</a></div>-->
-<!--                                <div class="cb-mini-card__date">Сегодня</div>-->
-<!--                                <div class="cb-mini-card__text">-->
-<!--                                    Будет вам скоро аж две главы сразу. Допиливаем, бэты смотрят. Но потом пауза в неделю.-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
+                <!--                </div>-->
 
 
-<!--                &lt;!&ndash; Репосты &ndash;&gt;-->
-<!--                <div class="ui-tabs-content" data-tab-content="11">-->
-<!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Репосты <span class="ui-text-body&#45;&#45;2">2</span></div>-->
+                <!--                &lt;!&ndash; Подписчики &ndash;&gt;-->
+                <!--                <div class="author-subscribers ui-tabs-content" data-tab-content="8">-->
+                <!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Подписчики <span class="ui-text-body&#45;&#45;2">2</span></div>-->
 
-<!--                    <div class="author__placeholder _indent">-->
-<!--                        <svg class="square-32">-->
-<!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#share-stroked-32' | theme}}"></use>-->
-<!--                        </svg>-->
-<!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">У вас пока нет ни одного репоста</div>-->
-<!--                        <span>Когда они появятся, вы увидите их здесь</span>-->
-<!--                    </div>-->
+                <!--                    <div class="ui-tabs" >-->
+                <!--                        <div class="ui-tabs-header">-->
+                <!--                            <div class="ui-tabs-line"></div>-->
+                <!--                            <div class="ui-tabs-header-wrapper" data-tabs="2">-->
+                <!--                                <div class="ui-tabs-link active" data-tab="1">Авторы <span>2</span></div>-->
+                <!--                                <div class="ui-tabs-link " data-tab="2">Читатели <span>2</span></div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                        <div class="ui-tabs-body" data-tabs="2">-->
+                <!--                            <div class="ui-tabs-content active" data-tab-content="1">-->
+                <!--                                <div class="ui-grid-container ui-grid-gap">-->
+                <!--                                    <a href="#" class="subscribe-card wrapper ui-col-sm-6">-->
+                <!--                                        <div class="subscribe-card__header">-->
+                <!--                                            <div class="subscribe-card__avatar">-->
+                <!--                                                <span class="ui-text-body&#45;&#45;1 ui-text&#45;&#45;medium">A</span>-->
+                <!--                                            </div>-->
+                <!--                                            <div class="subscribe-card__name ui-text&#45;&#45;bold">Викторов Роман</div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="subscribe-card__footer">-->
+                <!--                                            <div class="wrapper-item _indent">-->
+                <!--                                                <svg class="square-16">-->
+                <!--                                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>-->
+                <!--                                                </svg>-->
+                <!--                                                <span>19</span>-->
+                <!--                                            </div>-->
+                <!--                                            <div class="wrapper-item _indent">-->
+                <!--                                                <svg class="square-16">-->
+                <!--                                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#user-filled-16' | theme}}"></use>-->
+                <!--                                                </svg>-->
+                <!--                                                <span>142</span>-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                            <div class="ui-tabs-content" data-tab-content="2">-->
+                <!--                                <div class="ui-grid-container ui-grid-gap">-->
+                <!--                                    <a href="#" class="subscribe-card wrapper ui-col-sm-6">-->
+                <!--                                        <div class="subscribe-card__header">-->
+                <!--                                            <div class="subscribe-card__avatar">-->
+                <!--                                                <span class="ui-text-body&#45;&#45;1 ui-text&#45;&#45;medium">A</span>-->
+                <!--                                            </div>-->
+                <!--                                            <div class="subscribe-card__name ui-text&#45;&#45;bold">Викторов Роман</div>-->
+                <!--                                        </div>-->
+                <!--                                    </a>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
 
-<!--                    <div class="author-awards__container">-->
-<!--                        <div class="cb-mini-card _avatar">-->
-<!--                            <div class="cb-mini-card__image-wrapper">-->
-<!--                                <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" alt="">-->
-<!--                            </div>-->
-<!--                            <div class="cb-mini-card__wrapper">-->
-<!--                                <div class="">Поделился книгой  <a class="ui-link _violet" href="">Группа крови на рукаве</a></div>-->
-<!--                                <div class="cb-mini-card__date">Сегодня</div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="cb-mini-card _avatar">-->
-<!--                            <div class="cb-mini-card__image-wrapper">-->
-<!--                                <span class="ui-text-body&#45;&#45;1 ui-text&#45;&#45;medium">M</span>-->
-<!--                            </div>-->
-<!--                            <div class="cb-mini-card__wrapper">-->
-<!--                                <div class="">Поделился книгой  <a class="ui-link _violet" href="">Группа крови на рукаве</a></div>-->
-<!--                                <div class="cb-mini-card__date">10.08.22</div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
+
+                <!--                &lt;!&ndash; Награды &ndash;&gt;-->
+                <!--                <div class="author-awards ui-tabs-content" data-tab-content="9">-->
+                <!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Награды <span class="ui-text-body&#45;&#45;2">2</span></div>-->
+
+                <!--                    <div class="author__placeholder _indent">-->
+                <!--                        <svg class="square-32">-->
+                <!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#feather-stroked-24' | theme}}"></use>-->
+                <!--                        </svg>-->
+                <!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">У вас пока нет ни одной награды</div>-->
+                <!--                        <span>Когда они появятся, вы увидите их здесь</span>-->
+                <!--                    </div>-->
+
+                <!--                    <div class="author-awards__container">-->
+                <!--                        <div class="ui-tabs" >-->
+                <!--                            <div class="ui-tabs-header">-->
+                <!--                                <div class="ui-tabs-line"></div>-->
+                <!--                                <div class="ui-tabs-header-wrapper" data-tabs="3">-->
+                <!--                                    <div class="ui-tabs-link active" data-tab="1">Получил наград <span>12</span></div>-->
+                <!--                                    <div class="ui-tabs-link " data-tab="2">Подарил наград <span>2</span></div>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                            <div class="ui-tabs-body" data-tabs="3">-->
+                <!--                                <div class="ui-tabs-content active" data-tab-content="1">-->
+                <!--                                    <div class="cb-mini-card _book">-->
+                <!--                                        <div class="cb-mini-card__image-wrapper">-->
+                <!--                                            <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" alt="">-->
+                <!--                                        </div>-->
+                <!--                                        <div class="cb-mini-card__wrapper">-->
+                <!--                                            <div class="">от <a class="ui-link _violet" href="">Александр Кошкин</a> за книгу <a href="" class="ui-link _violet">Увлекательная история про Алексона</a>  </div>-->
+                <!--                                            <div class="cb-mini-card__date">Сегодня</div>-->
+                <!--                                        </div>-->
+                <!--                                    </div>-->
+                <!--                                    <div class="cb-mini-card _book">-->
+                <!--                                        <div class="cb-mini-card__image-wrapper">-->
+                <!--                                            <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" alt="">-->
+                <!--                                        </div>-->
+                <!--                                        <div class="cb-mini-card__wrapper">-->
+                <!--                                            <div class="">от <a class="ui-link _violet" href="">Александр Кошкин</a> за книгу <a href="" class="ui-link _violet">Увлекательная история про Алексона</a>  </div>-->
+                <!--                                            <div class="cb-mini-card__date">Сегодня</div>-->
+                <!--                                        </div>-->
+                <!--                                    </div>-->
+                <!--                                </div>-->
+                <!--                                <div class="ui-tabs-content" data-tab-content="2">-->
+                <!--                                    <div class="cb-mini-card _book">-->
+                <!--                                        <div class="cb-mini-card__image-wrapper">-->
+                <!--                                            <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" alt="">-->
+                <!--                                        </div>-->
+                <!--                                        <div class="cb-mini-card__wrapper">-->
+                <!--                                            <div class="">за книгу <a class="ui-link _violet" href="">Сапер. Том III</a></div>-->
+                <!--                                            <div class="cb-mini-card__date">Сегодня</div>-->
+                <!--                                        </div>-->
+                <!--                                    </div>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+
+
+                <!--                &lt;!&ndash; Комментарии &ndash;&gt;-->
+                <!--                <div class="ui-tabs-content" data-tab-content="10">-->
+                <!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Комментарии <span class="ui-text-body&#45;&#45;2">2</span></div>-->
+
+                <!--                    <div class="author__placeholder _indent">-->
+                <!--                        <svg class="square-32">-->
+                <!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-stroked-24' | theme}}"></use>-->
+                <!--                        </svg>-->
+                <!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">У вас пока нет ни одной награды</div>-->
+                <!--                        <span>Когда они появятся, вы увидите их здесь</span>-->
+                <!--                    </div>-->
+
+                <!--                    <div class="author-awards__container">-->
+                <!--                        <div class="cb-mini-card _avatar">-->
+                <!--                            <div class="cb-mini-card__image-wrapper">-->
+                <!--                                <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" alt="">-->
+                <!--                            </div>-->
+                <!--                            <div class="cb-mini-card__wrapper">-->
+                <!--                                <div class="">Написал комментарий к книге <a class="ui-link _violet" href="">Группа крови на рукаве</a></div>-->
+                <!--                                <div class="cb-mini-card__date">Сегодня</div>-->
+                <!--                                <div class="cb-mini-card__text">-->
+                <!--                                    Будет вам скоро аж две главы сразу. Допиливаем, бэты смотрят. Но потом пауза в неделю.-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                        <div class="cb-mini-card _avatar">-->
+                <!--                            <div class="cb-mini-card__image-wrapper">-->
+                <!--                                <span class="ui-text-body&#45;&#45;1 ui-text&#45;&#45;medium">M</span>-->
+                <!--                            </div>-->
+                <!--                            <div class="cb-mini-card__wrapper">-->
+                <!--                                <div class="">Написал комментарий к книге <a class="ui-link _violet" href="">Группа крови на рукаве</a></div>-->
+                <!--                                <div class="cb-mini-card__date">Сегодня</div>-->
+                <!--                                <div class="cb-mini-card__text">-->
+                <!--                                    Будет вам скоро аж две главы сразу. Допиливаем, бэты смотрят. Но потом пауза в неделю.-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+
+
+                <!--                &lt;!&ndash; Репосты &ndash;&gt;-->
+                <!--                <div class="ui-tabs-content" data-tab-content="11">-->
+                <!--                    <div class="ui-container author__tab-title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Репосты <span class="ui-text-body&#45;&#45;2">2</span></div>-->
+
+                <!--                    <div class="author__placeholder _indent">-->
+                <!--                        <svg class="square-32">-->
+                <!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#share-stroked-32' | theme}}"></use>-->
+                <!--                        </svg>-->
+                <!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">У вас пока нет ни одного репоста</div>-->
+                <!--                        <span>Когда они появятся, вы увидите их здесь</span>-->
+                <!--                    </div>-->
+
+                <!--                    <div class="author-awards__container">-->
+                <!--                        <div class="cb-mini-card _avatar">-->
+                <!--                            <div class="cb-mini-card__image-wrapper">-->
+                <!--                                <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" alt="">-->
+                <!--                            </div>-->
+                <!--                            <div class="cb-mini-card__wrapper">-->
+                <!--                                <div class="">Поделился книгой  <a class="ui-link _violet" href="">Группа крови на рукаве</a></div>-->
+                <!--                                <div class="cb-mini-card__date">Сегодня</div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                        <div class="cb-mini-card _avatar">-->
+                <!--                            <div class="cb-mini-card__image-wrapper">-->
+                <!--                                <span class="ui-text-body&#45;&#45;1 ui-text&#45;&#45;medium">M</span>-->
+                <!--                            </div>-->
+                <!--                            <div class="cb-mini-card__wrapper">-->
+                <!--                                <div class="">Поделился книгой  <a class="ui-link _violet" href="">Группа крови на рукаве</a></div>-->
+                <!--                                <div class="cb-mini-card__date">10.08.22</div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
             </div>
         </div>
 
@@ -766,7 +781,8 @@
                 {% if profile.tg %}
                 <a href="{{profile.tg}}" rel="noopener" target="_blank" class="author-contacts__link">
                     <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-telegram-stroked-16' | theme}}"></use>
+                        <use
+                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-telegram-stroked-16' | theme}}"></use>
                     </svg>
                     <span>{{profile.tg}}</span>
                 </a>
@@ -788,7 +804,8 @@
                 </div>
                 <div class="thematic-section__container ">
                     <a href="#" class="book-sidebar-card _indent">
-                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-sidebar-card__image" alt=""
+                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
+                             class="book-sidebar-card__image" alt=""
                              loading="lazy">
                         <div class="book-sidebar-card__description">
                             <div class="book-sidebar-card__label">ЛитРПГ</div>
@@ -796,7 +813,8 @@
                         </div>
                     </a>
                     <a href="#" class="book-sidebar-card _indent">
-                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-sidebar-card__image" alt=""
+                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
+                             class="book-sidebar-card__image" alt=""
                              loading="lazy">
                         <div class="book-sidebar-card__description">
                             <div class="book-sidebar-card__label">ЛитРПГ</div>
@@ -804,7 +822,8 @@
                         </div>
                     </a>
                     <a href="#" class="book-sidebar-card _indent">
-                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-sidebar-card__image" alt=""
+                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
+                             class="book-sidebar-card__image" alt=""
                              loading="lazy">
                         <div class="book-sidebar-card__description">
                             <div class="book-sidebar-card__label">ЛитРПГ</div>

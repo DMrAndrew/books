@@ -28,6 +28,7 @@ class AuthorSpace extends ComponentBase
 
     public function init()
     {
+
         $this->profile_id = $this->param('profile_id');
         if (!$this->profile = Profile::find($this->profile_id) ?? Auth::getUser()?->profile) {
             abort(404);
@@ -44,7 +45,7 @@ class AuthorSpace extends ComponentBase
         $this->page['isOwner'] = $isOwner;
         $this->page['hasContacts'] = !$this->profile->isContactsEmpty();
         $this->page['should_call_fit_profile'] = $isOwner && $this->profile->isEmpty();
-        $books = $this->profile->books()
+        $books = $this->profile->booksSortedByAuthorOrder()
             ->when(!$isOwner, fn($q) => $q->public())
             ->defualtEager()
             ->get();

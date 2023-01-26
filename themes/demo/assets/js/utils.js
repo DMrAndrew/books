@@ -25,9 +25,6 @@ let openTab = function (default_tab) {
         tab.click()
     }
 }
-let toggleModal = () => {
-    $('#modal-container').toggle()
-}
 
 
 addEventListener('page:before-cache', function () {
@@ -55,7 +52,7 @@ let initSortable = (container, handler) => {
                 let arr = $(container).find('input').map(function () {
                     return $(this).val();
                 }).get()
-                oc.ajax(handler, {data: {sequence: arr, is_owner:$(`input[name=is_owner]`).val()}})
+                oc.ajax(handler, {data: {sequence: arr, is_owner: $(`input[name=is_owner]`).val()}})
             }
         });
     })

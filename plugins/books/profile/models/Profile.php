@@ -109,7 +109,7 @@ class Profile extends Model
 
     ];
     public $hasMany = [
-        'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id']
+        'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id', 'scope' => 'sortByAuthorOrder']
     ];
 
     public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
@@ -139,7 +139,7 @@ class Profile extends Model
 
     public function authorshipsAs(?bool $is_owner): HasMany
     {
-       return $this->authorships()->when(!is_null($is_owner), fn(Builder $builder) => $is_owner ? $builder->owner() : $builder->notOwner());
+        return $this->authorships()->when(!is_null($is_owner), fn(Builder $builder) => $is_owner ? $builder->owner() : $builder->notOwner());
     }
 
     public function getFirstLatterAttribute(): string
@@ -167,6 +167,10 @@ class Profile extends Model
         return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website',]))->some(fn($i) => !!$i);
     }
 
+    public function booksSortedByAuthorOrder(): BelongsToMany
+    {
+        return $this->books()->orderByPivot('sort_order', 'desc');
+    }
 
 
 }

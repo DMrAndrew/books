@@ -11,13 +11,17 @@
     <div class="personal-area__wrap _indent-small">Баннер</div>
     <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">Это изображение показывается в верхней части вашего профиля. Чтобы фотография выглядела привлекательно на всех устройствах, загружайте изображение размером не менее 1152x160 пикселей.</div>
 
-    {% component 'bannerUploader' %}
+    <div>
+        {% component 'bannerUploader' %}
+    </div>
 
+
+    <div class="personal-area__wrap _separator"></div>
     {{ form_ajax('profile::onUpdateProfile',{
     id:'primary_profile_information',
     'data-request-validate':'true'
     }) }}
-    <div class="personal-area__wrap _separator"></div>
+
     <div class="personal-area__wrap _indent-small">Имя или псевдоним</div>
     <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">Имя или псевдоним можно изменить через администратора.
         <a onclick="openChangerUserNameForm()" class="ui-link _violet" style="cursor: pointer">Изменить</a></div>

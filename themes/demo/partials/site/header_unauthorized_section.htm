@@ -84,7 +84,7 @@
     <form id="login_form" class="auth__container _small"
           data-request="bookAccount::onSignin"
           data-request-validate
-          data-request-success="closeForm()"
+          data-request-data="{ redirect: '/' }"
     >
         <div class="auth__header _desktop">
             <svg class="square-24 auth__button-back active">
@@ -107,7 +107,6 @@
             <div class="auth__form-container">
                 <div class="ui-input-wrapper">
                     <input class="ui-input-item _size-32" type="email" name="email" placeholder="Электронная почта">
-
                     <div class="ui-select-hitn"></div>
                     <div class="ui-select-error" data-validate-for="email"></div>
                 </div>
@@ -118,6 +117,7 @@
                     <div class="ui-select-error" data-validate-for="password"></div>
                 </div>
             </div>
+            <div class="ui-select-error" data-validate-for="auth"></div>
 
             <button type="submit" class="auth__action ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
                 <span class="ui-text--medium">Войти</span>

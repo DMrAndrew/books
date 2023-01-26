@@ -1,21 +1,42 @@
+{% set href_link =  is_not_public_view ? '/about-book/' : '/book-card/' %}
 <div class="book-card">
     <div class="book-card__body">
         <div class="book-card__column-left">
-            <a href="#">
+            <a data-turbo="false" href="{{href_link~book.id}}">
                 <img class="book-card__image" src="{{book.cover.getThumb(104,150)}}" alt="" loading="lazy">
             </a>
 
+            {% if not is_not_public_view %}
             <button class="book-card__bookmark">
-                <svg class="book-card__bookmark-icon _color-violet ">
+                <svg class="book-card__bookmark-icon _color-violet">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-check-16' | theme}}"></use>
                 </svg>
                 <svg class="book-card__bookmark-icon _color-black active">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme}}"></use>
                 </svg>
             </button>
+            {% endif %}
         </div>
         <div class="book-card__column-right">
-            <a href="#" class="book-card__title ui-text-head--3 ui-text--bold">{{book.title}}</a>
+            {% if is_not_public_view %}
+            <div class="book-card__action">
+                <a data-turbo="false" href="{{href_link~book.id}}"
+                   class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">
+                    <svg class="square-16">
+                        <use
+                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>
+                    </svg>
+                    <span class="ui-button--text-hidden">Редактировать</span>
+                </a>
+                <div class="">
+                    <svg class="chapter-book__drag square-24 handle">
+                        <use
+                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#move-vertical-24' | theme}}"></use>
+                    </svg>
+                </div>
+            </div>
+            {% endif %}
+            <a data-turbo="false" href="{{href_link~book.id}}" class="book-card__title ui-text-head--3 ui-text--bold">{{book.title}}</a>
             <a href="/author-page/{{book.author.profile.id}}" class="book-card__author ui-link _violet">{{book.author.profile.username}}</a>
             {% partial 'book/ebook-card-info' book=book %}
             <div class="book-card__description">
@@ -68,7 +89,7 @@
             <svg>
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-filled-16' | theme}}"></use>
             </svg>
-            <span>0</span>
+            <span>{{book.favoritesCount}}</span>
         </div>
     </div>
 </div>

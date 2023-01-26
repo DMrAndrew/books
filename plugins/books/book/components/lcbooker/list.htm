@@ -1,0 +1,33 @@
+{% if authorships.count() %}
+<div class="lc-books__listing-container">
+    <ul id="sortable_books">
+        {% for authorship in authorships %}
+        <li>
+            <input type="hidden" name="authorships[{{authorship.id}}]" value="{{authorship.id}}"/>
+            {% partial 'book/book' book=authorship.book is_not_public_view=1 %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% else %}
+<div class="author__placeholder _indent">
+    <svg class="square-32">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
+    </svg>
+    <div class="ui-text-head--3 ui-text--bold">У вас нет книг {{ is_owner == 'coauthor' ? 'в соавторстве' : ''}}
+    </div>
+    <span>Тут будет какой-нибудь привлекающий текст, как в литмаркете</span>
+
+    {% if is_owner != 'coauthor' %}
+    <a href="/create-book" data-turbo="false">
+        <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Добавить книгу
+        </button>
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+
+<script>
+    initSortable('#sortable_books', 'LCBooker::onChangeOrder')
+</script>

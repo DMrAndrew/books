@@ -53,15 +53,14 @@ class Chapterer extends ComponentBase
 
     public function init()
     {
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
+        }
         $this->user = Auth::getUser();
-        $this->book = $this->user->profile->books()->find($this->param('book_id'));
+        $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
         $this->ebook = $this->book->ebook;
         $this->chapter = $this->ebook->chapters()->find($this->param('chapter_id')) ?? null;
         $this->chapterManager = new ChapterManager($this->ebook);
-    }
-
-    public function onRun()
-    {
         $this->prepareVals();
     }
 

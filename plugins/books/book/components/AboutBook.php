@@ -1,10 +1,10 @@
 <?php namespace Books\Book\Components;
 
-use ApplicationException;
+
 use Books\Book\Models\Book;
-use Cms\Classes\ComponentBase;
-use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use RainLab\User\Facades\Auth;
+use Cms\Classes\ComponentBase;
 
 /**
  * AboutBook Component
@@ -40,9 +40,12 @@ class AboutBook extends ComponentBase
 
     public function init()
     {
-        $this->user = Auth::getUser() ?? throw new ApplicationException('User required');
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
+        }
+        $this->user = Auth::getUser();
         $this->book_id = (int)$this->param('book_id');
-        $this->book = $this->user->profile->books()->with('editions')->find($this->book_id) ?? throw new ApplicationException('Book not found');
+        $this->book = $this->user->profile->books()->with('editions')->find($this->book_id) ?? abort(404);
 
         $this->addComponent(
             Booker::class,
@@ -62,8 +65,10 @@ class AboutBook extends ComponentBase
         $this->prepareVals();
     }
 
+
     function prepareVals()
     {
-       $this->page['book'] = $this->book;
+        $this->page['book'] = $this->book;
+        $this->page->meta_title = $this->page->meta_title . ' ' . $this->book->title;
     }
 }

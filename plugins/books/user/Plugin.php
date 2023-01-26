@@ -7,12 +7,17 @@ use Books\User\Components\Searcher;
 use Config;
 use Event;
 use Illuminate\Foundation\AliasLoader;
+use October\Rain\Foundation\Exception\Handler;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use RainLab\User\Models\User;
+use Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use System\Classes\PluginBase;
 use Books\User\Behaviors\BookUser;
 use Books\User\Components\BookAccount;
 use Books\User\Classes\UserEventHandler;
+use View;
+use function Termwind\render;
 
 /**
  * Plugin Information File

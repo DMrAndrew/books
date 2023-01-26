@@ -3,6 +3,7 @@
 
 use Model;
 use System\Models\File;
+use RainLab\User\Facades\Auth;
 use Books\Catalog\Models\Genre;
 use Books\Profile\Models\Profile;
 use October\Rain\Database\Builder;
@@ -63,7 +64,7 @@ class Book extends Model
      */
     public $rules = [
         'title' => 'required|between:2,100',
-        'annotation' => 'nullable|string',
+        'annotation' => 'nullable|string|max:1000',
         'cover' => 'nullable|image',
         'cycle_id' => 'nullable|integer|exists:books_book_cycles,id'
     ];
@@ -169,6 +170,19 @@ class Book extends Model
     public $attachMany = [];
 
 
+    public function getFavoritedAttribute()
+    {
+        $this->attributes['favorited'] = null;
+        $user = Auth::getUser();
+        if (!$user) {
+            $this->attributes['favorited'] = false;
+        }
+        if (is_null($this->attributes['favorited'])) {
+            $this->attributes['favorited'] = $this->isFavorited($user);
+        }
+        return $this->attributes['favorited'];
+    }
+
     public function scopeSearchByString(Builder $query, string $string)
     {
         return $query->public()->where('title', 'like', "%$string%");
@@ -226,7 +240,6 @@ class Book extends Model
             }
         });
     }
-
 
     protected function afterCreate()
     {

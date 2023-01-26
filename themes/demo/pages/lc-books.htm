@@ -2,9 +2,10 @@ url = "/lc-books"
 layout = "default"
 title = "Личный кабинет - Книги"
 description = "Личный кабинет - Книги"
-
+[session]
+security = "user"
+redirect = "/"
 [LCBooker]
-
 [fileUploader fb_uploader]
 maxSize = 20
 fileTypes = ".fb2"
@@ -31,9 +32,10 @@ $this->pageCycle();
     <div class="ui-container-fluid">
         <div class="personal-area__container ui-grid-container ui-grid-gap">
             {% partial "profile/sidebarmenu" %}
-
-            {% component "LCBooker" %}
+            <div class="ui-col-sm-9" id="lc-books">
+                {% component "LCBooker" %}
+            </div>
         </div>
     </div>
 </div>
-{% partial 'LCBooker::import_fb_modal' %}
+

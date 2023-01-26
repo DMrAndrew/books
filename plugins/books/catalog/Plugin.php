@@ -1,12 +1,13 @@
 <?php namespace Books\Catalog;
 
-use Books\Catalog\Models\Genre;
-use Event;
 use Backend;
-use Illuminate\Foundation\AliasLoader;
+use Books\Book\Models\Book;
 use System\Classes\PluginBase;
+use Books\Catalog\Models\Genre;
 use Books\Catalog\Components\Genres;
+use Illuminate\Foundation\AliasLoader;
 use Books\Catalog\Components\FavoriteGenres;
+use Mobecan\Favorites\Behaviors\Favoriteable;
 
 /**
  * Plugin Information File
@@ -48,6 +49,9 @@ class Plugin extends PluginBase
     public function boot()
     {
         AliasLoader::getInstance()->alias('Genre', Genre::class);
+        Book::extend(function (Book $book) {
+            $book->implementClassWith(Favoriteable::class);
+        });
     }
 
     /**

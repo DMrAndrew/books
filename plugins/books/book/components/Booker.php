@@ -31,29 +31,6 @@ class Booker extends ComponentBase
     protected User $user;
     protected BookService $service;
 
-    public function init()
-    {
-
-        $this->user = User::find($this->property('user_id')) ?? Auth::getUser();
-        if (!$this->user) {
-            throw new ApplicationException('User required');
-        }
-        $this->book = $this->user->profile->books()->find($this->property('book_id')) ?? new Book();
-
-        $this->service = new BookService(user: $this->user, book: $this->book, session_key: $this->getSessionKey());
-
-        $component = $this->addComponent(
-            ImageUploader::class,
-            'coverUploader',
-            [
-                'modelClass' => Book::class,
-                'deferredBinding' => !!!$this->book->id,
-                'imageWidth' => 168,
-                'imageHeight' => 243,
-            ]
-        );
-        $component->bindModel('cover', $this->book);
-    }
 
     /**
      * componentDetails
@@ -85,8 +62,30 @@ class Booker extends ComponentBase
     }
 
 
-    public function onRun()
+    public function init()
     {
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
+        }
+        $this->user = User::find($this->property('user_id')) ?? Auth::getUser();
+        if (!$this->user) {
+            throw new ApplicationException('User required');
+        }
+        $this->book = $this->user->profile->books()->find($this->property('book_id')) ?? new Book();
+
+        $this->service = new BookService(user: $this->user, book: $this->book, session_key: $this->getSessionKey());
+
+        $component = $this->addComponent(
+            ImageUploader::class,
+            'coverUploader',
+            [
+                'modelClass' => Book::class,
+                'deferredBinding' => !!!$this->book->id,
+                'imageWidth' => 168,
+                'imageHeight' => 243,
+            ]
+        );
+        $component->bindModel('cover', $this->book);
         $this->page['ebook'] = $this->book->ebook;
         $this->page['age_restrictions'] = AgeRestrictionsEnum::cases();
         $this->page['cycles'] = $this->getCycles();
@@ -122,7 +121,7 @@ class Booker extends ComponentBase
         try {
             collect(post('authors'))
                 ->whereNotNull('profile_id')
-                ->whereBetween('percent_value',[0,100])
+                ->whereBetween('percent_value', [0, 100])
                 ->map(fn($i) => [
                     'profile' => Profile::find($i['profile_id']),
                     'value' => $i['percent_value']
@@ -262,9 +261,8 @@ class Booker extends ComponentBase
 
     public function onAddAuthor()
     {
-
         try {
-            if ($this->service->getProfiles()->count() > 3) {
+            if ($this->service->getProfiles()->count() > 2) {
                 throw new ValidationException(['authors' => 'Вы можете добавить до 3 соавторов.']);
             }
             if ($profile = Profile::find(post('item')['id'] ?? null)) {
@@ -283,6 +281,9 @@ class Booker extends ComponentBase
      */
     public function onAddTag(): array
     {
+        if ($this->service->getTags()->count() > 7) {
+            throw new ValidationException(['tags' => 'Вы можете добавить до 8 тэгов.']);
+        }
         $this->service->addTag(Tag::find(post('item')['id'] ?? null) ?? post('item')['value'] ?? null);
         return $this->generateTagInput(['autofocus' => true]);
     }
@@ -302,8 +303,6 @@ class Booker extends ComponentBase
             if (Request::ajax()) throw $ex;
             else Flash::error($ex->getMessage());
         }
-
-
     }
 
     public function onDeleteAuthor()

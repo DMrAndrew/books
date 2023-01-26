@@ -1,25 +1,14 @@
 <?php namespace Books\Book\Components;
 
-use ApplicationException;
 use Books\Book\Classes\FB2Manager;
-use Books\Book\Models\Book;
 use Books\Book\Models\EbookEdition;
-use Books\FileUploader\Components\FileUploader;
-use Books\FileUploader\Components\ImageUploader;
-use Books\Profile\Models\Profile;
 use Cms\Classes\ComponentBase;
 use Exception;
-use Flash;
-use Input;
-use October\Rain\Database\Builder;
 use October\Rain\Database\Collection;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
-use Request;
 use ValidationException;
-use Validator;
-use function Symfony\Component\Translation\t;
 
 /**
  * LCBooker Component
@@ -44,18 +33,16 @@ class LCBooker extends ComponentBase
 
     public function init()
     {
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
+        }
         $this->user = Auth::getUser();
-    }
-
-    public function onRender()
-    {
         $this->page['authorships'] = $this->getAuthorships();
     }
 
     function getAuthorships(): Collection
     {
         return $this->user->profile->authorshipsAs($this->getIsOwner())
-            ->orderByDesc('sort_order')
             ->with(['book', 'book.profile', 'book.ebook', 'book.cover'])
             ->get();
     }
@@ -79,13 +66,15 @@ class LCBooker extends ComponentBase
     public function generateList(?array $options = [])
     {
         return [
-            '#books_list_partial' => $this->renderPartial('@default', ['authorships' => $this->getAuthorships(), 'is_owner' => $this->getOwnerFilter(), ...$options])
+            '#books_list_partial' => $this->renderPartial('@list', ['authorships' => $this->getAuthorships(), 'is_owner' => $this->getOwnerFilter(), ...$options])
         ];
     }
 
     public function onUploadFile()
     {
         try {
+
+
             $uploadedFile = (new EbookEdition())->fb2()->withDeferred($this->getSessionKey())->get()?->first();
             if (!$uploadedFile) {
                 throw new ValidationException(['fb2' => 'Файл не найден.']);
@@ -93,6 +82,10 @@ class LCBooker extends ComponentBase
 
             $book = (new FB2Manager(user: $this->user, session_key: $this->getSessionKey()))->apply($uploadedFile);
             $book->ebook->save(null, $this->getSessionKey());
+            (new EbookEdition())->cancelDeferred($this->getSessionKey());
+            return [
+                '#lc-books' => $this->renderPartial('@default', ['authorships' => $this->getAuthorships()]),
+            ];
 
             return Redirect::to('/lc-books');
 

@@ -30,7 +30,7 @@ class Author extends Model
     public $table = 'books_book_authors';
 
 
-    protected $fillable = ['book_id', 'profile_id', 'percent','sort_order','is_owner'];
+    protected $fillable = ['book_id', 'profile_id', 'percent', 'sort_order', 'is_owner'];
     /**
      * @var array rules for validation
      */
@@ -48,18 +48,23 @@ class Author extends Model
     ];
 
     public $belongsTo = [
-        'book' => [Book::class,'key' => 'book_id','otherKey' => 'id'],
-        'profile' => [Profile::class,'key' => 'profile_id','otherKey' => 'id'],
+        'book' => [Book::class, 'key' => 'book_id', 'otherKey' => 'id'],
+        'profile' => [Profile::class, 'key' => 'profile_id', 'otherKey' => 'id'],
     ];
 
     public function scopeOwner(Builder $builder): Builder
     {
-        return $builder->where('is_owner','=',true);
+        return $builder->where('is_owner', '=', true);
     }
 
     public function scopeNotOwner(Builder $builder): Builder
     {
-        return $builder->where('is_owner','=',false);
+        return $builder->where('is_owner', '=', false);
+    }
+
+    public function scopeSortByAuthorOrder(Builder $builder): Builder
+    {
+        return $builder->orderByDesc('sort_order');
     }
 
 
