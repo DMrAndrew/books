@@ -20,7 +20,6 @@ function openModal(container, buttonOpenModal) {
     })
 
     buttonClose.click(() => {
-        console.log('buttonClose click')
         modal.removeClass(`active`);
         // document.body.style.overflow = 'initial';
     })
