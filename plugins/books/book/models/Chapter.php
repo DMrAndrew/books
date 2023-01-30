@@ -20,7 +20,6 @@ class   Chapter extends Model
     use SoftDelete;
 
 
-
     /**
      * @var string table associated with the model
      */
@@ -119,5 +118,32 @@ class   Chapter extends Model
         return strlen(strip_tags(preg_replace('/\s+/', '', $string))) ?? 0;
     }
 
+    public function paginator()
+    {
+
+        $dom = (new \DOMDocument());
+        libxml_use_internal_errors(true);
+        $dom->loadHTML(mb_convert_encoding($this->content, 'HTML-ENTITIES', 'UTF-8'));
+        $root = $dom->getElementsByTagName('body')[0];
+        $perhapses = collect($root->childNodes)->map(fn($node) => [
+            'html' => $dom->saveHTML($node),
+            'length' => strlen($node->textContent),
+        ]);
+        $pagination = collect([]);
+
+        foreach ($perhapses as $perhaps) {
+            if (!($pagination->last() instanceof \October\Rain\Support\Collection)) {
+                $pagination->push(collect([]));
+            }
+
+            $length = ($pagination->last()?->sum('length') ?? 0) + $perhaps['length'];
+            if ($length >= 6500 && $length <= 7500) {
+                $pagination->push(collect([]));
+            }
+            $pagination->last()->push($perhaps);
+        }
+        return $pagination->filter(fn($i) => $i->sum('length'))->map->sum('length');
+
+    }
 
 }

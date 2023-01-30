@@ -172,6 +172,7 @@ class Book extends Model
 
     public function getFavoritedAttribute()
     {
+
         $this->attributes['favorited'] = null;
         $user = Auth::getUser();
         if (!$user) {
