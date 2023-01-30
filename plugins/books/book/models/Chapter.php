@@ -1,11 +1,14 @@
 <?php namespace Books\Book\Models;
 
+use DiDom\Document;
+use Illuminate\Support\Collection;
 use Model;
 use Carbon\Carbon;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
+use RecursiveIteratorIterator;
 
 /**
  * Chapter Model
