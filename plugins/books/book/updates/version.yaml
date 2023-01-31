@@ -14,3 +14,6 @@
     - create_pagination_table.php
     - create_trackers_table.php
     - create_updates_table.php
+1.0.3:
+    - 'Longtext для content'
+    - pagination_content_to_longtext.php
