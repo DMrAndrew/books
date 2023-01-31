@@ -7,14 +7,14 @@ security = "user"
 redirect = "/"
 [LCBooker]
 [fileUploader fb_uploader]
-maxSize = 20
+maxSize = 30
 fileTypes = ".fb2"
 deferredBinding = 1
 ==
 <?php
 function onInit()
 {
-    $this->fb_uploader->bindModel('fb2', new EbookEdition());
+    $this->fb_uploader->bindModel('fb2', new Edition());
 }
 function onRefreshFiles()
 {

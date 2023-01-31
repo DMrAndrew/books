@@ -2,14 +2,12 @@
 
 
 use ApplicationException;
-use Books\Book\Models\Book;
 use Books\Book\Models\BookStatus;
-use Books\Book\Models\EbookEdition;
+use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
 use RainLab\User\Facades\Auth;
-use Redirect;
 use Request;
 
 /**
@@ -19,7 +17,7 @@ use Request;
  */
 class EBooker extends ComponentBase
 {
-    protected EbookEdition $ebook;
+    protected Edition $ebook;
 
     /**
      * componentDetails

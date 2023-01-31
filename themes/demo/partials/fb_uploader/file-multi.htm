@@ -4,45 +4,61 @@
     data-template="#uploaderTemplate{{ __SELF__ }}"
     data-unique-id="{{ __SELF__ }}"
     data-upload-handler="{{ __SELF__ }}::onUpload"
-    {% if __SELF__.fileTypes %}data-file-types="{{ __SELF__.fileTypes }}"{% endif %}
+    {% if __SELF__.fileTypes %}data-file-types="{{ __SELF__.fileTypes }}" {% endif %}
 >
-
+    <div class="upload-button" style="position: relative;margin: 0;height: auto">
+        <div class="personal-area-discount-modal__actions " style="margin-bottom: 16px">
+            <label class="ui-input-file ui-input-file--full">
+                <input type="hidden" name="_uploader[{{ __SELF__.attribute }}]" value=""/>
+                <div class="ui-input-file-item ui-input-file-item-view--2 ui-input-file-item--full ui-text--medium">
+                    Выберите файл
+                </div>
+            </label>
+        </div>
+    </div>
     <!-- Field placeholder -->
-    <input type="hidden" name="_uploader[{{ __SELF__.attribute }}]" value="" />
+    <input type="hidden" name="_uploader[{{ __SELF__.attribute }}]" value=""/>
 
-    <!-- Upload Button -->
-    <button type="button" class="ui button btn btn-default oc-icon-upload upload-button">
-        {{ __SELF__.placeholderText }}
-    </button>
+
+    <div class="upload-empty-message" style="padding: 0">
+        <div class="buy-book-modal__upload">
+            <p class="ui-text-body--2">Или перетащите в это окно</p>
+        </div>
+    </div>
 
     <!-- Existing files -->
     <div class="upload-files-container">
         {% for file in __SELF__.fileList %}
-            <div class="upload-object is-success" data-id="{{ file.id }}" data-path="{{ file.pathUrl }}">
-                <div class="icon-container">
-                    {% if file.isImage %}
-                        <img src="{{ file.thumbUrl }}" alt="" />
-                    {% else %}
-                        <img src="{{ 'plugins/books/fileuploader/assets/images/upload.png'|app }}" alt="" />
-                    {% endif %}
-                </div>
-                <div class="info">
-                    <h4 class="filename">
-                        <span data-dz-name>{{ file.title ?: file.file_name }}</span>
-                    </h4>
-                    <p class="size">{{ file.sizeToString }}</p>
-                </div>
-                <div class="meta">
-                    <a
-                        href="javascript:;"
-                        class="upload-remove-button"
-                        data-request="{{ __SELF__ ~ '::onRemoveAttachment' }}"
-                        data-request-confirm="{{ 'books.fileuploader::lang.are_you_sure' | trans }}"
-                        data-request-data="file_id: {{ file.id }}"
-                        >&times;</a>
-                </div>
+        <div class="upload-object is-success" data-id="{{ file.id }}" data-path="{{ file.pathUrl }}">
+            <div class="icon-container">
+                {% if file.isImage %}
+                <img src="{{ file.thumbUrl }}" alt=""/>
+                {% else %}
+                <img src="{{ 'plugins/books/fileuploader/assets/images/upload.png'|app }}" alt=""/>
+                {% endif %}
             </div>
+            <div class="info">
+                <h4 class="filename">
+                    <span data-dz-name>{{ file.title ?: file.file_name }}</span>
+                </h4>
+                <p class="size">{{ file.sizeToString }}</p>
+            </div>
+            <div class="meta">
+                <a
+                    href="javascript:;"
+                    class="upload-remove-button"
+                    data-request="{{ __SELF__ ~ '::onRemoveAttachment' }}"
+                    data-request-confirm="{{ 'books.fileuploader::lang.are_you_sure' | trans }}"
+                    data-request-data="file_id: {{ file.id }}"
+                >&times;</a>
+            </div>
+        </div>
         {% endfor %}
+    </div>
+    <div class="personal-area-discount-modal__actions parse-fb2-button" style="padding-top: 16px;display: none">
+        <div onclick="oc.request('#fb_upload_form')"
+             class="ui-input-file-item ui-input-file-item-view--2 ui-input-file-item--full ui-text--medium">Сохранить
+        </div>
     </div>
 </div>
 
@@ -50,7 +66,7 @@
 <script type="text/template" id="uploaderTemplate{{ __SELF__ }}">
     <div class="upload-object dz-preview dz-file-preview">
         <div class="icon-container">
-            <img data-dz-thumbnail src="{{ 'plugins/books/fileuploader/assets/images/upload.png'|app }}" />
+            <img data-dz-thumbnail src="{{ 'plugins/books/fileuploader/assets/images/upload.png'|app }}"/>
         </div>
         <div class="info">
             <h4 class="filename">
@@ -65,7 +81,7 @@
                 class="upload-remove-button"
                 data-request="{{ __SELF__ ~ '::onRemoveAttachment' }}"
                 data-request-confirm="{{ 'books.fileuploader::lang.are_you_sure' | trans }}"
-                >&times;</a>
+            >&times;</a>
             <div class="progress-bar"><span class="upload-progress" data-dz-uploadprogress></span></div>
         </div>
     </div>

@@ -16,13 +16,14 @@ class CreateAuthorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('books_book_authors', function(Blueprint $table) {
+        Schema::create('books_book_authors', function (Blueprint $table) {
             $table->id();
             $table->integer('profile_id')->unsigned()->index();
             $table->integer('book_id')->unsigned()->index();
             $table->boolean('is_owner')->default(0);
             $table->tinyInteger('percent')->default(0);
             $table->integer('sort_order')->default(0);
+            $table->boolean('accepted')->nullable()->default(null);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -3,7 +3,7 @@
 
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
-use Books\Book\Models\EbookEdition;
+use Books\Book\Models\Edition;
 use Exception;
 use Flash;
 use RainLab\User\Models\User;
@@ -26,7 +26,7 @@ class Chapterer extends ComponentBase
 {
     protected User $user;
     protected Book $book;
-    protected EbookEdition $ebook;
+    protected Edition $ebook;
     protected ?Chapter $chapter;
     protected ChapterManager $chapterManager;
 

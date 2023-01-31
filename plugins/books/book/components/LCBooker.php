@@ -1,7 +1,7 @@
 <?php namespace Books\Book\Components;
 
 use Books\Book\Classes\FB2Manager;
-use Books\Book\Models\EbookEdition;
+use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use Exception;
 use October\Rain\Database\Collection;
@@ -85,8 +85,6 @@ class LCBooker extends ComponentBase
             return [
                 '#lc-books' => $this->renderPartial('@default', ['authorships' => $this->getAuthorships()]),
             ];
-
-            return Redirect::to('/lc-books');
 
         } catch (Exception $ex) {
             throw new ValidationException(['fb2' => $ex->getMessage()]);

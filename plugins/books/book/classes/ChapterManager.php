@@ -2,13 +2,13 @@
 
 namespace Books\Book\Classes;
 
+use Books\Book\Models\Edition;
 use Db;
 use Html;
 use Event;
 use Carbon\Carbon;
 use Books\Book\Models\Chapter;
 use Illuminate\Support\Collection;
-use Books\Book\Models\EbookEdition;
 use Books\Book\Models\ChapterStatus;
 use Illuminate\Database\Eloquent\Model;
 use Books\Book\Models\ChapterSalesType;
@@ -16,10 +16,10 @@ use Books\Book\Models\ChapterSalesType;
 class ChapterManager
 {
     /**
-     * @param EbookEdition $ebook
+     * @param Edition $ebook
      * @param bool $should_recompute_ebook
      */
-    public function __construct(protected EbookEdition $ebook, protected bool $should_recompute_ebook = true)
+    public function __construct(protected Edition $ebook, protected bool $should_recompute_ebook = true)
     {
     }
 
@@ -88,7 +88,7 @@ class ChapterManager
         if ($data->has('content')) {
             $data['content'] = Html::clean($data['content']);
         }
-        $data['length'] = Chapter::countChapterLength($data['content']??'');
+        $data['length'] = Chapter::countChapterLength($data['content'] ?? '');
 
         return $data->toArray();
     }
