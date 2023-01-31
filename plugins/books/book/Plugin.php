@@ -5,14 +5,15 @@ use Books\Book\Classes\BookService;
 use Books\Book\Classes\FB2Manager;
 use Books\Book\Components\AboutBook;
 use Books\Book\Components\Booker;
+use Books\Book\Components\BookPage;
 use Books\Book\Components\Chapterer;
 use Books\Book\Components\EBooker;
 use Books\Book\Components\LCBooker;
+use Books\Book\Components\Reader;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Cycle;
-use Books\Book\Models\EbookEdition;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Tag;
 use Config;
@@ -65,7 +66,6 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Cycle', Cycle::class);
         AliasLoader::getInstance()->alias('Tag', Tag::class);
         AliasLoader::getInstance()->alias('Edition', Edition::class);
-        AliasLoader::getInstance()->alias('EbookEdition', EbookEdition::class);
         AliasLoader::getInstance()->alias('Author', Author::class);
         AliasLoader::getInstance()->alias('FB2Manager', FB2Manager::class);
         AliasLoader::getInstance()->alias('BookService', BookService::class);
@@ -88,6 +88,8 @@ class Plugin extends PluginBase
             EBooker::class => 'ebooker',
             LCBooker::class => 'LCBooker',
             Chapterer::class => 'Chapterer',
+            BookPage::class => 'BookPage',
+            Reader::class => 'reader',
         ];
     }
 

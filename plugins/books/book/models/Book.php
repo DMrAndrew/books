@@ -1,6 +1,7 @@
 <?php namespace Books\Book\Models;
 
 
+use Books\Book\Classes\Enums\EditionsEnums;
 use Model;
 use System\Models\File;
 use RainLab\User\Facades\Auth;
@@ -20,7 +21,6 @@ use October\Rain\Database\Relations\HasOneThrough;
  * Book Model
  *
  * @method HasOne author
- * @method HasOne ebookEdition
  * @method HasMany editions
  * @method BelongsTo cycle
  * @method BelongsToMany tags
@@ -29,7 +29,7 @@ use October\Rain\Database\Relations\HasOneThrough;
  * @method BelongsToMany coauthors
  * @method BelongsToMany profiles
  * @method HasOneThrough profile
- * @method HasOneThrough ebook
+ * @method HasOne ebook
  * @method AttachOne cover
  */
 class Book extends Model
@@ -105,7 +105,7 @@ class Book extends Model
      */
     public $hasOne = [
         'author' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'owner'],
-        'ebookEdition' => [Edition::class, 'key' => 'book_id', 'id', 'scope' => 'ebook'],
+        'ebook' => [Edition::class, 'key' => 'book_id', 'id', 'scope' => 'ebook'],
     ];
     public $hasMany = [
         'authors' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id'],
@@ -117,14 +117,6 @@ class Book extends Model
     ];
 
     public $hasOneThrough = [
-        'ebook' => [
-            EbookEdition::class,
-            'key' => 'book_id',
-            'through' => Edition::class,
-            'throughKey' => 'id',
-            'otherKey' => 'id',
-            'secondOtherKey' => 'editionable_id'
-        ],
         'profile' => [
             Profile::class,
             'key' => 'book_id',
@@ -172,15 +164,7 @@ class Book extends Model
 
     public function getFavoritedAttribute()
     {
-        $this->attributes['favorited'] = null;
-        $user = Auth::getUser();
-        if (!$user) {
-            $this->attributes['favorited'] = false;
-        }
-        if (is_null($this->attributes['favorited'])) {
-            $this->attributes['favorited'] = $this->isFavorited($user);
-        }
-        return $this->attributes['favorited'];
+        return 0;
     }
 
     public function scopeSearchByString(Builder $query, string $string)
@@ -191,9 +175,7 @@ class Book extends Model
     public function scopePublic(Builder $q)
     {
         return $q->whereHas('editions', function ($query) {
-            return $query->whereHasMorph('editionable', EbookEdition::class, function (Builder $builder) {
-                return $builder->whereNotIn('status', [BookStatus::HIDDEN->value]);
-            });
+            return $query->whereNotIn('status', [BookStatus::HIDDEN->value]);
         });
     }
 
@@ -226,9 +208,7 @@ class Book extends Model
     protected function setDefaultEdition(): void
     {
         if (!$this->ebook()->exists()) {
-            $edition = new Edition();
-            $edition->editionable = EbookEdition::create();
-            $this->editions()->save($edition);
+            $this->editions()->save(new Edition(['type' => EditionsEnums::default()->value]));
         }
     }
 

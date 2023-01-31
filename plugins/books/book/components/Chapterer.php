@@ -3,7 +3,7 @@
 
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
-use Books\Book\Models\EbookEdition;
+use Books\Book\Models\Edition;
 use Exception;
 use Flash;
 use RainLab\User\Models\User;
@@ -26,7 +26,7 @@ class Chapterer extends ComponentBase
 {
     protected User $user;
     protected Book $book;
-    protected EbookEdition $ebook;
+    protected Edition $ebook;
     protected ?Chapter $chapter;
     protected ChapterManager $chapterManager;
 
@@ -93,13 +93,16 @@ class Chapterer extends ComponentBase
                     case 'published_at':
                     {
                         $data['status'] = ChapterStatus::PUBLISHED;
-                        if (!isset($data['published_at'])) {
+                        if (!isset($data['published_at_date'])) {
                             new ValidationException(['published_at' => 'Укажите дату публикации.']);
                         }
-                        if (!Carbon::canBeCreatedFromFormat($data['published_at'] ?? '', 'Y-m-d\TH:i')) {
-                            throw new ValidationException(['published_at' => 'Не удалось получить дату публикации. Укажите дату в формате Y-m-d H:i']);
+                        if (!isset($data['published_at_time'])) {
+                            new ValidationException(['published_at' => 'Укажите время публикации.']);
                         }
-                        $data['published_at'] = Carbon::createFromFormat('Y-m-d\TH:i', $data['published_at']);
+                        if (!Carbon::canBeCreatedFromFormat($data['published_at_date'] ?? '', 'd.m.Y')) {
+                            throw new ValidationException(['published_at' => 'Не удалось получить дату публикации. Укажите дату в формате d.m.Y']);
+                        }
+                        $data['published_at'] = Carbon::createFromFormat('d.m.Y', $data['published_at_date'])->setTimeFromTimeString($data['published_at_time']);
                         break;
                     }
                     case 'save_as_draft':

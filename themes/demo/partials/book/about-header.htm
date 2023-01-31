@@ -2,7 +2,7 @@
     <div class="listing-book__book book-card">
         <div class="book-card__body">
             <div class="book-card__column-left">
-                <a href="/book-card.html">
+                <a href="/book-card/{{book.id}}">
                     <img class="book-card__image"
                          src="{{ book.cover.getThumb(166,240) }}"
                          alt=""
@@ -11,7 +11,8 @@
                 </a>
             </div>
             <div class="book-card__column-right">
-                <a href="/book-card.html" class="book-card__title ui-text-head--2 ui-text--bold">{{book.title}}</a>
+                <a href="/book-card/{{book.id}}"
+                   class="book-card__title ui-text-head--2 ui-text--bold">{{book.title}}</a>
                 <div class="book-card__raiting">
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>

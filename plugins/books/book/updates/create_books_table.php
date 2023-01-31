@@ -1,6 +1,5 @@
 <?php namespace Books\Book\Updates;
 
-use Books\Book\Models\BookStatus;
 use Schema;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
@@ -18,7 +17,6 @@ class CreateBooksTable extends Migration
             $table->text('annotation')->nullable();
             $table->integer('cycle_id')->unsigned()->nullable();
             $table->tinyInteger('age_restriction')->default(0);
-
             $table->timestamps();
         });
     }

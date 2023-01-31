@@ -235,7 +235,7 @@ class Booker extends ComponentBase
     {
         try {
             $name = post('term');
-            if (!$name && strlen($name) < 3) {
+            if (!$name && strlen($name) < 1) {
                 return [];
             }
 
@@ -247,7 +247,7 @@ class Booker extends ComponentBase
                 return [
                     'id' => $item->id,
                     'label' => $item->username,
-                    'htm' => $this->renderPartial('select/option', ['label' => $item->username]),
+                    'htm' => $this->renderPartial('select/option', ['label' => $item->username . " (id: $item->id)"]),
                     'handler' => $this->alias . '::onAddAuthor'
                 ];
             })->toArray();

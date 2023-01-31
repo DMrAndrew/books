@@ -1,0 +1,886 @@
+<div class="ui-container-fluid">
+    <div class="book-card-full _indent">
+        <img class="book-card-full__image" src="{{book.cover.getThumb(168,244)}}" alt="">
+        <div class="book-card-full__description">
+            <h1 class="book-card-full__title ui-text-head--2 ui-text--bold">{{book.title}}</h1>
+            <div class="book-card-full__author-wrapper">
+                <a href="" class="book-card-full__author ui-link _violet">{{book.author.profile.username}}</a>
+                <a href="" class="ui-link _violet _icon">
+                    <svg>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#coins-stroked-16' | theme}}"></use>
+                    </svg>
+                    <span>Поддержать автора</span>
+                </a>
+            </div>
+            <div class="book-card-full__type">
+                <div class="ui-tabs" data-tabs="1">
+                    <div class="ui-tabs-header">
+                        <div class="ui-tabs-line"></div>
+                        <div class="ui-tabs-header-wrapper">
+                            <!--                            <div class="ui-tabs-link active" data-tab="1">Электронная</div>-->
+                            <!--                            <div class="ui-tabs-link " data-tab="2">Аудиокнига</div>-->
+                            <!--                            <div class="ui-tabs-link " data-tab="3">Бумажная</div>-->
+                        </div>
+                    </div>
+                    <div class="ui-tabs-body _field">
+                        <div class="ui-tabs-content active" data-tab-content="1">
+                            <div class="book-card-full-type">
+                                <div class="book-card-full-type__description _indent-bottom">
+                                    <svg class="square-16">
+                                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#check-stroked-16"></use>
+                                    </svg>
+                                    <span>Закончена</span>
+                                    <span class="book-card-full-type__description-dot"></span>
+                                    <span>18.01.21</span>
+                                    <span class="book-card-full-type__description-dot"></span>
+                                    <span>231 448 зн.</span>
+                                    <span class="book-card-full-type__description-dot"></span>
+                                    <a href="#" class="ui-link _violet">История</a>
+                                </div>
+
+                                <div class="book-card-full-type__link-wrapper ">
+                                    <a href="/reader/{{book.ebook.id}}"
+                                       class="ui-button ui-button-size--56 ui-button-view--2 ui-button--full">Читать</a>
+                                    <!--                                    <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">-->
+                                    <!--                      <span>-->
+                                    <!--                        <span class="ui-text&#45;&#45;medium">Купить 139 ₽ <span class="ui-button-text-initial ui-text&#45;&#45;lt">111 ₽</span></span>-->
+                                    <!--                        <span class="ui-text-body&#45;&#45;3 ui-text&#45;&#45;regular">Скидка 20%</span>-->
+                                    <!--                      </span>-->
+                                    <!--                                    </a>-->
+                                </div>
+
+                                <div class="book-card-full-type__description _indent-top">
+                                    <span class="_indent">Скачать: </span>
+                                    <a href="#" class="ui-link _violet">epub</a>,
+                                    <a href="#" class="ui-link _violet">mobi</a>,
+                                    <a href="#" class="ui-link _violet">fb2</a>
+                                    <span class="book-card-full-type__description-dot"></span>
+                                    <span>1 448 993 загрузок</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!--                        <div class="ui-tabs-content" data-tab-content="2">-->
+                        <!--                            <div class="book-card-full-type">-->
+                        <!--                                <div class="book-card-full-type__description _indent-bottom">-->
+                        <!--                                    <svg class="square-16">-->
+                        <!--                                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#pencil-stroked-16"></use>-->
+                        <!--                                    </svg>-->
+                        <!--                                    <span>В работе</span>-->
+                        <!--                                    <span class="book-card-full-type__description-dot"></span>-->
+                        <!--                                    <span>18.01.21</span>-->
+                        <!--                                    <span class="book-card-full-type__description-dot"></span>-->
+                        <!--                                    <span>03 ч 31 мин</span>-->
+                        <!--                                    <span class="book-card-full-type__description-dot"></span>-->
+                        <!--                                    <a href="#" class="ui-link _violet">История</a>-->
+                        <!--                                </div>-->
+
+                        <!--                                <div class="book-card-full-type__link-wrapper _double">-->
+                        <!--                                    <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full">Слушать</a>-->
+                        <!--                                    <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="ui-tabs-content" data-tab-content="3">-->
+                        <!--                            <div class="book-card-full-type__link-wrapper">-->
+                        <!--                                <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="book-card-full__info book-card-full-info">
+            <div class="book-card-full-info__button-wrapper">
+                <button class="ui-button ui-button-size--56 ui-button-view--3 ui-button--full ui-button--column">
+                    <svg class="square-16">
+                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16"></use>
+                    </svg>
+                    <span class="ui-text--medium">В библиотеку</span>
+                </button>
+                <button class="ui-button ui-button-size--56 ui-button-view--3 ui-button--full ui-button--column">
+                    <svg class="square-16">
+                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#like-stroked-16"></use>
+                    </svg>
+                    <span class="ui-text--medium">Нравится 200</span>
+                </button>
+            </div>
+            <div class="book-card-full-info__rating">
+                <div class="book-card__raiting">
+                    <svg>
+                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#star-filled-16"></use>
+                    </svg>
+                    <span>12</span>
+                </div>
+                <div class="tags-list">
+                    {% for genre in book.genres %}
+                    <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#0 в {{genre.name}}</a>
+
+                    {% endfor %}
+                </div>
+                <!--                <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#11 в Любовная фантастика,</a>-->
+                <!--                <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#443 в Остросюжетный любовный-->
+                <!--                    роман,</a>-->
+
+                <button class="book-card-full-info__button-raiting">
+                    <span>Рейтинг в категориях</span>
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                    </svg>
+                </button>
+
+            </div>
+            <div class="book-card-full-info__footer">
+                {% if not book.age_restriction.value == 0 %}
+                <div class="book-card__footer-label">{{book.age_restriction.getLabel()}}</div>
+                {% endif %}
+                <div class="book-card__footer-wrapper">
+                    <svg>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
+                    </svg>
+                    <span>0</span>
+                </div>
+                <div class="book-card__footer-wrapper">
+                    <svg>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-16' | theme}}"></use>
+                    </svg>
+                    <span>0</span>
+                </div>
+                <div class="book-card__footer-wrapper">
+                    <svg>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>
+                    </svg>
+                    <span>0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Дополнительный контент -->
+<div class="ui-container-fluid">
+    <div class="ui-grid-container ui-grid-gap">
+        <div class="ui-col-sm-8 ui-col-md-9">
+            <div class="book-card-full-description _indent">
+                <div class="ui-tabs" data-tabs="2">
+                    <div class="ui-tabs-header">
+                        <div class="ui-tabs-line"></div>
+                        <div class="ui-tabs-header-wrapper">
+                            <div class="ui-tabs-link active" data-tab="1">О книге</div>
+                            <div class="ui-tabs-link " data-tab="2">Содержание</div>
+                            <div class="ui-tabs-link " data-tab="3">Репосты</div>
+                            <div class="ui-tabs-link " data-tab="4">Награды<span>1</span></div>
+                            <div class="ui-tabs-link " data-tab="5">Конкурсы<span>31</span></div>
+                            <div class="ui-tabs-link " data-tab="6">Циклы<span>1121</span></div>
+                        </div>
+                    </div>
+                    <div class="ui-tabs-body _field">
+                        <div class="ui-tabs-content active" data-tab-content="1">
+                            <div class="book-card-full-description__about">
+                                {{book.annotation|md}}
+                                <div class="book-card__genres tags-list">
+                                    {% for tag in book.tags %}
+                                    <a href="#" class="ui-link _violet">{{tag.name}}</a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="2">
+                            <div class="book-card-full-description__content ">
+                                <a href="#" class="ui-link _violet">Глава 1 На стыке миров</a>
+                                <span>18.01.21</span>
+                            </div>
+                            <div class="book-card-full-description__content _disabled ">
+                                <a href="#" class="ui-link _violet ui-tooltip _disabled" data-tooltip="Платный доступ">Глава
+                                    3 Спутники бога</a>
+                                <span>18.01.21</span>
+                                <svg class="square-16">
+                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#lock-filled-16"></use>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="3">
+                            <div class="book-card-repost">
+                                <span>Поделиться:</span>
+                                <svg class="square-32" style="color: #0077FF;">
+                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#logo-vk-28"></use>
+                                </svg>
+                                <svg class="square-32" style="color: #54A9E7;">
+                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#logo-telegram-28"></use>
+                                </svg>
+                                <svg class="square-32">
+                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#social-ok-filled-32"></use>
+                                </svg>
+                            </div>
+                            <div class="book-card-full-description__content ">
+                                <a href="#" class="ui-link _violet">Александр Кошкин</a>
+                                <span>Вчера</span>
+                            </div>
+                            <div class="book-card-full-description__content ">
+                                <a href="#" class="ui-link _violet">Олег Квашин</a>
+                                <span>18.01.21</span>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content " data-tab-content="4">
+                            <a href="#"
+                               class="book-card-full-description__awards-button ui-button ui-button-size--32 ui-button-view--2">Купить
+                                награду</a>
+                            <div class="book-card-full-description__awards" data-accodrion="wrapper">
+                                <div class="book-card-full-description__awards-header" data-accodrion="header">
+                                    <div class="book-card-full-description__awards-feather _gold square-40">
+                                        <svg class="square-24">
+                                            <use
+                                                xlink:href="./assets/icon-sprite/svg-sprite.svg#feather-stroked-24"></use>
+                                        </svg>
+                                    </div>
+                                    <div class="book-card-full-description__awards-text">
+                                        <div class="ui-text--bold">Золотое перо</div>
+                                        <span>+N к рейтингу книги</span>
+                                    </div>
+                                    <div class="book-card-full-description__awards-number">
+                                        <span>133</span>
+                                        <svg class="square-16">
+                                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="book-card-full-description__awards-body" data-accodrion="body">
+                                    <div class="book-card-full-description__content ">
+                                        <a href="#" class="ui-link _violet">Александр Кошкин</a>
+                                        <span>Вчера</span>
+                                    </div>
+                                    <div class="book-card-full-description__content ">
+                                        <a href="#" class="ui-link _violet">Олег Квашин</a>
+                                        <span>18.01.21</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="book-card-full-description__awards" data-accodrion="wrapper">
+                                <div class="book-card-full-description__awards-header" data-accodrion="header">
+                                    <div class="book-card-full-description__awards-feather  square-40">
+                                        <svg class="square-24">
+                                            <use
+                                                xlink:href="./assets/icon-sprite/svg-sprite.svg#feather-stroked-24"></use>
+                                        </svg>
+                                    </div>
+                                    <div class="book-card-full-description__awards-text">
+                                        <div class="ui-text--bold">Золотое перо</div>
+                                        <span>+N к рейтингу книги</span>
+                                    </div>
+                                    <div class="book-card-full-description__awards-number">
+                                        <span>133</span>
+                                        <svg class="square-16">
+                                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="book-card-full-description__awards-body" data-accodrion="body">
+                                    <div class="book-card-full-description__content ">
+                                        <a href="#" class="ui-link _violet">Александр Кошкин</a>
+                                        <span>Вчера</span>
+                                    </div>
+                                    <div class="book-card-full-description__content ">
+                                        <a href="#" class="ui-link _violet">Олег Квашин</a>
+                                        <span>18.01.21</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="book-card-full-description__awards" data-accodrion="wrapper">
+                                <div class="book-card-full-description__awards-header" data-accodrion="header">
+                                    <div class="book-card-full-description__awards-feather _silver square-40">
+                                        <svg class="square-24">
+                                            <use
+                                                xlink:href="./assets/icon-sprite/svg-sprite.svg#feather-stroked-24"></use>
+                                        </svg>
+                                    </div>
+                                    <div class="book-card-full-description__awards-text">
+                                        <div class="ui-text--bold">Золотое перо</div>
+                                        <span>+N к рейтингу книги</span>
+                                    </div>
+                                    <div class="book-card-full-description__awards-number">
+                                        <span>133</span>
+                                        <svg class="square-16">
+                                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="book-card-full-description__awards-body" data-accodrion="body">
+                                    <div class="book-card-full-description__content ">
+                                        <a href="#" class="ui-link _violet">Александр Кошкин</a>
+                                        <span>Вчера</span>
+                                    </div>
+                                    <div class="book-card-full-description__content ">
+                                        <a href="#" class="ui-link _violet">Олег Квашин</a>
+                                        <span>18.01.21</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="5">
+                            <div class="book-card-full-description__content ">
+                                <a href="#" class="ui-link _violet">Писатели - детям 2022 (благотворительная акция) </a>
+                            </div>
+                            <div class="book-card-full-description__content ">
+                                <a href="#" class="ui-link _violet">Я - попаданец</a>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="6">
+                            <div class="book-card-cycles__container">
+                                <div class="book-card-cycles__header">
+                                    <div class="book-card-cycles__title ui-text-head--3 ui-text--bold">История
+                                        бессмертного
+                                    </div>
+                                    <a href="#" class="ui-link _violet">Подробнее</a>
+                                </div>
+                                <div class="book-card-cycles__stage">
+                                    <svg class="square-16">
+                                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#pencil-stroked-16"></use>
+                                    </svg>
+                                    <span>В работе</span>
+                                </div>
+                            </div>
+                            <div class="thematic-section__container swiper">
+                                <div class="thematic-section__card-container swiper-wrapper">
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="thematic-section__nav _left">
+                                    <svg>
+                                        <use
+                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                    </svg>
+                                </div>
+                                <div class="thematic-section__nav _right">
+                                    <svg>
+                                        <use
+                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="book-card-full-description _indent">
+                <div class="ui-tabs" data-tabs="3">
+                    <div class="ui-tabs-header">
+                        <div class="ui-tabs-line"></div>
+                        <div class="ui-tabs-header-wrapper">
+                            <div class="ui-tabs-link active" data-tab="1">Другие книги автора</div>
+                            <div class="ui-tabs-link " data-tab="2">С этой книгой читают</div>
+                            <div class="ui-tabs-link " data-tab="3">Горячие новинки</div>
+                            <div class="ui-tabs-link " data-tab="4">Популярное</div>
+                        </div>
+                    </div>
+                    <div class="ui-tabs-body _field">
+                        <div class="ui-tabs-content active" data-tab-content="1">
+                            <div class="thematic-section__container swiper">
+                                <div class="thematic-section__card-container swiper-wrapper">
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="thematic-section__nav _left">
+                                    <svg>
+                                        <use
+                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                    </svg>
+                                </div>
+                                <div class="thematic-section__nav _right">
+                                    <svg>
+                                        <use
+                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="2">
+                            <div class="thematic-section__container swiper">
+                                <div class="thematic-section__card-container swiper-wrapper">
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="thematic-section__nav _left">
+                                    <svg>
+                                        <use
+                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                    </svg>
+                                </div>
+                                <div class="thematic-section__nav _right">
+                                    <svg>
+                                        <use
+                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="3">
+                            <div class="thematic-section__container swiper">
+                                <div class="thematic-section__card-container swiper-wrapper">
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                    <a href="#" class="book-mini-card _mobile-size swiper-slide">
+                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                             class="book-mini-card__image" alt=""
+                                             loading="lazy"></img>
+                                        <div class="book-mini-card__title">
+                                            Влезает только три строчки. Влезает только три строчки
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="thematic-section__nav _left">
+                                    <svg>
+                                        <use
+                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                    </svg>
+                                </div>
+                                <div class="thematic-section__nav _right">
+                                    <svg>
+                                        <use
+                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-tabs-content" data-tab-content="4">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="comments">
+                <form class="comments-form _indent">
+                    <h3 class="comments-form__title ui-text--bold"><span class="ui-text-head--3">Комментарии</span> 214
+                    </h3>
+                    <div class="comments-form__container">
+                        <textarea class="comments-form__textarea" placeholder="Оставьте комментарий"></textarea>
+                        <button class="ui-button ui-button-size--32 ui-button-view--2 disabled">Отправить</button>
+
+                    </div>
+                    <div class="comments-form__auth">
+                        <span>Авторизуйтесь, чтобы оставлять комментарии</span>
+                        <button class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Войти</button>
+                    </div>
+                </form>
+
+                <div class="comments__container">
+                    <div class="comments__wrapper _indent comments-comment">
+                        <div class="comments-comment__avatar square-40">
+                            <span class="ui-text-body--1 ui-text--bold">A</span>
+                            <!-- <img class="square-40" src="" alt=""> -->
+                        </div>
+                        <div class="comments-comment__info">
+                            <div class="comments-comment__info-wrapper">
+                                <div class="comments-comment__author ui-text--bold">Терин Рем</div>
+                                <div class="comments-comment__addition">
+                                    <span>10.01.21</span>
+                                    <a href="#" class="ui-link _violet">Автор</a>
+                                    <span>Ред.</span>
+                                </div>
+                                <div class="comments-comment__text">Хорошо, спасибо!</div>
+                                <div class="comments-comment__action">
+                                    <button>Ответить</button>
+                                    <div class="comments-comment__action-wrapper">
+                                        <svg class="square-16">
+                                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="comments__wrapper _indent comments-comment">
+                        <div class="comments-comment__avatar square-40">
+                            <span class="ui-text-body--1 ui-text--bold">A</span>
+                            <!-- <img class="square-40" src="" alt=""> -->
+                        </div>
+                        <div class="comments-comment__info">
+                            <div class="comments-comment__info-wrapper">
+                                <div class="comments-comment__author ui-text--bold">Терин Рем</div>
+                                <div class="comments-comment__addition">
+                                    <span>10.01.21</span>
+                                </div>
+                                <div class="comments-comment__text">Хорошо, спасибо!</div>
+                                <div class="comments-comment__action">
+                                    <button>Ответить</button>
+                                    <div class="comments-comment__action-wrapper">
+                                        <svg class="square-16">
+                                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comments-comment__sub">
+                                <div class="comments__wrapper _indent comments-comment">
+                                    <div class="comments-comment__avatar square-40">
+                                        <span class="ui-text-body--1 ui-text--bold">A</span>
+                                        <!-- <img class="square-40" src="" alt=""> -->
+                                    </div>
+                                    <div class="comments-comment__info">
+                                        <div class="comments-comment__info-wrapper">
+                                            <div class="comments-comment__author ui-text--bold">Терин Рем</div>
+                                            <div class="comments-comment__addition">
+                                                <span>10.01.21</span>
+                                            </div>
+                                            <div class="comments-comment__text">Хорошо, спасибо!</div>
+                                            <div class="comments-comment__action">
+                                                <button>Ответить</button>
+                                                <div class="comments-comment__action-wrapper">
+                                                    <svg class="square-16">
+                                                        <use
+                                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="comments__wrapper _indent comments-comment">
+                                    <div class="comments-comment__avatar square-40">
+                                        <span class="ui-text-body--1 ui-text--bold">A</span>
+                                        <!-- <img class="square-40" src="" alt=""> -->
+                                    </div>
+                                    <div class="comments-comment__info">
+                                        <div class="comments-comment__info-wrapper">
+                                            <div class="comments-comment__author ui-text--bold">Терин Рем</div>
+                                            <div class="comments-comment__addition">
+                                                <span>10.01.21</span>
+                                                <span>Ред.</span>
+                                            </div>
+                                            <div class="comments-comment__text">Хорошо, спасибо!</div>
+                                            <div class="comments-comment__action">
+                                                <button>Ответить</button>
+                                                <div class="comments-comment__action-wrapper">
+                                                    <svg class="square-16">
+                                                        <use
+                                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comments__wrapper _indent comments-comment">
+                        <div class="comments-comment__avatar square-40">
+                            <span class="ui-text-body--1 ui-text--bold">A</span>
+                            <!-- <img class="square-40" src="" alt=""> -->
+                        </div>
+                        <div class="comments-comment__info">
+                            <div class="comments-comment__info-wrapper">
+                                <div class="comments-comment__author ui-text--bold">Терин Рем</div>
+                                <div class="comments-comment__addition">
+                                    <span>10.01.21</span>
+                                </div>
+                                <div class="comments-comment__text">Хорошо, спасибо!</div>
+                                <div class="comments-comment__action">
+                                    <button>Ответить</button>
+                                    <div class="comments-comment__action-wrapper">
+                                        <svg class="square-16">
+                                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui-col-sm-4 ui-col-md-3">
+            <div class="advert _trash">
+                <img src="" alt="">
+            </div>
+
+            <div class="thematic-section">
+                <div class="thematic-section__header">
+                    <div class="ui-text-head--3 ui-text--bold">Рекомендуем</div>
+                    <a href="#" class="thematic-section__link ui-link _violet">Все</a>
+                </div>
+                <div class="thematic-section__container ">
+                    <a href="#" class="book-sidebar-card _indent">
+                        <img src="./assets/images/main/book-card-placeholder.png" class="book-sidebar-card__image"
+                             alt=""
+                             loading="lazy">
+                        <div class="book-sidebar-card__description">
+                            <div class="book-sidebar-card__label">ЛитРПГ</div>
+                            <div class="book-sidebar-card__title">Сага о неудачнике 3</div>
+                        </div>
+                    </a>
+                    <a href="#" class="book-sidebar-card _indent">
+                        <img src="./assets/images/main/book-card-placeholder.png" class="book-sidebar-card__image"
+                             alt=""
+                             loading="lazy">
+                        <div class="book-sidebar-card__description">
+                            <div class="book-sidebar-card__label">ЛитРПГ</div>
+                            <div class="book-sidebar-card__title">История бессмертного-3. Свобода или смерть</div>
+                        </div>
+                    </a>
+                    <a href="#" class="book-sidebar-card _indent">
+                        <img src="./assets/images/main/book-card-placeholder.png" class="book-sidebar-card__image"
+                             alt=""
+                             loading="lazy">
+                        <div class="book-sidebar-card__description">
+                            <div class="book-sidebar-card__label">ЛитРПГ</div>
+                            <div class="book-sidebar-card__title">История бессмертного-8. Ключевой мир</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        initTabs('[data-tabs="1"]');
+        initTabs('[data-tabs="2"]');
+        initTabs('[data-tabs="3"]');
+    </script>
+</div>

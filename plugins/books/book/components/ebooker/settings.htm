@@ -55,7 +55,7 @@
             <div class="ui-grid-container ui-grid-gap e-book-sale__inside-wrapper">
                 <div class="ui-col-md-6 ui-input">
                     <label class="ui-input-label">Цена, ₽</label>
-                    <input class="ui-input-item _size-32" type="text" name="price" value="{{ebook.price}}">
+                    <input class="ui-input-item _size-32" type="number" min="0" max="9999" name="price" value="{{ebook.price}}">
                     <div class="ui-select-hitn"></div>
                     <div class="ui-select-error" data-validate-for="price"></div>
 

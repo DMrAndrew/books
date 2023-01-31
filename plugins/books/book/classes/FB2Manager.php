@@ -30,9 +30,9 @@ class FB2Manager
     {
         $this->session_key ??= uuid_create();
         $this->book ??= new Book();
-        $this->bookService ??= new BookService(user: $this->user, book: $this->book, session_key: $this->session_key);
-    }
+        $this->bookService = new BookService(user: $this->user, book: $this->book, session_key: $this->session_key);
 
+    }
 
     public function apply(File $fb2)
     {
@@ -45,8 +45,7 @@ class FB2Manager
                 $this->parser = new FB2Controller($file);
                 $this->parser->withNotes();
                 $this->parser->startParse();
-            }
-            catch (\Exception $exception){
+            } catch (\Exception $exception) {
                 throw new FBParserException();
             }
 
@@ -62,12 +61,12 @@ class FB2Manager
             $cover->save();
             $this->book->cover()->add($cover, $this->session_key);
 
-            foreach ($this->parser->getBook()->getAuthors() as $author) {
-                //TODO улучшить поиск по пользователям
-                if ($profile = Profile::username($author->getFullName())->first()) {
-                    $this->bookService->addProfile($profile);
-                }
-            }
+//            foreach ($this->parser->getBook()->getAuthors() as $author) {
+//                //TODO улучшить поиск по пользователям
+//                if ($profile = Profile::username($author->getFullName())->first()) {
+//                    $this->bookService->addProfile($profile);
+//                }
+//            }
 
             $keywords = collect(explode(',', $this->info->getKeywords()));
             $keywords->each(function ($i) {
@@ -76,7 +75,7 @@ class FB2Manager
 
             $this->book = $this->bookService->save($data);
 
-            if(!$this->book->ebook){
+            if (!$this->book->ebook) {
                 throw new \Exception('Электронное издание книги не найдено. Обратитесь к администратору.');
             }
 

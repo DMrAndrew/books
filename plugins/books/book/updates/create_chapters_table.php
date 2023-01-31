@@ -1,6 +1,7 @@
 <?php namespace Books\Book\Updates;
 
 use Schema;
+use Books\Book\Classes\Enums\EditionsEnums;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
 
@@ -14,6 +15,7 @@ class CreateChaptersTable extends Migration
         Schema::create('books_book_chapters', function (Blueprint $table) {
             $table->id();
             $table->integer('edition_id')->unsigned()->index();
+            $table->tinyInteger('type')->default(EditionsEnums::default()->value);
             $table->string('title')->nullable();
             $table->longText('content')->nullable();
             $table->string('status')->default('draft');

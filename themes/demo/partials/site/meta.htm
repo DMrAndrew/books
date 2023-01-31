@@ -10,12 +10,15 @@
 <link rel="icon" type="image/png" href="{{ 'assets/images/main/logo.png'|theme }}">
 <link href="{{ 'assets/css/main.min.css' | theme }}" rel="stylesheet">
 <link href="{{ 'assets/css/helper.css' | theme }}" rel="stylesheet">
+<link href="{{ 'assets/css/slimselect.css' | theme }}" rel="stylesheet">
+<link href="{{ 'assets/css/jquery-ui.min.css' | theme }}" rel="stylesheet">
 <!-- Временное подключение шрифтов -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
 <!-- Подключение стилей свайпера -->
+<script src="https://unpkg.com/slim-select@latest/dist/slimselect.min.js"></script>
 <script src="{{ ['@jquery','@framework','@framework.extras',]|theme}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
 <script src="{{ 'assets/js/jquery-ui.js'|theme }}"></script>
@@ -25,6 +28,8 @@
 <script src="{{ 'assets/js/tabs.js'|theme }}"></script>
 <script src="{{ 'assets/js/dropdown.js'|theme }}"></script>
 <script src="{{ 'assets/js/modal.js'|theme }}"></script>
+<script src="{{ 'assets/js/reader.js'|theme }}"></script>
+
 {% styles %}
 {% framework extras turbo %}
 {% scripts %}

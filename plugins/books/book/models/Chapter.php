@@ -1,21 +1,29 @@
 <?php namespace Books\Book\Models;
 
+use Books\Book\Classes\Enums\EditionsEnums;
+use DiDom\Document;
+use Illuminate\Support\Collection;
 use Model;
 use Carbon\Carbon;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Relations\AttachOne;
+use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
+use System\Models\File;
 
 /**
  * Chapter Model
+ *
+ * @method AttachOne file
+ * @method HasMany pagination
  */
 class   Chapter extends Model
 {
     use Sortable;
     use Validation;
     use SoftDelete;
-
 
 
     /**
@@ -40,17 +48,19 @@ class   Chapter extends Model
      */
     public $rules = [
         'title' => 'nullable|string',
-        'edition_id' => 'required|exists:books_book_ebook_editions,id',
+        'edition_id' => 'required|exists:books_book_editions,id',
         'content' => 'nullable|string',
         'published_at' => 'nullable|date',
         'length' => 'nullable|integer',
-        'sort_order' => 'sometimes|filled|integer'
+        'sort_order' => 'sometimes|filled|integer',
+        'type'
     ];
 
     /**
      * @var array Attributes to be cast to native types
      */
     protected $casts = [
+        'type' => EditionsEnums::class,
         'status' => ChapterStatus::class,
         'sales_type' => ChapterSalesType::class,
     ];
@@ -61,7 +71,7 @@ class   Chapter extends Model
     protected $jsonable = [];
 
     public $belongsTo = [
-        'edition' => [EbookEdition::class, 'key' => 'id', 'otherKey' => 'edition_id']
+        'edition' => [Edition::class, 'key' => 'id', 'otherKey' => 'edition_id']
     ];
 
     /**
@@ -86,8 +96,12 @@ class   Chapter extends Model
     /**
      * @var array hasOne and other relations
      */
-    public $hasOne = [];
-    public $hasMany = [];
+    public $hasOne = [
+        'file' => [File::class]
+    ];
+    public $hasMany = [
+        'pagination' => [Pagination::class, 'key' => 'chapter_id', 'otherKey' => 'id']
+    ];
     public $belongsToMany = [];
     public $morphTo = [];
     public $morphOne = [];
@@ -116,5 +130,62 @@ class   Chapter extends Model
         return strlen(strip_tags(preg_replace('/\s+/', '', $string))) ?? 0;
     }
 
+    protected function afterCreate()
+    {
+        $pagination = $this->paginate();
+        $this->pagination()->addMany($pagination);
+    }
+
+    public function getPaginationLinks(int $page = 1)
+    {
+        $pagination = $this->pagination;
+        $links = $pagination->map(function ($item) use ($pagination, $page) {
+            if (in_array($item->page, [
+                $page,
+                $page + 1,
+                $page - 1,
+                $pagination->first()->page,
+                $pagination->last()->page
+            ])) {
+                return $item;
+            }
+            return null;
+
+        });
+        return $links->filter(function ($value, $key) use ($links) {
+            return $value || (!!$links[$key + 1] ?? false);
+        })->values();
+    }
+
+    public function paginate()
+    {
+
+        $dom = (new \DOMDocument());
+        libxml_use_internal_errors(true);
+        $dom->loadHTML(mb_convert_encoding($this->content, 'HTML-ENTITIES', 'UTF-8'));
+        $root = $dom->getElementsByTagName('body')[0];
+        $perhapses = collect($root->childNodes)->map(fn($node) => [
+            'html' => $dom->saveHTML($node),
+            'length' => strlen($node->textContent),
+        ]);
+        $pagination = collect([collect([])]);
+
+        foreach ($perhapses as $perhaps) {
+
+            $length = ($pagination->last()?->sum('length') ?? 0) + $perhaps['length'];
+            if ($length >= 6500 && $length <= 7500) {
+                $pagination->push(collect([]));
+            }
+            $pagination->last()->push($perhaps);
+        }
+        return $pagination->filter(fn($i) => $i->sum('length'))->map(function ($item, $index) {
+            return new Pagination([
+                'page' => $index + 1,
+                'content' => $item->pluck('html')->join(''),
+                'length' => $item->sum('length'),
+            ]);
+        });
+
+    }
 
 }
