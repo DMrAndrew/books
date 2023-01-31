@@ -5,9 +5,11 @@ use Books\Book\Classes\BookService;
 use Books\Book\Classes\FB2Manager;
 use Books\Book\Components\AboutBook;
 use Books\Book\Components\Booker;
+use Books\Book\Components\BookPage;
 use Books\Book\Components\Chapterer;
 use Books\Book\Components\EBooker;
 use Books\Book\Components\LCBooker;
+use Books\Book\Components\Reader;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
@@ -88,6 +90,8 @@ class Plugin extends PluginBase
             EBooker::class => 'ebooker',
             LCBooker::class => 'LCBooker',
             Chapterer::class => 'Chapterer',
+            BookPage::class => 'BookPage',
+            Reader::class => 'reader',
         ];
     }
 

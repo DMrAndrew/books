@@ -7,7 +7,6 @@ use Exception;
 use October\Rain\Database\Collection;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
-use Redirect;
 use ValidationException;
 
 /**
@@ -75,14 +74,14 @@ class LCBooker extends ComponentBase
         try {
 
 
-            $uploadedFile = (new EbookEdition())->fb2()->withDeferred($this->getSessionKey())->get()?->first();
+            $uploadedFile = (new Edition())->fb2()->withDeferred($this->getSessionKey())->get()?->first();
             if (!$uploadedFile) {
                 throw new ValidationException(['fb2' => 'Файл не найден.']);
             }
 
             $book = (new FB2Manager(user: $this->user, session_key: $this->getSessionKey()))->apply($uploadedFile);
             $book->ebook->save(null, $this->getSessionKey());
-            (new EbookEdition())->cancelDeferred($this->getSessionKey());
+            (new Edition())->cancelDeferred($this->getSessionKey());
             return [
                 '#lc-books' => $this->renderPartial('@default', ['authorships' => $this->getAuthorships()]),
             ];

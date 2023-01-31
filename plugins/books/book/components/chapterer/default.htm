@@ -44,8 +44,39 @@
         </label>
 
         <div class="personal-area__wrap _indent-small ui-input" id="published_at_input" style="display: none">
+
+        </div>
             <label class="ui-input-label">Дата публикации</label>
-            <input class="ui-input-item _size-32"  name="published_at" value="{{chapter.published_at ? carbon(chapter.published_at).format('Y-m-d\TH:i') : ''}}"  type="datetime-local">
+<!--            <input class="ui-input-item _size-32"  name="published_at" value="{{chapter.published_at ? carbon(chapter.published_at).format('Y-m-d\TH:i') : ''}}"  type="datetime-local">-->
+        <div class="personal-area__datetime">
+            <input class="ui-input-item _size-32" type="text" id="datepicker" name="published_at_date" value="{{chapter.published_at ? carbon(chapter.published_at).format('d.m.Y') : ''}}" >
+            <select id="time" name="published_at_time" value="{{chapter.published_at ? carbon(chapter.published_at).format('H:i') : ''}}">
+                <option value="0">00:00</option>
+                <option value="1">01:00</option>
+                <option value="2">02:00</option>
+                <option value="3">03:00</option>
+                <option value="4">04:00</option>
+                <option value="5">05:00</option>
+                <option value="6">06:00</option>
+                <option value="7">07:00</option>
+                <option value="8">08:00</option>
+                <option value="9">09:00</option>
+                <option value="10">10:00</option>
+                <option value="11">11:00</option>
+                <option value="12">12:00</option>
+                <option value="13">13:00</option>
+                <option value="14">14:00</option>
+                <option value="15">15:00</option>
+                <option value="16">16:00</option>
+                <option value="17">17:00</option>
+                <option value="18">18:00</option>
+                <option value="19">19:00</option>
+                <option value="20">20:00</option>
+                <option value="21">21:00</option>
+                <option value="22">22:00</option>
+                <option value="23">23:00</option>
+            </select>
+        </div>
         </div>
         <div class="ui-select-hitn"></div>
         <div class="ui-select-error" data-validate-for="published_at"></div>
@@ -60,15 +91,51 @@
     if (!document.getElementById('cke_chapter_content')) {
         CKEDITOR.replace('chapter_content');
     }
-    $('.chapter-action-radio').on('change', function (e) {
-        let input = $('#published_at_input')
-        if (e.target.id === 'published_at_radio') {
-            input.show()
-        } else {
-            input.hide()
+
+    $(function () {
+        if(document.querySelector('input[class = "chapter-action-radio"]:checked').id == 'published_at_radio'){
+            $('#published_at_input').show()
+        }
+        $('.chapter-action-radio').on('change', function (e) {
+            let input = $('#published_at_input')
+            if (e.target.id === 'published_at_radio') {
+                input.show()
+            } else {
+                input.hide()
+            }
+        })
+        $.datepicker.regional['ru'] = {
+            closeText: "Закрыть",
+            prevText: "Пред",
+            nextText: "След",
+            currentText: "Сегодня",
+            monthNames: [ "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь" ],
+            monthNamesShort: [ "Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек" ],
+            dayNames: [ "воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота" ],
+            dayNamesShort: [ "вск", "пнд", "втр", "срд", "чтв", "птн", "сбт" ],
+            dayNamesMin: [ "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб" ],
+            weekHeader: "Нед",
+            dateFormat: "dd.mm.yy",
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: "" };;
+
+        $.datepicker.setDefaults($.datepicker.regional['ru']);
+        $( "#datepicker" ).datepicker({
+            changeMonth: true,
+            changeYear: true
+        });
+    });
+    new SlimSelect({
+        select: '#multiple',
+    })
+
+    new SlimSelect({
+        select: '#time',
+        settings: {
+            showSearch: false
         }
     })
-    if(document.querySelector('input[class = "chapter-action-radio"]:checked').id == 'published_at_radio'){
-        $('#published_at_input').show()
-    }
+
 </script>

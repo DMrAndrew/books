@@ -65,8 +65,8 @@ class Profile extends Model
      * @var array rules for validation
      */
     public $rules = [
-        'username' => 'required|between:2,255|unique:books_profile_profiles',
-        'username_clipboard' => 'nullable|between:2,255|unique:books_profile_profiles',
+        'username' => 'required|between:2,255',
+        'username_clipboard' => 'nullable|between:2,255',
         'username_clipboard_comment' => 'nullable|string',
         'avatar' => 'nullable|image|mimes:jpg,png|dimensions:min_width=168,min_height=168',
         'banner' => 'nullable|image|mimes:jpg,png|dimensions:min_width=1152,min_height=160',
@@ -149,7 +149,7 @@ class Profile extends Model
 
     public function scopeSearchByString(Builder $query, string $string): Builder
     {
-        return $query->where('username', 'like', "%$string%");
+        return $query->where('username', 'like', "%$string%")->orWhere('id', 'like', "%$string%");
     }
 
     public function scopeUsername(Builder $builder, string $username): Builder

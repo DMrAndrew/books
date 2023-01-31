@@ -62,12 +62,12 @@ class FB2Manager
             $cover->save();
             $this->book->cover()->add($cover, $this->session_key);
 
-            foreach ($this->parser->getBook()->getAuthors() as $author) {
-                //TODO улучшить поиск по пользователям
-                if ($profile = Profile::username($author->getFullName())->first()) {
-                    $this->bookService->addProfile($profile);
-                }
-            }
+//            foreach ($this->parser->getBook()->getAuthors() as $author) {
+//                //TODO улучшить поиск по пользователям
+//                if ($profile = Profile::username($author->getFullName())->first()) {
+//                    $this->bookService->addProfile($profile);
+//                }
+//            }
 
             $keywords = collect(explode(',', $this->info->getKeywords()));
             $keywords->each(function ($i) {

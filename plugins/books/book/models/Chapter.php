@@ -129,12 +129,9 @@ class   Chapter extends Model
             'html' => $dom->saveHTML($node),
             'length' => strlen($node->textContent),
         ]);
-        $pagination = collect([]);
+        $pagination = collect([collect([])]);
 
         foreach ($perhapses as $perhaps) {
-            if (!($pagination->last() instanceof \October\Rain\Support\Collection)) {
-                $pagination->push(collect([]));
-            }
 
             $length = ($pagination->last()?->sum('length') ?? 0) + $perhaps['length'];
             if ($length >= 6500 && $length <= 7500) {

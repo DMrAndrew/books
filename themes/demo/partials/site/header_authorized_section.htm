@@ -285,7 +285,7 @@ redirect = "/"
         <div class="popup-menu _profile" data-header-action="profile">
             <div class="dropwdown-profile">
                 <ul class="dropwdown-profile__list">
-                    <li class="dropwdown-profile__name">{{user.username}}</li>
+                    <li class="dropwdown-profile__name">{{user.profile.username~' ID:'~user.profile.id}}</li>
                     <li><a href="/author-page">Моя страница</a></li>
                     <li class="dropwdown-profile__separator"></li>
                     <li><a href="/lc-profile" data-turbo="false">Личный кабинет</a></li>

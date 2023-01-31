@@ -1,23 +1,26 @@
 <div id="input-authors">
-<div class="ui-input" style="position: relative">
-    <label class="ui-input-label">Соавторы</label>
-    <input class="ui-input-item _size-32 books-autocomplete {{ autofocus ? 'should-focus' : ''}}"
-           type="text"
-           placeholder="Введите соавтора"/>
-    <div class="ui-select-hitn"></div>
-    <div class="ui-select-error" data-validate-for="authors"></div>
+    <div class="ui-input" style="position: relative">
+        <label class="ui-input-label">Соавторы</label>
+        <input class="ui-input-item _size-32 books-autocomplete {{ autofocus ? 'should-focus' : ''}}"
+               type="text"
+               placeholder="Введите соавтора"/>
+        <div class="ui-select-hitn"></div>
+        <div class="ui-select-error" data-validate-for="authors"></div>
 
-</div>
-<div class="create-book__co-author-container">
-    {% for item in authors %}
-    {% partial 'booker::authorItem' item=item %}
-    {% endfor %}
-</div>
+    </div>
+    <div class="create-book__co-author-container">
+        {% for item in authors %}
+        {% partial 'booker::authorItem' item=item %}
+        {% endfor %}
+    </div>
 
-<script>
-    initAutocomplete({
-        container: '#input-authors',
-        onRequestHandler: 'booker::onSearchAuthor',
-    })
-</script>
+    <script>
+        initAutocomplete({
+            container: '#input-authors',
+            onRequestHandler: 'booker::onSearchAuthor',
+            options: {
+                minLength: 1
+            }
+        })
+    </script>
 </div>
