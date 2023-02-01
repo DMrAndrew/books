@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug' => (bool)env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -157,5 +157,7 @@ return [
     */
 
     'timezone' => 'UTC',
+
+    'version' => '1.0.0'
 
 ];
