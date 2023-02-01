@@ -4,8 +4,12 @@
         <div class="book-card-full__description">
             <h1 class="book-card-full__title ui-text-head--2 ui-text--bold">{{book.title}}</h1>
             <div class="book-card-full__author-wrapper">
-                <a href="" class="book-card-full__author ui-link _violet">{{book.author.profile.username}}</a>
-                <a href="" class="ui-link _violet _icon">
+                <div class="book-card-full__author-container tag-list">
+                    {% for profile in book.profiles %}
+                    <a href="" class="book-card-full__author ui-link _violet">{{profile.username}}</a>
+                    {% endfor %}
+                </div>
+                <a href="" class="ui-link _violet _icon book-card-full__author-support">
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#coins-stroked-16' | theme}}"></use>
                     </svg>
@@ -17,9 +21,11 @@
                     <div class="ui-tabs-header">
                         <div class="ui-tabs-line"></div>
                         <div class="ui-tabs-header-wrapper">
-                            <!--                            <div class="ui-tabs-link active" data-tab="1">Электронная</div>-->
-                            <!--                            <div class="ui-tabs-link " data-tab="2">Аудиокнига</div>-->
-                            <!--                            <div class="ui-tabs-link " data-tab="3">Бумажная</div>-->
+                            <div class="ui-tabs-link active" data-tab="1">Электронная</div>
+                            <div class="ui-tabs-link " data-tab="2">Аудиокнига</div>
+                            <div class="ui-tabs-link " data-tab="3">Бумажная</div>
+                            <div class="ui-tabs-link " data-tab="4">Бумажная</div>
+                            <div class="ui-tabs-link " data-tab="5">Бумажная</div>
                         </div>
                     </div>
                     <div class="ui-tabs-body _field">
@@ -29,11 +35,11 @@
                                     <svg class="square-16">
                                         <use xlink:href="./assets/icon-sprite/svg-sprite.svg#check-stroked-16"></use>
                                     </svg>
-                                    <span>Закончена</span>
+                                    <span>{{book.ebook.status.getLabel()}}</span>
                                     <span class="book-card-full-type__description-dot"></span>
-                                    <span>18.01.21</span>
+                                    <span>{{carbon(book.ebook.created_at).format('d.m.y')}}</span>
                                     <span class="book-card-full-type__description-dot"></span>
-                                    <span>231 448 зн.</span>
+                                    <span>{{book.ebook.length}} зн.</span>
                                     <span class="book-card-full-type__description-dot"></span>
                                     <a href="#" class="ui-link _violet">История</a>
                                 </div>
@@ -59,32 +65,42 @@
                                 </div>
                             </div>
                         </div>
-                        <!--                        <div class="ui-tabs-content" data-tab-content="2">-->
-                        <!--                            <div class="book-card-full-type">-->
-                        <!--                                <div class="book-card-full-type__description _indent-bottom">-->
-                        <!--                                    <svg class="square-16">-->
-                        <!--                                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#pencil-stroked-16"></use>-->
-                        <!--                                    </svg>-->
-                        <!--                                    <span>В работе</span>-->
-                        <!--                                    <span class="book-card-full-type__description-dot"></span>-->
-                        <!--                                    <span>18.01.21</span>-->
-                        <!--                                    <span class="book-card-full-type__description-dot"></span>-->
-                        <!--                                    <span>03 ч 31 мин</span>-->
-                        <!--                                    <span class="book-card-full-type__description-dot"></span>-->
-                        <!--                                    <a href="#" class="ui-link _violet">История</a>-->
-                        <!--                                </div>-->
+                        <div class="ui-tabs-content" data-tab-content="2">
+                            <div class="book-card-full-type">
+                                <div class="book-card-full-type__description _indent-bottom">
+                                    <svg class="square-16">
+                                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#pencil-stroked-16"></use>
+                                    </svg>
+                                    <span>В работе</span>
+                                    <span class="book-card-full-type__description-dot"></span>
+                                    <span>18.01.21</span>
+                                    <span class="book-card-full-type__description-dot"></span>
+                                    <span>03 ч 31 мин</span>
+                                    <span class="book-card-full-type__description-dot"></span>
+                                    <a href="#" class="ui-link _violet">История</a>
+                                </div>
 
-                        <!--                                <div class="book-card-full-type__link-wrapper _double">-->
-                        <!--                                    <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full">Слушать</a>-->
-                        <!--                                    <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
-                        <!--                                </div>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
-                        <!--                        <div class="ui-tabs-content" data-tab-content="3">-->
-                        <!--                            <div class="book-card-full-type__link-wrapper">-->
-                        <!--                                <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
+                                <div class="book-card-full-type__link-wrapper _double">
+                                    <a href="#" class="ui-button ui-button-size--56 ui-button-view--2 ui-button--full">Слушать</a>
+                                    <a href="#" class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full">Купить 139 ₽</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="3">
+                            <div class="book-card-full-type__link-wrapper">
+                                <a href="#" class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full">Купить 139 ₽</a>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="4">
+                            <div class="book-card-full-type__link-wrapper">
+                                <a href="#" class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full">Купить 139 ₽</a>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="5">
+                            <div class="book-card-full-type__link-wrapper">
+                                <a href="#" class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full">Купить 139 ₽</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -93,13 +109,13 @@
             <div class="book-card-full-info__button-wrapper">
                 <button class="ui-button ui-button-size--56 ui-button-view--3 ui-button--full ui-button--column">
                     <svg class="square-16">
-                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16"></use>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme}}"></use>
                     </svg>
                     <span class="ui-text--medium">В библиотеку</span>
                 </button>
                 <button class="ui-button ui-button-size--56 ui-button-view--3 ui-button--full ui-button--column">
                     <svg class="square-16">
-                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#like-stroked-16"></use>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-stroked-16' | theme}}"></use>
                     </svg>
                     <span class="ui-text--medium">Нравится 200</span>
                 </button>
@@ -107,7 +123,7 @@
             <div class="book-card-full-info__rating">
                 <div class="book-card__raiting">
                     <svg>
-                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#star-filled-16"></use>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
                     </svg>
                     <span>12</span>
                 </div>
@@ -194,7 +210,8 @@
                                     3 Спутники бога</a>
                                 <span>18.01.21</span>
                                 <svg class="square-16">
-                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#lock-filled-16"></use>
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#lock-filled-16' | theme}}"></use>
                                 </svg>
                             </div>
                         </div>
@@ -202,13 +219,15 @@
                             <div class="book-card-repost">
                                 <span>Поделиться:</span>
                                 <svg class="square-32" style="color: #0077FF;">
-                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#logo-vk-28"></use>
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-vk-28' | theme}}"></use>
                                 </svg>
                                 <svg class="square-32" style="color: #54A9E7;">
-                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#logo-telegram-28"></use>
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-telegram-28' | theme}}"></use>
                                 </svg>
                                 <svg class="square-32">
-                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#social-ok-filled-32"></use>
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-filled-32' | theme}}"></use>
                                 </svg>
                             </div>
                             <div class="book-card-full-description__content ">
@@ -341,7 +360,7 @@
                             <div class="thematic-section__container swiper">
                                 <div class="thematic-section__card-container swiper-wrapper">
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -349,7 +368,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -357,7 +376,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -365,7 +384,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -373,7 +392,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -381,7 +400,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -389,7 +408,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -397,7 +416,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -408,13 +427,13 @@
                                 <div class="thematic-section__nav _left">
                                     <svg>
                                         <use
-                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
                                     </svg>
                                 </div>
                                 <div class="thematic-section__nav _right">
                                     <svg>
                                         <use
-                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
                                     </svg>
                                 </div>
                             </div>
@@ -439,7 +458,7 @@
                             <div class="thematic-section__container swiper">
                                 <div class="thematic-section__card-container swiper-wrapper">
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -447,7 +466,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -455,7 +474,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -463,7 +482,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -471,7 +490,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -479,7 +498,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -487,7 +506,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -495,7 +514,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -506,13 +525,13 @@
                                 <div class="thematic-section__nav _left">
                                     <svg>
                                         <use
-                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
                                     </svg>
                                 </div>
                                 <div class="thematic-section__nav _right">
                                     <svg>
                                         <use
-                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
                                     </svg>
                                 </div>
                             </div>
@@ -521,7 +540,7 @@
                             <div class="thematic-section__container swiper">
                                 <div class="thematic-section__card-container swiper-wrapper">
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -529,7 +548,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -537,7 +556,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -545,7 +564,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -553,7 +572,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -561,7 +580,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -569,7 +588,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -577,7 +596,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -588,13 +607,13 @@
                                 <div class="thematic-section__nav _left">
                                     <svg>
                                         <use
-                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
                                     </svg>
                                 </div>
                                 <div class="thematic-section__nav _right">
                                     <svg>
                                         <use
-                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
                                     </svg>
                                 </div>
                             </div>
@@ -603,7 +622,7 @@
                             <div class="thematic-section__container swiper">
                                 <div class="thematic-section__card-container swiper-wrapper">
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -611,7 +630,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -619,7 +638,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -627,7 +646,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -635,7 +654,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -643,7 +662,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -651,7 +670,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -659,7 +678,7 @@
                                         </div>
                                     </a>
                                     <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                                        <img src="./assets/images/main/book-card-placeholder.png"
+                                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
                                              class="book-mini-card__image" alt=""
                                              loading="lazy"></img>
                                         <div class="book-mini-card__title">
@@ -670,13 +689,13 @@
                                 <div class="thematic-section__nav _left">
                                     <svg>
                                         <use
-                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
                                     </svg>
                                 </div>
                                 <div class="thematic-section__nav _right">
                                     <svg>
                                         <use
-                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24"></use>
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
                                     </svg>
                                 </div>
                             </div>
@@ -847,7 +866,8 @@
                 </div>
                 <div class="thematic-section__container ">
                     <a href="#" class="book-sidebar-card _indent">
-                        <img src="./assets/images/main/book-card-placeholder.png" class="book-sidebar-card__image"
+                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
+                             class="book-sidebar-card__image"
                              alt=""
                              loading="lazy">
                         <div class="book-sidebar-card__description">
@@ -856,7 +876,8 @@
                         </div>
                     </a>
                     <a href="#" class="book-sidebar-card _indent">
-                        <img src="./assets/images/main/book-card-placeholder.png" class="book-sidebar-card__image"
+                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
+                             class="book-sidebar-card__image"
                              alt=""
                              loading="lazy">
                         <div class="book-sidebar-card__description">
@@ -865,7 +886,8 @@
                         </div>
                     </a>
                     <a href="#" class="book-sidebar-card _indent">
-                        <img src="./assets/images/main/book-card-placeholder.png" class="book-sidebar-card__image"
+                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
+                             class="book-sidebar-card__image"
                              alt=""
                              loading="lazy">
                         <div class="book-sidebar-card__description">
@@ -880,7 +902,32 @@
     </div>
     <script>
         initTabs('[data-tabs="1"]');
-        initTabs('[data-tabs="2"]');
-        initTabs('[data-tabs="3"]');
+        (() => {
+            new Swiper('.swiper', {
+                // Optional parameters
+                direction: 'horizontal',
+                loop: false,
+
+                // draggable: true,
+                spaceBetween: 16,
+                breakpoints: {
+                    0: {
+                        slidesPerView: 2.5,
+                    },
+                    768: {
+                        slidesPerView: 5,
+                    },
+                    1280: {
+                        slidesPerView: 6,
+                    }
+                },
+
+                // Navigation arrows
+                navigation: {
+                    nextEl: '.thematic-section__nav._right',
+                    prevEl: '.thematic-section__nav._left',
+                },
+            });
+        })()
     </script>
 </div>
