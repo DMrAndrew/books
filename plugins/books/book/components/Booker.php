@@ -19,6 +19,7 @@ use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Request;
 use ValidationException;
+use Validator;
 
 /**
  * Booker Component
@@ -100,8 +101,19 @@ class Booker extends ComponentBase
     public function onSaveBook()
     {
         try {
+            $data = post();
+            $book = (new Book());
+            $book->addValidationRule('annotation', 'max:2000');
+            $validator = Validator::make(
+                $data,
+                $book->rules,
+                (array)$book->customMessages
+            );
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+            $book = $this->service->save($data);
             $redirect = !!$this->book->id;
-            $book = $this->service->save(post());
 
             return $redirect ?
                 ['#about-header' => $this->renderPartial('book/about-header', ['book' => $book])]

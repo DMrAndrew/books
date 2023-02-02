@@ -30,7 +30,7 @@ class Author extends Model
     public $table = 'books_book_authors';
 
 
-    protected $fillable = ['book_id', 'profile_id', 'percent', 'sort_order', 'is_owner'];
+    protected $fillable = ['book_id', 'profile_id', 'percent', 'sort_order', 'is_owner', 'accepted'];
     /**
      * @var array rules for validation
      */
