@@ -2,9 +2,13 @@
     {% partial '@pagination' %}
     <div class="reader__body">
         {% if reader.paginator.page == 1 %}
-        <h2 class="ui-text-head--3 ui-text--bold">{{reader.chapter.title|raw}}</h2>
+        <h2 class="ui-text-head--3-em ui-text--bold">{{reader.chapter.title|raw}}</h2>
         {% endif %}
         {{ reader.paginator.content|raw }}
     </div>
     {% partial '@pagination' %}
+
+    <script>
+        initReader();
+    </script>
 </div>
