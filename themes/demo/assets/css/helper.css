@@ -117,3 +117,7 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
 .profile-avatar-image {
     height: 100%;
 }
+
+.reader__body {
+    text-align: justify;
+}
