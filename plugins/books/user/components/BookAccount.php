@@ -67,6 +67,7 @@ class BookAccount extends Account
 
         if ($this->user()?->required_post_register) {
             $partials['#post_register_container'] = $this->renderPartial('auth/postRegisterContainer', ['user' => $this->user()]);
+            return Response::make($partials);
         } else {
             $cookies[] = Cookie::make(name: 'post_register_accepted', value: 1, httpOnly: false);
         }
