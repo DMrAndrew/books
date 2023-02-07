@@ -13,6 +13,9 @@ fields:
     favorite:
         label: Любимый жанр
         type: checkbox
+    adult:
+        label: 18+
+        type: checkbox
     parent:
         label: Родитель
         type: dropdown

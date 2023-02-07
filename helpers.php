@@ -65,5 +65,11 @@ function redirectIfUnauthorized()
     return false;
 }
 
+function shouldRestrictAdult(): bool
+{
+    $user = Auth::getUser();
+    return !$user || !$user->birthday || !$user->see_adult;
+}
+
 ?>
 

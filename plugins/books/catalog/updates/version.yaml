@@ -3,3 +3,6 @@
     - create_genres_table.php
     - create_types_table.php
     - seed_all_tables.php
+1.0.2:
+    - '18+ для жанров'
+    - genres_add_adult.php

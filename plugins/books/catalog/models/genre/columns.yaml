@@ -15,3 +15,6 @@ columns:
     active:
         label: Активный
         type: switch
+    adult:
+        label: 18+
+        type: switch

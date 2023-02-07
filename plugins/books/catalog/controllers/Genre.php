@@ -4,6 +4,7 @@ use Lang;
 use Flash;
 use BackendMenu;
 use Backend\Classes\Controller;
+use Books\Catalog\Models\Genre as GenreModel;
 use Backend\Behaviors\ListController;
 use Backend\Behaviors\FormController;
 
@@ -61,34 +62,14 @@ class Genre extends Controller
             count($checkedIds)
         ) {
 
-            foreach ($checkedIds as $genreId) {
-                if (!$genre = \Books\Catalog\Models\Genre::find($genreId)) {
-                    continue;
-                }
-
-                switch ($bulkAction) {
-                    case 'delete':
-                        $genre->forceDelete();
-                        break;
-
-                    case 'activate':
-                        $genre->activate();
-                        break;
-
-                    case 'deactivate':
-                        $genre->deactivate();
-                        break;
-
-                    case 'favorite':
-                        $genre->enableFavorite();
-                        break;
-
-                    case 'unfavorite':
-                        $genre->disableFavorite();
-                        break;
-                }
+            $allowed = ['delete', 'activate', 'deactivate', 'enableFavorite', 'disableFavorite', 'checkAdult', 'uncheckAdult'];
+            if (in_array($bulkAction, $allowed)) {
+                GenreModel::query()
+                    ->whereIn('id', $checkedIds)
+                    ->get()
+                    ->map
+                    ->{$bulkAction}();
             }
-
             Flash::success(Lang::get('books.catalog::lang.genres.' . $bulkAction . '_selected_success'));
         } else {
             Flash::error(Lang::get('books.catalog::lang.genres.' . $bulkAction . '_selected_empty'));

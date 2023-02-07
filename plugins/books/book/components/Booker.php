@@ -228,7 +228,7 @@ class Booker extends ComponentBase
         }
 
 
-        $array = Genre::active()
+        $array = Genre::public()
             ->name($term)
             ->get()
             ->diff($this->service->getGenres());

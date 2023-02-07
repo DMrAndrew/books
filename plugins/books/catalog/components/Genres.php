@@ -22,16 +22,14 @@ class Genres extends ComponentBase
         return [];
     }
 
-    public function parented()
+    public function parented(bool $child = false)
     {
-        return Genre::query()->roots()->active()->get();
+        return Genre::query()->roots()->public()->when($child, fn($q) => $q->with('children'))->get();
     }
 
     public function allGenres()
     {
-        $all = $this->parented();
-        $all->load('children');
-        return $all->split(4);
+        return $this->parented(child: true)->split(4);
     }
 
 }

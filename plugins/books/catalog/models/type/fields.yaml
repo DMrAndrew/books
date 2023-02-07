@@ -3,8 +3,10 @@
 # ===================================
 
 fields:
-    name:
+    label:
         label: Название
+    name:
+        label: Имя
     desc:
         label: Описание
         type: textarea

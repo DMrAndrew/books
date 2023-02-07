@@ -3,8 +3,11 @@
 # ===================================
 
 columns:
-    name:
+    Label:
         label: Название
+        searchable: true
+    name:
+        label: Имя
         searchable: true
     desc:
         label: Описание

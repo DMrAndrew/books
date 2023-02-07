@@ -4,7 +4,6 @@
 use Books\Book\Classes\Enums\EditionsEnums;
 use Model;
 use System\Models\File;
-use RainLab\User\Facades\Auth;
 use Books\Catalog\Models\Genre;
 use Books\Profile\Models\Profile;
 use October\Rain\Database\Builder;
@@ -16,6 +15,7 @@ use October\Rain\Database\Relations\AttachOne;
 use October\Rain\Database\Relations\BelongsTo;
 use October\Rain\Database\Relations\BelongsToMany;
 use October\Rain\Database\Relations\HasOneThrough;
+
 
 /**
  * Book Model
@@ -161,7 +161,6 @@ class Book extends Model
     ];
     public $attachMany = [];
 
-
     public function getFavoritedAttribute()
     {
         return 0;
@@ -172,9 +171,18 @@ class Book extends Model
         return $query->public()->where('title', 'like', "%$string%");
     }
 
+    public function scopeAdult(Builder $builder)
+    {
+        if (!shouldRestrictAdult()) {
+            return $builder;
+        }
+        return $builder->where('age_restriction', '<', '18')
+            ->whereDoesntHave('genres', fn($g) => $g->adult());
+    }
+
     public function scopePublic(Builder $q)
     {
-        return $q->whereHas('editions', function ($query) {
+        return $q->adult()->whereHas('editions', function ($query) {
             return $query->whereNotIn('status', [BookStatus::HIDDEN->value]);
         });
     }
@@ -225,7 +233,18 @@ class Book extends Model
     {
         $this->setDefaultCover();
         $this->setDefaultEdition();
+    }
 
+    protected function beforeUpdate()
+    {
+        if ($this->genres()->adult()->exists()) {
+            $this->attributes['age_restriction'] = AgeRestrictionsEnum::A18;
+        }
+
+    }
+
+    protected function afterUpdate()
+    {
     }
 
     public function getDeferred($key): Collection

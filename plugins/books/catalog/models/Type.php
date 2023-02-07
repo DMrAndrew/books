@@ -41,6 +41,7 @@ class Type extends Model
         'icon' => 'nullable|image|mimes:png'
     ];
 
+
     /**
      * @var array Attributes to be cast to native types
      */
@@ -88,9 +89,16 @@ class Type extends Model
     ];
     public $attachMany = [];
 
-   public function getLabelAttribute(){
-       return $this->enum->getLabel();
-   }
+    public function getEnumAttribute($value)
+    {
+        return BookTypeEnum::tryFrom($this->attributes['name']);
+    }
+
+    public function getLabelAttribute()
+    {
+        return $this->enum?->getLabel();
+    }
+
     public function activate()
     {
         $this->active = 1;

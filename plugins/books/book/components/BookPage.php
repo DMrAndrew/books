@@ -2,6 +2,7 @@
 
 use Books\Book\Models\Book;
 use Cms\Classes\ComponentBase;
+use RainLab\User\Facades\Auth;
 
 /**
  * BookPage Component
@@ -38,7 +39,10 @@ class BookPage extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
-        $this->book = Book::find($this->param('book_id')) ?? abort(404);
+        $book_id = $this->param('book_id');
+        $this->book = Book::query()->public()->find($book_id)
+            ?? Auth::getUser()->profile->books()->find($book_id)
+            ?? abort(404);
         $this->page['book'] = $this->book;
     }
 }
