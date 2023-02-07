@@ -15,6 +15,7 @@ use October\Rain\Database\Relations\AttachOne;
 use October\Rain\Database\Relations\BelongsTo;
 use October\Rain\Database\Relations\BelongsToMany;
 use October\Rain\Database\Relations\HasOneThrough;
+use WordForm;
 
 
 /**
@@ -260,6 +261,11 @@ class Book extends Model
     public function getDeferredAuthor($key, int|Profile $profile)
     {
         return $this->getDeferredAuthors($key)?->first(fn($bind) => $bind->slave_id === (is_int($profile) ? $profile : $profile->id)) ?? null;
+    }
+
+    public static function wordForm(): WordForm
+    {
+        return new WordForm(...self::$endingArray);
     }
 
 

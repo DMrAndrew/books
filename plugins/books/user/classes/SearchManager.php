@@ -17,7 +17,7 @@ class SearchManager
     public function apply(string $query): \October\Rain\Support\Collection|\Illuminate\Support\Collection
     {
         $res = Search::add(Book::public()->defualtEager(), 'title')
-            ->add(Profile::with(['avatar','books' => fn($i) => $i->public()]), 'username')
+            ->add(Profile::with(['avatar', 'books' => fn($i) => $i->public()]), 'username')
             ->includeModelType()
             ->orderByModel([
                 Book::class, Profile::class])
@@ -30,7 +30,7 @@ class SearchManager
             return [
                 'active' => !!!$this->active++,
                 'count' => $count,
-                'label' => getCorrectSuffix($count, $class::$endingArray),
+                'label' => $class::wordForm()->getCorrectSuffix($count),
                 'items' => $grouped,
                 'type' => $key
             ];
