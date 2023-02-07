@@ -5,6 +5,7 @@ namespace Books\User\Behaviors;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
+use Carbon\Carbon;
 use RainLab\User\Models\User;
 use Books\User\Models\Country;
 use Books\User\Models\Settings;
@@ -57,6 +58,10 @@ class BookUser extends ExtensionBase
         ]);
     }
 
+    public function setBirthdayAttribute($value)
+    {
+        $this->parent->attributes['birthday'] = Carbon::parse($value);
+    }
 
     public function getNameAttribute()
     {

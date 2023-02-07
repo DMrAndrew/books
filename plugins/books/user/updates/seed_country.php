@@ -30,6 +30,7 @@ class SeedCountry extends Seeder
                     ->insert($list->toArray());
             }
 
+
             $prefers = ['RU', 'UA', 'US', 'GB'];
             $preferred = Country::code(...$prefers)->get();
             $preferred->each(fn($i) => $i->update(['sort_order' => array_search($i->code, $prefers)], ['force' => true]));
