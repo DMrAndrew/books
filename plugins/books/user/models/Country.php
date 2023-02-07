@@ -1,6 +1,8 @@
 <?php namespace Books\User\Models;
 
 use Model;
+use October\Rain\Database\Builder;
+use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 
@@ -10,6 +12,7 @@ use RainLab\User\Models\User;
 class Country extends Model
 {
     use Validation;
+    use Sortable;
 
     /**
      * @var string table associated with the model
@@ -24,7 +27,7 @@ class Country extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['name', 'code'];
+    protected $fillable = ['name', 'code', 'sort_order'];
 
     /**
      * @var array rules for validation
@@ -75,8 +78,8 @@ class Country extends Model
     public $attachOne = [];
     public $attachMany = [];
 
-    public function scopeCode($q, $code)
+    public function scopeCode($q, string ...$code)
     {
-        return $q->where('code', '=', $code);
+        return $q->whereIn('code', $code);
     }
 }

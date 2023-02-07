@@ -21,7 +21,8 @@
         "books/profile-plugin": "*",
         "books/book-plugin": "*",
         "books/fileuploader-plugin": "*",
-        "protonemedia/laravel-cross-eloquent-search": "^3.1"
+        "protonemedia/laravel-cross-eloquent-search": "^3.1",
+        "monarobase/country-list": "^3.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -95,6 +96,5 @@
             "type": "path",
             "url": "./plugins/books/fileuploader"
         }
-
     }
 }

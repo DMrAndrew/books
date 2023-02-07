@@ -19,8 +19,7 @@ class BookUser extends ExtensionBase
 {
     public function __construct(protected User $parent)
     {
-        $this->parent->hasOne['country'] = [Country::class, 'key' => 'id', 'otherKey' => 'country_id'];
-
+        $this->parent->belongsTo['country'] = [Country::class, 'key' => 'country_id', 'otherKey' => 'id'];
         $this->parent->hasMany['tags'] = [Tag::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['cycles'] = [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['settings'] = [Settings::class, 'key' => 'user_id', 'otherKey' => 'id'];
@@ -50,11 +49,10 @@ class BookUser extends ExtensionBase
             'username' => ProfileAttributeCasts::class,
             'birthday' => BirthdayAttributeCasts::class,
         ]);
-
         $this->parent->addJsonable([
             'favorite_genres',
             'exclude_genres',
-            '',
+            'loved_genres',
             'unloved_genres'
         ]);
     }
@@ -92,6 +90,11 @@ class BookUser extends ExtensionBase
     public function getCountryOptions(): array
     {
         return Country::lists('name', 'id');
+    }
+
+    public function allowedSeeAdult(): bool
+    {
+        return !$this->parent->asked_adult_agreement || !$this->parent->birthday || !$this->parent->see_adult;
     }
 
 

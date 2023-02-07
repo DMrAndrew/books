@@ -19,6 +19,7 @@ if (!function_exists('mb_ucfirst') && extension_loaded('mbstring')) {
         $str = mb_ereg_replace('^[\ ]+', '', $str);
         $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding) .
             mb_substr($str, 1, mb_strlen($str), $encoding);
+
         return $str;
     }
 }
@@ -31,6 +32,7 @@ if (!function_exists('mb_ucfirst') && extension_loaded('mbstring')) {
 function plainText($text, $allowed_tags = '<br><p><li>')
 {
     $text = strip_tags($text, $allowed_tags);
+
     return preg_replace('/<[^>]*>/', PHP_EOL, $text);
 }
 
@@ -62,6 +64,7 @@ function redirectIfUnauthorized()
     if (!Auth::getUser()) {
         return Redirect::to('/');
     }
+
     return false;
 }
 
@@ -69,6 +72,13 @@ function shouldRestrictAdult(): bool
 {
     $user = Auth::getUser();
     return !$user || !$user->birthday || !$user->see_adult;
+}
+
+function shouldRestrictContent(): bool
+{
+    $foreign = parse_url(config('app.foreign_url') ?? '');
+
+    return request()->host() !== $foreign['host'] ?? $foreign['path'];
 }
 
 ?>

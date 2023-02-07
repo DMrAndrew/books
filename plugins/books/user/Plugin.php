@@ -4,9 +4,11 @@ use Backend;
 use Books\User\Classes\SearchManager;
 use Books\User\Components\AuthorSpace;
 use Books\User\Components\Searcher;
+use Books\User\Models\Country;
 use Config;
 use Event;
 use Illuminate\Foundation\AliasLoader;
+use Monarobase\CountryList\CountryListFacade;
 use October\Rain\Foundation\Exception\Handler;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use RainLab\User\Models\User;
@@ -61,6 +63,8 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('User', User::class);
         AliasLoader::getInstance()->alias('Search', Search::class);
         AliasLoader::getInstance()->alias('SearchManager', SearchManager::class);
+        AliasLoader::getInstance()->alias('Country', Country::class);
+        AliasLoader::getInstance()->alias('Countries', CountryListFacade::class);
         User::extend(function (User $model) {
             $model->implementClassWith(BookUser::class);
             $model->bindEvent('model.afterCreate', function () use ($model) {
