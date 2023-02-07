@@ -77,7 +77,15 @@ class Genre extends Model
      * @var array hasOne and other relations
      */
     public $hasOne = [];
-    public $hasMany = [];
+    public $hasMany = [
+        'f_children' => [
+            Genre::class,
+            'key' => 'parent_id',
+            'replicate' => false,
+            'scope' => 'favorite'
+        ]
+    ];
+
     public $belongsTo = [];
     public $belongsToMany = [
         'books' => [
@@ -144,6 +152,11 @@ class Genre extends Model
     public function scopeFavorite(Builder $builder): Builder
     {
         return $builder->where('favorite', '=', 1);
+    }
+
+    public function scopeOrFavorite(Builder $builder): Builder
+    {
+        return $builder->orWhere('favorite', '=', 1);
     }
 
     public function scopeActive(Builder $builder): Builder

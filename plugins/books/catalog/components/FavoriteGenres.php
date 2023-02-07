@@ -3,6 +3,8 @@
 use Lang;
 use Flash;
 use Cookie;
+use October\Rain\Database\Builder;
+use October\Rain\Database\Collection;
 use Request;
 use Response;
 use Exception;
@@ -18,7 +20,8 @@ use Books\Catalog\Classes\FavoritesManager;
 class FavoriteGenres extends ComponentBase
 {
     private $user = null;
-    private array $favorite_genres = array();
+    private Collection $loved_genres;
+    private $unloved_genres;
 
     public function componentDetails()
     {
@@ -35,53 +38,135 @@ class FavoriteGenres extends ComponentBase
 
     public function init()
     {
-        parent::init();
         $this->user = Auth::getUser();
-        if (!$this->user && !Cookie::has('favorite_genres')) {
-            $this->favorite_genres = (new FavoritesManager())->getDefaultGenres();
+        if (!$this->user) {
+            $this->loved_genres = Genre::find(Cookie::has('loved_genres') ? json_decode(Cookie::get('loved_genres')) : (new FavoritesManager())->getDefaultGenres());
+            $this->unloved_genres = Genre::find(Cookie::has('unloved_genres') ? json_decode(Cookie::get('unloved_genres')) : []);
         } else {
-            $this->favorite_genres = $this->user?->favorite_genres ?? json_decode(Cookie::get('favorite_genres')) ?? [];
+            $this->loved_genres = Genre::find($this->user->loved_genres ?? []);
+            $this->unloved_genres = Genre::find($this->user->unloved_genres ?? []);
         }
+        $this->prepareVals();
     }
 
-    public function favoriteGenres()
+    public function prepareVals()
+    {
+        $this->page['genres'] = $this->genres();
+        $this->page['nestedGenres'] = $this->nestedGenres();
+        $this->page['loved_genres'] = $this->loved_genres;
+        $this->page['unloved_genres'] = $this->unloved_genres;
+    }
+
+    public function queryGenres()
     {
         return Genre::query()
-            ->active()
-            ->favorite()
-            ->select(['id', 'name'])
-            ->get()
-            ->each(function ($i) {
-                $i['selected'] = in_array($i->id, $this->favorite_genres);
-            })
-            ->split(4);
+            ->public()
+            ->select(['id', 'name']);
+    }
 
+    public function genres()
+    {
+        return $this->mergeWithSelected($this->queryGenres()->favorite()->get());
+    }
+
+    public function nestedGenres()
+    {
+
+        $roots = $this->queryGenres()
+            ->nestedFavorites()
+            ->get();
+
+        $this->mergeWithSelected($roots);
+        $roots->each(function ($root) {
+            $this->mergeWithSelected($root->children);
+        });
+        return $roots;
+    }
+
+    function mergeWithSelected(Collection $genres): Collection
+    {
+        $genres->each(function ($i) {
+            $i['loved'] = !!$this->loved_genres->intersect([$i])->count();
+            $i['unloved'] = !!$this->unloved_genres?->intersect([$i])->count();
+        });
+
+        return $genres;
     }
 
     public function onToggleFavorite(): \Illuminate\Http\Response
     {
-
-        $attempts = $this->user ? 30 : 15;
+        $attempts = 15;
         if (!RateLimiter::attempt('toggleFavorite' . request()->ip(), $attempts, fn() => 1)) {
             $ex = new Exception(Lang::get('books.catalog::lang.plugin.too_many_attempt'));
             if (Request::ajax()) throw $ex;
             else Flash::error($ex->getMessage());
         }
 
-        $id = post('id');
-        $this->favorite_genres = array_values(
-            in_array($id, $this->favorite_genres)
-                ? array_diff($this->favorite_genres, [$id])
-                : array_merge($this->favorite_genres, [$id])
-        );
+        $genre = Genre::find(post('id'));
+        if ($genre) {
+            $this->loved_genres = (
+            $this->loved_genres->intersect([$genre])->count()
+                ? $this->loved_genres->diff([$genre])
+                : $this->loved_genres->merge([$genre])
+            );
+        }
 
         $response = Response::make('');
+
         if ($this->user) {
-            (new FavoritesManager())->save($this->user, $this->favorite_genres);
+            (new FavoritesManager())->save($this->user, $this->loved_genres->pluck('id')->toArray());
 
             return $response;
         }
 
-        return $response->withCookie(Cookie::forever('favorite_genres', json_encode($this->favorite_genres)));
+        return $response->withCookie(Cookie::forever('loved_genres', json_encode($this->loved_genres->pluck('id')->toArray())))
+            ->withCookie(Cookie::forever('unloved_genres', json_encode([])));
+    }
+
+    public function onChangeGenres()
+    {
+        $attempts = 15;
+        if (!RateLimiter::attempt('toggleFavorite' . request()->ip(), $attempts, fn() => 1)) {
+            $ex = new Exception(Lang::get('books.catalog::lang.plugin.too_many_attempt'));
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
+
+        $recommend = collect(post('recommend'));
+
+        $this->loved_genres = Genre::find($recommend->filter(fn($i) => $i == 'on')->keys());
+        $this->unloved_genres = Genre::find($recommend->filter(fn($i) => $i == 'off')->keys());
+
+        $loved = $this->loved_genres->pluck('id')->toArray();
+        $unloved = $this->unloved_genres->pluck('id')->toArray();
+
+        if ($this->user) {
+            (new FavoritesManager())->save($this->user, $loved, $unloved);
+        }
+
+        if ($this->user) {
+
+            $partial = ['.recommend_spawn' => $this->renderPartial('personal-area/recommend_section', [
+                'loved_genres' => $this->loved_genres,
+                'unloved_genres' => $this->unloved_genres,
+                'nestedGenres' => $this->nestedGenres(),
+            ])];
+        } else {
+            $partial = ['.index_favorite_widget_spawn' => $this->renderPartial('genres/index_favorite_widget', [
+                'genres' => $this->genres()
+            ])];
+
+        }
+
+
+        $response = Response::make($partial);
+
+        if (!$this->user) {
+            $response->
+            withCookie(Cookie::forever('loved_genres', json_encode($loved)))->
+            withCookie(Cookie::forever('unloved_genres', json_encode($unloved)));
+        }
+
+        return $response;
     }
 }

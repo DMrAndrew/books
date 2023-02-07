@@ -1,9 +1,9 @@
-
 {% if user  %}
 {% set action = 'bookAccount::onPostRegister' %}
 {% else %}
 {% set action = 'bookAccount::onRegisterProxy' %}
 {% endif %}
+
 <form id="register_form" class="auth__container _large"
       data-request="{{action}}"
       data-request-validate
@@ -14,7 +14,7 @@
             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
         </svg>
         <div class="auth__title ui-text--bold">Регистрация</div>
-        {% if not user  %}
+        {% if not user %}
         <svg onclick="closeForm()" class="auth__button-close square-24">
             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
         </svg>
@@ -22,7 +22,7 @@
 
     </div>
     <div class="auth__body">
-        {% if not user  %}
+        {% if not user %}
         <a href="#" class="auth__button-back-desktop ui-link _violet" onclick="registerPopup()">
             <svg class="square-16">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
@@ -42,7 +42,7 @@
             <div class="ui-col-sm-6">
                 <div class="ui-input-wrapper">
                     <div class="ui-input-label">Дата рождения</div>
-                    <input name="birthday"  class="ui-input-item _size-32" type="date"
+                    <input name="birthday" class="ui-input-item _size-32" type="text" id="datepicker"
                            value="{{ user and user.birthday ? carbon(userdata.birthday).format('Y-m-d') : ''}}"
                     >
 
@@ -51,17 +51,20 @@
                 </div>
             </div>
             <div class="ui-col-sm-12">
-                <div class="ui-input-wrapper">
-                    <div class="ui-input-label">Любимые жанры</div>
-                    <input name="favorite" class="ui-input-item _size-32" type="text" value="{{ user.favorite }}">
-
-                    <div class="ui-select-hitn"></div>
-                    <div class="ui-select-error" data-validate-for="favorite"></div>
-
+                <div class="personal-area__wrap _indent-large ui-select">
+                    <div class="ui-select-header">
+                        <label class="ui-select-label">Любимые жанры</label>
+                    </div>
+                    <button type="button" class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium"
+                            data-modal="open-recommend">
+                        Изменить
+                    </button>
+                    <div class="ui-select-hint ui-text-body--3">Не обязательно для заполнения. Жанры в любой момент
+                        можно выбрать в настройках профиля.
+                    </div>
                 </div>
-                <div class="ui-input-hint ui-text-body--3">
-                    Не обязательно для заполнения. Жанры в любой момент можно выбрать в настройках профиля.
-                </div>
+
+
             </div>
             <div class="ui-col-sm-12">
                 <div class="ui-input-wrapper">
@@ -75,7 +78,7 @@
             <div class="ui-col-sm-6">
                 <div class="ui-input-wrapper">
                     <div class="ui-input-label">Пароль
-                        {% if not user  %}
+                        {% if not user %}
                         *
                         {% endif %}
                     </div>
@@ -88,7 +91,7 @@
             <div class="ui-col-sm-6">
                 <div class="ui-input-wrapper">
                     <div class="ui-input-label">Подтверждение пароля
-                        {% if not user  %}
+                        {% if not user %}
                         *
                         {% endif %}
                     </div>
@@ -111,7 +114,7 @@
             </div>
         </div>
 
-        {% if not user  %}
+        {% if not user %}
         <div class="auth__addition auth__action ">
             Есть аккаунт? <a href="#" class="ui-link _violet"
                              onclick="loginForm()"
@@ -123,4 +126,32 @@
             href="#" class="ui-link _violet">политикой конфиденциальности</a>.
         </div>
     </div>
+    <script>
+        $.datepicker.regional['ru'] = {
+            closeText: "Закрыть",
+            prevText: "Пред",
+            nextText: "След",
+            currentText: "Сегодня",
+            monthNames: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
+            monthNamesShort: ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"],
+            dayNames: ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"],
+            dayNamesShort: ["вск", "пнд", "втр", "срд", "чтв", "птн", "сбт"],
+            dayNamesMin: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
+            weekHeader: "Нед",
+            dateFormat: "dd.mm.yy",
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ""
+        };
+        ;
+
+        $.datepicker.setDefaults($.datepicker.regional['ru']);
+        $("#datepicker").datepicker({
+            changeMonth: true,
+            changeYear: true
+        });
+    </script>
 </form>
+
+{% partial 'modals/recommend' nestedGenres=nestedGenres %}

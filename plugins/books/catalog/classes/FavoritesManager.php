@@ -11,14 +11,15 @@ class FavoritesManager
 {
     /**
      * @param User|null $user
-     * @param array|null $array
+     * @param array|null $loved
      * @return void
      */
-    public function save(?User $user = null, ?array $array = null): void
+    public function save(?User $user = null, ?array $loved = null, ?array $unloved = null): void
     {
         $user ??= Auth::getUser();
         if ($user) {
-            $user->favorite_genres = $array ?? (Cookie::has('favorite_genres') ? json_decode(Cookie::get('favorite_genres')) : $this->getDefaultGenres());
+            $user->loved_genres = $loved ?? (Cookie::has('loved_genres') ? json_decode(Cookie::get('loved_genres')) : $this->getDefaultGenres());
+            $user->unloved_genres = $unloved ?? (Cookie::has('unloved_genres') ? json_decode(Cookie::get('unloved_genres')) : []);
             $user->save(['force' => true]);
         }
     }
@@ -31,7 +32,7 @@ class FavoritesManager
     public function getDefaultGenres(): array
     {
         return Genre::query()
-            ->active()
+            ->public()
             ->favorite()
             ->select(['id'])
             ->get()

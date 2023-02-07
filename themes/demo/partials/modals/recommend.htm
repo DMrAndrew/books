@@ -1,0 +1,43 @@
+<div class="personal-area-settings-recommend ui-modal ui-modal-scrollable-body overlay" data-modal="recommend">
+    <div class="ui-modal-container">
+        <div class="buy-book-modal__container ui-modal-content">
+            {{form_ajax('onChangeGenres')}}
+            <div class="buy-book-modal__header ui-modal-header">
+                <div class="ui-text-head--2 ui-text--bold">Рекомендации</div>
+                <svg class="square-24" data-modal="close">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                </svg>
+            </div>
+
+            <div class="ui-modal-body">
+
+                <div class="personal-area-settings-recommend__container">
+                    {% for root in nestedGenres %}
+                    <div data-radio-group>
+                        {% partial 'modals/recommend-item' genre=root %}
+                        {% for child in root.children %}
+                        {% partial 'modals/recommend-item' genre=child sub=1 %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+
+            </div>
+
+            <div class="buy-book-modal__footer ui-modal-footer">
+                <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                    <span class="ui-text--medium">Сохранить</span>
+                </button>
+                <button class="ui-button ui-button-size--32 ui-button-view--3 ui-button--full " type="reset">
+                    <span class="ui-text--medium">Сбросить все</span>
+                </button>
+            </div>
+            {{ form_close() }}
+        </div>
+    </div>
+</div>
+<script>
+    openModal('[data-modal="recommend"]', '[data-modal="open-recommend"]');
+    radioGroupTabs()
+</script>

@@ -1,0 +1,31 @@
+title = "Личный кабинет - Настройки"
+layout = "default"
+url = "/lc-settings"
+title = "Личный кабинет - Настройки"
+description = "Личный кабинет - Настройки"
+
+[session]
+security = "user"
+redirect = "/"
+[favorite_genres]
+==
+{% partial 'profile/personal_area_header' %}
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
+            {% partial "profile/sidebarmenu" %}
+            <div class="ui-col-sm-9">
+                <div class="personal-area__subtitle">
+                    <span class="ui-text-head--3 ui-text--bold">Настройки</span>
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                    </svg>
+                </div>
+
+                {% partial 'personal-area/settings' %}
+            </div>
+        </div>
+    </div>
+</div>
+

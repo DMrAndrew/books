@@ -14,7 +14,9 @@ let registerForm = () => toForm('register_form');
 
 let openChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'flex'
 let closeChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'none'
-let closeModal = () => Array.from(document.getElementsByClassName('ui-modal')).forEach(e => e.style.display = 'none')
+// let closeModal = () => {
+//     Array.from(document.getElementsByClassName('ui-modal')).forEach(e => e.style.display = 'none')
+// }
 let openCreateCycleForm = () => document.getElementById('create_cycle_form').style.display = 'flex'
 let closeDropDowns = () => Array.from(document.getElementsByClassName('ui-dropdown')).forEach(e => e.style.display = 'none')
 
