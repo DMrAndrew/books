@@ -8,3 +8,6 @@
 1.0.2:
     - 'Соглашение 18+'
     - user_add_adult_agreement.php
+1.0.3:
+    - 'Любимые жанры'
+    - users_loved_genres.php

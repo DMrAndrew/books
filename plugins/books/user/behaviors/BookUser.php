@@ -39,6 +39,8 @@ class BookUser extends ExtensionBase
             'country_id',
             'required_post_register',
             'favorite_genres',
+            'loved_genres',
+            'unloved_genres',
             'exclude_genres',
             'see_adult',
             'asked_adult_agreement'
@@ -46,12 +48,14 @@ class BookUser extends ExtensionBase
         $this->parent->addDateAttribute('birthday');
         $this->parent->addCasts([
             'username' => ProfileAttributeCasts::class,
-            'birthday' => BirthdayAttributeCasts::class
+            'birthday' => BirthdayAttributeCasts::class,
         ]);
 
         $this->parent->addJsonable([
             'favorite_genres',
-            'exclude_genres'
+            'exclude_genres',
+            '',
+            'unloved_genres'
         ]);
     }
 
@@ -88,10 +92,6 @@ class BookUser extends ExtensionBase
     public function getCountryOptions(): array
     {
         return Country::lists('name', 'id');
-    }
-
-    public function books(){
-        return $this->profile->books();
     }
 
 
