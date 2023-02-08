@@ -22,16 +22,21 @@ use WordForm;
  * Book Model
  *
  * @method HasOne author
+ * @property  Author author
  * @method HasMany editions
  * @method BelongsTo cycle
+ * @property  Cycle cycle
  * @method BelongsToMany tags
  * @method BelongsToMany genres
  * @method HasMany authors
  * @method BelongsToMany coauthors
  * @method BelongsToMany profiles
  * @method HasOneThrough profile
+ * @property  Profile profile
  * @method HasOne ebook
+ * @property  Edition ebook
  * @method AttachOne cover
+ * @property  File cover
  */
 class Book extends Model
 {
@@ -162,7 +167,7 @@ class Book extends Model
     ];
     public $attachMany = [];
 
-    public function getFavoritedAttribute()
+    public function getFavoritedAttribute(): int
     {
         return 0;
     }
@@ -172,7 +177,7 @@ class Book extends Model
         return $query->public()->where('title', 'like', "%$string%");
     }
 
-    public function scopeAdult(Builder $builder)
+    public function scopeAdult(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
         if (!shouldRestrictAdult()) {
             return $builder;
@@ -183,16 +188,40 @@ class Book extends Model
 
     public function scopePublic(Builder $q)
     {
-        return $q->adult()->whereHas('editions', function ($query) {
-            return $query->whereNotIn('status', [BookStatus::HIDDEN->value]);
-        });
+        return $q
+            ->adult()
+            ->whereHas('editions', function ($query) {
+                return $query->whereNotIn('status', [BookStatus::HIDDEN->value]);
+            });
     }
 
-    public function scopeDefualtEager(Builder $q)
+    public function scopeDefaultEager(Builder $q): Builder
     {
         return $q->with(['cover', 'tags', 'genres', 'ebook', 'author.profile']);
     }
 
+
+    protected function afterCreate()
+    {
+        $this->setDefaultCover();
+        $this->setDefaultEdition();
+    }
+
+    public function createEventHandler()
+    {
+        $this->setAdultIfHasOne();
+        $this->setSortOrder();
+    }
+
+    public function updateEventHandler()
+    {
+        $this->setAdultIfHasOne();
+    }
+
+    public function parsedEventHandler()
+    {
+        $this->ebook?->recompute();
+    }
 
     /**
      * Try set default book cover if not exists one.
@@ -230,22 +259,16 @@ class Book extends Model
         });
     }
 
-    protected function afterCreate()
-    {
-        $this->setDefaultCover();
-        $this->setDefaultEdition();
-    }
-
-    protected function beforeUpdate()
+    public function setAdultIfHasOne()
     {
         if ($this->genres()->adult()->exists()) {
-            $this->attributes['age_restriction'] = AgeRestrictionsEnum::A18;
+            $this->update(['age_restriction' => AgeRestrictionsEnum::A18]);
         }
-
     }
 
-    protected function afterUpdate()
+    public static function wordForm(): WordForm
     {
+        return new WordForm(...self::$endingArray);
     }
 
     public function getDeferred($key): Collection
@@ -260,12 +283,9 @@ class Book extends Model
 
     public function getDeferredAuthor($key, int|Profile $profile)
     {
-        return $this->getDeferredAuthors($key)?->first(fn($bind) => $bind->slave_id === (is_int($profile) ? $profile : $profile->id)) ?? null;
-    }
-
-    public static function wordForm(): WordForm
-    {
-        return new WordForm(...self::$endingArray);
+        return $this->getDeferredAuthors($key)
+            ?->first(fn($bind) => $bind->slave_id == (is_int($profile) ? $profile : $profile->id))
+            ?? null;
     }
 
 

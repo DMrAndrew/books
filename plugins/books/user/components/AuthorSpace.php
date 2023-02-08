@@ -45,8 +45,10 @@ class AuthorSpace extends ComponentBase
         $this->page['isOwner'] = $isOwner;
         $this->page['hasContacts'] = !$this->profile->isContactsEmpty();
         $this->page['should_call_fit_profile'] = $isOwner && $this->profile->isEmpty();
-        $books = $this->profile->booksSortedByAuthorOrder()->public()
-            ->defualtEager()
+        $books = $this->profile
+            ->booksSortedByAuthorOrder()
+            ->public()
+            ->defaultEager()
             ->get();
         $this->page['books'] = $books;
         $this->page['books_count'] = $books->count();

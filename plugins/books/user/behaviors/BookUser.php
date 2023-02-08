@@ -99,7 +99,7 @@ class BookUser extends ExtensionBase
 
     public function allowedSeeAdult(): bool
     {
-        return !$this->parent->birthday || !$this->parent->asked_adult_agreement || !$this->parent->see_adult;
+        return $this->parent->asked_adult_agreement && $this->parent->birthday && $this->parent->see_adult;
     }
 
 

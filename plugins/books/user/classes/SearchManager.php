@@ -16,7 +16,7 @@ class SearchManager
 
     public function apply(string $query): \October\Rain\Support\Collection|\Illuminate\Support\Collection
     {
-        $res = Search::add(Book::public()->defualtEager(), 'title')
+        $res = Search::add(Book::public()->defaultEager(), 'title')
             ->add(Profile::with(['avatar', 'books' => fn($i) => $i->public()]), 'username')
             ->includeModelType()
             ->orderByModel([

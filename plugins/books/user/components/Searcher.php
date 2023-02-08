@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\RateLimiter;
 class Searcher extends ComponentBase
 {
     protected $query;
-    protected bool $useCache = true;
+    protected bool $useCache = false;
 
     /**
      * componentDetails

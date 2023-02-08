@@ -70,8 +70,9 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('FB2Manager', FB2Manager::class);
         AliasLoader::getInstance()->alias('BookService', BookService::class);
 
-        Event::listen('books.book.created', fn(Book $book) => $book->setSortOrder());
-        Event::listen('books.book.parsed', fn(Book $book) => $book->ebook?->recompute());
+        Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
+        Event::listen('books.book.updated', fn(Book $book) => $book->updateEventHandler());
+        Event::listen('books.book.parsed', fn(Book $book) => $book->parsedEventHandler());
     }
 
     /**

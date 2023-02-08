@@ -5,14 +5,17 @@ use Db;
 use Model;
 use Books\Book\Models\Book;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Collection;
 use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\NestedTree;
 use October\Rain\Database\Traits\Validation;
+use October\Rain\Database\TreeCollection;
 
 /**
  * Genre Model
  *
  * @method HasMany children
+ * @property  TreeCollection children
  */
 class Genre extends Model
 {
@@ -77,14 +80,7 @@ class Genre extends Model
      * @var array hasOne and other relations
      */
     public $hasOne = [];
-    public $hasMany = [
-        'f_children' => [
-            Genre::class,
-            'key' => 'parent_id',
-            'replicate' => false,
-            'scope' => 'favorite'
-        ]
-    ];
+    public $hasMany = [];
 
     public $belongsTo = [];
     public $belongsToMany = [
