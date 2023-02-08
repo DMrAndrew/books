@@ -125,7 +125,6 @@ class Edition extends Model
 
     public function recompute()
     {
-        $this->lengthRecount();
         $this->setSalesAt();
         $this->setFreeParts();
     }

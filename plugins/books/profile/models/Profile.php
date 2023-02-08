@@ -10,6 +10,7 @@ use October\Rain\Database\Relations\HasMany;
 use System\Models\File;
 use RainLab\User\Models\User;
 use October\Rain\Database\Traits\Validation;
+use WordForm;
 
 
 /**
@@ -170,6 +171,11 @@ class Profile extends Model
     public function booksSortedByAuthorOrder(): BelongsToMany
     {
         return $this->books()->orderByPivot('sort_order', 'desc');
+    }
+
+    public static function wordForm(): WordForm
+    {
+        return new WordForm(...self::$endingArray);
     }
 
 

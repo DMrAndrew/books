@@ -2,6 +2,7 @@
 
 use Books\Book\Classes\Enums\EditionsEnums;
 use DiDom\Document;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 use Model;
 use Carbon\Carbon;
@@ -18,6 +19,8 @@ use System\Models\File;
  *
  * @method AttachOne file
  * @method HasMany pagination
+ * @method BelongsTo edition
+ * @property Edition edition
  */
 class   Chapter extends Model
 {
@@ -71,7 +74,7 @@ class   Chapter extends Model
     protected $jsonable = [];
 
     public $belongsTo = [
-        'edition' => [Edition::class, 'key' => 'id', 'otherKey' => 'edition_id']
+        'edition' => [Edition::class, 'key' => 'edition_id', 'otherKey' => 'id']
     ];
 
     /**
@@ -124,16 +127,17 @@ class   Chapter extends Model
     {
         return $this->status === ChapterStatus::PUBLISHED && $this->published_at->gt(Carbon::now());
     }
-
-    public static function countChapterLength(string $string): int
-    {
-        return strlen(strip_tags(preg_replace('/\s+/', '', $string))) ?? 0;
-    }
-
     protected function afterCreate()
     {
         $pagination = $this->paginate();
         $this->pagination()->addMany($pagination);
+        $this->lengthRecount();
+    }
+    public function lengthRecount()
+    {
+        $this->length = (int)$this->pagination()->sum('length') ?? 0;
+        $this->save();
+        $this->edition->lengthRecount();
     }
 
     public function getPaginationLinks(int $page = 1)

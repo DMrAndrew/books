@@ -88,7 +88,7 @@ class ChapterManager
         if ($data->has('content')) {
             $data['content'] = Html::clean($data['content']);
         }
-        $data['length'] = Chapter::countChapterLength($data['content'] ?? '');
+//        $data['length'] = Chapter::countChapterLength($data['content'] ?? '');
 
         return $data->toArray();
     }

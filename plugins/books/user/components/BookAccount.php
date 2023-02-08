@@ -30,6 +30,8 @@ class BookAccount extends Account
     {
         Cookie::queue(Cookie::forget(name: 'post_register_accepted'));
         Cookie::queue(Cookie::forget(name: 'adult_agreement_accepted'));
+        Cookie::queue(Cookie::forget(name: 'loved_genres'));
+        Cookie::queue(Cookie::forget(name: 'unloved_genres'));
 
         return (new Session())->onLogout();
     }
@@ -57,6 +59,7 @@ class BookAccount extends Account
         $action = post('action');
         $val = $action === 'accept' ? 1 : 0;
         $this->user()->update(['see_adult' => $val, 'asked_adult_agreement' => 1]);
+        return ['#adult_modal_spawn' => ''];
 
     }
 
@@ -67,13 +70,12 @@ class BookAccount extends Account
 
         if ($this->user()?->required_post_register) {
             $partials['#post_register_container'] = $this->renderPartial('auth/postRegisterContainer', ['user' => $this->user()]);
-            return Response::make($partials);
         } else {
             $cookies[] = Cookie::make(name: 'post_register_accepted', value: 1, httpOnly: false);
         }
 
         if ($this->should_adult_agreement()) {
-            $partials['#adult_modal_spawn'] = $this->renderPartial('auth/adult-modal');
+            $partials['#adult_modal_spawn'] = $this->renderPartial('auth/adult-modal', ['active' => 1]);
         } else {
             $cookies[] = Cookie::make(name: 'adult_agreement_accepted', value: 1, httpOnly: false);
         }
