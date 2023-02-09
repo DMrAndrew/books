@@ -31,11 +31,13 @@
         data-request="reader::onNext"
         data-request-data="paginator_page : {{ reader.paginator.page }}"
         data-request-complete="window.scrollTo(2, 1);"
-        class="reader__pagination-button ui-button ui-button-view--3 ui-button-size--32 cursor-pointer {{pagination.next ? '' : 'disabled'}}">
-        <span>Вперед</span>
-        <svg class="ui-button-icon--right _disabled square-16">
+        class="reader__pagination-button ui-button  ui-button-size--32 cursor-pointer {{pagination.next ? 'ui-button-view--3' : 'ui-button-view--2'}}">
+        <span>{{pagination.next ? 'Вперёд' : 'Прочитано'}}</span>
+        {% if pagination.next %}
+        <svg class="ui-button-icon--right square-16">
             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
         </svg>
+        {% endif %}
     </a>
 </div>
 

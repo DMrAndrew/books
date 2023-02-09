@@ -1,13 +1,17 @@
 <?php namespace Books\Book\Models;
 
 use Model;
+use October\Rain\Database\Builder;
+use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Relations\HasOne;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Models\User;
 
 /**
  * Pagination Model
  *
  * @method HasOne chapter
+ * @method HasMany trackers
  */
 class Pagination extends Model
 {
@@ -40,12 +44,25 @@ class Pagination extends Model
     ];
 
     public $belongsTo = [
-        'chapter' => [Chapter::class, 'key' => 'id', 'otherKey' => 'chapter_id']
+        'chapter' => [Chapter::class, 'key' => 'id', 'otherKey' => 'chapter_id'],
+    ];
+
+    public $hasMany = [
+        'trackers' => [Tracker::class, 'key' => 'paginator_id', 'otherKey' => 'id']
+    ];
+
+    public $belongsToMany = [
+        'users' => [User::class, 'table' => 'books_book_trackers', 'key' => 'paginator_id', 'otherKey' => 'user_id']
     ];
 
     public function file()
     {
         return $this->chapter()->first()?->file();
+    }
+
+    public function scopePage(Builder $builder, int $page): Builder
+    {
+        return $builder->where('page', '=', $page);
     }
 }
 

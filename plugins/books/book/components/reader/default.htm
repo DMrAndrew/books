@@ -22,7 +22,7 @@
                 <div class="reader__header reader-header">
 
                     <div class="reader-header__dropdown">
-                        <select  class="book-select" name="chapter_id" id="reader-chapter-select" style="display: none">
+                        <select  class="book-select" name="chapter_id" data-request="onChapter" id="reader-chapter-select" style="display: none">
                             {% for chapter in chapters %}
                             <option  value="{{chapter.id}}"
                                      {{ reader.chapter.id == chapter.id ? 'selected' : ''  }}
@@ -62,7 +62,9 @@
                         </button>
                     </div>
                 </div>
+                <div id="reader-body-spawn">
                 {% partial '@body' %}
+                </div>
             </div>
             <div class="reader__sidebar ui-col-sm-4 ui-col-md-3">
                 <div class="reader__user reader-user">
@@ -144,9 +146,4 @@
             </div>
         </div>
     </div>
-    <script>
-        document.addEventListener('page:loaded', () => {
-            initReader();
-        });
-    </script>
 </div>

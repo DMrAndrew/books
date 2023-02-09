@@ -16,6 +16,7 @@ use Books\Book\Models\Chapter;
 use Books\Book\Models\Cycle;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Tag;
+use Books\Book\Models\Tracker;
 use Config;
 use Event;
 use Illuminate\Foundation\AliasLoader;
@@ -69,6 +70,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Author', Author::class);
         AliasLoader::getInstance()->alias('FB2Manager', FB2Manager::class);
         AliasLoader::getInstance()->alias('BookService', BookService::class);
+        AliasLoader::getInstance()->alias('Tracker', Tracker::class);
 
         Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
         Event::listen('books.book.updated', fn(Book $book) => $book->updateEventHandler());

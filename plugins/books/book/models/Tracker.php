@@ -5,11 +5,11 @@ use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 
 /**
- * Trackers Model
+ * Tracker Model
  *
  * @link https://docs.octobercms.com/3.x/extend/system/models.html
  */
-class Trackers extends Model
+class Tracker extends Model
 {
     use Validation;
 
@@ -24,6 +24,8 @@ class Trackers extends Model
      * @var array rules for validation
      */
     public $rules = [
+        'user_id' => 'required',
+        'paginator_id' => 'required',
         'sec' => 'integer',
         'length' => 'integer',
     ];

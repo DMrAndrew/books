@@ -73,6 +73,18 @@ let tabElemInit = function () {
         }
     })
 }
+
+addEventListener('page:before-cache', function() {
+    // console.log('page:before-cache')
+    reInitSelect()
+});
+
 addEventListener('page:loaded', function () {
+    // console.log('page:loaded')
     iniSelect()
 });
+
+addEventListener('page:unload', function() {
+    // console.log('page:unload')
+    window.reader && window.reader.clear();
+})

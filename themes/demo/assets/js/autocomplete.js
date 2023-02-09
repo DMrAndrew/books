@@ -27,17 +27,27 @@ $.widget("custom.bookSelect", $.ui.selectmenu, {
 
 
 const iniSelect = function (){
-
     $(".book-select").each(function (index, item) {
         $(item).bookSelect({
             classes:{
                 'ui-selectmenu-menu':'ui-dropdown ui-dropdown-container',
                 'ui-selectmenu-button':'ui-select-item-option',
             },
+            select: function (event, ui) {
+                if($(item).data('request')){
+                    oc.ajax($(item).data('request'),{
+                        data: {...ui.item}
+                    })
+                }
+            }
         }).bookSelect( "menuWidget" );
-
     });
 };
+const  reInitSelect = function (){
+    $(".ui-selectmenu-button").remove()
+    $(".ui-selectmenu-menu").remove()
+    iniSelect()
+}
 const initAutocomplete = function (params) {
     let {container = null, onRequestHandler = null, options} = params
 
