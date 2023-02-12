@@ -2,8 +2,8 @@
 
 namespace Books\Profile\Updates;
 
-use Schema;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 class UsersAddProfileColumn extends Migration
 {
@@ -24,6 +24,5 @@ class UsersAddProfileColumn extends Migration
                 $table->dropColumn('current_profile_id');
             });
         }
-
     }
 }

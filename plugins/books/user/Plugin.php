@@ -1,25 +1,20 @@
-<?php namespace Books\User;
+<?php
+
+namespace Books\User;
 
 use Backend;
+use Books\User\Behaviors\BookUser;
 use Books\User\Classes\SearchManager;
+use Books\User\Classes\UserEventHandler;
 use Books\User\Components\AuthorSpace;
+use Books\User\Components\BookAccount;
 use Books\User\Components\Searcher;
 use Books\User\Models\Country;
-use Config;
-use Event;
 use Illuminate\Foundation\AliasLoader;
 use Monarobase\CountryList\CountryListFacade;
-use October\Rain\Foundation\Exception\Handler;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use RainLab\User\Models\User;
-use Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use System\Classes\PluginBase;
-use Books\User\Behaviors\BookUser;
-use Books\User\Components\BookAccount;
-use Books\User\Classes\UserEventHandler;
-use View;
-use function Termwind\render;
 
 /**
  * Plugin Information File
@@ -39,7 +34,7 @@ class Plugin extends PluginBase
             'name' => 'User',
             'description' => 'No description provided yet...',
             'author' => 'Books',
-            'icon' => 'icon-leaf'
+            'icon' => 'icon-leaf',
         ];
     }
 
@@ -83,7 +78,7 @@ class Plugin extends PluginBase
         return [
             BookAccount::class => 'bookAccount',
             AuthorSpace::class => 'author_space',
-            Searcher::class => 'searcher'
+            Searcher::class => 'searcher',
         ];
     }
 
@@ -99,7 +94,7 @@ class Plugin extends PluginBase
         return [
             'books.user.some_permission' => [
                 'tab' => 'User',
-                'label' => 'Some permission'
+                'label' => 'Some permission',
             ],
         ];
     }

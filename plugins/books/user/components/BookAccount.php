@@ -2,18 +2,17 @@
 
 namespace Books\User\Components;
 
-
-use Db;
-use Flash;
+use Carbon\Carbon;
 use Cookie;
+use Db;
+use Exception;
+use Flash;
 use October\Rain\Auth\AuthException;
+use RainLab\User\Components\Account;
 use RainLab\User\Components\Session;
+use RainLab\User\Facades\Auth;
 use Request;
 use Response;
-use Exception;
-use Carbon\Carbon;
-use RainLab\User\Facades\Auth;
-use RainLab\User\Components\Account;
 use ValidationException;
 
 class BookAccount extends Account
@@ -22,7 +21,7 @@ class BookAccount extends Account
     {
         return [
             'name' => 'Book Account Component',
-            'description' => 'Extend rainlab user account component'
+            'description' => 'Extend rainlab user account component',
         ];
     }
 
@@ -48,9 +47,10 @@ class BookAccount extends Account
     public function should_adult_agreement(): bool
     {
         $user = $this->user();
-        if ($user && $user->birthday && $user->asked_adult_agreement !== 1 && !$user->required_post_register) {
+        if ($user && $user->birthday && $user->asked_adult_agreement !== 1 && ! $user->required_post_register) {
             return abs(Carbon::now()->diffInYears($user->birthday)) > 17;
         }
+
         return false;
     }
 
@@ -59,8 +59,8 @@ class BookAccount extends Account
         $action = post('action');
         $val = $action === 'accept' ? 1 : 0;
         $this->user()->update(['see_adult' => $val, 'asked_adult_agreement' => 1]);
-        return ['#adult_modal_spawn' => ''];
 
+        return ['#adult_modal_spawn' => ''];
     }
 
     public function onPageLoad()
@@ -81,7 +81,8 @@ class BookAccount extends Account
         }
 
         $response = Response::make($partials);
-        collect($cookies)->each(fn($cookie) => $response->withCookie($cookie));
+        collect($cookies)->each(fn ($cookie) => $response->withCookie($cookie));
+
         return $response;
     }
 
@@ -92,11 +93,15 @@ class BookAccount extends Account
                 $redirect = $this->onRegister();
                 $user = Auth::getUser();
                 $user->update(['required_post_register' => 0], ['force' => true]);
+
                 return $redirect;
             });
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
     }
 
@@ -121,10 +126,12 @@ class BookAccount extends Account
             });
 
             return $this->makeRedirection();
-
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
     }
 }

@@ -8,10 +8,10 @@
 
             {% if not is_not_public_view %}
             <button class="book-card__bookmark">
-                <svg class="book-card__bookmark-icon _color-violet">
+                <svg class="book-card__bookmark-icon _color-violet {{book.in_user_lib ? 'active' : ''}}">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-check-16' | theme}}"></use>
                 </svg>
-                <svg class="book-card__bookmark-icon _color-black active">
+                <svg class="book-card__bookmark-icon _color-black {{book.in_user_lib ? '' : 'active'}}">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme}}"></use>
                 </svg>
             </button>
@@ -84,7 +84,7 @@
             <svg>
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-16' | theme}}"></use>
             </svg>
-            <span>0</span>
+            <span>{{book.in_lib_count}}</span>
         </div>
         <div class="book-card__footer-wrapper">
             <svg>
@@ -96,7 +96,7 @@
             <svg>
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-filled-16' | theme}}"></use>
             </svg>
-            <span>{{book.favoritesCount}}</span>
+            <span>{{book.likes_count}}</span>
         </div>
     </div>
 </div>

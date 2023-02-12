@@ -2,17 +2,16 @@
 
 namespace Books\Profile\Classes;
 
-use RainLab\User\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
-use Illuminate\Database\Eloquent\Builder;
+use RainLab\User\Models\User;
 
 class ProfiledScope implements Scope
 {
-
     /**
-     * @param Builder $builder
-     * @param Model $model
+     * @param  Builder  $builder
+     * @param  Model  $model
      * @return void
      */
     public function apply(Builder $builder, Model $model): void
@@ -21,17 +20,17 @@ class ProfiledScope implements Scope
             $ids = get_class($model)::getProfiler($model, $user)->getIds() ?? [];
             $builder->whereIn('id', $ids);
         }
-
     }
 
-    public function extend(Builder $builder){
-         $builder->macro('allProfiles', function (Builder $builder) {
+    public function extend(Builder $builder)
+    {
+        $builder->macro('allProfiles', function (Builder $builder) {
             return $builder->withoutGlobalScope($this);
         });
     }
 
     /**
-     * @param Builder $builder
+     * @param  Builder  $builder
      * @return mixed
      */
     private function getQueryUser(Builder $builder): mixed

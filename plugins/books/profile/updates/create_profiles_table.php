@@ -2,14 +2,14 @@
 
 namespace Books\Profile\Updates;
 
-use Schema;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 class CreateProfilesTable extends Migration
 {
     public function up()
     {
-        if(Schema::hasTable('books_profile_profiles')){
+        if (Schema::hasTable('books_profile_profiles')) {
             return;
         }
         Schema::create('books_profile_profiles', function ($table) {

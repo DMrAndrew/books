@@ -1,46 +1,60 @@
-<?php namespace Books\Book\Models;
+<?php
 
+namespace Books\Book\Models;
 
+use Books\Book\Classes\Enums\AgeRestrictionsEnum;
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
-use Model;
-use System\Models\File;
 use Books\Catalog\Models\Genre;
+use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
+use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Collection;
-use October\Rain\Database\Relations\HasOne;
-use October\Rain\Database\Relations\HasMany;
-use October\Rain\Database\Traits\Validation;
 use October\Rain\Database\Relations\AttachOne;
 use October\Rain\Database\Relations\BelongsTo;
 use October\Rain\Database\Relations\BelongsToMany;
+use October\Rain\Database\Relations\HasMany;
+use October\Rain\Database\Relations\HasOne;
 use October\Rain\Database\Relations\HasOneThrough;
+use October\Rain\Database\Traits\Validation;
+use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
+use System\Models\File;
 use WordForm;
-
 
 /**
  * Book Model
  *
  * @method HasOne author
+ *
  * @property  Author author
+ *
  * @method HasMany editions
  * @method BelongsTo cycle
+ *
  * @property  Cycle cycle
+ *
  * @method BelongsToMany tags
  * @method BelongsToMany genres
  * @method HasMany authors
+ * @method HasMany libs
  * @method BelongsToMany coauthors
  * @method BelongsToMany profiles
  * @method HasOneThrough profile
+ *
  * @property  Profile profile
+ *
  * @method HasOne ebook
+ *
  * @property  Edition ebook
+ *
  * @method AttachOne cover
+ *
  * @property  File cover
  */
 class Book extends Model
 {
-
     use Validation;
 
     /**
@@ -62,7 +76,7 @@ class Book extends Model
         'title',
         'annotation',
         'age_restriction',
-        'cycle_id'
+        'cycle_id',
     ];
 
     /**
@@ -72,7 +86,7 @@ class Book extends Model
         'title' => 'required|between:2,100',
         'annotation' => 'nullable|string',
         'cover' => 'nullable|image',
-        'cycle_id' => 'nullable|integer|exists:books_book_cycles,id'
+        'cycle_id' => 'nullable|integer|exists:books_book_cycles,id',
     ];
 
     /**
@@ -103,7 +117,7 @@ class Book extends Model
     protected $dates = [
         'created_at',
         'updated_at',
-        'sales_at'
+        'sales_at',
     ];
 
     /**
@@ -113,15 +127,19 @@ class Book extends Model
         'author' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'owner'],
         'ebook' => [Edition::class, 'key' => 'book_id', 'id', 'scope' => 'ebook'],
     ];
+
     public $hasMany = [
         'authors' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id'],
         'coauthors' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'notOwner'],
-        'editions' => [Edition::class, 'key' => 'book_id', 'id']
+        'editions' => [Edition::class, 'key' => 'book_id', 'id'],
+        'libs' => [Lib::class, 'key' => 'book_id', 'otherKey' => 'id'],
     ];
+
     public $belongsTo = [
         'cycle' => [Cycle::class],
     ];
 
+    //TODO ??
     public $hasOneThrough = [
         'profile' => [
             Profile::class,
@@ -129,24 +147,23 @@ class Book extends Model
             'through' => Author::class,
             'throughKey' => 'id',
             'otherKey' => 'id',
-            'secondOtherKey' => 'profile_id'
-        ]
+            'secondOtherKey' => 'profile_id',
+        ],
     ];
-
 
     public $belongsToMany = [
         'genres' => [
             Genre::class,
             'table' => 'books_book_genre',
             'key' => 'book_id',
-            'otherKey' => 'genre_id'
+            'otherKey' => 'genre_id',
         ],
         'tags' => [
             Tag::class,
             'table' => 'books_book_tag',
             'key' => 'book_id',
             'otherKey' => 'tag_id',
-            'scope' => 'orderByName'
+            'scope' => 'orderByName',
         ],
         'profiles' => [
             Profile::class,
@@ -154,22 +171,26 @@ class Book extends Model
             'key' => 'book_id',
             'otherKey' => 'profile_id',
             'pivot' => ['percent', 'sort_order', 'is_owner'],
-            'pivotSortable' => 'is_owner'
+            'pivotSortable' => 'is_owner',
         ],
 
     ];
+
     public $morphTo = [];
+
     public $morphOne = [];
+
     public $morphMany = [];
+
     public $attachOne = [
         'cover' => File::class,
-
     ];
+
     public $attachMany = [];
 
-    public function getFavoritedAttribute(): int
+    public function isAuthor(User $user)
     {
-        return 0;
+        return $this->profiles()->user($user)->exists();
     }
 
     public function scopeSearchByString(Builder $query, string $string)
@@ -182,14 +203,14 @@ class Book extends Model
         if (!shouldRestrictAdult()) {
             return $builder;
         }
+
         return $builder->where('age_restriction', '<', '18')
-            ->whereDoesntHave('genres', fn($g) => $g->adult());
+            ->whereDoesntHave('genres', fn($genres) => $genres->adult());
     }
 
     public function scopePublic(Builder $q)
     {
-        return $q
-            ->adult()
+        return $q->adult()
             ->whereHas('editions', function ($query) {
                 return $query->whereNotIn('status', [BookStatus::HIDDEN->value]);
             });
@@ -197,9 +218,38 @@ class Book extends Model
 
     public function scopeDefaultEager(Builder $q): Builder
     {
-        return $q->with(['cover', 'tags', 'genres', 'ebook', 'author.profile']);
+        return $q->with(['cover', 'tags', 'genres', 'ebook', 'author.profile'])
+            ->withCount(['favorites as likes_count'])
+            ->inLibCount()
+            ->inLibExists()
+            ->likeExists();
     }
 
+    public function scopeInLibCount(Builder $builder)
+    {
+        return $builder->withCount(['libs as in_lib_count' => fn($libs) => $libs->notWatched()]);
+    }
+
+    public function scopeLikeExists(Builder $builder, ?User $user = null)
+    {
+        $user ??= Auth::getUser();
+
+        return $builder->withExists(['favorites as user_liked' => fn($favorites) => $favorites->user($user)]);
+    }
+
+    public function scopeInLibExists(Builder $builder, ?User $user = null)
+    {
+        $user ??= Auth::getUser();
+
+        return $builder->withExists(['libs as in_user_lib' => fn($libs) => $libs->notWatched()->whereHas(
+            'favorites', fn($favorites) => $favorites->user($user)
+        )]);
+    }
+
+    public function scopeWithProgress(Builder $builder, User $user): Builder
+    {
+        return $builder->with(['editions' => fn($edition) => $edition->withProgress($user)]);
+    }
 
     protected function afterCreate()
     {
@@ -218,11 +268,6 @@ class Book extends Model
         $this->setAdultIfHasOne();
     }
 
-    public function parsedEventHandler()
-    {
-        $this->ebook?->recompute();
-    }
-
     /**
      * Try set default book cover if not exists one.
      *
@@ -230,7 +275,7 @@ class Book extends Model
      */
     protected function setDefaultCover(): void
     {
-        if (!$this->cover) {
+        if (!$this->cover()->exists()) {
             if ($dir = config('book.book_cover_blank_dir')) {
                 $file_src = collect(glob(base_path() . "/$dir/*.png"))->random();
                 if (file_exists($file_src)) {
@@ -287,6 +332,4 @@ class Book extends Model
             ?->first(fn($bind) => $bind->slave_id == (is_int($profile) ? $profile : $profile->id))
             ?? null;
     }
-
-
 }

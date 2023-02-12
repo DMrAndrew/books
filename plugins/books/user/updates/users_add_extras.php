@@ -2,8 +2,8 @@
 
 namespace Books\User\Updates;
 
-use Schema;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 class UsersAddBirthday extends Migration
 {

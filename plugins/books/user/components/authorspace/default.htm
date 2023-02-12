@@ -173,7 +173,7 @@
                     {% endif %}
 
                     {% for book in books %}
-                    {% partial 'book/book' book=book %}
+                    {% ajaxPartial "bookCard::standard-card" book=book %}
                     {% endfor %}
                 </div>
             </div>

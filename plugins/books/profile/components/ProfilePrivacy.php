@@ -1,4 +1,6 @@
-<?php namespace Books\Profile\Components;
+<?php
+
+namespace Books\Profile\Components;
 
 use Books\User\Classes\SettingsTagEnum;
 use Cms\Classes\ComponentBase;
@@ -21,7 +23,7 @@ class ProfilePrivacy extends ComponentBase
     {
         return [
             'name' => 'ProfilePrivacy Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -34,7 +36,7 @@ class ProfilePrivacy extends ComponentBase
         $this->page['settings'] = $this->getPrivactSettings();
     }
 
-    function getPrivactSettings()
+    public function getPrivactSettings()
     {
         return $this->user->profileSettings->filter->hasTag(SettingsTagEnum::PRIVACY);
     }
@@ -51,14 +53,13 @@ class ProfilePrivacy extends ComponentBase
 
     public function onUpdatePrivacy()
     {
-
         collect(post('options'))->each(function ($option, $key) {
             $this->user->profileSettings()->updateOrCreate(['setting_id' => $key], ['value' => $option]);
             $this->user->refresh();
         });
-        return [
-            '#profile_privacy_form' => $this->renderPartial('profile/privacy', ['settings' => $this->getPrivactSettings()])
-        ];
 
+        return [
+            '#profile_privacy_form' => $this->renderPartial('profile/privacy', ['settings' => $this->getPrivactSettings()]),
+        ];
     }
 }

@@ -1,8 +1,10 @@
-<?php namespace Books\Book\Updates;
+<?php
 
-use Schema;
+namespace Books\Book\Updates;
+
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 /**
  * CreateUpdatesTable Migration

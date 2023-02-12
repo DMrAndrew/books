@@ -3,11 +3,11 @@
     - create_tags_table.php
     - create_cycles_table.php
     - create_books_table.php
+    - create_editions_table.php
     - create_authors_table.php
     - create_chapters_table.php
     - create_book_genre_table.php
     - create_book_tag_table.php
-    - create_editions_table.php
     - create_ebook_editions_table.php
 1.0.2:
     - 'Пагинация, трекеры, обновления'

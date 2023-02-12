@@ -1,9 +1,11 @@
-<?php namespace Books\Profile\Updates;
+<?php
 
-use Schema;
+namespace Books\Profile\Updates;
+
+use Books\User\Classes\PrivacySettingsEnum as PSEnum;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
-use Books\User\Classes\PrivacySettingsEnum as PSEnum;
+use Schema;
 
 /**
  * CreateProfileSettingsTable Migration
@@ -17,7 +19,7 @@ class CreateProfileSettingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('books_profile_profile_settings', function(Blueprint $table) {
+        Schema::create('books_profile_profile_settings', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->index();
             $table->enum('privacy_allow_fit_account_index_page', PSEnum::values())->default(PSEnum::default());

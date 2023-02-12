@@ -2,14 +2,14 @@
 
 namespace Books\Profile\Updates;
 
-use Schema;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 class CreateProfilersTable extends Migration
 {
     public function up()
     {
-        if(Schema::hasTable('books_profile_profilers')){
+        if (Schema::hasTable('books_profile_profilers')) {
             return;
         }
         Schema::create('books_profile_profilers', function ($table) {
@@ -17,8 +17,8 @@ class CreateProfilersTable extends Migration
             $table->increments('id');
             $table->integer('profile_id')->unsigned();
             $table->string('entity_type');
-            $table->json('ids')->default("[]");
-            $table->index(['profile_id','entity_type']);
+            $table->json('ids')->default('[]');
+            $table->index(['profile_id', 'entity_type']);
         });
     }
 

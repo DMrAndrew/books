@@ -1,7 +1,8 @@
-<?php namespace Books\User\Models;
+<?php
+
+namespace Books\User\Models;
 
 use Model;
-use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
@@ -62,20 +63,28 @@ class Country extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
      * @var array hasOne and other relations
      */
     public $hasOne = [];
+
     public $hasMany = [];
+
     public $belongsTo = [];
+
     public $belongsToMany = ['users' => [User::class, 'key' => 'country_id', 'otherKey' => 'id']];
+
     public $morphTo = [];
+
     public $morphOne = [];
+
     public $morphMany = [];
+
     public $attachOne = [];
+
     public $attachMany = [];
 
     public function scopeCode($q, string ...$code)

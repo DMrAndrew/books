@@ -1,6 +1,8 @@
-<?php namespace Books\Book\Components;
+<?php
 
-use Books\Book\Classes\FB2Manager;
+namespace Books\Book\Components;
+
+use Books\Book\Classes\BookService;
 use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use Exception;
@@ -17,6 +19,7 @@ use ValidationException;
 class LCBooker extends ComponentBase
 {
     protected User $user;
+
     protected ?bool $is_owner = null;
 
     /**
@@ -26,7 +29,7 @@ class LCBooker extends ComponentBase
     {
         return [
             'name' => 'LCBooker Component',
-            'description' => 'Компонент книг личного кабинета'
+            'description' => 'Компонент книг личного кабинета',
         ];
     }
 
@@ -39,10 +42,10 @@ class LCBooker extends ComponentBase
         $this->page['authorships'] = $this->getAuthorships();
     }
 
-    function getAuthorships(): Collection
+    public function getAuthorships(): Collection
     {
         return $this->user->profile->authorshipsAs($this->getIsOwner())
-            ->with(['book', 'book.profile', 'book.ebook', 'book.cover'])
+            ->with(['book' => fn ($q) => $q->defaultEager(), 'book.profile'])
             ->get();
     }
 
@@ -65,31 +68,27 @@ class LCBooker extends ComponentBase
     public function generateList(?array $options = [])
     {
         return [
-            '#books_list_partial' => $this->renderPartial('@list', ['authorships' => $this->getAuthorships(), 'is_owner' => $this->getOwnerFilter(), ...$options])
+            '#books_list_partial' => $this->renderPartial('@list', ['authorships' => $this->getAuthorships(), 'is_owner' => $this->getOwnerFilter(), ...$options]),
         ];
     }
 
     public function onUploadFile()
     {
         try {
-
-
             $uploadedFile = (new Edition())->fb2()->withDeferred($this->getSessionKey())->get()?->first();
-            if (!$uploadedFile) {
+            if (! $uploadedFile) {
                 throw new ValidationException(['fb2' => 'Файл не найден.']);
             }
 
-            $book = (new FB2Manager(user: $this->user, session_key: $this->getSessionKey()))->apply($uploadedFile);
-            $book->ebook->save(null, $this->getSessionKey());
+            (new BookService(user: $this->user, session_key: $this->getSessionKey()))->from($uploadedFile);
             (new Edition())->cancelDeferred($this->getSessionKey());
+
             return [
                 '#lc-books' => $this->renderPartial('@default', ['authorships' => $this->getAuthorships()]),
             ];
-
         } catch (Exception $ex) {
             throw new ValidationException(['fb2' => $ex->getMessage()]);
         }
-
     }
 
     /**
@@ -128,8 +127,7 @@ class LCBooker extends ComponentBase
             'coauthor' => false,
             default => null,
         };
+
         return $this->is_owner;
     }
-
-
 }

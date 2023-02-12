@@ -152,7 +152,7 @@ class SeedAllTables extends Seeder
         ],
         'РПГ' => [
             'ЛитРПГ',
-            'РеалРПГ'
+            'РеалРПГ',
         ],
         'Триллер' => [],
         'Янг-эдалт' => [],
@@ -196,6 +196,6 @@ class SeedAllTables extends Seeder
 
     private function mapWithName(array $array): array
     {
-        return array_map(fn($item) => ['name' => $item], $array);
+        return array_map(fn ($item) => ['name' => $item], $array);
     }
 }

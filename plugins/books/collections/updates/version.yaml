@@ -1,1 +1,4 @@
-1.0.1: First version of Collections
+1.0.1:
+    - "Библиотека"
+    - create_lib_table.php
+

@@ -6,7 +6,7 @@ return [
         'description' => 'Фронтенд управление каталогом.',
         'tab' => 'Каталог',
         'access_catalog' => 'Управление каталогом',
-        'too_many_attempt' => 'Слишком много попыток!'
+        'too_many_attempt' => 'Слишком много попыток!',
 
     ],
 
@@ -41,7 +41,7 @@ return [
         'enableFavorite_selected_success' => 'Выбранные жанры успешно помечены как любимые.',
         'checkAdult_selected_success' => 'Выбранные жанры успешно помечены как 18+.',
         'uncheckAdult_selected_success' => 'Выбранные жанры успешно помечены как не 18+.',
-        'disableFavorite_selected_success' => 'Выбранные жанры успешно помечены как обычные.'
+        'disableFavorite_selected_success' => 'Выбранные жанры успешно помечены как обычные.',
     ],
     'types' => [
         'menu_label' => 'Типы книг',
@@ -75,5 +75,5 @@ return [
         'active' => 'Активен',
         'favorite' => 'Любимый жанр',
 
-    ]
+    ],
 ];

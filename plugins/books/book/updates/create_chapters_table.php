@@ -1,9 +1,11 @@
-<?php namespace Books\Book\Updates;
+<?php
 
-use Schema;
+namespace Books\Book\Updates;
+
 use Books\Book\Classes\Enums\EditionsEnums;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 /**
  * CreateChaptersTable Migration
@@ -14,7 +16,7 @@ class CreateChaptersTable extends Migration
     {
         Schema::create('books_book_chapters', function (Blueprint $table) {
             $table->id();
-            $table->integer('edition_id')->unsigned()->index();
+            $table->unsignedBigInteger('edition_id');
             $table->tinyInteger('type')->default(EditionsEnums::default()->value);
             $table->string('title')->nullable();
             $table->longText('content')->nullable();
@@ -25,6 +27,12 @@ class CreateChaptersTable extends Migration
             $table->string('sales_type')->default('free');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->unsignedBigInteger('next_id')->nullable();
+            $table->unsignedBigInteger('prev_id')->nullable();
+
+            $table->foreign('edition_id')->references('id')->on('books_book_editions')->cascadeOnDelete();
+            $table->index('edition_id');
         });
     }
 

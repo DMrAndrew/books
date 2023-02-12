@@ -1,8 +1,10 @@
-<?php namespace Books\Catalog\Updates;
+<?php
 
-use Schema;
+namespace Books\Catalog\Updates;
+
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 /**
  * CreateGenresTable Migration

@@ -5,7 +5,7 @@
     </ul>
 <?php Block::endPut() ?>
 
-<?php if (!$this->fatalError): ?>
+<?php if (! $this->fatalError) { ?>
 
     <?= Form::open(['class' => 'layout']) ?>
 
@@ -19,7 +19,7 @@
                     type="submit"
                     data-request="onSave"
                     data-hotkey="ctrl+s, cmd+s"
-                    data-load-indicator="<?= e(trans('backend::lang.form.creating_name', ['name'=>$formRecordName])) ?>"
+                    data-load-indicator="<?= e(trans('backend::lang.form.creating_name', ['name' => $formRecordName])) ?>"
                     class="btn btn-primary">
                     <?= e(trans('backend::lang.form.create')) ?>
                 </button>
@@ -28,7 +28,7 @@
                     data-request="onSave"
                     data-request-data="close:1"
                     data-hotkey="ctrl+enter, cmd+enter"
-                    data-load-indicator="<?= e(trans('backend::lang.form.creating_name', ['name'=>$formRecordName])) ?>"
+                    data-load-indicator="<?= e(trans('backend::lang.form.creating_name', ['name' => $formRecordName])) ?>"
                     class="btn btn-default">
                     <?= e(trans('backend::lang.form.create_and_close')) ?>
                 </button>
@@ -40,9 +40,9 @@
 
     <?= Form::close() ?>
 
-<?php else: ?>
+<?php } else { ?>
 
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>
     <p><a href="<?= Backend::url('books/catalog/genre') ?>" class="btn btn-default"><?= e(trans('backend::lang.form.return_to_list')) ?></a></p>
 
-<?php endif ?>
+<?php } ?>

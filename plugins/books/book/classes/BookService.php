@@ -2,18 +2,22 @@
 
 namespace Books\Book\Classes;
 
-use Db;
-use Event;
-use Session;
-use ValidationException;
-use Books\Book\Models\Tag;
-use Books\Book\Models\Book;
-use RainLab\User\Models\User;
+use Books\Book\Classes\Exceptions\FBParserException;
+use Books\Book\Classes\Exceptions\UnknownFormatException;
 use Books\Book\Models\Author;
+use Books\Book\Models\Book;
+use Books\Book\Models\Chapter;
+use Books\Book\Models\Tag;
 use Books\Catalog\Models\Genre;
 use Books\Profile\Models\Profile;
+use Db;
+use Event;
 use Illuminate\Support\Collection;
-
+use RainLab\User\Models\User;
+use Session;
+use System\Models\File;
+use Tizis\FB2\Model\Book as TizisBook;
+use ValidationException;
 
 class BookService
 {
@@ -23,10 +27,8 @@ class BookService
 
     protected array $relations = ['profiles', 'genres', 'tags'];
 
-
     public function __construct(protected User $user, protected ?Book $book = null, protected ?string $session_key = null)
     {
-
         $this->proxy = new Book();
         $this->book ??= new Book();
     }
@@ -41,7 +43,7 @@ class BookService
 
     protected function isNew(): bool
     {
-        return !$this->book->id;
+        return ! $this->book->id;
     }
 
     protected function isBounded(): bool
@@ -52,16 +54,15 @@ class BookService
     protected function bound(): bool
     {
         $this->bound = $this->isBounded() || Db::transaction(function () {
-
-                foreach ($this->relations as $relation) {
-                    foreach ($this->book->$relation()->get() as $item) {
-                        $this->proxy->$relation()->add($item, $this->getSessionKey(), $item->pivot ? $item->pivot->toArray() : []);
-                    }
+            foreach ($this->relations as $relation) {
+                foreach ($this->book->$relation()->get() as $item) {
+                    $this->proxy->$relation()->add($item, $this->getSessionKey(), $item->pivot ? $item->pivot->toArray() : []);
                 }
-                Session::put($this->getSessionKey(), true);
-                return true;
+            }
+            Session::put($this->getSessionKey(), true);
 
-            });
+            return true;
+        });
 
         return $this->bound;
     }
@@ -69,6 +70,7 @@ class BookService
     protected function proxy(): Book
     {
         $this->bound();
+
         return $this->proxy;
     }
 
@@ -80,11 +82,61 @@ class BookService
     }
 
     /**
-     * @param array|null $data
-     * @return Book
+     * @throws FBParserException
+     * @throws UnknownFormatException
      * @throws ValidationException
      */
-    public function save(?array $data = null): Book
+    public function from(mixed $payload): Book
+    {
+        if (is_array($payload)) {
+            $this->save($payload);
+
+            return $this->book;
+        }
+        if ($payload instanceof File) {
+            $tizisBook = (new FB2Manager($payload))->apply();
+            $this->fromTizis($tizisBook);
+            $this->book->ebook->fb2()->save($payload);
+            Event::fire('books.book.parsed', [$this->book]);
+            return $this->book;
+        }
+        throw new UnknownFormatException();
+    }
+
+    protected function fromTizis(TizisBook $book): Book
+    {
+        return Db::transaction(function () use ($book) {
+            $info = $book->getInfo();
+            $data = [
+                'title' => strip_tags($info->getTitle()),
+                'annotation' => $info->getAnnotation(),
+            ];
+
+            $cover = (new File())->fromData(base64_decode($book->getCover()), 'cover.jpg');
+            $cover->save();
+            $this->book->cover()->add($cover, $this->session_key);
+
+            collect(explode(',', $info->getKeywords()))->each(fn ($tag) => $this->addTag($tag));
+            $this->save($data);
+
+            collect($book->getChapters())->map(function ($chapter) {
+                return (new Chapter())
+                    ->service()
+                    ->setEdition($this->book->ebook)
+                    ->from($chapter);
+            });
+
+            return $this->book;
+        });
+    }
+
+    /**
+     * @param  array|null  $data
+     * @return Book
+     *
+     * @throws ValidationException
+     */
+    protected function save(?array $data = null): Book
     {
         return Db::transaction(function () use ($data) {
             $data = collect($data);
@@ -107,14 +159,12 @@ class BookService
             $this->clean();
 
             return $this->book;
-
         });
-
     }
 
     protected function create(?array $data): Book
     {
-        $this->book = new Book($data);
+        $this->book = $this->book->fill($data);
         $this->book->save(null, $this->getSessionKey());
         Event::fire('books.book.created', [$this->book]);
 
@@ -134,7 +184,7 @@ class BookService
     protected function syncRelations(): void
     {
         foreach ($this->relations as $relation) {
-            $method = 'get' . ucfirst($relation);
+            $method = 'get'.ucfirst($relation);
             $this->book->$relation()->sync($this->{$method}());
         }
 
@@ -144,16 +194,14 @@ class BookService
                     [Author::PERCENT => $profile->pivot?->percent ?? 0]
                 );
             });
-
     }
 
     protected function bindOwner(): void
     {
-        if (!$this->getOwnerProfile()) {
-            $this->attachProfile($this->user->profile, [Author::PERCENT => 100, Author::IS_OWNER => 1]);
+        if (! $this->getOwnerProfile()) {
+            $this->attachProfile($this->user->profile, [Author::PERCENT => 100, Author::IS_OWNER => 1, Author::ACCEPTED => 1]);
         }
     }
-
 
     public function setPercent(Profile $profile, int $value): void
     {
@@ -164,12 +212,12 @@ class BookService
     }
 
     /**
-     * @param string|Tag|null $tag
+     * @param  string|Tag|null  $tag
      * @return void
      */
     public function addTag(null|string|Tag $tag): void
     {
-        if (!$tag) {
+        if (! $tag) {
             return;
         }
         $tag = $this->user->tags()->firstOrCreate([Tag::NAME => (is_string($tag) ? mb_ucfirst($tag) : $tag->{Tag::NAME})]);
@@ -177,7 +225,7 @@ class BookService
     }
 
     /**
-     * @param Genre $genre
+     * @param  Genre  $genre
      * @return void
      */
     public function addGenre(Genre $genre): void
@@ -186,17 +234,16 @@ class BookService
     }
 
     /**
-     * @param Profile $profile
+     * @param  Profile  $profile
      * @return void
      */
     public function addProfile(Profile $profile): void
     {
         $this->bindOwner();
         $this->attachProfile($profile);
-
     }
 
-    function attachProfile(Profile $profile, array $pivot = []): void
+    protected function attachProfile(Profile $profile, array $pivot = []): void
     {
         $this->proxy()->profiles()
             ->add($profile, $this->getSessionKey(),
@@ -214,7 +261,7 @@ class BookService
 
     protected function getOwnerProfile()
     {
-        return $this->getProfiles()->first(fn($i) => $i->id === $this->user->profile->id);
+        return $this->getProfiles()->first(fn ($i) => $i->id === $this->user->profile->id);
     }
 
     /**
@@ -226,11 +273,10 @@ class BookService
         if ($pivot) {
             $this->proxy()->getDeferredAuthors($this->getSessionKey())
                 ->each(function ($bind) use ($authors) {
-                    if ($author = $authors->first(fn($i) => $i->id === $bind->slave_id)) {
+                    if ($author = $authors->first(fn ($i) => $i->id === $bind->slave_id)) {
                         $author->pivot = new Author($bind->pivot_data ?? []);
                     }
                 });
-//        ->sortByDesc(fn ($a, $b) => $a->pivot['is_owner'] <=> $b->pivot['is_owner']) //TODO
         }
 
         return $authors;
@@ -247,7 +293,7 @@ class BookService
     }
 
     /**
-     * @param Genre $genre
+     * @param  Genre  $genre
      * @return void
      */
     public function removeGenre(Genre $genre): void
@@ -266,5 +312,4 @@ class BookService
             $this->proxy()->profiles()->remove($profile, $this->getSessionKey());
         }
     }
-
 }

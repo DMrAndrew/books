@@ -23,6 +23,6 @@ class UsersLovedGenres extends Migration
                 $blueprint->dropColumn('loved_genres');
                 $blueprint->dropColumn('unloved_genres');
             });
-        };
+        }
     }
 }

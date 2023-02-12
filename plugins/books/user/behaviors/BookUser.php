@@ -2,19 +2,19 @@
 
 namespace Books\User\Behaviors;
 
-use Books\Book\Models\Tag;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
-use Carbon\Carbon;
-use RainLab\User\Models\User;
+use Books\Book\Models\Tag;
+use Books\Profile\Classes\ProfileManager;
+use Books\Profile\Models\ProfileSettings;
+use Books\User\Classes\BirthdayAttributeCasts;
+use Books\User\Classes\ProfileAttributeCasts;
+use Books\User\Models\AccountSettings;
 use Books\User\Models\Country;
 use Books\User\Models\Settings;
-use Books\User\Models\AccountSettings;
+use Carbon\Carbon;
 use October\Rain\Extension\ExtensionBase;
-use Books\Profile\Models\ProfileSettings;
-use Books\Profile\Classes\ProfileManager;
-use Books\User\Classes\ProfileAttributeCasts;
-use Books\User\Classes\BirthdayAttributeCasts;
+use RainLab\User\Models\User;
 
 class BookUser extends ExtensionBase
 {
@@ -26,7 +26,7 @@ class BookUser extends ExtensionBase
         $this->parent->hasMany['settings'] = [Settings::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['accountSettings'] = [AccountSettings::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['profileSettings'] = [ProfileSettings::class, 'key' => 'user_id', 'otherKey' => 'id'];
-        $this->parent->hasMany['books'] = [Book::class, 'key' => 'user_id', 'otherKey' => 'id',];
+        $this->parent->hasMany['books'] = [Book::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->addValidationRule('birthday', 'nullable');
         $this->parent->addValidationRule('birthday', 'date');
         $this->parent->addValidationRule('show_birthday', 'nullable');
@@ -43,7 +43,7 @@ class BookUser extends ExtensionBase
             'unloved_genres',
             'exclude_genres',
             'see_adult',
-            'asked_adult_agreement'
+            'asked_adult_agreement',
         ]);
         $this->parent->addDateAttribute('birthday');
         $this->parent->addCasts([
@@ -54,7 +54,7 @@ class BookUser extends ExtensionBase
             'favorite_genres',
             'exclude_genres',
             'loved_genres',
-            'unloved_genres'
+            'unloved_genres',
         ]);
     }
 
@@ -101,6 +101,4 @@ class BookUser extends ExtensionBase
     {
         return $this->parent->asked_adult_agreement && $this->parent->birthday && $this->parent->see_adult;
     }
-
-
 }

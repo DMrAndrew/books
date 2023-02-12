@@ -2,12 +2,11 @@
 
 namespace Books\Book\Updates;
 
-use Schema;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 class CreateBookTagTable extends Migration
 {
-
     public function up()
     {
         Schema::create('books_book_tag', function ($table) {

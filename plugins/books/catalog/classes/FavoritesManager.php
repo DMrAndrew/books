@@ -2,16 +2,16 @@
 
 namespace Books\Catalog\Classes;
 
-use Cookie;
-use RainLab\User\Models\User;
-use RainLab\User\Facades\Auth;
 use Books\Catalog\Models\Genre;
+use Cookie;
+use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 
 class FavoritesManager
 {
     /**
-     * @param User|null $user
-     * @param array|null $loved
+     * @param  User|null  $user
+     * @param  array|null  $loved
      * @return void
      */
     public function save(?User $user = null, ?array $loved = null, ?array $unloved = null): void
@@ -39,5 +39,4 @@ class FavoritesManager
             ->pluck('id')
             ->toArray();
     }
-
 }

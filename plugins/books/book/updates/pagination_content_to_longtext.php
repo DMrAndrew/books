@@ -1,8 +1,10 @@
-<?php namespace Books\Book\Updates;
+<?php
 
-use Schema;
+namespace Books\Book\Updates;
+
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 /**
  * CreatePaginationTable Migration
@@ -16,9 +18,9 @@ class PaginationContentToLongtext extends Migration
      */
     public function up()
     {
-        Schema::table('books_book_pagination', function (Blueprint $table) {
-            $table->longText('content')->change();
-        });
+//        Schema::table('books_book_pagination', function (Blueprint $table) {
+//            $table->longText('content')->change();
+//        });
     }
 
     /**

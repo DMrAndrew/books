@@ -1,11 +1,10 @@
-<?php namespace Books\Catalog\Models;
+<?php
 
+namespace Books\Catalog\Models;
 
-use Db;
-use Model;
 use Books\Book\Models\Book;
+use Model;
 use October\Rain\Database\Builder;
-use October\Rain\Database\Collection;
 use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\NestedTree;
 use October\Rain\Database\Traits\Validation;
@@ -15,6 +14,7 @@ use October\Rain\Database\TreeCollection;
  * Genre Model
  *
  * @method HasMany children
+ *
  * @property  TreeCollection children
  */
 class Genre extends Model
@@ -45,7 +45,7 @@ class Genre extends Model
         'desc' => 'string|nullable',
         'active' => 'boolean',
         'favorite' => 'boolean',
-        'parent_id' => 'nullable|exists:books_catalog_genres,id'
+        'parent_id' => 'nullable|exists:books_catalog_genres,id',
     ];
 
     /**
@@ -73,30 +73,36 @@ class Genre extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
      * @var array hasOne and other relations
      */
     public $hasOne = [];
+
     public $hasMany = [];
 
     public $belongsTo = [];
+
     public $belongsToMany = [
         'books' => [
             Book::class,
             'table' => 'books_book_genre',
             'key' => 'genre_id',
-            'otherKey' => 'book_id'
-        ]
+            'otherKey' => 'book_id',
+        ],
     ];
-    public $morphTo = [];
-    public $morphOne = [];
-    public $morphMany = [];
-    public $attachOne = [];
-    public $attachMany = [];
 
+    public $morphTo = [];
+
+    public $morphOne = [];
+
+    public $morphMany = [];
+
+    public $attachOne = [];
+
+    public $attachMany = [];
 
     public function checkAdult(): static
     {
@@ -111,7 +117,6 @@ class Genre extends Model
 
         return $this;
     }
-
 
     public function activate(): static
     {
@@ -139,7 +144,6 @@ class Genre extends Model
         $this->update(['favorite' => 0]);
 
         return $this;
-
     }
 
     /**
@@ -149,7 +153,6 @@ class Genre extends Model
     {
         return static::lists('name', 'id');
     }
-
 
     public function scopeRoots(Builder $builder): Builder
     {
@@ -199,8 +202,8 @@ class Genre extends Model
     public function scopeNestedFavorites(Builder $builder): Builder
     {
         return $builder
-            ->where(fn($q) => $q->roots()->whereHas('children', fn($q) => $q->favorite()))
-            ->orWhere(fn($q) => $q->roots()->favorite())
-            ->with('children', fn($q) => $q->favorite());
+            ->where(fn ($q) => $q->roots()->whereHas('children', fn ($q) => $q->favorite()))
+            ->orWhere(fn ($q) => $q->roots()->favorite())
+            ->with('children', fn ($q) => $q->favorite());
     }
 }

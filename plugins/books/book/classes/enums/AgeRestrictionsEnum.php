@@ -1,6 +1,6 @@
 <?php
 
-namespace Books\Book\Models;
+namespace Books\Book\Classes\Enums;
 
 enum AgeRestrictionsEnum: int
 {
@@ -12,7 +12,7 @@ enum AgeRestrictionsEnum: int
 
     public function getLabel(): string
     {
-        return $this->value . '+';
+        return $this->value.'+';
     }
 
     public static function default(): AgeRestrictionsEnum

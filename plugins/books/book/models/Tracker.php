@@ -1,6 +1,9 @@
-<?php namespace Books\Book\Models;
+<?php
+
+namespace Books\Book\Models;
 
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 
@@ -18,20 +21,43 @@ class Tracker extends Model
      */
     public $table = 'books_book_trackers';
 
-    protected $fillable = ['sec', 'length', 'user_id', 'paginator_id'];
+    protected $fillable = ['time', 'progress', 'length', 'user_id', 'data'];
 
     /**
      * @var array rules for validation
      */
     public $rules = [
-        'user_id' => 'required',
-        'paginator_id' => 'required',
-        'sec' => 'integer',
+        'user_id' => 'required|exists:users,id',
+        'time' => 'integer',
         'length' => 'integer',
+        'progress' => 'integer|between:0,100',
+    ];
+
+    protected $casts = [
+        'time' => 'integer',
+        'length' => 'integer',
+        'progress' => 'integer',
+    ];
+
+    protected $jsonable = [
+        'data',
     ];
 
     public $belongsTo = [
         'user' => [User::class, 'key' => 'id', 'otherKey' => 'user_id'],
-        'paginator' => [Pagination::class, 'key' => 'id', 'otherKey' => 'paginator_id'],
     ];
+
+    public $morphTo = [
+        'trackable' => [],
+    ];
+
+    public function scopeType(Builder $builder, string $class): Builder
+    {
+        return $builder->where('trackable_type', '=', $class);
+    }
+
+    public function scopeUser(Builder $builder, ?User $user): Builder
+    {
+        return $builder->where('user_id', '=', $user?->id);
+    }
 }

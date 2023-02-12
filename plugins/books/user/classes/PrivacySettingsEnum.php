@@ -8,7 +8,6 @@ enum PrivacySettingsEnum: string
     case SUBSCRIBERS = 'sub';
     case NONE = 'none';
 
-
     public function getLabel()
     {
         return match ($this) {
@@ -27,5 +26,4 @@ enum PrivacySettingsEnum: string
     {
         return self::ALL->value;
     }
-
 }

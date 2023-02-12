@@ -1,4 +1,6 @@
-<?php namespace Books\Profile\Models;
+<?php
+
+namespace Books\Profile\Models;
 
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
@@ -7,11 +9,10 @@ use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
 use October\Rain\Database\Relations\BelongsToMany;
 use October\Rain\Database\Relations\HasMany;
-use System\Models\File;
-use RainLab\User\Models\User;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Models\User;
+use System\Models\File;
 use WordForm;
-
 
 /**
  * Profile Model
@@ -36,7 +37,6 @@ class Profile extends Model
     protected $guarded = ['*'];
 
     public static array $endingArray = ['Автор', 'Автора', 'Авторов'];
-
 
     /**
      * @var array fillable attributes are mass assignable
@@ -80,6 +80,7 @@ class Profile extends Model
         'ok' => 'nullable|url',
         'vk' => 'nullable|url',
     ];
+
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
      */
@@ -100,7 +101,7 @@ class Profile extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -109,38 +110,44 @@ class Profile extends Model
     public $hasOne = [
 
     ];
+
     public $hasMany = [
-        'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id', 'scope' => 'sortByAuthorOrder']
+        'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id', 'scope' => 'sortByAuthorOrder'],
     ];
 
     public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
+
     public $belongsToMany = [
         'books' => [
             Book::class,
             'table' => 'books_book_authors',
             'key' => 'profile_id',
             'otherKey' => 'book_id',
-            'pivot' => ['percent', 'sort_order', 'is_owner']
-        ]
+            'pivot' => ['percent', 'sort_order', 'is_owner'],
+        ],
     ];
 
     public $morphTo = [];
+
     public $morphOne = [];
+
     public $morphMany = [];
+
     public $attachOne = [
         'banner' => [File::class],
         'avatar' => [File::class],
     ];
+
     public $attachMany = [];
 
     public function getIsCurrentAttribute(): bool
     {
-        return !!$this->user->current_profile_id == $this->id;
+        return (bool) $this->user->current_profile_id == $this->id;
     }
 
     public function authorshipsAs(?bool $is_owner): HasMany
     {
-        return $this->authorships()->when(!is_null($is_owner), fn(Builder $builder) => $is_owner ? $builder->owner() : $builder->notOwner());
+        return $this->authorships()->when(! is_null($is_owner), fn (Builder $builder) => $is_owner ? $builder->owner() : $builder->notOwner());
     }
 
     public function getFirstLatterAttribute(): string
@@ -158,14 +165,19 @@ class Profile extends Model
         return $builder->where('username', '=', $username);
     }
 
+    public function scopeUser(Builder $builder, User $user): Builder
+    {
+        return $builder->where('user_id', '=', $user->id);
+    }
+
     public function isEmpty(): bool
     {
-        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => !!$i);
+        return ! collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn ($i) => (bool) $i);
     }
 
     public function isContactsEmpty(): bool
     {
-        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website',]))->some(fn($i) => !!$i);
+        return ! collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn ($i) => (bool) $i);
     }
 
     public function booksSortedByAuthorOrder(): BelongsToMany
@@ -177,6 +189,4 @@ class Profile extends Model
     {
         return new WordForm(...self::$endingArray);
     }
-
-
 }

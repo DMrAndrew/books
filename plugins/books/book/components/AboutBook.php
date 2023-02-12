@@ -1,10 +1,11 @@
-<?php namespace Books\Book\Components;
+<?php
 
+namespace Books\Book\Components;
 
 use Books\Book\Models\Book;
-use RainLab\User\Models\User;
-use RainLab\User\Facades\Auth;
 use Cms\Classes\ComponentBase;
+use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 
 /**
  * AboutBook Component
@@ -14,7 +15,9 @@ use Cms\Classes\ComponentBase;
 class AboutBook extends ComponentBase
 {
     protected ?Book $book;
+
     protected User $user;
+
     protected int $book_id;
 
     /**
@@ -24,7 +27,7 @@ class AboutBook extends ComponentBase
     {
         return [
             'name' => 'AboutBook Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -44,7 +47,7 @@ class AboutBook extends ComponentBase
             return $redirect;
         }
         $this->user = Auth::getUser();
-        $this->book_id = (int)$this->param('book_id');
+        $this->book_id = (int) $this->param('book_id');
         $this->book = $this->user->profile->books()->with('editions')->find($this->book_id) ?? abort(404);
 
         $this->addComponent(
@@ -65,10 +68,9 @@ class AboutBook extends ComponentBase
         $this->prepareVals();
     }
 
-
-    function prepareVals()
+    public function prepareVals()
     {
         $this->page['book'] = $this->book;
-        $this->page->meta_title = $this->page->meta_title . ' ' . $this->book->title;
+        $this->page->meta_title = $this->page->meta_title.' '.$this->book->title;
     }
 }

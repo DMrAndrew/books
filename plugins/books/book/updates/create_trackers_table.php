@@ -1,8 +1,10 @@
-<?php namespace Books\Book\Updates;
+<?php
 
-use Schema;
+namespace Books\Book\Updates;
+
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 /**
  * CreateTrackersTable Migration
@@ -18,10 +20,12 @@ class CreateTrackersTable extends Migration
     {
         Schema::create('books_book_trackers', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('paginator_id');
             $table->unsignedBigInteger('user_id');
-            $table->integer('sec')->default(0);
-            $table->integer('length')->default(0);
+            $table->morphs('trackable');
+            $table->unsignedTinyInteger('progress')->default(0);
+            $table->unsignedBigInteger('time')->default(0);
+            $table->unsignedBigInteger('length')->default(0);
+            $table->json('data')->nullable();
             $table->timestamps();
         });
     }

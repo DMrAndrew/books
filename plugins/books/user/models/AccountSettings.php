@@ -1,8 +1,9 @@
-<?php namespace Books\User\Models;
+<?php
 
+namespace Books\User\Models;
 
-use October\Rain\Database\Builder;
 use Books\User\Classes\UserSettingsEnum;
+use October\Rain\Database\Builder;
 
 /**
  * AccountSettings Model

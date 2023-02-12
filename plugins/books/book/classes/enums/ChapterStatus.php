@@ -1,18 +1,18 @@
 <?php
 
-namespace Books\Book\Models;
+namespace Books\Book\Classes\Enums;
 
-enum ChapterStatus:string
+enum ChapterStatus: string
 {
-    case DRAFT = "draft";
-    case PUBLISHED = "published";
+    case DRAFT = 'draft';
+    case PUBLISHED = 'published';
 
     /**
      * @return string
      */
     public function getLabel(): string
     {
-        return match($this){
+        return match ($this) {
             self::DRAFT => 'Черновик',
             self::PUBLISHED => 'Опубликована',
         };

@@ -11,7 +11,7 @@ class Reader {
     curFont = 16;
     minFont = 12;
     #tracker_id = null;
-    #trackerInterval = 20000;
+    #trackerInterval = 45000;
 
     #paginator_id = null
 
@@ -35,6 +35,7 @@ class Reader {
     }
 
     track(ms = null) {
+
         if (this.#paginator_id && this.#trackerInterval >= 5000) {
             oc.ajax('reader::onTrack', {
                 data: {

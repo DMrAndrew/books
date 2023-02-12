@@ -1,4 +1,6 @@
-<?php namespace Books\Profile\Models;
+<?php
+
+namespace Books\Profile\Models;
 
 use Model;
 use October\Rain\Database\Traits\Validation;
@@ -41,7 +43,7 @@ class Profiler extends Model
      * @var array jsonable attribute names that are json encoded and decoded from the database
      */
     protected $jsonable = [
-        'ids'
+        'ids',
     ];
 
     /**
@@ -59,20 +61,28 @@ class Profiler extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
      * @var array hasOne and other relations
      */
     public $hasOne = [];
+
     public $hasMany = [];
+
     public $belongsTo = [];
+
     public $belongsToMany = [];
+
     public $morphTo = [];
+
     public $morphOne = [];
+
     public $morphMany = [];
+
     public $attachOne = [];
+
     public $attachMany = [];
 
     public function getIds()

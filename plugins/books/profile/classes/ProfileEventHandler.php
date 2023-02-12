@@ -2,9 +2,9 @@
 
 namespace Books\Profile\Classes;
 
-use Mail;
 use Backend;
 use Backend\Models\User as BackendUser;
+use Mail;
 
 class ProfileEventHandler
 {
@@ -27,10 +27,9 @@ class ProfileEventHandler
             Mail::queue(
                 'books.profile::mail.modify_username_request',
                 $data,
-                fn($msg) => $msg->to($recipient)
+                fn ($msg) => $msg->to($recipient)
             );
         }
-
     }
 
     public function createdProfilableModel($model): void

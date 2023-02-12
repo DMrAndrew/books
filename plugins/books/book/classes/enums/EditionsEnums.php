@@ -1,10 +1,9 @@
 <?php
 
 namespace Books\Book\Classes\Enums;
+
 enum EditionsEnums: int
 {
-
-
     case Ebook = 1;
 
     case Audio = 2;

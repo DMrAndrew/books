@@ -1,13 +1,14 @@
-<?php namespace Books\Book\Components;
+<?php
 
+namespace Books\Book\Components;
 
+use Books\Book\Classes\Reader as Service;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Response;
-use \Books\Book\Classes\Reader as Service;
 
 /**
  * Reader Component
@@ -17,7 +18,11 @@ use \Books\Book\Classes\Reader as Service;
 class Reader extends ComponentBase
 {
     protected Book $book;
+
+    protected ?Chapter $chapter;
+
     protected User $user;
+
     protected Service $service;
 
     /**
@@ -27,7 +32,7 @@ class Reader extends ComponentBase
     {
         return [
             'name' => 'Reader Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -43,6 +48,7 @@ class Reader extends ComponentBase
 
     public function init()
     {
+
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
@@ -50,14 +56,14 @@ class Reader extends ComponentBase
         $this->user = Auth::getUser();
         $this->book = Book::query()->public()->find($this->param('book_id'))
             ?? $this->user?->profile->books()->find($this->param('book_id')) ?? abort(404);
+        $this->chapter = Chapter::find($this->param('chapter_id'));
         $this->service = new Service(
             book: $this->book,
-            chapter: Chapter::find($this->param('chapter_id')),
+            chapter: $this->chapter,
             page: $this->getCurrentPaginatorKey()
         );
 
         $this->prepareVals();
-
     }
 
     public function prepareVals()
@@ -67,51 +73,55 @@ class Reader extends ComponentBase
         }
     }
 
-
     public function onNext()
     {
-        if ($page = $this->service->nextPage()) {
-            $this->service->setPage($page);
+        if ($paginator = $this->service->nextPage()) {
+            $this->service->setPage($paginator->page);
+
             return $this->onMove();
         }
         if ($chapter = $this->service->nextChapter()) {
-            return \Redirect::to('/reader/' . $this->book->id . '/' . $chapter);
+            return \Redirect::to('/reader/' . $this->book->id . '/' . $chapter->id);
         }
-        //add to library
+        $this->user->library($this->book)->read();
+
         return false;
     }
 
     public function onPrev()
     {
-        if ($page = $this->service->prevPage()) {
-            $this->service->setPage($page);
+        if ($paginator = $this->service->prevPage()) {
+            $this->service->setPage($paginator->page);
+
             return $this->onMove();
         }
         if ($chapter = $this->service->prevChapter()) {
-            return \Redirect::to('/reader/' . $this->book->id . '/' . $chapter);
+            return \Redirect::to('/reader/' . $this->book->id . '/' . $chapter->id);
         }
+
         return false;
     }
 
-    public function onChapter(){
-        if($chapter = post('value')){
+    public function onChapter()
+    {
+        if ($chapter = post('value')) {
             return \Redirect::to('/reader/' . $this->book->id . '/' . $chapter);
         }
     }
-
 
     public function onMove()
     {
         $this->prepareVals();
-        return Response::make([
-            '#reader-body-spawn' => $this->renderPartial('@body')
-        ]);
 
+        return Response::make([
+            '#reader-body-spawn' => $this->renderPartial('@body'),
+            '.reader-user-section' => $this->renderPartial('@user-section')
+        ]);
     }
 
     public function onTrack()
     {
-        return $this->service->track((int)post('ms'));
+        return $this->service->track((int)post('ms'),(int)post('paginator_id'));
     }
 
     public function getCurrentPaginatorKey()

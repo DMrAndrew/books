@@ -1,21 +1,22 @@
-<?php namespace Books\Profile\Components;
+<?php
 
-use Db;
-use Event;
-use Flash;
-use Request;
-use Exception;
-use Validator;
-use ValidationException;
-use RainLab\User\Models\User;
-use Cms\Classes\ComponentBase;
-use RainLab\User\Facades\Auth;
+namespace Books\Profile\Components;
+
 use Books\FileUploader\Components\ImageUploader;
 use Books\Profile\Models\Profile as UserProfile;
+use Cms\Classes\ComponentBase;
+use Db;
+use Event;
+use Exception;
+use Flash;
+use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
+use Request;
+use ValidationException;
+use Validator;
 
 class Profile extends ComponentBase
 {
-
     protected User $user;
 
     /**
@@ -25,10 +26,9 @@ class Profile extends ComponentBase
     {
         return [
             'name' => 'Profile',
-            'description' => 'Details'
+            'description' => 'Details',
         ];
     }
-
 
     public function init()
     {
@@ -73,7 +73,6 @@ class Profile extends ComponentBase
      */
     public function onUpdateProfile()
     {
-
         try {
             $profile = $this->user->profile;
             $data = array_diff_assoc(post(), $profile->only($profile->getFillable()));
@@ -84,7 +83,7 @@ class Profile extends ComponentBase
             $validation = Validator::make(
                 $data,
                 $profile->rules,
-                (array)(new UserProfile())->customMessages
+                (array) (new UserProfile())->customMessages
             );
             if ($validation->fails()) {
                 throw new ValidationException($validation);
@@ -95,15 +94,15 @@ class Profile extends ComponentBase
 
             return [
                 'profile/primaryInformation' => $this->renderPartial('profile/primaryInformation', ['userdata' => $this->user]),
-                'profile/profileSecondaryInformation' => $this->renderPartial('profile/profileSecondaryInformation', ['userdata' => $this->user])
+                'profile/profileSecondaryInformation' => $this->renderPartial('profile/profileSecondaryInformation', ['userdata' => $this->user]),
             ];
-
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
-
-
     }
 
     /**
@@ -112,7 +111,6 @@ class Profile extends ComponentBase
     public function onUpdateUsername()
     {
         try {
-
             Db::transaction(function () {
                 $data = post();
                 $data['username_clipboard'] = $data['username'];
@@ -127,7 +125,7 @@ class Profile extends ComponentBase
                         'username_clipboard' => $rules['username_clipboard'],
                         'username_clipboard_comment' => $rules['username_clipboard_comment'],
                     ],
-                    (array)(new UserProfile())->customMessages
+                    (array) (new UserProfile())->customMessages
                 );
                 if ($validation->fails()) {
                     throw new ValidationException($validation);
@@ -141,15 +139,16 @@ class Profile extends ComponentBase
 
             return true;
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
-
     }
 
     public function onRefreshFiles()
     {
         $this->pageCycle();
     }
-
 }

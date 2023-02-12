@@ -1,4 +1,6 @@
-<?php namespace Books\Profile\Components;
+<?php
+
+namespace Books\Profile\Components;
 
 use Books\User\Classes\SettingsTagEnum;
 use Cms\Classes\ComponentBase;
@@ -21,10 +23,9 @@ class ProfileNotification extends ComponentBase
     {
         return [
             'name' => 'ProfileNotification Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
-
 
     public function init()
     {
@@ -35,7 +36,7 @@ class ProfileNotification extends ComponentBase
         $this->page['settings'] = $this->getNotifySettings();
     }
 
-    function getNotifySettings()
+    public function getNotifySettings()
     {
         return [
             'profilable' => $this->user->profileSettings->filter->hasTag(SettingsTagEnum::NOTIFICATION),
@@ -59,9 +60,9 @@ class ProfileNotification extends ComponentBase
             $this->user->settings()->updateOrCreate(['setting_id' => $key], ['value' => $option]);
             $this->user->refresh();
         });
-        return [
-            'profile/notification' => $this->renderPartial('profile/notification', ['settings' => $this->getNotifySettings()])
-        ];
 
+        return [
+            'profile/notification' => $this->renderPartial('profile/notification', ['settings' => $this->getNotifySettings()]),
+        ];
     }
 }

@@ -3,12 +3,11 @@
 namespace Books\Book\Updates;
 
 use October\Rain\Database\Schema\Blueprint;
-use Schema;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 class CreateBookGenreTable extends Migration
 {
-
     public function up()
     {
         Schema::create('books_book_genre', function (Blueprint $table) {

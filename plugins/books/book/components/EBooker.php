@@ -1,8 +1,9 @@
-<?php namespace Books\Book\Components;
+<?php
 
+namespace Books\Book\Components;
 
 use ApplicationException;
-use Books\Book\Models\BookStatus;
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use Exception;
@@ -26,7 +27,7 @@ class EBooker extends ComponentBase
     {
         return [
             'name' => 'EBooker Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -36,7 +37,7 @@ class EBooker extends ComponentBase
             return $redirect;
         }
         $this->ebook = Auth::getUser()->profile->books()->find($this->property('book_id'))?->ebook;
-        if (!$this->ebook) {
+        if (! $this->ebook) {
             throw new ApplicationException('Электронное издание книги не найден.');
         }
         $this->page['ebook'] = $this->ebook;
@@ -56,7 +57,7 @@ class EBooker extends ComponentBase
                 'description' => 'Книга пользователя',
                 'type' => 'string',
                 'default' => null,
-            ]
+            ],
         ];
     }
 
@@ -64,14 +65,17 @@ class EBooker extends ComponentBase
     {
         try {
             $this->ebook->changeChaptersOrder(post('sequence'));
+
             return [
-                '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook])
+                '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
             ];
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
-
     }
 
     public function onUpdate()
@@ -86,10 +90,12 @@ class EBooker extends ComponentBase
                 '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
                 '#ebook-settings' => $this->renderPartial('@settings', ['ebook' => $this->ebook]),
             ];
-
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
     }
 }

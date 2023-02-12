@@ -2,7 +2,6 @@
 
 namespace Books\Book\Classes\Exceptions;
 
-
 use ApplicationException;
 
 class FBParserException extends ApplicationException

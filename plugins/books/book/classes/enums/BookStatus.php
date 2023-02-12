@@ -1,8 +1,8 @@
 <?php
 
-namespace Books\Book\Models;
+namespace Books\Book\Classes\Enums;
 
-enum BookStatus:string
+enum BookStatus: string
 {
     case WORKING = 'working';
     case COMPLETE = 'complete';
@@ -14,7 +14,7 @@ enum BookStatus:string
      */
     public function getLabel(): string
     {
-        return match($this){
+        return match ($this) {
             self::WORKING => 'В работе',
             self::COMPLETE => 'Завершена',
             self::FROZEN => 'Заморожена',
@@ -30,5 +30,4 @@ enum BookStatus:string
             self::HIDDEN,
         ];
     }
-
 }

@@ -1,7 +1,9 @@
-<?php namespace Books\Catalog\Models;
+<?php
 
-use Model;
+namespace Books\Catalog\Models;
+
 use Books\Catalog\Classes\BookTypeEnum;
+use Model;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
 
@@ -29,7 +31,7 @@ class Type extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['name', 'desc', 'active',];
+    protected $fillable = ['name', 'desc', 'active'];
 
     /**
      * @var array rules for validation
@@ -38,15 +40,14 @@ class Type extends Model
         'name' => 'required|string|min:3',
         'desc' => 'nullable|string',
         'active' => 'boolean',
-        'icon' => 'nullable|image|mimes:png'
+        'icon' => 'nullable|image|mimes:png',
     ];
-
 
     /**
      * @var array Attributes to be cast to native types
      */
     protected $casts = [
-        'enum' => BookTypeEnum::class
+        'enum' => BookTypeEnum::class,
     ];
 
     /**
@@ -58,7 +59,7 @@ class Type extends Model
      * @var array appends attributes to the API representation of the model (ex. toArray())
      */
     protected $appends = [
-        'enum'
+        'enum',
     ];
 
     /**
@@ -71,22 +72,30 @@ class Type extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
      * @var array hasOne and other relations
      */
     public $hasOne = [];
+
     public $hasMany = [];
+
     public $belongsTo = [];
+
     public $belongsToMany = [];
+
     public $morphTo = [];
+
     public $morphOne = [];
+
     public $morphMany = [];
+
     public $attachOne = [
-        'icon' => 'System\Models\File'
+        'icon' => 'System\Models\File',
     ];
+
     public $attachMany = [];
 
     public function getEnumAttribute($value)
@@ -103,6 +112,7 @@ class Type extends Model
     {
         $this->active = 1;
         $this->save();
+
         return $this;
     }
 

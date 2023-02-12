@@ -1,4 +1,6 @@
-<?php namespace Books\Book\Models;
+<?php
+
+namespace Books\Book\Models;
 
 use Model;
 use October\Rain\Database\Traits\Validation;

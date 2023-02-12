@@ -1,9 +1,13 @@
-<?php namespace Books\Book;
+<?php
+
+namespace Books\Book;
 
 use Backend;
+use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;
 use Books\Book\Classes\FB2Manager;
 use Books\Book\Components\AboutBook;
+use Books\Book\Components\BookCard;
 use Books\Book\Components\Booker;
 use Books\Book\Components\BookPage;
 use Books\Book\Components\Chapterer;
@@ -15,11 +19,13 @@ use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Cycle;
 use Books\Book\Models\Edition;
+use Books\Book\Models\Pagination;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
 use Config;
 use Event;
 use Illuminate\Foundation\AliasLoader;
+use Mobecan\Favorites\Behaviors\Favorable;
 use System\Classes\PluginBase;
 
 /**
@@ -40,7 +46,7 @@ class Plugin extends PluginBase
             'name' => 'Book',
             'description' => 'No description provided yet...',
             'author' => 'Books',
-            'icon' => 'icon-leaf'
+            'icon' => 'icon-leaf',
         ];
     }
 
@@ -71,10 +77,26 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('FB2Manager', FB2Manager::class);
         AliasLoader::getInstance()->alias('BookService', BookService::class);
         AliasLoader::getInstance()->alias('Tracker', Tracker::class);
+        AliasLoader::getInstance()->alias('Pagination', Pagination::class);
 
-        Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
-        Event::listen('books.book.updated', fn(Book $book) => $book->updateEventHandler());
-        Event::listen('books.book.parsed', fn(Book $book) => $book->parsedEventHandler());
+        Event::listen('books.book.created', fn (Book $book) => $book->createEventHandler());
+        Event::listen('books.book.updated', fn (Book $book) => $book->updateEventHandler());
+
+        foreach (['books.chapter.updated'] as $event){
+            Event::listen($event, function (Chapter $chapter){
+                $chapter->paginateContent();
+            });
+        }
+
+        Book::extend(function (Book $book) {
+            $book->implementClassWith(Favorable::class);
+        });
+
+        foreach ([Edition::class, Chapter::class, Pagination::class] as $class) {
+            $class::extend(function ($model) {
+                $model->implementClassWith(Trackable::class);
+            });
+        }
     }
 
     /**
@@ -84,7 +106,6 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-
         return [
             AboutBook::class => 'AboutBook',
             Booker::class => 'booker',
@@ -93,6 +114,7 @@ class Plugin extends PluginBase
             Chapterer::class => 'Chapterer',
             BookPage::class => 'BookPage',
             Reader::class => 'reader',
+            BookCard::class => 'bookCard',
         ];
     }
 
@@ -108,7 +130,7 @@ class Plugin extends PluginBase
         return [
             'books.book.some_permission' => [
                 'tab' => 'Book',
-                'label' => 'Some permission'
+                'label' => 'Some permission',
             ],
         ];
     }

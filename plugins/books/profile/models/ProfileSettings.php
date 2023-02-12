@@ -1,8 +1,10 @@
-<?php namespace Books\Profile\Models;
+<?php
 
-use October\Rain\Database\Builder;
-use Books\User\Models\Settings;
+namespace Books\Profile\Models;
+
 use Books\User\Classes\UserSettingsEnum;
+use Books\User\Models\Settings;
+use October\Rain\Database\Builder;
 
 /**
  * ProfileSettings Model
@@ -16,7 +18,6 @@ class ProfileSettings extends Settings
      */
     protected static function booted()
     {
-
         static::addGlobalScope('profilable', function (Builder $builder) {
             $builder->whereIn('setting_id', collect(UserSettingsEnum::profilable())->pluck('value')->toArray());
         });

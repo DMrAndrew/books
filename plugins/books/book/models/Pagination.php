@@ -1,4 +1,6 @@
-<?php namespace Books\Book\Models;
+<?php
+
+namespace Books\Book\Models;
 
 use Model;
 use October\Rain\Database\Builder;
@@ -11,6 +13,13 @@ use RainLab\User\Models\User;
  * Pagination Model
  *
  * @method HasOne chapter
+ * @property  ?Chapter chapter
+ *
+ * @property ?Pagination next
+ * @property ?Pagination prev
+ *
+ * @method HasOne next
+ * @method HasOne prev
  * @method HasMany trackers
  */
 class Pagination extends Model
@@ -22,15 +31,15 @@ class Pagination extends Model
      */
     public $table = 'books_book_pagination';
 
+    public const RECOMMEND_MAX_LENGTH = 7500;
+
     protected $fillable = [
         'page',
         'length',
         'content',
-        'chapter_id'
-    ];
-
-    protected $casts = [
-        'content' => 'string'
+        'chapter_id',
+        'next_id',
+        'prev_id',
     ];
 
     /**
@@ -38,31 +47,36 @@ class Pagination extends Model
      */
     public $rules = [
         'page' => 'required|integer',
-        'length' => 'integer',
-        'content' => 'nullable|string',
-        'chapter_id' => 'required|integer|exists:books_book_chapters,id'
+        'length' => 'required|integer',
+        'content' => 'required|string',
+        'chapter_id' => 'required|integer|exists:books_book_chapters,id',
+        'next_id' => 'nullable|integer|exists:books_book_pagination,id',
+        'prev_id' => 'nullable|integer|exists:books_book_pagination,id',
     ];
+
 
     public $belongsTo = [
-        'chapter' => [Chapter::class, 'key' => 'id', 'otherKey' => 'chapter_id'],
+        'chapter' => [Chapter::class,'key' => 'chapter_id','otherKey' => 'id'],
+        'next' => [Pagination::class, 'key' => 'next_id', 'otherKey' => 'id'],
+        'prev' => [Pagination::class, 'key' => 'prev_id', 'otherKey' => 'id'],
     ];
-
-    public $hasMany = [
-        'trackers' => [Tracker::class, 'key' => 'paginator_id', 'otherKey' => 'id']
-    ];
-
-    public $belongsToMany = [
-        'users' => [User::class, 'table' => 'books_book_trackers', 'key' => 'paginator_id', 'otherKey' => 'user_id']
-    ];
-
-    public function file()
-    {
-        return $this->chapter()->first()?->file();
-    }
 
     public function scopePage(Builder $builder, int $page): Builder
     {
         return $builder->where('page', '=', $page);
     }
-}
 
+    public function setNeighbours()
+    {
+        $this->setPrev();
+        $this->setNext();
+    }
+
+    public function setNext(){
+        $this->update(['next_id' => $this->chapter->pagination()->page($this->page + 1)?->first()?->id]);
+    }
+
+    public function setPrev(){
+        $this->update(['prev_id' => $this->chapter->pagination()->page($this->page - 1)?->first()?->id]);
+    }
+}

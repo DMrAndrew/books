@@ -1,7 +1,9 @@
-<?php namespace Books\Catalog\Controllers;
+<?php
 
-use BackendMenu;
+namespace Books\Catalog\Controllers;
+
 use Backend\Classes\Controller;
+use BackendMenu;
 use Flash;
 use Lang;
 
@@ -12,7 +14,7 @@ class Type extends Controller
 {
     public $implement = [
         \Backend\Behaviors\FormController::class,
-        \Backend\Behaviors\ListController::class
+        \Backend\Behaviors\ListController::class,
     ];
 
     /**
@@ -58,9 +60,8 @@ class Type extends Controller
             is_array($checkedIds) &&
             count($checkedIds)
         ) {
-
             foreach ($checkedIds as $typeId) {
-                if (!$type = \Books\Catalog\Models\Type::find($typeId)) {
+                if (! $type = \Books\Catalog\Models\Type::find($typeId)) {
                     continue;
                 }
 
@@ -76,13 +77,12 @@ class Type extends Controller
                     case 'deactivate':
                         $type->deactivate();
                         break;
-
                 }
             }
 
-            Flash::success(Lang::get('books.catalog::lang.types.' . $bulkAction . '_selected_success'));
+            Flash::success(Lang::get('books.catalog::lang.types.'.$bulkAction.'_selected_success'));
         } else {
-            Flash::error(Lang::get('books.catalog::lang.types.' . $bulkAction . '_selected_empty'));
+            Flash::error(Lang::get('books.catalog::lang.types.'.$bulkAction.'_selected_empty'));
         }
 
         return $this->listRefresh();

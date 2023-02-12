@@ -6,6 +6,8 @@ use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
+use Books\Collections\classes\CollectionEnum;
+use Event;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use RainLab\User\Facades\Auth;
@@ -14,11 +16,12 @@ use RainLab\User\Models\User;
 class Reader
 {
     protected Edition $edition;
+
     protected Collection $chapters;
+
     protected Collection $pagination;
+
     protected Pagination $paginator;
-    protected Iterator $iteratorPagination;
-    protected Iterator $iteratorChapters;
 
     public function __construct(protected Book $book, protected ?Chapter $chapter, protected ?int $page = 1, protected ?User $user = null)
     {
@@ -28,11 +31,6 @@ class Reader
         $this->edition = $this->book->ebook;
         $this->chapters = $this->edition->chapters;
         $this->chapter = $this->edition->chapters()->find($this->chapter?->id) ?? $this->chapters->first();
-
-        $this->pagination = $this->chapter->pagination;
-        $this->iteratorPagination = new Iterator($this->pagination->pluck('page')->toArray());
-        $this->iteratorChapters = new Iterator($this->chapter->pluck('id')->toArray());
-        $this->iteratorChapters->seek($this->chapter->id);
         $this->setPage($this->page);
     }
 
@@ -42,71 +40,76 @@ class Reader
     public function setPage(?int $page): void
     {
         $this->page = $page;
-        $this->paginator = $this->chapter->pagination()->page($this->page)?->first() ?? abort(404);
-        $this->iteratorPagination->seek($this->page);
+        $this->paginator = $this->chapter?->pagination()->page($this->page)?->first() ?? abort(404);
     }
 
-    public function track(?int $ms): ?Model
+    public function track(?int $ms, int $paginator_id)
     {
         if (!$this->user) {
             return null;
         }
 
         $sec = (int)floor(($ms ?? 0) / 1000);
-
-        $tracker = $this->paginator->trackers()->firstOrCreate(['user_id' => $this->user->id], ['sec' => 1, 'length' => $this->paginator->length]);
-        $tracker->update(['sec' => $tracker->sec + $sec]);
-        return  $tracker;
+        if ($paginator = $this->chapter?->pagination()->find($paginator_id)) {
+            if ($tracker = $paginator->trackByUser($this->user)) {
+                $tracker->update(['time' => $tracker->time + $sec, 'length' => $paginator->length, 'progress' => 100]);
+                Event::fire('books.paginator.tracked');
+                $lib = $this->user->library($this->book);
+                if ($lib->has() && $lib->get()->type === CollectionEnum::INTERESTED) {
+                    $lib->reading();
+                }
+                $paginator->chapter->progress();
+                return $tracker;
+            }
+        }
     }
 
     public function getReaderPage(): array
     {
         return [
+            'book' => $this->book->newQuery()->defaultEager()->find($this->book->id),
             'pagination' => [
-                'prev' => $this->iteratorPagination->hasPrev() ?? $this->iteratorChapters->hasPrev(),
-                'links' => $this->chapter->getPaginationLinks($this->page),
-                'next' => $this->iteratorPagination->hasNext() ?? $this->iteratorChapters->hasNext()
+                'prev' => !!($this->prevPage() ?? $this->prevChapter()),
+                'links' => $this->chapter->service()->getPaginationLinks($this->page),
+                'next' => !!($this->nextPage() ?? $this->nextChapter()),
             ],
             'chapters' => $this->chapters,
             'reader' => [
                 'chapter' => $this->chapter,
                 'paginator' => $this->paginator,
-            ]
+            ],
         ];
     }
 
     /**
-     * @return false|int $page_number
+     * @return Pagination|null $pagination
      */
-
-    public function nextPage(): bool|int
+    public function nextPage(): ?Pagination
     {
-        return $this->iteratorPagination->next();
+        return $this->paginator->next;
     }
 
     /**
-     * @return false|int $page_number
+     * @return Pagination|null $pagination
      */
-    public function prevPage(): bool|int
+    public function prevPage(): ?Pagination
     {
-        return $this->iteratorPagination->prev();
+        return $this->paginator->prev;
     }
 
     /**
-     * @return false|int $chapter_id
+     * @return Chapter|null $chapter
      */
-    public function nextChapter(): bool|int
+    public function nextChapter(): ?Chapter
     {
-        return $this->iteratorChapters->next();
+        return $this->chapter->next;
     }
 
     /**
-     * @return false|int $chapter_id
+     * @return Chapter|null $chapter
      */
-    public function prevChapter(): bool|int
+    public function prevChapter(): ?Chapter
     {
-        return $this->iteratorChapters->prev();
+        return $this->chapter->prev;
     }
-
-
 }

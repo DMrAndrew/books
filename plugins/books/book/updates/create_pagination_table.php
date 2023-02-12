@@ -1,9 +1,11 @@
-<?php namespace Books\Book\Updates;
+<?php
 
-use Schema;
-use October\Rain\Database\Schema\Blueprint;
+namespace Books\Book\Updates;
+
 use Books\Book\Classes\Enums\EditionsEnums;
+use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 /**
  * CreatePaginationTable Migration
@@ -21,10 +23,16 @@ class CreatePaginationTable extends Migration
             $table->id();
             $table->unsignedBigInteger('chapter_id');
             $table->integer('page');
-            $table->text('content')->nullable();
+            $table->longText('content')->nullable();
             $table->integer('length')->nullable();
             $table->tinyInteger('type')->default(EditionsEnums::default()->value);
             $table->timestamps();
+
+            $table->unsignedBigInteger('next_id')->nullable();
+            $table->unsignedBigInteger('prev_id')->nullable();
+
+            $table->foreign('chapter_id')->references('id')->on('books_book_chapters')->cascadeOnDelete();
+            $table->index('chapter_id');
         });
     }
 

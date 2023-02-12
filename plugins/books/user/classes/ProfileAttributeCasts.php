@@ -6,12 +6,11 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
 class ProfileAttributeCasts implements CastsAttributes
 {
-
     /**
      * @param $model
-     * @param string $key
+     * @param  string  $key
      * @param $value
-     * @param array $attributes
+     * @param  array  $attributes
      * @return mixed
      */
     public function get($model, string $key, $value, array $attributes)
@@ -21,9 +20,9 @@ class ProfileAttributeCasts implements CastsAttributes
 
     /**
      * @param $model
-     * @param string $key
+     * @param  string  $key
      * @param $value
-     * @param array $attributes
+     * @param  array  $attributes
      * @return mixed
      */
     public function set($model, string $key, $value, array $attributes)

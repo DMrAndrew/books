@@ -1,6 +1,6 @@
 <?php
 
-namespace Books\Book\Models;
+namespace Books\Book\Classes\Enums;
 
 enum ChapterSalesType: string
 {

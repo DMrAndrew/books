@@ -1,13 +1,13 @@
-<?php namespace Books\Catalog;
+<?php
+
+namespace Books\Catalog;
 
 use Backend;
-use Books\Book\Models\Book;
-use System\Classes\PluginBase;
-use Books\Catalog\Models\Genre;
-use Books\Catalog\Components\Genres;
-use Illuminate\Foundation\AliasLoader;
 use Books\Catalog\Components\FavoriteGenres;
-use Mobecan\Favorites\Behaviors\Favoriteable;
+use Books\Catalog\Components\Genres;
+use Books\Catalog\Models\Genre;
+use Illuminate\Foundation\AliasLoader;
+use System\Classes\PluginBase;
 
 /**
  * Plugin Information File
@@ -27,7 +27,7 @@ class Plugin extends PluginBase
             'name' => 'Catalog',
             'description' => 'No description provided yet...',
             'author' => 'Books',
-            'icon' => 'icon-leaf'
+            'icon' => 'icon-leaf',
         ];
     }
 
@@ -38,7 +38,6 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-
     }
 
     /**
@@ -49,9 +48,6 @@ class Plugin extends PluginBase
     public function boot()
     {
         AliasLoader::getInstance()->alias('Genre', Genre::class);
-        Book::extend(function (Book $book) {
-            $book->implementClassWith(Favoriteable::class);
-        });
     }
 
     /**
@@ -61,7 +57,6 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-
         return [
             Genres::class => 'genres',
             FavoriteGenres::class => 'favorite_genres',
@@ -80,7 +75,7 @@ class Plugin extends PluginBase
         return [
             'books.catalog.some_permission' => [
                 'tab' => 'Catalog',
-                'label' => 'Some permission'
+                'label' => 'Some permission',
             ],
         ];
     }
@@ -92,8 +87,6 @@ class Plugin extends PluginBase
      */
     public function registerNavigation()
     {
-
-
         return [
             'catalog' => [
                 'label' => 'Каталог',
@@ -107,15 +100,15 @@ class Plugin extends PluginBase
                         'label' => 'Типы книг',
                         'icon' => 'icon-leaf',
                         'url' => Backend::url('books/catalog/type'),
-                        'permissions' => ['books.catalog.*']
+                        'permissions' => ['books.catalog.*'],
                     ],
                     'genres' => [
                         'label' => 'Жанры',
                         'icon' => 'icon-leaf',
                         'url' => Backend::url('books/catalog/genre'),
-                        'permissions' => ['books.catalog.*']
-                    ]
-                ]
+                        'permissions' => ['books.catalog.*'],
+                    ],
+                ],
             ],
         ];
     }

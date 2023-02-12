@@ -17,6 +17,8 @@
         <div class="book-card__info-wrap _text">{{ carbon(book.ebook.sales_at).format('d.m.y') }}</div>
         {% endif %}
         <div class="book-card__info-dot"></div>
+        {% if book.ebook.length %}
         <div class="book-card__info-wrap _text">{{book.ebook.length}}&thinsp;зн.</div>
+        {% endif %}
     </div>
 </div>

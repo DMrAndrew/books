@@ -1,8 +1,9 @@
-<?php namespace Books\User\Models;
+<?php
 
+namespace Books\User\Models;
 
-use Books\User\Classes\UserSettingsEnum;
 use Books\User\Classes\SettingsTagEnum;
+use Books\User\Classes\UserSettingsEnum;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 
@@ -33,7 +34,6 @@ class Settings extends Model
         'value' => 'required',
     ];
 
-
     public function getDeclarationAttribute(): ?UserSettingsEnum
     {
         return UserSettingsEnum::tryFrom($this->setting_id);
@@ -43,7 +43,7 @@ class Settings extends Model
     {
         return new static([
             'setting_id' => $enum->value,
-            'value' => $enum->defaultValue()
+            'value' => $enum->defaultValue(),
         ]);
     }
 
@@ -51,6 +51,4 @@ class Settings extends Model
     {
         return $this->declaration->tag() === $tag;
     }
-
-
 }
