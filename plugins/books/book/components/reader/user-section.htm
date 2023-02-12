@@ -1,0 +1,26 @@
+<div class="reader__user reader-user">
+
+
+    {% for profile in book.profiles %}
+    <div class="reader-user__user">
+        <img src="{{profile.avatar.getThumb(40,40)}}" alt="">
+        <span class="ui-text--bold">{{profile.username}}</span>
+    </div>
+    {% endfor %}
+
+    <a href="" class="reader-user__support ui-link _violet disabled">
+        <svg class="square-16">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#coins-stroked-16' | theme}}"></use>
+        </svg>
+        <span>Поддержать автора</span>
+    </a>
+    {% ajaxPartial "bookCard::reader-card" book=book %}
+
+    <div class="reader-user__books tags-list">
+        {% for genre in book.genres %}
+        <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#0 в {{genre.name}}</a>
+        {% endfor %}
+
+    </div>
+    <!--                    <div>Отредактировано: 05.09.2022</div>-->
+</div>
