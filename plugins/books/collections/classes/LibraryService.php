@@ -64,6 +64,11 @@ class LibraryService
 
     }
 
+    public function is(CollectionEnum $type)
+    {
+        return $this->has() && $this->get()->type === $type;
+    }
+
     public function has(): bool
     {
         return $this->build()->exists();

@@ -43,7 +43,7 @@
                                     <div class="tippymodal" style="width: 384px">
                                         <div class="tippymodal-block tags-list"><span class="tippymodal-title">Автор:</span>
                                             {% for author in lib.book.authors %}
-                                            <a href="" class="ui-link _violet">{{author.profile.username}}</a>
+                                            <a  href="/author-page/{{author.profile.id}}" class="ui-link _violet">{{author.profile.username}}</a>
                                             {% endfor %}
                                         </div>
                                         <div class="tippymodal-block tags-list"><span class="tippymodal-title">Жанры:</span>
@@ -63,16 +63,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="book-mini-card__addition">+901 зн.</div>
+<!--                            {% if lib.book.editions.first.progress_length %}-->
+<!--                            <div class="book-mini-card__addition">+{{lib.book.editions.first.progress_length}} зн.</div>-->
+<!--                            {% endif %}-->
                             <a href="" class="book-mini-card__title">
                                 {{lib.book.title}}
                             </a>
+                            {% if lib.type.value == 3 and lib.book.editions.first.progress %}
                             <div class="book-mini-card__progress book-mini-card-progress">
                                 <div class="book-mini-card-progress__item-wrapper">
                                     <div class="book-mini-card-progress__line" {{'style=width:'~lib.book.editions.first.progress~'%'}} ></div>
                                 </div>
                                 <div class="book-mini-card-progress__text">{{lib.book.editions.first.progress}} %</div>
                             </div>
+                            {% endif %}
                         </div>
 
 

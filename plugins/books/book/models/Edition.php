@@ -27,6 +27,7 @@ use System\Models\File;
  * * @method HasMany chapters
  * * @method AttachOne fb2
  * * @method BelongsTo book
+ * * @property  Book book
  */
 class Edition extends Model
 {
@@ -137,6 +138,7 @@ class Edition extends Model
             $order ??= $this->chapters()->pluck('sort_order')->toArray();
             $this->chapters()->first()->setSortableOrder($ids, $order);
             $this->setFreeParts();
+            $this->chapters()->get()->each->setNeighbours();
         });
     }
 

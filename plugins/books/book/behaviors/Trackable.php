@@ -2,8 +2,13 @@
 
 namespace Books\Book\Behaviors;
 
+use Books\Book\Models\Chapter;
+use Books\Book\Models\Edition;
+use Books\Book\Models\Pagination;
 use Books\Book\Models\Tracker;
+use Books\Collections\classes\CollectionEnum;
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Extension\ExtensionBase;
 use RainLab\User\Models\User;
 
@@ -31,6 +36,11 @@ class Trackable extends ExtensionBase
         ]);
     }
 
+    public function scopeCountUserTrackers(Builder $builder, User $user): Builder
+    {
+        return $builder->withCount(['trackers' => fn($i) => $i->user($user)]);
+    }
+
 
     public function computeProgress(?User $user = null)
     {
@@ -46,18 +56,39 @@ class Trackable extends ExtensionBase
             ->filter(fn($i) => !$user || $i['user_id'] === $user->id)
             ->groupBy('user_id')
             ->map(function ($trackers, $user_id) {
-                $tracker = $this->model->trackByUser(User::find($user_id));
+                $user = User::find($user_id);
+                $tracker = $this->model->trackByUser($user);
 
-                $progress = (int)floor(
-                    $tracker->pluck('progress') //прогресс по всем трекнутым
+                $progress = (int)ceil(
+                    $trackers->pluck('progress') //прогресс по всем трекнутым
                     ->pad($this->model->{$this->model->trackerChildRelation}()->count(), 0)// добиваем до общего кол-ва
                     ->avg() // profit
                 );
-                 $tracker->update([
+
+                $tracker->update([
                     'length' => $trackers->sum('length'),
                     'time' => $trackers->sum('time'),
                     'progress' => $progress
                 ]);
+
+
+                //когда пользователь открыл книгу и начал читать ( от 3-х страниц) добавляем в раздел "читаю сейчас" если книга в библиотеке и в разделе "Хочу прочесть"
+                if ($this->model instanceof Edition) {
+                    $lib = $user->library($this->model->book);
+                    if ($lib->is(CollectionEnum::INTERESTED)) {
+                        //TODO ref
+                        $trackers_count = $this->model
+                            ->chapters()
+                            ->select('id')
+                            ->with(['pagination' => fn($p) => $p->select(['id', 'chapter_id'])->countUserTrackers($user)])
+                            ->get()->pluck('pagination')
+                            ->flatten(1)
+                            ->pluck('trackers_count')->sum();
+                        if ($trackers_count > 3) {
+                            $lib->reading();
+                        }
+                    }
+                }
 
                 return $progress;
 

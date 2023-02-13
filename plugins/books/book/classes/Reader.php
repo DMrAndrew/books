@@ -54,10 +54,6 @@ class Reader
             if ($tracker = $paginator->trackByUser($this->user)) {
                 $tracker->update(['time' => $tracker->time + $sec, 'length' => $paginator->length, 'progress' => 100]);
                 Event::fire('books.paginator.tracked');
-                $lib = $this->user->library($this->book);
-                if ($lib->has() && $lib->get()->type === CollectionEnum::INTERESTED) {
-                    $lib->reading();
-                }
                 $paginator->chapter->progress();
                 return $tracker;
             }
