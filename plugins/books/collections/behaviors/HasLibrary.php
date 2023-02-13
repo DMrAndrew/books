@@ -29,7 +29,9 @@ class HasLibrary extends ExtensionBase
     public function getLib()
     {
         $libs = $this->model->libs()
-            ->with(['favorable' => fn($q) => $q->with(['book' => fn($book) => $book->withProgress($this->model)])])
+            ->with([
+                'favorable' => fn($q) => $q->with(['book' => fn($book) => $book->withProgress($this->model)->defaultEager()]),
+                ])
             ->get()
             ->pluck('favorable')
             ->sortByDesc('id')
