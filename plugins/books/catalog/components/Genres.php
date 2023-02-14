@@ -28,6 +28,8 @@ class Genres extends ComponentBase
         return Genre::query()->roots()->public()->when($child, fn ($q) => $q->with('children'))->get();
     }
 
+
+
     public function allGenres()
     {
         return $this->parented(child: true)->split(4);

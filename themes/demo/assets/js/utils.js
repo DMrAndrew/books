@@ -96,6 +96,11 @@ addEventListener('page:before-cache', function() {
     reInitSelect()
 });
 
+// addEventListener('page:render', function() {
+//     console.log('page:render')
+// });
+
+
 addEventListener('page:loaded', function () {
     // console.log('page:loaded')
     iniSelect()
@@ -103,5 +108,5 @@ addEventListener('page:loaded', function () {
 
 addEventListener('page:unload', function() {
     // console.log('page:unload')
-    window.reader && window.reader.clear();
+    window.reader && window.reader.clear()
 })

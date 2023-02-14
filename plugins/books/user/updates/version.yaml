@@ -11,6 +11,6 @@
     - 'Любимые жанры'
     - users_loved_genres.php
 1.0.4:
-    - 'Seed всех стран'
+    - 'Seed всех стран объединяйтесь'
     - countries_add_sort_order.php
     - seed_country.php

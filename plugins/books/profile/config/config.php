@@ -7,7 +7,6 @@ use Mobecan\Favorites\Models\Favorite;
 return [
     'profileable' => [
         Review::class,
-        Favorite::class,
         ProfileSettings::class,
     ],
 ];

@@ -19,4 +19,5 @@ class CountriesAddSortOrder extends Migration
             });
         }
     }
+    public function down(){}
 }

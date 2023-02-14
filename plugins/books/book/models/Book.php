@@ -193,6 +193,61 @@ class Book extends Model
         return $this->profiles()->user($user)->exists();
     }
 
+    public function scopeType(Builder $builder, ?EditionsEnums $type): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        if (!$type) {
+            return $builder;
+        }
+        return $builder->whereHas('editions', function ($query) use ($type) {
+            return $query->whereIn('type', [$type->value]);
+        });
+    }
+
+    public function scopeMinPrice(Builder $builder, ?int $price): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('editions', fn($e) => $e->free(false)->minPrice($price));
+    }
+
+    public function scopeFree(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('editions', fn($e) => $e->free());
+    }
+
+
+    public function scopeMaxPrice(Builder $builder, ?int $price): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('editions', fn($e) => $e->free(false)->maxPrice($price));
+    }
+
+
+    public function scopeComplete(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('editions', function ($query) {
+            return $query->whereIn('status', [BookStatus::COMPLETE]);
+        });
+    }
+
+
+    public function scopeHasGenres(Builder $builder, array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        if (!count($ids)) {
+            return $builder;
+        }
+        return $builder->{$mode == 'include' ? 'whereHas' : 'whereDoesntHave'}('genres',
+            fn($genres) => $genres->whereIn('id', $ids));
+    }
+
+
+    public function scopeHasTags(Builder $builder, array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        if (!count($ids)) {
+            return $builder;
+        }
+        return $builder->{$mode == 'include' ? 'whereHas' : 'whereDoesntHave'}('tags',
+            fn($tags) => $tags->whereIn('id', $ids));
+    }
+
+
     public function scopeSearchByString(Builder $query, string $string)
     {
         return $query->public()->where('title', 'like', "%$string%");

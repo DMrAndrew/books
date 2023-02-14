@@ -2,7 +2,7 @@
 
 namespace Books\Catalog\Models;
 
-use Books\Catalog\Classes\BookTypeEnum;
+use Books\Book\Classes\Enums\EditionsEnums;
 use Model;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
@@ -11,7 +11,7 @@ use October\Rain\Database\Traits\Validation;
  * Type Model
  *
  * @property string label
- * @property BookTypeEnum enum
+ * @property EditionsEnums type
  */
 class Type extends Model
 {
@@ -47,7 +47,7 @@ class Type extends Model
      * @var array Attributes to be cast to native types
      */
     protected $casts = [
-        'enum' => BookTypeEnum::class,
+        'type' => EditionsEnums::class,
     ];
 
     /**
@@ -59,7 +59,7 @@ class Type extends Model
      * @var array appends attributes to the API representation of the model (ex. toArray())
      */
     protected $appends = [
-        'enum',
+
     ];
 
     /**
@@ -98,14 +98,9 @@ class Type extends Model
 
     public $attachMany = [];
 
-    public function getEnumAttribute($value)
+    public function getLabelAttribute(): string
     {
-        return BookTypeEnum::tryFrom($this->attributes['name']);
-    }
-
-    public function getLabelAttribute()
-    {
-        return $this->enum?->getLabel();
+        return $this->type->label();
     }
 
     public function activate()

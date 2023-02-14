@@ -2,7 +2,7 @@
 
 namespace Books\Catalog\Updates;
 
-use Books\Catalog\Classes\BookTypeEnum;
+use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Catalog\Models\Genre;
 use Illuminate\Support\Facades\DB;
 use October\Rain\Database\Updates\Seeder;
@@ -183,19 +183,21 @@ class SeedAllTables extends Seeder
 
     public function run()
     {
-        $this->types = collect(BookTypeEnum::cases())->pluck('value')->toArray();
-        $data = $this->mapWithName($this->types);
-        DB::table('books_catalog_types')->insert($data);
+
+        $types = $this->mapWith(array_keys(EditionsEnums::toArray()), 'type');
+        DB::table('books_catalog_types')->insert($types);
 
         foreach ($this->genres as $genre => $list) {
             $root = Genre::query()->create(['name' => $genre]);
-            $root->children()->createMany($this->mapWithName($list));
+            $root->children()->createMany($this->mapWith($list));
         }
         Genre::query()->whereIn('name', $this->favorites)->update(['favorite' => 1]);
     }
 
-    private function mapWithName(array $array): array
+    private function mapWith(array $array, $key = 'name'): array
     {
-        return array_map(fn ($item) => ['name' => $item], $array);
+        return array_map(fn($item) => [$key => $item], $array);
     }
+
+
 }

@@ -6,15 +6,6 @@ columns:
     Label:
         label: Название
         searchable: true
-    name:
-        label: Имя
-        searchable: true
-    desc:
-        label: Описание
-        searchable: true
-    active:
-        label: Активный
-        type: switch
     icon:
         label: Иконка
         type: image

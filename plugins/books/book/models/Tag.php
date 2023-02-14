@@ -3,6 +3,7 @@
 namespace Books\Book\Models;
 
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 
 /**
@@ -12,7 +13,7 @@ class Tag extends Model
 {
     use Validation;
 
-    public  const NAME = 'name';
+    public const NAME = 'name';
 
     /**
      * @var string table associated with the model
@@ -98,8 +99,20 @@ class Tag extends Model
         return $q->orderBy('name');
     }
 
+    public function scopePublic($q)
+    {
+        return $q;
+    }
+
+
     public function scopeNameLike($q, string $name)
     {
         return $q->where('name', 'like', "%$name%");
     }
+
+    public function scopeAsOption(Builder $builder): Builder
+    {
+        return $builder->select(['id', 'name']);
+    }
+
 }

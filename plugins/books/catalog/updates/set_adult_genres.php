@@ -14,4 +14,6 @@ class SetAdultGenres extends Seeder
             $adult->children->each->checkAdult();
         }
     }
+
+    public function down(){}
 }

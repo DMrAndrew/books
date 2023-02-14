@@ -115,6 +115,20 @@ class Edition extends Model
         return (bool)$this->sales_free ? 0 : $this->price;
     }
 
+    public function scopeMinPrice(Builder $builder, ?int $price): Builder
+    {
+        return $builder->where('price', '>=', $price);
+    }
+
+    public function scopeMaxPrice(Builder $builder, ?int $price): Builder
+    {
+        return $builder->where('price', '<=', $price);
+    }
+    public function scopeFree(Builder $builder, $free = true): Builder
+    {
+        return $builder->where('sales_free', '=', $free)->orWhere('price','=',0);
+    }
+
     public function scopeEbook(Builder $builder): Builder
     {
         return $builder->where('type', '=', EditionsEnums::Ebook->value);

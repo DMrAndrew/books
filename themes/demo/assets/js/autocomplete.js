@@ -1,5 +1,4 @@
 
-const toggleChevron = (element,chevron) => $(`${element} .chevron:first`).replaceWith(chevron)
 $.widget("custom.bookAutocomplete", $.ui.autocomplete, {
     _renderItem: function (ul, item) {
         return $(item.htm)
@@ -61,6 +60,10 @@ const initAutocomplete = function (params) {
         "_token": form.children('input[name=_token]').val()
     };
 
+    if(!onRequestHandler){
+        onRequestHandler = $(container).data('request')
+    }
+
 
     $(`${container} .books-autocomplete:first`).bookAutocomplete({
         ...{
@@ -84,7 +87,7 @@ const initAutocomplete = function (params) {
             open: () => $(container).addClass('ui-menu-opened'),
             close: () => $(container).removeClass('ui-menu-opened'),
             select: function (event, ui) {
-                oc.ajax(ui.item.handler, {
+                oc.request(this,ui.item.handler, {
                     data: {...session_data, ...ui},
                 })
             },

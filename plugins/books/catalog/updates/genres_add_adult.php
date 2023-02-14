@@ -14,4 +14,6 @@ class GenresAddAdult extends Migration
             $blueprint->boolean('adult')->default(false);
         });
     }
+    public function down(){}
 }
+

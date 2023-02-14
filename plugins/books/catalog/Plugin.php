@@ -3,8 +3,10 @@
 namespace Books\Catalog;
 
 use Backend;
+use Books\Catalog\Classes\ListingFilter;
 use Books\Catalog\Components\FavoriteGenres;
 use Books\Catalog\Components\Genres;
+use Books\Catalog\Components\Listing;
 use Books\Catalog\Models\Genre;
 use Illuminate\Foundation\AliasLoader;
 use System\Classes\PluginBase;
@@ -48,6 +50,7 @@ class Plugin extends PluginBase
     public function boot()
     {
         AliasLoader::getInstance()->alias('Genre', Genre::class);
+        AliasLoader::getInstance()->alias('ListingFilter', ListingFilter::class);
     }
 
     /**
@@ -60,6 +63,7 @@ class Plugin extends PluginBase
         return [
             Genres::class => 'genres',
             FavoriteGenres::class => 'favorite_genres',
+            Listing::class => 'listing',
         ];
     }
 

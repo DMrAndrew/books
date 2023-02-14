@@ -5,6 +5,7 @@ namespace Books\Book;
 use Backend;
 use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;
+use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\FB2Manager;
 use Books\Book\Components\AboutBook;
 use Books\Book\Components\BookCard;
@@ -78,6 +79,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('BookService', BookService::class);
         AliasLoader::getInstance()->alias('Tracker', Tracker::class);
         AliasLoader::getInstance()->alias('Pagination', Pagination::class);
+        AliasLoader::getInstance()->alias('EditionsEnums', EditionsEnums::class);
 
         Event::listen('books.book.created', fn (Book $book) => $book->createEventHandler());
         Event::listen('books.book.updated', fn (Book $book) => $book->updateEventHandler());

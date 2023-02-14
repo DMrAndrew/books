@@ -19,9 +19,7 @@ class CreateTypesTable extends Migration
         Schema::create('books_catalog_types', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->string('name');
-            $table->string('desc')->nullable();
-            $table->boolean('active')->default(true);
+            $table->unsignedTinyInteger('type');
             $table->integer('sort_order')->default(0);
             $table->timestamps();
         });

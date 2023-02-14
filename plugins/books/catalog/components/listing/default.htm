@@ -1,0 +1,9 @@
+<!-- Тело страницы "Список книг" -->
+{{ form_ajax('onSearch')}}
+<div id="listing-form">
+    {% partial '@listing-form-view' bind=bind %}
+    <script>
+        oc.request('#listing-form','listing::onInitQueryString')
+    </script>
+</div>
+{{ form_close() }}
