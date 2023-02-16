@@ -32,6 +32,6 @@ class Genres extends ComponentBase
 
     public function allGenres()
     {
-        return $this->parented(child: true)->split(4);
+        return $this->parented(child: true);
     }
 }

@@ -21,7 +21,7 @@ enum EditionsEnums: int
             self::Ebook => 'Электронная книга',
             self::Audio => 'Аудиокниги',
             self::Physic => 'Бумажная книга',
-            self::Comics => 'Комикс книга',
+            self::Comics => 'Комикс',
         };
     }
 
