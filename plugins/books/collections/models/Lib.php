@@ -59,4 +59,9 @@ class Lib extends Model
     {
         return static::where('created_at', '<=', now()->subWeeks(2));
     }
+
+    protected function beforeDelete()
+    {
+        $this->favorites()->delete();
+    }
 }

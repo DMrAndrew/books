@@ -179,17 +179,21 @@
             </div>
             {% endif %}
             <!-- Карточка книги -->
-            <!--                    <div class="library-placeholder wrapper">-->
-            <!--                        <svg class="square-32">-->
-            <!--                            <use-->
-            <!--                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme }}"></use>-->
-            <!--                        </svg>-->
-            <!--                        <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Ничего не найдено</div>-->
-            <!--                        -->
-            <!--                    </div>-->
+
+            {% if bind.books.first() %}
             {% for book in bind.books %}
             {% ajaxPartial "bookCard::standard-card" book=book %}
             {% endfor %}
+            {% else %}
+            <div class="library-placeholder wrapper">
+                <svg class="square-32">
+                    <use
+                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme }}"></use>
+                </svg>
+                <div class="ui-text-head--3 ui-text--bold">Ничего не найдено</div>
+
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -61,7 +61,7 @@ class LibraryService
 
     public function remove()
     {
-
+        return $this->has() && $this->get()->delete();
     }
 
     public function is(CollectionEnum $type)
@@ -78,6 +78,7 @@ class LibraryService
     {
         return ($this->build()?->first() ?? $this->add())->favorable;
     }
+
 
     public function add()
     {
