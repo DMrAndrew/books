@@ -156,7 +156,17 @@ class Profile extends Model
 
     public function getIsCurrentAttribute(): bool
     {
-        return (bool)$this->user->current_profile_id == $this->id;
+        return $this->user->current_profile_id == $this->id;
+    }
+
+    public function acceptClipboardUsername()
+    {
+        $this->service()->replaceUsernameFromClipboard();
+    }
+
+    public function rejectClipboardUsername()
+    {
+        $this->service()->replaceUsernameFromClipboard(reject: true);
     }
 
     public function authorshipsAs(?bool $is_owner): HasMany

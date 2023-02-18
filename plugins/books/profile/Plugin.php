@@ -105,19 +105,24 @@ class Plugin extends PluginBase
             $controller->implementClassWith(Backend\Behaviors\RelationController::class);
 
             $controller->addDynamicMethod('onChangeUsername', function ($recordId) use ($controller) {
-                $model = $controller->formFindModelObject($recordId);
-                $model->acceptClipboardUsername();
-                Flash::success('Псевдоним пользователя успешно обновлён');
+                $model = ProfileModel::find(post('manage_id'));
+                if($model){
+                    $model->acceptClipboardUsername();
+                    Flash::success('Псевдоним пользователя успешно обновлён');
+                    return Redirect::refresh();
+                }
+                return  Flash::error('Профиль не найден');
 
-                return Redirect::refresh();
             });
 
             $controller->addDynamicMethod('onRejectUsername', function ($recordId) use ($controller) {
-                $model = $controller->formFindModelObject($recordId);
-                $model->rejectClipboardUsername();
-                Flash::success('Изменение псевдонима пользователя отклонено');
 
-                return Redirect::refresh();
+                $model = ProfileModel::find(post('manage_id'));
+                if($model){
+                    $model->rejectClipboardUsername();
+                    Flash::success('Изменение псевдонима пользователя отклонено');
+                    return Redirect::refresh();
+                }
             });
         });
     }

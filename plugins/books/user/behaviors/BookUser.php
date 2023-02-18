@@ -63,16 +63,6 @@ class BookUser extends ExtensionBase
         return $q->whereHas('profiles', fn($profile) => $profile->username($name));
     }
 
-    public function acceptClipboardUsername()
-    {
-        (new ProfileService($this->parent->profile))->replaceUsernameFromClipboard();
-    }
-
-    public function rejectClipboardUsername()
-    {
-        (new ProfileService($this->parent->profile))->replaceUsernameFromClipboard(reject: true);
-    }
-
     public function allowedSeeAdult(): bool
     {
         return $this->parent->asked_adult_agreement && $this->parent->birthday && $this->parent->see_adult;

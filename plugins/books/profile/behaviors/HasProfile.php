@@ -2,8 +2,6 @@
 
 namespace Books\Profile\Behaviors;
 
-
-use October\Rain\Database\Model;
 use RainLab\User\Models\User;
 use Books\Profile\Models\Profile;
 use October\Rain\Extension\ExtensionBase;
