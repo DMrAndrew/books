@@ -9,10 +9,14 @@ use Books\User\Classes\UserEventHandler;
 use Books\User\Components\AuthorSpace;
 use Books\User\Components\BookAccount;
 use Books\User\Components\Searcher;
-use Books\User\Models\Country;
+use Books\User\Models\Settings;
+use Carbon\Carbon;
+use Event;
 use Illuminate\Foundation\AliasLoader;
 use Monarobase\CountryList\CountryListFacade;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
+use RainLab\Location\Behaviors\LocationModel;
+use RainLab\Location\Models\Country;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
@@ -46,6 +50,9 @@ class Plugin extends PluginBase
     public function register()
     {
         //test
+        Event::listen('rainlab.user.register', function (User $model) {
+            (new UserEventHandler())->afterCreate($model->fresh());
+        });
     }
 
     /**
@@ -59,12 +66,10 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Search', Search::class);
         AliasLoader::getInstance()->alias('SearchManager', SearchManager::class);
         AliasLoader::getInstance()->alias('Country', Country::class);
-        AliasLoader::getInstance()->alias('Countries', CountryListFacade::class);
+        AliasLoader::getInstance()->alias('BookSettings', Settings::class);
         User::extend(function (User $model) {
             $model->implementClassWith(BookUser::class);
-            $model->bindEvent('model.afterCreate', function () use ($model) {
-                (new UserEventHandler())->afterCreate($model);
-            });
+            $model->implementClassWith(LocationModel::class);
         });
     }
 

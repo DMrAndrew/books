@@ -1,0 +1,31 @@
+<div class="buy-book-modal ui-modal ui-modal-scrollable-body overlay" data-modal="new-profile">
+    <form data-request="profile::onCreateProfile"
+          data-request-validate
+    >
+        <div class="ui-modal-container">
+            <div class="buy-book-modal__container _size-large ui-modal-content">
+                <div class="buy-book-modal__header">
+                    <div class="square-16 "></div>
+                    <div class="ui-text-head--2 ui-text--bold">Создать профиль</div>
+                    <svg data-modal="close" class="square-24 cursor-pointer">
+                        <use
+                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                    </svg>
+                </div>
+                <div class="ui-input">
+                    <input class="ui-input-item _size-32" name="username" placeholder="Псевдоним"
+                           required
+                           type="text">
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="username"></div>
+                </div>
+                <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                    <span class="ui-text--medium">Отправить</span>
+                </button>
+            </div>
+        </div>
+    </form>
+    <script>
+        openModal('[data-modal="new-profile"]', '[data-modal="open-new-profile-modal"]');
+    </script>
+</div>

@@ -5,7 +5,7 @@ description = "Личный кабинет - Уведомления"
 [session]
 security = "user"
 redirect = "/"
-[profileNotification]
+[notificationLC]
 ==
 {% partial 'profile/personal_area_header' %}
 <div class="personal-area">
@@ -19,7 +19,9 @@ redirect = "/"
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
                     </svg>
                 </div>
-                {% partial 'profile/notification' %}
+                <div id="lc-notification-form">
+                {% component 'notificationLC' %}
+                </div>
             </div>
         </div>
     </div>

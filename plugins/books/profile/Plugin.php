@@ -4,15 +4,20 @@ namespace Books\Profile;
 
 use Backend;
 use Books\Profile\Behaviors\HasProfile;
-use Books\Profile\Behaviors\Profileable;
+use Books\Profile\Behaviors\Masterable;
+use Books\Profile\Behaviors\Slavable;
 use Books\Profile\Classes\ProfileEventHandler;
 use Books\Profile\Components\Profile;
-use Books\Profile\Components\ProfileNotification;
-use Books\Profile\Components\ProfilePrivacy;
+use Books\Profile\Components\ProfileLC;
+use Books\Profile\Models\Profile as ProfileModel;
+use Books\Profile\Components\NotificationLC;
+use Books\Profile\Components\PrivacyLC;
+use Books\Profile\Models\Profiler;
 use Config;
 use Event;
 use Flash;
 use Illuminate\Foundation\AliasLoader;
+use October\Rain\Database\Model;
 use RainLab\User\Controllers\Users as UsersController;
 use RainLab\User\Models\User;
 use Redirect;
@@ -47,7 +52,7 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-        Event::listen('books.profile.username.modify.requested', fn ($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
+        Event::listen('books.profile.username.modify.requested', fn($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
     }
 
     /**
@@ -57,21 +62,31 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-        AliasLoader::getInstance()->alias('Profile', Models\Profile::class);
+        AliasLoader::getInstance()->alias('Profile', ProfileModel::class);
+        AliasLoader::getInstance()->alias('Profiler', Profiler::class);
         Config::set('profile', Config::get('books.profile::config'));
+
         User::extend(function (User $model) {
             $model->implementClassWith(HasProfile::class);
         });
+
+        foreach ([User::class, ProfileModel::class] as $class) {
+            $class::extend(function (Model $model) {
+                $model->implementClassWith(Masterable::class);
+            });
+
+        }
+
         foreach (config('profile.profileable') ?? [] as $class) {
             $class::extend(function ($model) {
-                $model->implementClassWith(Profileable::class);
-                $model->bindEvent('model.afterCreate', fn () => (new ProfileEventHandler())->createdProfilableModel($model));
-                $model->bindEvent('model.afterDelete', fn () => (new ProfileEventHandler())->deletedProfilableModel($model));
+                $model->implementClassWith(Slavable::class);
+                $model->bindEvent('model.afterCreate', fn() => $model->profilerService()->add());
+                $model->bindEvent('model.afterDelete', fn() => $model->profilerService()->remove());
             });
         }
 
         UsersController::extendFormFields(function ($form, $model, $context) {
-            if (! $model instanceof User) {
+            if (!$model instanceof User) {
                 return;
             }
             $form->addTabFields([
@@ -116,8 +131,9 @@ class Plugin extends PluginBase
     {
         return [
             Profile::class => 'profile',
-            ProfilePrivacy::class => 'profilePrivacy',
-            ProfileNotification::class => 'profileNotification',
+            ProfileLC::class => 'profileLC',
+            PrivacyLC::class => 'privacyLC',
+            NotificationLC::class => 'notificationLC',
         ];
     }
 

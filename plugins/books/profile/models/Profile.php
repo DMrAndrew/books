@@ -4,14 +4,18 @@ namespace Books\Profile\Models;
 
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
+use Books\Profile\Classes\ProfileService;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
 use October\Rain\Database\Relations\BelongsToMany;
 use October\Rain\Database\Relations\HasMany;
+use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 use System\Models\File;
+use System\Models\Revision;
+use ValidationException;
 use WordForm;
 
 /**
@@ -25,6 +29,7 @@ use WordForm;
 class Profile extends Model
 {
     use Validation;
+    use Revisionable;
 
     /**
      * @var string table associated with the model
@@ -35,6 +40,8 @@ class Profile extends Model
      * @var array guarded attributes aren't mass assignable
      */
     protected $guarded = ['*'];
+
+    protected $revisionable = ['username'];
 
     public static array $endingArray = ['Автор', 'Автора', 'Авторов'];
 
@@ -131,7 +138,9 @@ class Profile extends Model
 
     public $morphOne = [];
 
-    public $morphMany = [];
+    public $morphMany = [
+        'revision_history' => [Revision::class, 'name' => 'revisionable']
+    ];
 
     public $attachOne = [
         'banner' => [File::class],
@@ -140,14 +149,19 @@ class Profile extends Model
 
     public $attachMany = [];
 
+    public function service(): ProfileService
+    {
+        return new ProfileService($this);
+    }
+
     public function getIsCurrentAttribute(): bool
     {
-        return (bool) $this->user->current_profile_id == $this->id;
+        return (bool)$this->user->current_profile_id == $this->id;
     }
 
     public function authorshipsAs(?bool $is_owner): HasMany
     {
-        return $this->authorships()->when(! is_null($is_owner), fn (Builder $builder) => $is_owner ? $builder->owner() : $builder->notOwner());
+        return $this->authorships()->when(!is_null($is_owner), fn(Builder $builder) => $is_owner ? $builder->owner() : $builder->notOwner());
     }
 
     public function getFirstLatterAttribute(): string
@@ -157,12 +171,22 @@ class Profile extends Model
 
     public function scopeSearchByString(Builder $query, string $string): Builder
     {
-        return $query->where('username', 'like', "%$string%")->orWhere('id', 'like', "%$string%");
+        return $query->usernameLike($string)->orWhere('id', '=', $string);
+    }
+
+    public function scopeUsernameLike(Builder $builder, string $username): Builder
+    {
+        return $builder->where('username', 'like', "%$username%");
     }
 
     public function scopeUsername(Builder $builder, string $username): Builder
     {
         return $builder->where('username', '=', $username);
+    }
+
+    public function scopeUsernameClipboard(Builder $builder, string $string): Builder
+    {
+        return $builder->where('username_clipboard', '=', $string);
     }
 
     public function scopeUser(Builder $builder, User $user): Builder
@@ -172,12 +196,12 @@ class Profile extends Model
 
     public function isEmpty(): bool
     {
-        return ! collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn ($i) => (bool) $i);
+        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => (bool)$i);
     }
 
     public function isContactsEmpty(): bool
     {
-        return ! collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn ($i) => (bool) $i);
+        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn($i) => (bool)$i);
     }
 
     public function booksSortedByAuthorOrder(): BelongsToMany
@@ -189,4 +213,20 @@ class Profile extends Model
     {
         return new WordForm(...self::$endingArray);
     }
+
+    public function isUsernameExists(string $string): bool
+    {
+        return $this->user->profiles()->username($string)->exists() || $this->user->profiles()->usernameClipboard($string)->exists();
+    }
+
+    protected function beforeCreate()
+    {
+        if ($this->user->profiles()->count() > 3) {
+            throw new ValidationException(['username' => 'Превышен лимит профилей.']);
+        }
+        if ($this->isUsernameExists($this->username)) {
+            throw new ValidationException(['username' => 'Псевдоним уже занят.']);
+        }
+    }
+
 }

@@ -1,12 +1,11 @@
 <?php
 
-use Books\Profile\Models\ProfileSettings;
 use Books\Reviews\Models\Review;
-use Mobecan\Favorites\Models\Favorite;
+use Books\User\Models\Settings;
 
 return [
     'profileable' => [
         Review::class,
-        ProfileSettings::class,
+        Settings::class,
     ],
 ];

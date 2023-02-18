@@ -3,6 +3,7 @@
 namespace Books\Profile\Components;
 
 use Books\User\Classes\SettingsTagEnum;
+use Books\User\Classes\UserSettingsEnum;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -12,7 +13,7 @@ use RainLab\User\Models\User;
  *
  * @link https://docs.octobercms.com/3.x/extend/cms-components.html
  */
-class ProfileNotification extends ComponentBase
+class NotificationLC extends ComponentBase
 {
     protected User $user;
 
@@ -33,15 +34,12 @@ class ProfileNotification extends ComponentBase
             return $redirect;
         }
         $this->user = Auth::getUser();
-        $this->page['settings'] = $this->getNotifySettings();
+        $this->page['settings'] = $this->getSettings();
     }
 
-    public function getNotifySettings()
+    public function getSettings()
     {
-        return [
-            'profilable' => $this->user->profileSettings->filter->hasTag(SettingsTagEnum::NOTIFICATION),
-            'accountable' => $this->user->accountSettings->filter->hasTag(SettingsTagEnum::NOTIFICATION),
-        ];
+        return $this->user->settings()->notify()->get();
     }
 
     /**
@@ -57,12 +55,11 @@ class ProfileNotification extends ComponentBase
     public function onUpdateNotify()
     {
         collect(post('options'))->each(function ($option, $key) {
-            $this->user->settings()->updateOrCreate(['setting_id' => $key], ['value' => $option]);
-            $this->user->refresh();
+            $this->user->settings()->type(UserSettingsEnum::tryFrom($key))->first()?->update(['value' => $option]);
         });
 
         return [
-            'profile/notification' => $this->renderPartial('profile/notification', ['settings' => $this->getNotifySettings()]),
+            '#lc-notification-form' => $this->renderPartial('@default', ['settings' => $this->getSettings()]),
         ];
     }
 }

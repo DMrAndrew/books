@@ -2,6 +2,7 @@
 
 namespace Books\Profile\Updates;
 
+use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
 use Schema;
 
@@ -12,13 +13,13 @@ class CreateProfilersTable extends Migration
         if (Schema::hasTable('books_profile_profilers')) {
             return;
         }
-        Schema::create('books_profile_profilers', function ($table) {
+        Schema::create('books_profile_profilers', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->integer('profile_id')->unsigned();
-            $table->string('entity_type');
-            $table->json('ids')->default('[]');
-            $table->index(['profile_id', 'entity_type']);
+            $table->morphs('master');
+            $table->string('slave_type');
+            $table->json('slave_ids')->default('[]');
+            $table->index(['master_id', 'master_type', 'slave_type']);
         });
     }
 

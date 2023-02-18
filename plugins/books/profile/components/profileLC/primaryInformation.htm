@@ -1,4 +1,4 @@
-<div  class="personal-area__wrapper">
+<div class="personal-area__wrapper">
     <div class="personal-area__wrap _indent-large ui-text--bold ui-text-head--2">Основная информация</div>
     <div class="personal-area__wrap _indent-small">Фото профиля</div>
     <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">
@@ -9,7 +9,10 @@
 
     <div class="personal-area__wrap _separator"></div>
     <div class="personal-area__wrap _indent-small">Баннер</div>
-    <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">Это изображение показывается в верхней части вашего профиля. Чтобы фотография выглядела привлекательно на всех устройствах, загружайте изображение размером не менее 1152x160 пикселей.</div>
+    <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">Это изображение показывается в верхней
+        части вашего профиля. Чтобы фотография выглядела привлекательно на всех устройствах, загружайте изображение
+        размером не менее 1152x160 пикселей.
+    </div>
 
     <div>
         {% component 'bannerUploader' %}
@@ -23,14 +26,19 @@
     }) }}
 
     <div class="personal-area__wrap _indent-small">Имя или псевдоним</div>
-    <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">Имя или псевдоним можно изменить через администратора.
-        <a onclick="openChangerUserNameForm()" class="ui-link _violet" style="cursor: pointer">Изменить</a></div>
+    <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">Имя или псевдоним можно изменить через
+        администратора.
+        <a data-modal="open-username-change" class="ui-link _violet" style="cursor: pointer">Изменить</a></div>
     <div class="personal-area__wrap">{{userdata.profile.username}}</div>
     {% if userdata.profile.username_clipboard %}
-    <div class="personal-area__wrap" > <span class="_color-gray ui-text-body--3">Новый псевдоним:</span> {{userdata.profile.username_clipboard}}</div>
+    <div class="personal-area__wrap"><span class="_color-gray ui-text-body--3">Новый псевдоним:</span>
+        {{userdata.profile.username_clipboard}}
+    </div>
     {% endif %}
     {% if userdata.profile.username_clipboard_comment %}
-    <div class="personal-area__wrap" > <span class="_color-gray ui-text-body--3"> Причина изменения: </span> {{userdata.profile.username_clipboard_comment}}</div>
+    <div class="personal-area__wrap"><span class="_color-gray ui-text-body--3"> Причина изменения: </span>
+        {{userdata.profile.username_clipboard_comment}}
+    </div>
     {% endif %}
     <div class="personal-area__wrap _separator"></div>
 
@@ -53,6 +61,6 @@
     <div class="personal-area__wrap _separator"></div>
 
     <button class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить</button>
-{{ form_close() }}
+    {{ form_close() }}
 </div>
 

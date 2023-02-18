@@ -1,4 +1,4 @@
-1.0.1:
+1.0.0:
     - 'Профили'
     - create_profilers_table.php
     - create_profiles_table.php

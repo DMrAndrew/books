@@ -8,7 +8,7 @@ enum PrivacySettingsEnum: string
     case SUBSCRIBERS = 'sub';
     case NONE = 'none';
 
-    public function getLabel()
+    public function label(): string
     {
         return match ($this) {
             self::ALL => 'Все',

@@ -2,7 +2,8 @@
 
 namespace Books\Profile\Models;
 
-use Model;
+use October\Rain\Database\Builder;
+use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 
 /**
@@ -19,6 +20,9 @@ class Profiler extends Model
      */
     public $table = 'books_profile_profilers';
 
+    const IDS_FIELD = 'slave_ids';
+
+
     /**
      * @var array guarded attributes aren't mass assignable
      */
@@ -27,7 +31,7 @@ class Profiler extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['profile_id', 'entity_type', 'ids'];
+    protected $fillable = ['slave_type', 'slave_ids'];
 
     /**
      * @var array rules for validation
@@ -43,7 +47,7 @@ class Profiler extends Model
      * @var array jsonable attribute names that are json encoded and decoded from the database
      */
     protected $jsonable = [
-        'ids',
+        'slave_ids',
     ];
 
     /**
@@ -75,7 +79,9 @@ class Profiler extends Model
 
     public $belongsToMany = [];
 
-    public $morphTo = [];
+    public $morphTo = [
+        'master' => []
+    ];
 
     public $morphOne = [];
 
@@ -87,6 +93,22 @@ class Profiler extends Model
 
     public function getIds()
     {
-        return $this->ids;
+        return $this->{self::IDS_FIELD};
     }
+
+    public function getIdsColumn(): string
+    {
+        return self::IDS_FIELD;
+    }
+
+    public function scopeSlaveType(Builder $builder, Model $model): Builder
+    {
+        return $builder->where('slave_type', '=', get_class($model));
+    }
+
+    public function scopeMasterType(Builder $builder, Model $model): Builder
+    {
+        return $builder->where('master_type', '=', get_class($model));
+    }
+
 }

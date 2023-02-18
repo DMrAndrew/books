@@ -2,15 +2,17 @@
 
 namespace Books\User\Models;
 
-use Books\User\Classes\SettingsTagEnum;
+
 use Books\User\Classes\UserSettingsEnum;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Models\User;
 
 /**
  * AccountSettings Model
  *
- * @property UserSettingsEnum $declaration
+ * @property UserSettingsEnum $type
  */
 class Settings extends Model
 {
@@ -21,34 +23,44 @@ class Settings extends Model
      */
     public $table = 'books_user_settings';
 
-    protected $appends = ['declaration'];
+    protected $fillable = ['type', 'value', 'user_id'];
 
-    protected $fillable = ['setting_id', 'value', 'user_id'];
+    protected $casts = [
+        'type' => UserSettingsEnum::class
+    ];
 
     /**
      * @var array rules for validation
      */
     public $rules = [
         'user_id' => 'required|exists:users,id',
-        'setting_id' => 'required|integer',
-        'value' => 'required',
+        'type' => 'required|integer',
     ];
 
-    public function getDeclarationAttribute(): ?UserSettingsEnum
+    public function scopePrivacy(Builder $builder)
     {
-        return UserSettingsEnum::tryFrom($this->setting_id);
+        return $builder->type(...UserSettingsEnum::privacy());
     }
 
-    public static function fromEnum(UserSettingsEnum $enum): static
+    public function scopeNotify(Builder $builder)
     {
-        return new static([
-            'setting_id' => $enum->value,
-            'value' => $enum->defaultValue(),
-        ]);
+        return $builder->type(...UserSettingsEnum::notify());
     }
 
-    public function hasTag(SettingsTagEnum $tag): bool
+    public function scopeType(Builder $builder, ?UserSettingsEnum ...$types): Builder
     {
-        return $this->declaration->tag() === $tag;
+        return $builder->whereIn('type', collect($types)->pluck('value')->toArray());
     }
+
+    public function scopeUser(Builder $builder, User $user): Builder
+    {
+        return $builder->where('user_id', '=', $user->id);
+    }
+
+
+    public function isAccountable(): bool
+    {
+        return $this->type->isAccountable();
+    }
+
 }

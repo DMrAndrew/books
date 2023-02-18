@@ -295,8 +295,8 @@ redirect = "/"
                     <li><a class="disabled" href="#">Коммерческий кабинет</a></li>
                     <li class="dropwdown-profile__separator"></li>
                     <li class="_dropdown-item">
-                        <a href="#">
-                            <span>Переключить аккаунт</span>
+                        <a class="cursor-pointer" style="justify-content: space-between">
+                            <span>Переключить профиль</span>
                             <svg class="square-16">
                                 <use
                                     xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
@@ -304,14 +304,28 @@ redirect = "/"
                         </a>
                         <div class="dropwdown-profile _dropdown">
                             <ul class="dropwdown-profile__list _dropdown">
-                                {% for profile in user.profiles_list %}
+                                <li data-modal="open-new-profile-modal">
+                                    <a class="dropwdown-profile__link active cursor-pointer">
+                                        <svg class="square-16">
+                                            <use
+                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#plus-stroked-16' | theme }}"></use>
+                                        </svg>
+                                        <span>Создать</span>
+                                    </a>
+                                </li>
+                                <li class="dropwdown-profile__separator"></li>
+                                {% for profile in user.profilesAsOptions %}
                                 <li>
-                                    <a href="#" class="dropwdown-profile__link active">
+                                    <a
+                                        {{profile.id != user.profile.id ? 'data-request="profile::onSwitchProfile"' : ''}}
+
+                                       data-request-data="profile_id:{{profile.id}}"
+                                       class="dropwdown-profile__link cursor-pointer {{profile.id == user.profile.id ? 'active' : ''}}">
                                         <svg class="square-16">
                                             <use
                                                 xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme }}"></use>
                                         </svg>
-                                        <span>{{profile.username}} </span>
+                                        <span>{{profile.username}} <span style="color: var(--color-dark-gray)">ID:{{profile.id}}</span> </span>
                                     </a>
                                 </li>
                                 {% endfor %}
@@ -331,6 +345,7 @@ redirect = "/"
         </div>
     </div>
 </div>
+{% partial 'modals/new-profile' %}
 
 <script>
     initUserStuff()

@@ -74,7 +74,7 @@
                                     <div class="ui-dropdown" data-tippy-block>
 
                                         <div class="ui-dropdown-container">
-                                            {% if item.type.value == 4 %}
+                                            {% if item.type.value == 4 and not lib.loved%}
                                             <div class="ui-dropdown-item active" onclick="switchLib({
                                             id:'{{lib.book.id}}',
                                             action:'loved'

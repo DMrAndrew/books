@@ -27,20 +27,10 @@ class ProfileEventHandler
             Mail::queue(
                 'books.profile::mail.modify_username_request',
                 $data,
-                fn ($msg) => $msg->to($recipient)
+                fn($msg) => $msg->to($recipient)
             );
         }
     }
 
-    public function createdProfilableModel($model): void
-    {
-        $profiler = $model->profiler();
-        $profiler->update(['ids' => array_merge($profiler->getIds(), [$model->id])]);
-    }
 
-    public function deletedProfilableModel($model): void
-    {
-        $profiler = $model->profiler();
-        $profiler->update(['ids' => array_values(array_diff($profiler->getIds(), [$model->id]))]);
-    }
 }

@@ -1,0 +1,39 @@
+<div id="change_username_form" class="buy-book-modal ui-modal ui-modal-scrollable-body overlay" data-modal="username-change">
+    <form data-request="profileLC::onUpdateUsername"
+          data-request-validate
+          data-request-success="document.location.reload()"
+    >
+        <div class="ui-modal-container">
+            <div class="buy-book-modal__container _size-large ui-modal-content">
+                <div class="buy-book-modal__header">
+                    <div class="square-16 "></div>
+                    <div class="ui-text-head--2 ui-text--bold">Изменить псевдоним</div>
+                    <svg data-modal="close" class="square-24 cursor-pointer">
+                        <use
+                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                    </svg>
+                </div>
+                <div class="ui-input">
+                    <input class="ui-input-item _size-32" name="username" placeholder="Псевдоним"
+                           value="{{userdata.profile.username}}"
+                           type="text">
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="username_clipboard"></div>
+                    <div class="ui-select-hitn"></div>
+                    <div class="ui-select-error" data-validate-for="username"></div>
+                </div>
+                <div class="personal-area__wrap _separator"></div>
+                <textarea name="username_clipboard_comment" class="ui-input-textarea" rows="3"
+                          placeholder="Укажите причину изменения псевдонима">{{ userdata.profile.username_clipboard_comment}}</textarea>
+
+
+                <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                    <span class="ui-text--medium">Отправить</span>
+                </button>
+            </div>
+        </div>
+    </form>
+    <script>
+        openModal('[data-modal="username-change"]', '[data-modal="open-username-change"]');
+    </script>
+</div>

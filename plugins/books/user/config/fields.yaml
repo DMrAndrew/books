@@ -19,10 +19,10 @@ tabs:
             mode: date
 
         country:
-            label: Страна
-            tab: rainlab.user::lang.user.account
-            span: auto
+            label: rainlab.location::lang.country.label
             type: dropdown
+            span: auto
+            placeholder: rainlab.location::lang.country.select
 
         send_invite:
             type: checkbox

@@ -21,8 +21,8 @@ class CreateAccountSettingsTable extends Migration
         Schema::create('books_user_settings', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->index();
-            $table->unsignedTinyInteger('setting_id')->index();
-            $table->string('value');
+            $table->unsignedTinyInteger('type')->index();
+            $table->string('value')->nullable();
             $table->timestamps();
         });
     }

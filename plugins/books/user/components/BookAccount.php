@@ -11,6 +11,7 @@ use October\Rain\Auth\AuthException;
 use RainLab\User\Components\Account;
 use RainLab\User\Components\Session;
 use RainLab\User\Facades\Auth;
+use Redirect;
 use Request;
 use Response;
 use ValidationException;
@@ -27,18 +28,25 @@ class BookAccount extends Account
 
     public function onLogout()
     {
+        $this->forgetCookie();
+        return (new Session())->onLogout();
+    }
+
+    public function forgetCookie()
+    {
         Cookie::queue(Cookie::forget(name: 'post_register_accepted'));
         Cookie::queue(Cookie::forget(name: 'adult_agreement_accepted'));
         Cookie::queue(Cookie::forget(name: 'loved_genres'));
         Cookie::queue(Cookie::forget(name: 'unloved_genres'));
 
-        return (new Session())->onLogout();
     }
 
     public function onSignin()
     {
         try {
-            return parent::onSignin();
+            $redirect = parent::onSignin();
+            $this->forgetCookie();
+            return $redirect;
         } catch (AuthException $authException) {
             throw new ValidationException(['auth' => $authException->getMessage()]);
         }
@@ -47,7 +55,7 @@ class BookAccount extends Account
     public function should_adult_agreement(): bool
     {
         $user = $this->user();
-        if ($user && $user->birthday && $user->asked_adult_agreement !== 1 && ! $user->required_post_register) {
+        if ($user && $user->birthday && $user->asked_adult_agreement !== 1 && !$user->required_post_register) {
             return abs(Carbon::now()->diffInYears($user->birthday)) > 17;
         }
 
@@ -60,7 +68,7 @@ class BookAccount extends Account
         $val = $action === 'accept' ? 1 : 0;
         $this->user()->update(['see_adult' => $val, 'asked_adult_agreement' => 1]);
 
-        return ['#adult_modal_spawn' => ''];
+        return Redirect::refresh();
     }
 
     public function onPageLoad()
@@ -81,7 +89,7 @@ class BookAccount extends Account
         }
 
         $response = Response::make($partials);
-        collect($cookies)->each(fn ($cookie) => $response->withCookie($cookie));
+        collect($cookies)->each(fn($cookie) => $response->withCookie($cookie));
 
         return $response;
     }
@@ -92,7 +100,8 @@ class BookAccount extends Account
             return Db::transaction(function () {
                 $redirect = $this->onRegister();
                 $user = Auth::getUser();
-                $user->update(['required_post_register' => 0], ['force' => true]);
+                $user->update(['required_post_register' => 0]);
+                $this->forgetCookie();
 
                 return $redirect;
             });

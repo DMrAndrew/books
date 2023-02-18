@@ -2,37 +2,24 @@
 
 namespace Books\User\Behaviors;
 
-use Books\Book\Models\Book;
-use Books\Book\Models\Cycle;
-use Books\Book\Models\Tag;
-use Books\Profile\Classes\ProfileManager;
-use Books\Profile\Models\ProfileSettings;
-use Books\User\Classes\BirthdayAttributeCasts;
-use Books\User\Classes\ProfileAttributeCasts;
-use Books\User\Models\AccountSettings;
-use Books\User\Models\Country;
-use Books\User\Models\Settings;
 use Carbon\Carbon;
-use October\Rain\Extension\ExtensionBase;
+use Books\Book\Models\Tag;
+use Books\Book\Models\Cycle;
 use RainLab\User\Models\User;
+use Books\User\Models\Settings;
+use October\Rain\Extension\ExtensionBase;
+use Books\Profile\Classes\ProfileService;
 
 class BookUser extends ExtensionBase
 {
     public function __construct(protected User $parent)
     {
-        $this->parent->belongsTo['country'] = [Country::class, 'key' => 'country_id', 'otherKey' => 'id'];
         $this->parent->hasMany['tags'] = [Tag::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['cycles'] = [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['settings'] = [Settings::class, 'key' => 'user_id', 'otherKey' => 'id'];
-        $this->parent->hasMany['accountSettings'] = [AccountSettings::class, 'key' => 'user_id', 'otherKey' => 'id'];
-        $this->parent->hasMany['profileSettings'] = [ProfileSettings::class, 'key' => 'user_id', 'otherKey' => 'id'];
-        $this->parent->hasMany['books'] = [Book::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->addValidationRule('birthday', 'nullable');
         $this->parent->addValidationRule('birthday', 'date');
-        $this->parent->addValidationRule('show_birthday', 'nullable');
         $this->parent->addValidationRule('show_birthday', 'boolean');
-        $this->parent->addValidationRule('country_id', 'nullable');
-        $this->parent->addValidationRule('country_id', 'exists:books_user_countries,id');
         $this->parent->addFillable([
             'birthday',
             'show_birthday',
@@ -46,10 +33,6 @@ class BookUser extends ExtensionBase
             'asked_adult_agreement',
         ]);
         $this->parent->addDateAttribute('birthday');
-        $this->parent->addCasts([
-            'username' => ProfileAttributeCasts::class,
-            'birthday' => BirthdayAttributeCasts::class,
-        ]);
         $this->parent->addJsonable([
             'favorite_genres',
             'exclude_genres',
@@ -60,7 +43,9 @@ class BookUser extends ExtensionBase
 
     public function setBirthdayAttribute($value)
     {
-        $this->parent->attributes['birthday'] = Carbon::parse($value);
+        if ($value && !$this->parent->birthday) {
+            $this->parent->attributes['birthday'] = Carbon::parse($value);
+        }
     }
 
     public function getNameAttribute()
@@ -68,33 +53,24 @@ class BookUser extends ExtensionBase
         return $this->parent->username;
     }
 
-    public function scopeCoauthorsAutocomplite($q, $name)
+    public function scopeUsernameLike($q, $name)
     {
-        return $q->whereHas('profiles', function ($query) use ($name) {
-            return $query->where('username', 'like', "%$name%");
-        });
+        return $q->whereHas('profiles', fn($profile) => $profile->usernameLike($name));
     }
 
     public function scopeUsername($q, $name)
     {
-        return $q->whereHas('profiles', function ($query) use ($name) {
-            return $query->where('username', '=', $name);
-        });
+        return $q->whereHas('profiles', fn($profile) => $profile->username($name));
     }
 
     public function acceptClipboardUsername()
     {
-        (new ProfileManager())->replaceUsernameFromClipboard(user: $this->parent);
+        (new ProfileService($this->parent->profile))->replaceUsernameFromClipboard();
     }
 
     public function rejectClipboardUsername()
     {
-        (new ProfileManager())->replaceUsernameFromClipboard(user: $this->parent, reject: true);
-    }
-
-    public function getCountryOptions(): array
-    {
-        return Country::lists('name', 'id');
+        (new ProfileService($this->parent->profile))->replaceUsernameFromClipboard(reject: true);
     }
 
     public function allowedSeeAdult(): bool
