@@ -1,8 +1,7 @@
-{% set href_link =  is_not_public_view ? '/about-book/' : '/book-card/' %}
 <div class="book-card">
     <div class="book-card__body">
         <div class="book-card__column-left">
-            <a data-turbo="false" href="{{href_link~book.id}}">
+            <a  href="/book-card/{{book.id}}">
                 <img class="book-card__image" src="{{book.cover.getThumb(104,150)}}" alt="" loading="lazy">
             </a>
 
@@ -24,7 +23,7 @@
         <div class="book-card__column-right">
             {% if is_not_public_view %}
             <div class="book-card__action">
-                <a data-turbo="false" href="{{href_link~book.id}}"
+                <a data-turbo="false" href="/about-book/{{book.id}}"
                    class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">
                     <svg class="square-16">
                         <use
