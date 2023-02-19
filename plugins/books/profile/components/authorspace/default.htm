@@ -31,10 +31,9 @@
                         </button>
                     </a>
                     {% else %}
-                    <button
-                        class="author-promo-info__button _half ui-button ui-button-size--32 ui-button-view--2">
-                        Подписаться
-                    </button>
+                    <div id="sub-button">
+                        {% partial '@sub-button' sub=profile.subscribers_exists %}
+                    </div>
                     <!--                    <button-->
                     <!--                        class="author-promo-info__button _half ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3">Сообщение</button>-->
                     <!--                    <button class="author-promo-info__button _full ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3">Поддержать-->
@@ -53,7 +52,7 @@
                     <div class="ui-tabs-line"></div>
                     <div class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
                         <div class="ui-tabs-link active" data-tab="1">Профиль</div>
-                        <div class="ui-tabs-link " data-tab="2">Книги <span> {{ books_count|default(' ') }} </span>
+                        <div class="ui-tabs-link " data-tab="2">Книги <span> {{ books_count }} </span>
                         </div>
 
                         <!--                        <div class="ui-tabs-link " data-tab="3">Магазин<span>12</span></div>-->
@@ -78,7 +77,7 @@
         </div>
         <div class="ui-tabs-content" data-tab-content="2">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Книги <span
-                class="ui-text-body--2"> {{ books_count|default('') }}</span></div>
+                class="ui-text-body--2"> {{ books_count }}</span></div>
         </div>
     </div>
     <div class="ui-grid-container ui-grid-gap">

@@ -19,7 +19,7 @@ class SearchManager
     {
         //TODO ->booksExists() для профиля
         $res = Search::add(Book::public()->defaultEager(), 'title')
-            ->add(Profile::query()->booksCount()->with(['avatar']), 'username')
+            ->add(Profile::query()->booksCount()->withSubscriberCount()->with(['avatar']), 'username')
             ->includeModelType()
             ->orderByModel([
                 Book::class, Profile::class])

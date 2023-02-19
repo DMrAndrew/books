@@ -7,6 +7,7 @@ use Books\Profile\Behaviors\HasProfile;
 use Books\Profile\Behaviors\Masterable;
 use Books\Profile\Behaviors\Slavable;
 use Books\Profile\Classes\ProfileEventHandler;
+use Books\Profile\Components\AuthorSpace;
 use Books\Profile\Components\Profile;
 use Books\Profile\Components\ProfileLC;
 use Books\Profile\Models\Profile as ProfileModel;
@@ -139,6 +140,7 @@ class Plugin extends PluginBase
             ProfileLC::class => 'profileLC',
             PrivacyLC::class => 'privacyLC',
             NotificationLC::class => 'notificationLC',
+            AuthorSpace::class => 'author_space'
         ];
     }
 

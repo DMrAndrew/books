@@ -3,3 +3,6 @@
     - create_profilers_table.php
     - create_profiles_table.php
     - users_add_profile_column.php
+1.0.2:
+    - 'Подписки'
+    - create_subscribers_table.php

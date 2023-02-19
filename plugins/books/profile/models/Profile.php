@@ -5,6 +5,7 @@ namespace Books\Profile\Models;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Profile\Classes\ProfileService;
+use Books\Profile\Traits\Subscribable;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
@@ -22,6 +23,8 @@ use WordForm;
  * Profile Model
  *
  * @method BelongsToMany books
+ * @method BelongsToMany subscribers
+ * @method BelongsToMany subscriptions
  * @method HasMany authorships
  * @method AttachOne banner
  * @method AttachOne avatar
@@ -30,6 +33,7 @@ class Profile extends Model
 {
     use Validation;
     use Revisionable;
+    use Subscribable;
 
     /**
      * @var string table associated with the model
@@ -132,6 +136,8 @@ class Profile extends Model
             'otherKey' => 'book_id',
             'pivot' => ['percent', 'sort_order', 'is_owner'],
         ],
+        'subscribers' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'profile_id', 'otherKey' => 'subscriber_id'],
+        'subscriptions' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'subscriber_id', 'otherKey' => 'profile_id'],
     ];
 
     public $morphTo = [];
@@ -248,5 +254,6 @@ class Profile extends Model
             throw new ValidationException(['username' => 'Псевдоним уже занят.']);
         }
     }
+
 
 }

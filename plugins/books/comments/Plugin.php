@@ -1,6 +1,7 @@
 <?php namespace Books\Comments;
 
 use Backend;
+use Books\Book\Models\Book;
 use Books\Comments\behaviors\Commentable;
 use Books\Comments\Components\Comments;
 use Books\Comments\Models\Comment;
@@ -45,7 +46,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-        foreach ([Profile::class] as $class) {
+        foreach ([Profile::class,Book::class] as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Commentable::class);
             });

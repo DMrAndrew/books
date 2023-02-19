@@ -3,6 +3,7 @@
 namespace Books\Book\Components;
 
 use Books\Book\Models\Book;
+use Books\Comments\Components\Comments;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -51,5 +52,8 @@ class BookPage extends ComponentBase
         $this->user->library($this->book)->get(); //Добавить в библиотеку
         $this->book = Book::query()->defaultEager()->find($this->book->id);
         $this->page['book'] = $this->book;
+        $comments = $this->addComponent(Comments::class, 'comments');
+        $comments->bindModel($this->book);
+        $comments->bindModelOwner($this->book->profile);
     }
 }

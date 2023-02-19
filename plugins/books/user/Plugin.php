@@ -80,7 +80,6 @@ class Plugin extends PluginBase
     {
         return [
             BookAccount::class => 'bookAccount',
-            AuthorSpace::class => 'author_space',
             Searcher::class => 'searcher',
         ];
     }
