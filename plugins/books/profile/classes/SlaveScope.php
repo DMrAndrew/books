@@ -19,14 +19,8 @@ class SlaveScope implements Scope
     {
 
         if ($user = $this->getQueryUser($builder)) {
-            $ids = collect([$user, $user->profile])
-                ->map->profiler($model)
-                ->map->getIds()
-                ->flatten(1)
-                ->toArray();
-            $builder->whereIn('id', $ids);
-
-
+            $builder->whereIn('id', $user->profiler($model)->select('slave_id'))
+                ->orWhereIn('id', $user->profile->profiler($model)->select('slave_id'));
         }
     }
 

@@ -15,11 +15,9 @@ class CreateProfilersTable extends Migration
         }
         Schema::create('books_profile_profilers', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->morphs('master');
-            $table->string('slave_type');
-            $table->json('slave_ids')->default('[]');
-            $table->index(['master_id', 'master_type', 'slave_type']);
+            $table->morphs('master', 'master');
+            $table->morphs('slave', 'slave');
+            $table->primary(['master_type', 'slave_type']);
         });
     }
 

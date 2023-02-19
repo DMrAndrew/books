@@ -15,19 +15,7 @@ class Masterable extends ExtensionBase
 
     public function profiler(Model $model)
     {
-        if (!$this->model->hasProfiler($model)) {
-            $this->model->addProfiler($model);
-        }
-        return $this->model->profilers()->slaveType($model)->first();
+        return $this->model->profilers()->slaveType($model);
     }
 
-    public function addProfiler(Model $model)
-    {
-        return $this->model->profilers()->add(new Profiler(['slave_type' => get_class($model)]));
-    }
-
-    public function hasProfiler(Model $model)
-    {
-        return $this->model->profilers()->slaveType($model)->exists();
-    }
 }

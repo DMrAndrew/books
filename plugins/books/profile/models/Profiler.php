@@ -4,10 +4,14 @@ namespace Books\Profile\Models;
 
 use October\Rain\Database\Builder;
 use October\Rain\Database\Model;
+use October\Rain\Database\Relations\MorphMany;
 use October\Rain\Database\Traits\Validation;
 
 /**
  * Profiler Model
+ *
+ * @method MorphMany master
+ * @method MorphMany slave
  */
 class Profiler extends Model
 {
@@ -20,7 +24,6 @@ class Profiler extends Model
      */
     public $table = 'books_profile_profilers';
 
-    const IDS_FIELD = 'slave_ids';
 
 
     /**
@@ -31,7 +34,7 @@ class Profiler extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['slave_type', 'slave_ids'];
+    protected $fillable = [];
 
     /**
      * @var array rules for validation
@@ -46,9 +49,7 @@ class Profiler extends Model
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
      */
-    protected $jsonable = [
-        'slave_ids',
-    ];
+    protected $jsonable = [];
 
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
@@ -80,7 +81,8 @@ class Profiler extends Model
     public $belongsToMany = [];
 
     public $morphTo = [
-        'master' => []
+        'master' => [],
+        'slave' => [],
     ];
 
     public $morphOne = [];
@@ -91,15 +93,6 @@ class Profiler extends Model
 
     public $attachMany = [];
 
-    public function getIds()
-    {
-        return $this->{self::IDS_FIELD};
-    }
-
-    public function getIdsColumn(): string
-    {
-        return self::IDS_FIELD;
-    }
 
     public function scopeSlaveType(Builder $builder, Model $model): Builder
     {
