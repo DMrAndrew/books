@@ -154,7 +154,7 @@ class Profile extends Model
         return new ProfileService($this);
     }
 
-    public function scopeBookExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    public function scopeBooksExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
         return $builder->whereHas('books', fn($book) => $book->public());
     }

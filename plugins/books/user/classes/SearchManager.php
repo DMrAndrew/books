@@ -17,8 +17,9 @@ class SearchManager
 
     public function apply(string $query): \October\Rain\Support\Collection|\Illuminate\Support\Collection
     {
+        //TODO ->booksExists() для профиля
         $res = Search::add(Book::public()->defaultEager(), 'title')
-            ->add(Profile::query()->bookExists()->booksCount()->with(['avatar']), 'username')
+            ->add(Profile::query()->booksCount()->with(['avatar']), 'username')
             ->includeModelType()
             ->orderByModel([
                 Book::class, Profile::class])

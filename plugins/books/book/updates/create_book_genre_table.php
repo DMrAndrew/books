@@ -14,8 +14,9 @@ class CreateBookGenreTable extends Migration
             $table->integer('book_id')->unsigned()->index();
             $table->integer('genre_id')->unsigned()->index();
             $table->integer('rate_number')->nullable();
-            $table->json('rate_history')->nullable();
+//            $table->json('rate_history')->nullable();
             $table->primary(['book_id', 'genre_id']);
+            $table->unique(['genre_id','rate_number']);
             $table->softDeletes();
         });
     }

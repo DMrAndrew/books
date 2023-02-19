@@ -155,8 +155,10 @@ class Book extends Model
         'genres' => [
             Genre::class,
             'table' => 'books_book_genre',
+            'pivotModel' => BookGenre::class,
             'key' => 'book_id',
             'otherKey' => 'genre_id',
+            'pivot' => ['rate_number']
         ],
         'tags' => [
             Tag::class,
