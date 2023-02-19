@@ -11,19 +11,13 @@ class Commentable extends ExtensionBase
 {
     public function __construct(protected Model $model)
     {
-        $this->model->morphToMany['comments'] = [Comment::class, 'name' => 'commentable'];
+        $this->model->morphMany['comments'] = [Comment::class, 'name' => 'commentable'];
     }
 
     public function addComment(User $user, array $payload)
     {
         $payload['user_id'] = $user->id;
-        return $this->model->comments()->add(new Comment($payload));
-    }
-
-    public function replay(Comment $comment, User $user, array $payload)
-    {
-        $payload['parent_id'] = $comment->id;
-        return $this->model->addComment($user, $payload);
+        return $this->model->comments()->create($payload);
     }
 
     public function deleteComment(Comment $comment)

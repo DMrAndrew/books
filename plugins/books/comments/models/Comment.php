@@ -37,4 +37,9 @@ class Comment extends Model
         'commentable' => []
     ];
 
+    protected static function booted()
+    {
+        static::addGlobalScope('orderByDesc',fn($q) => $q->orderByDesc('id'));
+    }
+
 }

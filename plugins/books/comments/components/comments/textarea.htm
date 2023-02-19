@@ -1,4 +1,8 @@
-<form class="comments-form__container">
-    <textarea class="comments-form__textarea" placeholder="Оставьте комментарий"></textarea>
-    <button class="ui-button ui-button-size--32 ui-button-view--2 disabled">Отправить</button>
+{{ form_ajax('onComment',{
+class:'comments-form__container',
+}) }}
+<input type="hidden" name="parent_id" value="{{parent_id}}">
+<textarea class="comments-form__textarea" name="content" placeholder="Оставьте комментарий"></textarea>
+<button class="ui-button ui-button-size--32 ui-button-view--2 disabled" type="submit">Отправить</button>
 </form>
+{{ form_close() }}

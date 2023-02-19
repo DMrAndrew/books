@@ -1,6 +1,8 @@
 <?php namespace Books\Comments\Components;
 
 use Books\Comments\behaviors\Commentable;
+use Books\Comments\Models\Comment;
+use Books\Profile\Models\Profile;
 use Closure;
 use Cms\Classes\ComponentBase;
 use Exception;
@@ -17,6 +19,7 @@ class Comments extends ComponentBase
 {
     protected Model $model;
     protected ?User $user;
+    protected Profile $owner;
 
     public function componentDetails()
     {
@@ -41,7 +44,25 @@ class Comments extends ComponentBase
 
     public function prepareVals()
     {
-        $this->page['user'] = $this->user;
+        foreach ($this->vals() as $key => $val) {
+            $this->page[$key] = $val;
+        }
+        $this->page['comments'] = $this->queryComments()->get()->toNested();
+        $this->page['comments_count'] = $this->queryComments()->count();
+    }
+
+    public function vals(): array
+    {
+        return [
+            'user' => $this->user,
+            'owner' => $this->owner
+        ];
+
+    }
+
+    public function queryComments()
+    {
+        return $this->model->comments()->with(['profile.avatar', 'children']);
     }
 
     /**
@@ -58,7 +79,16 @@ class Comments extends ComponentBase
         if (!$this->model->isClassExtendedWith(Commentable::class)) {
             throw new Exception(get_class($this->model) . ' must be extended with ' . Commentable::class . ' behavior.');
         }
+    }
+
+    public function bindModelOwner(Closure|Profile $model)
+    {
+        if (is_callable($model)) {
+            $model = $model();
+        }
+        $this->owner = $model;
         $this->prepareVals();
+
     }
 
     public function onComment()
@@ -67,15 +97,17 @@ class Comments extends ComponentBase
             return;
         }
         $payload = post();
-        $parent = $this->model->comments()->find(post('parent_id'));
-        $comment = null;
-        if ($parent) {
-            $this->model->reply($parent, $this->user, $payload);
-            $comment = $parent;
-        } else {
-            $comment = $this->model->addComment($this->user, $payload);
+        if (!$this->model->comments()->find(post('parent_id'))) {
+            unset($payload['parent_id']);
         }
-        $comment = $this->model->comments()->with(['profile:id,avatar,username','children'])->find($comment->id);
+        $comment = $this->model->addComment($this->user, $payload);
 
+        $this->prepareVals();
+        return [
+            '.comments-spawn' => $this->renderPartial('@default')
+        ];
     }
+
+    public function onEdit(){}
+    public function onRemove(){}
 }

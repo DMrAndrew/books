@@ -18,7 +18,7 @@ return new class extends Migration {
         Schema::create('books_comments_comments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->index();
-            $table->unsignedBigInteger('parent_id');
+            $table->unsignedBigInteger('parent_id')->nullable()->index();
             $table->morphs('commentable');
             $table->text('content');
             $table->softDeletes();

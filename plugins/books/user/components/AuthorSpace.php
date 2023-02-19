@@ -35,8 +35,9 @@ class AuthorSpace extends ComponentBase
         if (!$this->profile = Profile::find($this->profile_id) ?? Auth::getUser()?->profile) {
             abort(404);
         }
-        $comments = $this->addComponent(Comments::class,'comments');
+        $comments = $this->addComponent(Comments::class, 'comments');
         $comments->bindModel($this->profile);
+        $comments->bindModelOwner($this->profile);
         $this->prepareVals();
     }
 

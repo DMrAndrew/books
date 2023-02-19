@@ -50,9 +50,6 @@ class Plugin extends PluginBase
                 $model->implementClassWith(Commentable::class);
             });
         }
-        Comment::extend(function (Comment $comment) {
-            $comment->implementClassWith(Slavable::class);
-        });
     }
 
     /**

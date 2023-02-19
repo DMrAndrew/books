@@ -24,7 +24,8 @@
         "protonemedia/laravel-cross-eloquent-search": "^3.1",
         "monarobase/country-list": "^3.3",
         "books/collections-plugin": "*",
-        "rainlab/location-plugin": "^1.2"
+        "rainlab/location-plugin": "^1.2",
+        "books/comments-plugin": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -102,6 +103,10 @@
         "book/collections-plugin": {
             "type": "path",
             "url": "./plugins/books/collections"
+        },
+        "books/comments-plugin": {
+            "type": "path",
+            "url": "./plugins/books/comments"
         }
     }
 }
