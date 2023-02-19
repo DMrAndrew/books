@@ -70,7 +70,7 @@ class Edition extends Model
     public $rules = [
         'type' => 'required|integer',
         'price' => 'filled|integer|min:0|max:9999',
-        'free_parts' => 'filled|integer|min:0',
+        'free_parts' => 'filled|integer',
         'download_allowed' => 'boolean',
         'comment_allowed' => 'boolean',
         'sales_free' => 'boolean',

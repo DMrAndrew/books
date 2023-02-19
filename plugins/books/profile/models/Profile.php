@@ -154,6 +154,16 @@ class Profile extends Model
         return new ProfileService($this);
     }
 
+    public function scopeBookExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('books', fn($book) => $book->public());
+    }
+
+    public function scopeBooksCount(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->withCount(['books' => fn($book) => $book->public()]);
+    }
+
     public function getIsCurrentAttribute(): bool
     {
         return $this->user->current_profile_id == $this->id;

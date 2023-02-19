@@ -82,6 +82,7 @@ class EBooker extends ComponentBase
     {
         try {
             $data = collect(post())->only(['price', 'status', 'free_parts', 'sales_free'])->toArray();
+            $this->ebook->addValidationRule('free_parts','min:3');
             $this->ebook->update($data);
             $this->ebook->setFreeParts();
 

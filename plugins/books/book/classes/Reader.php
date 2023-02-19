@@ -54,7 +54,7 @@ class Reader
             if ($tracker = $paginator->trackByUser($this->user)) {
                 $tracker->update(['time' => $tracker->time + $sec, 'length' => $paginator->length, 'progress' => 100]);
                 Event::fire('books.paginator.tracked');
-                $paginator->chapter->progress();
+                $paginator->chapter->progress($this->user);
                 return $tracker;
             }
         }
