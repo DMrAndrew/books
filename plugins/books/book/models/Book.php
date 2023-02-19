@@ -278,6 +278,7 @@ class Book extends Model
         return $q->with(['cover', 'tags', 'genres', 'ebook', 'author.profile'])
             ->withCount(['favorites as likes_count'])
             ->inLibCount()
+            ->commentsCount()
             ->inLibExists()
             ->likeExists();
     }
