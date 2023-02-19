@@ -1,6 +1,11 @@
 <?php namespace Books\Comments;
 
 use Backend;
+use Books\Comments\behaviors\Commentable;
+use Books\Comments\Components\Comments;
+use Books\Comments\Models\Comment;
+use Books\Profile\Behaviors\Slavable;
+use Books\Profile\Models\Profile;
 use System\Classes\PluginBase;
 
 /**
@@ -16,10 +21,10 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'Comments',
+            'name' => 'Comments',
             'description' => 'No description provided yet...',
-            'author'      => 'Books',
-            'icon'        => 'icon-leaf'
+            'author' => 'Books',
+            'icon' => 'icon-leaf'
         ];
     }
 
@@ -40,7 +45,14 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+        foreach ([Profile::class] as $class) {
+            $class::extend(function ($model) {
+                $model->implementClassWith(Commentable::class);
+            });
+        }
+        Comment::extend(function (Comment $comment) {
+            $comment->implementClassWith(Slavable::class);
+        });
     }
 
     /**
@@ -50,10 +62,8 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
         return [
-            'Books\Comments\Components\MyComponent' => 'myComponent',
+            Comments::class => 'comments',
         ];
     }
 
@@ -85,11 +95,11 @@ class Plugin extends PluginBase
 
         return [
             'comments' => [
-                'label'       => 'Comments',
-                'url'         => Backend::url('books/comments/mycontroller'),
-                'icon'        => 'icon-leaf',
+                'label' => 'Comments',
+                'url' => Backend::url('books/comments/mycontroller'),
+                'icon' => 'icon-leaf',
                 'permissions' => ['books.comments.*'],
-                'order'       => 500,
+                'order' => 500,
             ],
         ];
     }

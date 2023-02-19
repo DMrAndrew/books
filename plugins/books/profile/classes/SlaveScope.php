@@ -2,6 +2,7 @@
 
 namespace Books\Profile\Classes;
 
+use Books\Book\Models\Chapter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -18,13 +19,14 @@ class SlaveScope implements Scope
     {
 
         if ($user = $this->getQueryUser($builder)) {
-            //TODO ref to query time cast
             $ids = collect([$user, $user->profile])
                 ->map->profiler($model)
                 ->map->getIds()
                 ->flatten(1)
                 ->toArray();
             $builder->whereIn('id', $ids);
+
+
         }
     }
 

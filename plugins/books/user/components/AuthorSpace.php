@@ -2,6 +2,7 @@
 
 namespace Books\User\Components;
 
+use Books\Comments\Components\Comments;
 use Books\Profile\Models\Profile;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
@@ -31,20 +32,22 @@ class AuthorSpace extends ComponentBase
     public function init()
     {
         $this->profile_id = $this->param('profile_id');
-        if (! $this->profile = Profile::find($this->profile_id) ?? Auth::getUser()?->profile) {
+        if (!$this->profile = Profile::find($this->profile_id) ?? Auth::getUser()?->profile) {
             abort(404);
         }
+        $comments = $this->addComponent(Comments::class,'comments');
+        $comments->bindModel($this->profile);
         $this->prepareVals();
     }
 
     protected function prepareVals()
     {
         $authUser = Auth::getUser();
-        $isOwner = (bool) $authUser && $this->profile->id === $authUser->profile->id;
-        $this->page['isLoggedIn'] = (bool) $authUser;
+        $isOwner = (bool)$authUser && $this->profile->id === $authUser->profile->id;
+        $this->page['isLoggedIn'] = (bool)$authUser;
         $this->page['profile'] = $this->profile;
         $this->page['isOwner'] = $isOwner;
-        $this->page['hasContacts'] = ! $this->profile->isContactsEmpty();
+        $this->page['hasContacts'] = !$this->profile->isContactsEmpty();
         $this->page['should_call_fit_profile'] = $isOwner && $this->profile->isEmpty();
         $books = $this->profile
             ->booksSortedByAuthorOrder()
