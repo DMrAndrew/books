@@ -11,32 +11,49 @@
             <div class="comments-comment__author ui-text--bold">{{ comment.profile.getAttribute('username') }}</div>
 
             <div class="comments-comment__addition">
-                <span>{{carbon(comment.updated_at).format('H:i d.m.y')}}</span>
+                <span>{{comment.isEdited() ? 'edited ':''}} {{comment.dateFormated()}}</span>
                 {% if owner and owner.id == comment.profile.id %}
-                <a href="#" class="ui-link _violet">Автор</a>
+                <a href="/author-page/{{comment.profile.id}}" class="ui-link _violet">Автор</a>
                 {% endif %}
                 {% if user and user.profile.id == comment.profile.id %}
-                <span>Ред.</span>
+                <span class="cursor-pointer" onclick="toggleTextArea('#comment_{{ comment.id }}')">Ред.</span>
                 {% endif %}
             </div>
 
-            <div class="comments-comment__addition">
-
+            <div id="comment_{{ comment.id }}" class="comment-js-form">
+                <div class="comments-comment__text">{{comment.content|raw}}</div>
+                {% partial '@textarea' item=comment cancel='#comment_'~comment.id %}
             </div>
-            <div class="comments-comment__text">{{comment.content|raw}}</div>
+
+            {% if user %}
             <div class="comments-comment__action">
-                <button>Ответить</button>
-                <div class="comments-comment__action-wrapper">
-                    <svg class="square-16">
+                <button onclick="toggleTextArea('#replay_{{comment.id}}')">Ответить</button>
+                <div class="comments-comment__action-wrapper" data-tippy-continer data-tippy-offset="[0, 0]">
+
+                    {% if user and user.profile.id == comment.profile.id or owner and user and user.profile.id == owner.id %}
+                    <svg class="square-16" data-tippy-init>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
                     </svg>
+                    <div class="ui-dropdown" data-tippy-block>
+                        <div class="ui-dropdown-container">
+
+                            <div class="ui-dropdown-item active"
+                                 onclick="oc.ajax('onRemove',{data:{id:'{{comment.id}}'}})">
+                                <span>Удалить</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
-<!--            {% partial '@textarea' parent_id=comment.id %}-->
+            <div class="comment-js-form" id="replay_{{comment.id}}">
+                {% partial '@textarea' parent_id=comment.id cancel='#replay_'~comment.id %}
+            </div>
+            {% endif %}
         </div>
-
         <div class="comments-comment__sub">
             {% partial '@list' comments=comment.children %}
         </div>
     </div>
 </div>
+

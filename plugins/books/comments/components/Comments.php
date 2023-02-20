@@ -104,13 +104,48 @@ class Comments extends ComponentBase
             unset($payload['parent_id']);
         }
         $comment = $this->model->addComment($this->user, $payload);
+        return $this->render();
+    }
 
+    public function onEdit()
+    {
+        if (!$this->user) {
+            return;
+        }
+
+        $comment = $this->queryComments()->find(post('comment_id'));
+        if (!$this->validateComment($comment)) {
+            return;
+        }
+        $comment->update(['content' => post('content')]);
+        return $this->render();
+    }
+
+    public function onRemove()
+    {
+        if (!$this->user) {
+            return;
+        }
+
+        $comment = $this->queryComments()->find(post('id'));
+        if (!$this->validateComment($comment)) {
+            return;
+        }
+        $this->model->deleteComment($comment);
+        return $this->render();
+
+    }
+
+    public function validateComment(?Comment $comment): bool
+    {
+        return $comment && ($this->user?->profile->id === $this->owner->id || $comment->profile?->id === $this->user?->profile->id);
+    }
+
+    public function render()
+    {
         $this->prepareVals();
         return [
             '.comments-spawn' => $this->renderPartial('@default')
         ];
     }
-
-    public function onEdit(){}
-    public function onRemove(){}
 }

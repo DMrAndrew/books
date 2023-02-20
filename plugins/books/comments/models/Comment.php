@@ -1,6 +1,7 @@
 <?php namespace Books\Comments\Models;
 
 use App\traits\ScopeUser;
+use Carbon\Carbon;
 use Model;
 use October\Rain\Database\Traits\SimpleTree;
 use October\Rain\Database\Traits\SoftDelete;
@@ -39,7 +40,22 @@ class Comment extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope('orderByDesc',fn($q) => $q->orderByDesc('id'));
+        static::addGlobalScope('orderByDesc', fn($q) => $q->orderByDesc('id'));
+    }
+
+    protected function beforeDelete()
+    {
+        $this->children->each->delete();
+    }
+
+    public function isEdited(): bool
+    {
+        return $this->created_at->notEqualTo($this->updated_at);
+    }
+
+    public function dateFormated()
+    {
+        return $this->updated_at->format('H:i d.m.y');
     }
 
 }

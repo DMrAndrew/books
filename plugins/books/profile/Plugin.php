@@ -78,7 +78,7 @@ class Plugin extends PluginBase
 
         }
 
-        foreach (config('profile.profileable') ?? [] as $class) {
+        foreach (config('profile.slavable') ?? [] as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Slavable::class);
                 $model->bindEvent('model.afterCreate', fn() => $model->profilerService()->add());

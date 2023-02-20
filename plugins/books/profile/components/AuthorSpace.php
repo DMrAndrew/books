@@ -36,7 +36,7 @@ class AuthorSpace extends ComponentBase
         $this->profile_id = $this->param('profile_id');
         $this->user = Auth::getUser();
         if (!$this->profile = Profile::query()
-            ->hasSubscriber($this->user->profile)
+            ->hasSubscriber($this->user?->profile)
             ->find($this->profile_id ?? $this->user?->profile->id)) {
             abort(404);
         }
@@ -55,9 +55,11 @@ class AuthorSpace extends ComponentBase
     {
         $authUser = $this->user;
         $isOwner = (bool)$authUser && $this->profile->id === $authUser->profile->id;
+        $sameAccount = (bool)$authUser && $this->profile->user->id === $authUser->id;
         $this->page['isLoggedIn'] = (bool)$authUser;
         $this->page['profile'] = $this->profile;
         $this->page['isOwner'] = $isOwner;
+        $this->page['sameAccount'] = $sameAccount;
         $this->page['hasContacts'] = !$this->profile->isContactsEmpty();
         $this->page['should_call_fit_profile'] = $isOwner && $this->profile->isEmpty();
         $books = $this->profile

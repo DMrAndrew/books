@@ -5,7 +5,7 @@ use Books\Reviews\Models\Review;
 use Books\User\Models\Settings;
 
 return [
-    'profileable' => [
+    'slavable' => [
         Review::class,
         Settings::class,
         Comment::class
