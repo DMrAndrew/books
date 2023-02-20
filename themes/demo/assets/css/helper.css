@@ -125,6 +125,3 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
 .comments{
     margin-top: 16px;
 }
-.book-card__footer > div:first-child{
-    margin-left: 16px;
-}
