@@ -322,13 +322,6 @@ class Book extends Model
         $this->setDefaultEdition();
         $this->stats()->add(new Stats());
     }
-    protected function afterFetch()
-    {
-        if(!$this->stats()->exists()){
-            $this->stats()->add(new Stats());
-        }
-    }
-
     public function createEventHandler()
     {
         $this->setAdultIfHasOne();

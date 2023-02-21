@@ -62,7 +62,7 @@
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
                     </svg>
-                    <span>{{book.stats.rate}}</span>
+                    <span>{{book.stats.rate|default('0')}}</span>
                 </div>
                 <div class="book-card__book-list tags-list">
                     {% for genre in book.genres %}
@@ -80,25 +80,25 @@
             <svg>
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
             </svg>
-            <span>{{book.stats.read_count}}</span>
+            <span>{{book.stats.read_count|default('0')}}</span>
         </div>
         <div class="book-card__footer-wrapper">
             <svg>
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-16' | theme}}"></use>
             </svg>
-            <span>{{book.stats.in_lib_count}}</span>
+            <span>{{book.stats.in_lib_count|default('0')}}</span>
         </div>
         <div class="book-card__footer-wrapper">
             <svg>
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>
             </svg>
-            <span>{{book.stats.comments_count}}</span>
+            <span>{{book.stats.comments_count|default('0')}}</span>
         </div>
         <div class="book-card__footer-wrapper">
             <svg>
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-filled-16' | theme}}"></use>
             </svg>
-            <span>{{book.stats.likes_count}}</span>
+            <span>{{book.stats.likes_count|default('0')}}</span>
         </div>
     </div>
 </div>

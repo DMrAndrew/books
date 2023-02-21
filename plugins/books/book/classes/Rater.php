@@ -2,12 +2,14 @@
 
 namespace Books\Book\Classes;
 
+use Books\Book\Models\Stats;
 use Exception;
 use Queue;
 use Books\Book\Models\Book;
 
 class Rater
 {
+    protected Stats $stats;
     protected array $closures = [];
     protected array $scopes = [
         'likes' => 'likesCount',
@@ -17,11 +19,12 @@ class Rater
 
     public function __construct(protected Book $book)
     {
+        $this->stats = $this->book->exists ? $this->book->stats : new Stats();
     }
 
     public function apply(): void
     {
-        if ($this->book->id) {
+        if ($this->stats->exists) {
             $query = Book::query();
 
             foreach (array_keys($this->closures) as $closure) {
@@ -35,6 +38,7 @@ class Rater
             foreach ($this->closures as $closure) {
                 $closure();
             }
+            $this->stats->save();
         }
         $this->closures = [];
     }
@@ -67,7 +71,7 @@ class Rater
         $this->likes();
         $this->closures['rate'] = function () {
             $this->book['rate'] = $this->book['likes_count']; // Пока есть только лайки
-            $this->update('rate');
+            $this->set('rate');
         };
         return $this;
     }
@@ -75,29 +79,30 @@ class Rater
     public function read(): static
     {
         $this->closures['read'] = function () {
-            $this->book['read_count'] = $this->book->ebook->chapters()->withReadTrackers()->get()->sum('completed_trackers');
-            $this->update('read_count');
+            $this->book['read_count'] = $this->book->ebook->chapters()->withReadTrackersCount()->get()
+                ->sum('completed_trackers');
+            $this->set('read_count');
         };
         return $this;
     }
 
     public function likes(): static
     {
-        $this->closures['likes'] = fn() => $this->update('likes_count');
+        $this->closures['likes'] = fn() => $this->set('likes_count');
 
         return $this;
     }
 
     public function libs(): static
     {
-        $this->closures['libs'] = fn() => $this->update('in_lib_count');
+        $this->closures['libs'] = fn() => $this->set('in_lib_count');
 
         return $this;
     }
 
     public function comments(): static
     {
-        $this->closures['comments'] = fn() => $this->update('comments_count');
+        $this->closures['comments'] = fn() => $this->set('comments_count');
 
         return $this;
     }
@@ -110,6 +115,11 @@ class Rater
         $this->read();
         $this->rate();
         return $this;
+    }
+
+    private function set(string $stat_key, ?string $book_key = null): void
+    {
+        $this->stats[$stat_key] = $this->book[$book_key ?? $stat_key];
     }
 
     public static function recompute(string ...$stats): void
@@ -126,11 +136,6 @@ class Rater
             }
         }
         $raters->each->queue();
-    }
-
-    private function update(string $stat_key, ?string $book_key = null)
-    {
-        return $this->book->stats->update([$stat_key => $this->book[$book_key ?? $stat_key]]);
     }
 
 
