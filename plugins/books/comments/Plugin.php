@@ -7,6 +7,7 @@ use Books\Comments\Components\Comments;
 use Books\Comments\Models\Comment;
 use Books\Profile\Behaviors\Slavable;
 use Books\Profile\Models\Profile;
+use Illuminate\Foundation\AliasLoader;
 use System\Classes\PluginBase;
 
 /**
@@ -51,6 +52,7 @@ class Plugin extends PluginBase
                 $model->implementClassWith(Commentable::class);
             });
         }
+        AliasLoader::getInstance()->alias('Comment', Comment::class);
     }
 
     /**
