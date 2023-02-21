@@ -2,9 +2,7 @@
 
 namespace Books\Book\Behaviors;
 
-use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
-use Books\Book\Models\Pagination;
 use Books\Book\Models\Tracker;
 use Books\Collections\classes\CollectionEnum;
 use Model;
@@ -21,19 +19,8 @@ class Trackable extends ExtensionBase
 
     public function trackByUser(User $user): Tracker
     {
-        $tracker = $this->model->trackers()->user($user)->first();
-        if (!$tracker) {
-            $tracker = $this->model->addTracker($user);
-        }
+        return $this->model->trackers()->firstOrCreate(['user_id' => $user->id]);
 
-        return $tracker;
-    }
-
-    public function addTracker(User $user)
-    {
-        return $this->model->trackers()->create([
-            'user_id' => $user->id,
-        ]);
     }
 
     public function scopeCountUserTrackers(Builder $builder, User $user): Builder
@@ -72,7 +59,7 @@ class Trackable extends ExtensionBase
                 ]);
 
 
-                //когда пользователь открыл книгу и начал читать ( от 3-х страниц) добавляем в раздел "читаю сейчас" если книга в библиотеке и в разделе "Хочу прочесть"
+                //когда пользователь открыл книгу и начал читать (от 3-х страниц) добавляем в раздел "читаю сейчас" если книга в библиотеке и в разделе "Хочу прочесть"
                 if ($this->model instanceof Edition) {
                     $lib = $user->library($this->model->book);
                     if ($lib->is(CollectionEnum::INTERESTED)) {

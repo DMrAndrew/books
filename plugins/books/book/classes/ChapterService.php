@@ -14,6 +14,8 @@ use Event;
 use Exception;
 use Html;
 use Illuminate\Support\Collection;
+use Str;
+use DOMDocument;
 
 class ChapterService
 {
@@ -170,13 +172,13 @@ class ChapterService
 
     public function chunkContent()
     {
-        $dom = (new \DOMDocument());
+        $dom = (new DOMDocument());
         libxml_use_internal_errors(true);
         $dom->loadHTML(mb_convert_encoding($this->chapter->content, 'HTML-ENTITIES', 'UTF-8'));
         $root = $dom->getElementsByTagName('body')[0];
         $perhapses = collect($root->childNodes)->map(fn($node) => [
             'html' => $dom->saveHTML($node),
-            'length' => strlen($node->textContent),
+            'length' => strlen(Str::squish($node->textContent)),
         ]);
 
         return $perhapses->chunkWhile(function ($value, $key, $chunk) {

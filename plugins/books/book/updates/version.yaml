@@ -17,3 +17,6 @@
 1.0.3:
     - 'Longtext для content'
     - pagination_content_to_longtext.php
+1.0.4:
+    - 'Статистика книги'
+    - create_stats_table.php

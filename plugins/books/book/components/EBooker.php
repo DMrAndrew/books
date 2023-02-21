@@ -3,7 +3,7 @@
 namespace Books\Book\Components;
 
 use ApplicationException;
-use Books\Book\Classes\Enums\BookStatus;
+use Books\Book\Classes\EditionService;
 use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use Exception;
@@ -19,6 +19,7 @@ use Request;
 class EBooker extends ComponentBase
 {
     protected Edition $ebook;
+    protected EditionService $service;
 
     /**
      * componentDetails
@@ -37,11 +38,22 @@ class EBooker extends ComponentBase
             return $redirect;
         }
         $this->ebook = Auth::getUser()->profile->books()->find($this->property('book_id'))?->ebook;
-        if (! $this->ebook) {
+        if (!$this->ebook) {
             throw new ApplicationException('Электронное издание книги не найден.');
         }
+        $this->service = new EditionService($this->ebook);
+
+    }
+
+    public function onRun()
+    {
+        $this->vals();
+    }
+
+    public function vals()
+    {
         $this->page['ebook'] = $this->ebook;
-        $this->page['bookStatusCases'] = BookStatus::publicCases();
+        $this->page['bookStatusCases'] = $this->ebook->getAllowedStatusCases();
     }
 
     /**
@@ -64,14 +76,18 @@ class EBooker extends ComponentBase
     public function onUpdateSortOrder()
     {
         try {
-            $this->ebook->changeChaptersOrder(post('sequence'));
+
+            $this->service->changeChaptersOrder(post('sequence'));
 
             return [
-                '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
+                '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook->fresh()]),
             ];
         } catch (Exception $ex) {
             if (Request::ajax()) {
-                throw $ex;
+                throw new \AjaxException([
+                    '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook->fresh()]),
+                    'error' => $ex->getMessage()
+                ]);
             } else {
                 Flash::error($ex->getMessage());
             }
@@ -81,15 +97,13 @@ class EBooker extends ComponentBase
     public function onUpdate()
     {
         try {
-            $data = collect(post())->only(['price', 'status', 'free_parts', 'sales_free'])->toArray();
-            $this->ebook->addValidationRule('free_parts','min:3');
-            $this->ebook->update($data);
-            $this->ebook->setFreeParts();
-
+            $this->service->update(post());
+            $this->ebook = $this->ebook->fresh();
+            $this->vals();
             return [
-                '#about-header' => $this->renderPartial('book/about-header', ['book' => $this->ebook->book]),
-                '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
-                '#ebook-settings' => $this->renderPartial('@settings', ['ebook' => $this->ebook]),
+                '#about-header' => $this->renderPartial('book/about-header'),
+                '#ebooker-chapters' => $this->renderPartial('@chapters'),
+                '#ebook-settings' => $this->renderPartial('@settings'),
             ];
         } catch (Exception $ex) {
             if (Request::ajax()) {

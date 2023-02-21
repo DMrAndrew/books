@@ -68,6 +68,18 @@ class Author extends Model
         return $builder->where('accepted', '=', true);
     }
 
+    public function scopeRejected(Builder $builder): Builder
+    {
+        return $builder->where('accepted', '=', false);
+    }
+
+    public function scopeAwait(Builder $builder): Builder
+    {
+        return $builder->where('accepted', '=', null);
+    }
+
+
+
     public function scopeNotOwner(Builder $builder): Builder
     {
         return $builder->where('is_owner', '=', false);

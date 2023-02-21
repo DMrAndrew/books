@@ -54,8 +54,8 @@ class AuthorSpace extends ComponentBase
     protected function prepareVals()
     {
         $authUser = $this->user;
-        $isOwner = (bool)$authUser && $this->profile->id === $authUser->profile->id;
-        $sameAccount = (bool)$authUser && $this->profile->user->id === $authUser->id;
+        $isOwner = (bool)$authUser && $this->profile->is($authUser->profile);
+        $sameAccount = (bool)$authUser && $this->profile->user->is($authUser);
         $this->page['isLoggedIn'] = (bool)$authUser;
         $this->page['profile'] = $this->profile;
         $this->page['isOwner'] = $isOwner;

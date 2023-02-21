@@ -2,6 +2,7 @@
 
 namespace Books\Book\Models;
 
+use Books\Book\Classes\ScopeToday;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
@@ -50,6 +51,27 @@ class Tracker extends Model
     public $morphTo = [
         'trackable' => [],
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new ScopeToday());
+    }
+
+    public function scopeCompleted(Builder $builder): Builder
+    {
+        return $builder->minProgress(100);
+    }
+
+    public function scopeMinProgress(Builder $builder, int $progress): Builder
+    {
+        return $builder->where('progress', '>=', $progress);
+    }
+
+    public function scopeMaxProgress(Builder $builder, int $progress): Builder
+    {
+        return $builder->where('progress', '<=', $progress);
+    }
+
 
     public function scopeType(Builder $builder, string $class): Builder
     {

@@ -55,7 +55,7 @@ class Comment extends Model
 
     public function dateFormated()
     {
-        return $this->updated_at->format('H:i d.m.y');
+        return $this->updated_at->diffForHumans();
     }
 
 }

@@ -25,9 +25,9 @@ enum BookStatus: string
     public static function publicCases(): array
     {
         return [
-            self::WORKING,
-            self::COMPLETE,
-            self::HIDDEN,
+            self::WORKING->value => self::WORKING,
+            self::COMPLETE->value => self::COMPLETE,
+            self::HIDDEN->value => self::HIDDEN,
         ];
     }
 }

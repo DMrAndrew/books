@@ -37,6 +37,7 @@ class BookCard extends ComponentBase
             $lib = $user->library($book);
             if ($lib->get()->type === CollectionEnum::WATCHED) {
                 $lib->interested();
+                $book->rater()->libs()->apply();
             }
         }
 
@@ -50,6 +51,7 @@ class BookCard extends ComponentBase
         $book = Book::find($id);
         if ($user && $book) {
             $user->toggleFavorite($book);
+            $book->rater()->likes()->apply();
         }
 
         return $this->render(['book' => Book::query()->defaultEager()->find($book->id)]);

@@ -138,7 +138,7 @@ class Comments extends ComponentBase
 
     public function validateComment(?Comment $comment): bool
     {
-        return $comment && ($this->user?->profile->id === $this->owner->id || $comment->profile?->id === $this->user?->profile->id);
+        return $comment && ($this->user?->profile->is( $this->owner) || $comment->profile?->is($this->user?->profile));
     }
 
     public function render()

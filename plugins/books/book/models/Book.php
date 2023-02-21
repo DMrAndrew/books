@@ -5,6 +5,7 @@ namespace Books\Book\Models;
 use Books\Book\Classes\Enums\AgeRestrictionsEnum;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Rater;
 use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
@@ -125,7 +126,8 @@ class Book extends Model
      */
     public $hasOne = [
         'author' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'owner'],
-        'ebook' => [Edition::class, 'key' => 'book_id', 'id', 'scope' => 'ebook'],
+        'ebook' => [Edition::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'ebook'],
+        'stats' => [Stats::class, 'key' => 'book_id', 'otherKey' => 'id'],
     ];
 
     public $hasMany = [
@@ -190,24 +192,33 @@ class Book extends Model
 
     public $attachMany = [];
 
+
+    public function rater(): Rater
+    {
+        return new Rater($this);
+    }
     public function isAuthor(User $user)
     {
         return $this->profiles()->user($user)->exists();
     }
+
 
     public function scopeType(Builder $builder, ?EditionsEnums $type): Builder|\Illuminate\Database\Eloquent\Builder
     {
         if (!$type) {
             return $builder;
         }
-        return $builder->whereHas('editions', function ($query) use ($type) {
-            return $query->whereIn('type', [$type->value]);
-        });
+        return $builder->whereHas('editions', fn($e) => $e->type($type));
     }
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder|\Illuminate\Database\Eloquent\Builder
     {
         return $builder->whereHas('editions', fn($e) => $e->free(false)->minPrice($price));
+    }
+
+    public function scopeMaxPrice(Builder $builder, ?int $price): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('editions', fn($e) => $e->free(false)->maxPrice($price));
     }
 
     public function scopeFree(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
@@ -216,17 +227,9 @@ class Book extends Model
     }
 
 
-    public function scopeMaxPrice(Builder $builder, ?int $price): Builder|\Illuminate\Database\Eloquent\Builder
-    {
-        return $builder->whereHas('editions', fn($e) => $e->free(false)->maxPrice($price));
-    }
-
-
     public function scopeComplete(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', function ($query) {
-            return $query->whereIn('status', [BookStatus::COMPLETE]);
-        });
+        return $builder->whereHas('editions', fn($e) => $e->status([BookStatus::COMPLETE]));
     }
 
 
@@ -245,6 +248,7 @@ class Book extends Model
         if (!count($ids)) {
             return $builder;
         }
+
         return $builder->{$mode == 'include' ? 'whereHas' : 'whereDoesntHave'}('tags',
             fn($tags) => $tags->whereIn('id', $ids));
     }
@@ -275,27 +279,29 @@ class Book extends Model
 
     public function scopeDefaultEager(Builder $q): Builder
     {
-        return $q->with(['cover', 'tags', 'genres', 'ebook', 'author.profile'])
-            ->withCount(['favorites as likes_count'])
-            ->inLibCount()
-            ->commentsCount()
+        return $q->with(['cover', 'tags', 'genres', 'stats', 'ebook', 'author.profile'])
             ->inLibExists()
             ->likeExists();
     }
 
-    public function scopeInLibCount(Builder $builder)
+    public function scopeLikesCount(Builder $builder): Builder
+    {
+        return $builder->withCount(['favorites as likes_count']);
+    }
+
+    public function scopeInLibCount(Builder $builder): Builder
     {
         return $builder->withCount(['libs as in_lib_count' => fn($libs) => $libs->notWatched()]);
     }
 
-    public function scopeLikeExists(Builder $builder, ?User $user = null)
+    public function scopeLikeExists(Builder $builder, ?User $user = null): Builder
     {
         $user ??= Auth::getUser();
 
         return $builder->withExists(['favorites as user_liked' => fn($favorites) => $favorites->user($user)]);
     }
 
-    public function scopeInLibExists(Builder $builder, ?User $user = null)
+    public function scopeInLibExists(Builder $builder, ?User $user = null): Builder
     {
         $user ??= Auth::getUser();
 
@@ -309,10 +315,18 @@ class Book extends Model
         return $builder->with(['editions' => fn($edition) => $edition->withProgress($user)]);
     }
 
+
     protected function afterCreate()
     {
         $this->setDefaultCover();
         $this->setDefaultEdition();
+        $this->stats()->add(new Stats());
+    }
+    protected function afterFetch()
+    {
+        if(!$this->stats()->exists()){
+            $this->stats()->add(new Stats());
+        }
     }
 
     public function createEventHandler()
