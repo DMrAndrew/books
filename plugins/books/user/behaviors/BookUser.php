@@ -2,6 +2,7 @@
 
 namespace Books\User\Behaviors;
 
+use Books\Comments\Models\Comment;
 use Carbon\Carbon;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Cycle;
@@ -14,6 +15,7 @@ class BookUser extends ExtensionBase
 {
     public function __construct(protected User $parent)
     {
+        $this->parent->hasMany['comments'] = [Comment::class,'key' => 'user_id','otherKey' => 'id'];
         $this->parent->hasMany['tags'] = [Tag::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['cycles'] = [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['settings'] = [Settings::class, 'key' => 'user_id', 'otherKey' => 'id'];

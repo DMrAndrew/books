@@ -1,0 +1,30 @@
+title = "Личный кабинет - Комментарии"
+layout = "default"
+url = "/lc-comments"
+meta_title = "Личный кабинет - Комментарии"
+[session]
+security = "user"
+redirect = "/"
+[commentsLC]
+==
+{% partial 'profile/personal_area_header' %}
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
+            {% partial "profile/sidebarmenu" %}
+            <div class="ui-col-sm-9">
+                <div class="personal-area__subtitle">
+                    <span class="ui-text-head--3 ui-text--bold">Комментарии</span>
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                    </svg>
+                </div>
+
+                <div id="comments-spawn">
+                    {% component 'commentsLC' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

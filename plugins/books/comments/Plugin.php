@@ -4,6 +4,7 @@ use Backend;
 use Books\Book\Models\Book;
 use Books\Comments\behaviors\Commentable;
 use Books\Comments\Components\Comments;
+use Books\Comments\Components\CommentsLC;
 use Books\Comments\Models\Comment;
 use Books\Profile\Behaviors\Slavable;
 use Books\Profile\Models\Profile;
@@ -64,6 +65,7 @@ class Plugin extends PluginBase
     {
         return [
             Comments::class => 'comments',
+            CommentsLC::class => 'commentsLC',
         ];
     }
 
