@@ -30,15 +30,20 @@ class BookCard extends ComponentBase
 
     public function onAddLib()
     {
-        $id = post('book_id');
         $user = Auth::getUser();
-        $book = Book::find($id);
+        $book = Book::find(post('book_id'));
         if ($user && $book) {
             $lib = $user->library($book);
-            if ($lib->get()->type === CollectionEnum::WATCHED) {
-                $lib->interested();
-                $book->rater()->libs()->apply();
+            if(!$lib->has()){
+                if ($lib->get()) {
+                    $lib->interested();
+                    $book->rater()->libs()->apply();
+                }
             }
+            else{
+                $lib->remove();
+            }
+            $book->rater()->libs()->apply();
         }
 
         return $this->render(['book' => Book::query()->defaultEager()->find($book->id)]);
@@ -46,12 +51,12 @@ class BookCard extends ComponentBase
 
     public function onLike()
     {
-        $id = post('book_id');
         $user = Auth::getUser();
-        $book = Book::find($id);
+        $book = Book::find(post('book_id'));
         if ($user && $book) {
             $user->toggleFavorite($book);
-            $book->rater()->likes()->apply();
+            $book->rater()->likes()->apply()
+                ->rate()->queue();
         }
 
         return $this->render(['book' => Book::query()->defaultEager()->find($book->id)]);

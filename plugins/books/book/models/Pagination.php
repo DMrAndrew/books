@@ -6,8 +6,8 @@ use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Relations\HasOne;
+use October\Rain\Database\Traits\Purgeable;
 use October\Rain\Database\Traits\Validation;
-use RainLab\User\Models\User;
 
 /**
  * Pagination Model
@@ -25,6 +25,9 @@ use RainLab\User\Models\User;
 class Pagination extends Model
 {
     use Validation;
+    use Purgeable;
+
+    protected $purgeable = ['new_content'];
 
     /**
      * @var string table name
@@ -36,7 +39,7 @@ class Pagination extends Model
     protected $fillable = [
         'page',
         'length',
-        'content',
+        'new_content',
         'chapter_id',
         'next_id',
         'prev_id',
@@ -48,7 +51,6 @@ class Pagination extends Model
     public $rules = [
         'page' => 'required|integer',
         'length' => 'required|integer',
-        'content' => 'required|string',
         'chapter_id' => 'required|integer|exists:books_book_chapters,id',
         'next_id' => 'nullable|integer|exists:books_book_pagination,id',
         'prev_id' => 'nullable|integer|exists:books_book_pagination,id',

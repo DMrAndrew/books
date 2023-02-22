@@ -22,7 +22,7 @@ class Rater
         $this->stats = $this->book->exists ? $this->book->stats : new Stats();
     }
 
-    public function apply(): void
+    public function apply()
     {
         if ($this->stats->exists) {
             $query = Book::query();
@@ -41,16 +41,17 @@ class Rater
             $this->stats->save();
         }
         $this->closures = [];
+        return $this;
     }
 
-    public function queue()
+    public function queue(): ?static
     {
         $actions = array_keys($this->closures);
         if (!count($actions)) {
             return null;
         }
         $id = $this->book->id;
-        return Queue::push(function ($job) use ($id, $actions) {
+        Queue::push(function ($job) use ($id, $actions) {
             try {
                 $r = new static(Book::find($id));
                 foreach ($actions as $action) {
@@ -64,6 +65,7 @@ class Rater
                 return false;
             }
         });
+        return $this;
     }
 
     public function rate(): static

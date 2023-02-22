@@ -53,11 +53,8 @@ class ChapterService
             ]);
         }
         if (is_array($payload)) {
-            if ($this->isNew()) {
-                return $this->create($payload);
-            }
 
-            return $this->update($payload);
+            return $this->{$this->isNew() ? 'create' : 'update'}($payload);
         }
         throw new UnknownFormatException();
     }
@@ -76,7 +73,6 @@ class ChapterService
         $this->chapter['edition_id'] = $this->edition->id;
         $this->chapter->save();
         Event::fire('books.chapter.created', [$this->chapter]);
-        $this->chapter->paginateContent(true);
 
         return $this->chapter;
     }
@@ -114,7 +110,8 @@ class ChapterService
         }
 
         if ($data->has('content')) {
-            $data['content'] = Html::clean($data['content']);
+            $data['new_content'] = Html::clean($data['content']);
+            $data->forget('content');
         }
 
         return $data->toArray();
@@ -153,18 +150,21 @@ class ChapterService
             return new Pagination(
                 [
                     'page' => $index + 1,
-                    'content' => $chunk->pluck('html')->join(''),
+                    'new_content' => $chunk->pluck('html')->join(''),
                     'length' => $chunk->sum('length'),
                 ]
             );
         });
         $pagination = $pages->map(function ($paginator) {
-            return $this->chapter->pagination()->updateOrCreate(['page' => $paginator->page], $paginator->toArray());
+            $page = $this->chapter->pagination()->firstOrCreate(['page' => $paginator->page],['length' => $paginator->length]);
+            $page->fill($paginator->toArray());
+            $page->save();
+            return $page;
         });
         $this->chapter->pagination()->whereNotIn('id', $pagination->pluck('id'))->delete();
-        $pagination->each->setNeighbours();
-        $this->chapter->setNeighbours();
+        $this->chapter->pagination()->get()->each->setNeighbours();
         $this->chapter->edition->lengthRecount();
+        $this->chapter->setNeighbours();
         Event::fire('books.chapter.paginated');
 
         return $pagination;
@@ -174,7 +174,7 @@ class ChapterService
     {
         $dom = (new DOMDocument());
         libxml_use_internal_errors(true);
-        $dom->loadHTML(mb_convert_encoding($this->chapter->content, 'HTML-ENTITIES', 'UTF-8'));
+        $dom->loadHTML(mb_convert_encoding($this->chapter->content->body, 'HTML-ENTITIES', 'UTF-8'));
         $root = $dom->getElementsByTagName('body')[0];
         $perhapses = collect($root->childNodes)->map(fn($node) => [
             'html' => $dom->saveHTML($node),

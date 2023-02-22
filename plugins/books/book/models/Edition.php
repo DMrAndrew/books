@@ -52,6 +52,7 @@ class Edition extends Model
         'status',
         'price',
         'book_id',
+        'length'
     ];
 
     protected $casts = [
@@ -135,6 +136,7 @@ class Edition extends Model
 
     public function shouldDeferredUpdate(): bool
     {
+        return false;
         return $this->status === BookStatus::COMPLETE;
     }
 
@@ -145,7 +147,7 @@ class Edition extends Model
 
     public function shouldRevision(): bool
     {
-        return false;
+        return !$this->shouldDeferredUpdate();
     }
 
     protected function beforeUpdate()

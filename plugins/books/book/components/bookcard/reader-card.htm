@@ -3,10 +3,11 @@
         class="ui-button ui-button-size--56
          {{book.in_user_lib ? 'ui-button-view--2' : 'ui-button-view--3' }}
          ui-button--full ui-button--column"
-        {{book.in_user_lib ?
-    '' : 'data-request="onAddLib"' }}
-    data-request-update="{ _self: true }"
-    data-request-data="book_id:{{book.id}}"
+        data-request="onAddLib"
+        data-request-update="{ _self: true }"
+        data-request-data="book_id:{{book.id}}"
+
+
     >
     <svg class="square-16">
         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme}}"></use>
@@ -27,6 +28,6 @@
         <svg class="square-16">
             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-stroked-16' | theme}}"></use>
         </svg>
-        <span class="ui-text--medium">Нравится {{book.stats.likes_count}}</span>
+        <span class="ui-text--medium">Нравится</span>
     </button>
 </div>

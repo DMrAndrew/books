@@ -23,7 +23,7 @@ class CreatePaginationTable extends Migration
             $table->id();
             $table->unsignedBigInteger('chapter_id');
             $table->integer('page');
-            $table->longText('content')->nullable();
+//            $table->longText('content')->nullable();
             $table->integer('length')->nullable();
             $table->tinyInteger('type')->default(EditionsEnums::default()->value);
             $table->timestamps();

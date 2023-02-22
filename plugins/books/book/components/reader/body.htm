@@ -4,7 +4,7 @@
     {% if reader.paginator.page == 1 %}
     <h2 class="ui-text-head--3-em ui-text--bold">{{reader.chapter.title|raw}}</h2>
     {% endif %}
-    {{ reader.paginator.content|raw }}
+    {{ reader.paginator.content.body|raw }}
 </div>
 {% partial '@pagination' %}
 

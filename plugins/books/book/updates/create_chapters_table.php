@@ -19,7 +19,7 @@ class CreateChaptersTable extends Migration
             $table->unsignedBigInteger('edition_id');
             $table->tinyInteger('type')->default(EditionsEnums::default()->value);
             $table->string('title')->nullable();
-            $table->longText('content')->nullable();
+//            $table->longText('content')->nullable();
             $table->string('status')->default('draft');
             $table->timestamp('published_at')->nullable();
             $table->integer('length')->nullable();

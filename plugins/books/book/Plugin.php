@@ -3,6 +3,7 @@
 namespace Books\Book;
 
 use Backend;
+use Books\Book\Behaviors\Fillable;
 use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;
 use Books\Book\Classes\Enums\EditionsEnums;
@@ -83,18 +84,19 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('EditionsEnums', EditionsEnums::class);
         AliasLoader::getInstance()->alias('Rater', Rater::class);
 
-        Event::listen('books.book.created', fn (Book $book) => $book->createEventHandler());
-        Event::listen('books.book.updated', fn (Book $book) => $book->updateEventHandler());
-
-        foreach (['books.chapter.updated'] as $event){
-            Event::listen($event, function (Chapter $chapter){
-                $chapter->paginateContent();
-            });
-        }
+        Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
+        Event::listen('books.book.updated', fn(Book $book) => $book->updateEventHandler());
 
         Book::extend(function (Book $book) {
             $book->implementClassWith(Favorable::class);
         });
+
+        foreach ([Chapter::class, Pagination::class] as $class) {
+            $class::extend(function ($model) {
+                $model->implementClassWith(Fillable::class);
+            });
+
+        }
 
         foreach ([Edition::class, Chapter::class, Pagination::class] as $class) {
             $class::extend(function ($model) {

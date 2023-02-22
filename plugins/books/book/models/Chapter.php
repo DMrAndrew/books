@@ -15,6 +15,8 @@ use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
 use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Relations\HasOne;
+use October\Rain\Database\Relations\MorphOne;
+use October\Rain\Database\Traits\Purgeable;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
@@ -38,12 +40,16 @@ use System\Models\File;
  *
  * @property ?Chapter prev
  * @property ?Chapter next
+ *
+ * @method MorphOne content
+ * @property  Content content
  */
 class Chapter extends Model
 {
     use Sortable;
     use Validation;
     use SoftDelete;
+    use Purgeable;
 
     /**
      * @var string table associated with the model
@@ -54,6 +60,7 @@ class Chapter extends Model
      * @var array guarded attributes aren't mass assignable
      */
     protected $guarded = ['*'];
+    protected $purgeable = ['new_content'];
 
     public string $trackerChildRelation = 'pagination';
 
@@ -61,7 +68,7 @@ class Chapter extends Model
      * @var array fillable attributes are mass assignable
      */
     protected $fillable = [
-        'title', 'edition_id', 'content', 'published_at', 'length', 'sort_order', 'status', 'sales_type', 'type',
+        'title', 'edition_id', 'published_at', 'new_content', 'length', 'sort_order', 'status', 'sales_type', 'type',
         'next_id', 'prev_id',
     ];
 
@@ -71,7 +78,6 @@ class Chapter extends Model
     public $rules = [
         'title' => 'nullable|string',
         'edition_id' => 'required|exists:books_book_editions,id',
-        'content' => 'nullable|string',
         'published_at' => 'nullable|date',
         'length' => 'nullable|integer',
         'sort_order' => 'sometimes|filled|integer',
@@ -144,11 +150,9 @@ class Chapter extends Model
         return new ChapterService($this);
     }
 
-    public function paginateContent($force = false)
+    public function paginateContent()
     {
-        if ($force || $this->wasChanged('content')) {
-            Queue::push(JobPaginate::class, ['chapter_id' => $this->id]);
-        }
+        Queue::push(JobPaginate::class, ['chapter_id' => $this->id]);
     }
 
     public function scopeSortOrder(Builder $builder, int $value): Builder
@@ -183,6 +187,7 @@ class Chapter extends Model
         $this->save();
     }
 
+
     public function setNeighbours()
     {
         $this->setPrev();
@@ -207,6 +212,11 @@ class Chapter extends Model
     public function progress(?User $user = null)
     {
         Queue::push(JobProgress::class, ['chapter_id' => $this->id, 'user_id' => $user?->id]);
+    }
+
+    public function getContent()
+    {
+        return $this->deferredContent ?? $this->content;
     }
 
 }

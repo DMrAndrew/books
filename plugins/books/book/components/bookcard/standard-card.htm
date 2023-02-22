@@ -7,7 +7,7 @@
 
             {% if not is_not_public_view %}
             <button class="book-card__bookmark"
-                    {{book.in_user_lib ? '' : 'data-request="onAddLib"' }}
+                    data-request="onAddLib"
                     data-request-update="{ _self: true }"
                     data-request-data="book_id:{{book.id}}"
             >
