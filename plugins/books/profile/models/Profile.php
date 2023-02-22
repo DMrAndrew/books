@@ -136,8 +136,8 @@ class Profile extends Model
             'otherKey' => 'book_id',
             'pivot' => ['percent', 'sort_order', 'is_owner'],
         ],
-        'subscribers' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'profile_id', 'otherKey' => 'subscriber_id'],
-        'subscriptions' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'subscriber_id', 'otherKey' => 'profile_id'],
+        'subscribers' => [Profile::class,'table' => 'books_profile_subscribers', 'key' => 'profile_id', 'otherKey' => 'subscriber_id'],
+        'subscriptions' => [Profile::class,'table' => 'books_profile_subscribers', 'key' => 'subscriber_id', 'otherKey' => 'profile_id'],
     ];
 
     public $morphTo = [];

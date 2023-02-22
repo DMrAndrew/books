@@ -83,9 +83,9 @@ class AuthorSpace extends ComponentBase
 
     public function onToggleSubscribe()
     {
-        $this->profile->toggleSubscribe($this->user->profile);
+        $this->user->profile->toggleSubscriptions($this->profile);
         return [
-            '#sub-button' => $this->renderPartial('@sub-button', ['sub' => $this->profile->hasSubscriber($this->user->profile)])
+            '#sub-button' => $this->renderPartial('@sub-button', ['sub' => $this->user->profile->hasSubscription($this->profile)])
         ];
     }
 }

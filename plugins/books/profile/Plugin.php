@@ -10,6 +10,7 @@ use Books\Profile\Classes\ProfileEventHandler;
 use Books\Profile\Components\AuthorSpace;
 use Books\Profile\Components\Profile;
 use Books\Profile\Components\ProfileLC;
+use Books\Profile\Components\Subs;
 use Books\Profile\Models\Profile as ProfileModel;
 use Books\Profile\Components\NotificationLC;
 use Books\Profile\Components\PrivacyLC;
@@ -140,7 +141,8 @@ class Plugin extends PluginBase
             ProfileLC::class => 'profileLC',
             PrivacyLC::class => 'privacyLC',
             NotificationLC::class => 'notificationLC',
-            AuthorSpace::class => 'author_space'
+            AuthorSpace::class => 'author_space',
+            Subs::class => 'subs',
         ];
     }
 

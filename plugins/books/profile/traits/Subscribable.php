@@ -6,33 +6,55 @@ use October\Rain\Database\Builder;
 trait Subscribable
 {
 
-    public function subscribe(Profile $profile): void
+    public function addSubscribers(Profile $profile): void
     {
-        if ($profile->user_id !== $this->user_id) {
+        if (!$profile->is($this) && !$this->hasSubscribers($profile)) {
             $this->subscribers()->add($profile);
         }
     }
 
-    public function toggleSubscribe(Profile $profile)
+    public function removeSubscribers(Profile $profile): void
     {
-        if ($this->hasSubscriber($profile)) {
-            $this->unSubscribe($profile);
-        } else {
-            $this->subscribe($profile);
-        }
-    }
-
-    public function unSubscribe(Profile $profile)
-    {
-        if ($profile->user_id !== $this->user_id) {
+        if (!$profile->is($this) && $this->hasSubscribers($profile)) {
             $this->subscribers()->remove($profile);
         }
     }
 
-    public function hasSubscriber(Profile $profile): bool
+    public function addSubscriptions(Profile $profile): void
     {
-        return $this->subscribers()->where('subscriber_id', '=', $profile->id)->exists();
+        if (!$profile->is($this) && !$this->hasSubscription($profile)) {
+            $this->subscriptions()->add($profile);
+        }
     }
+
+
+    public function removeSubscriptions(Profile $profile): void
+    {
+        if (!$profile->is($this) && $this->hasSubscription($profile)) {
+            $this->subscriptions()->remove($profile);
+        }
+    }
+
+    public function toggleSubscriptions(Profile $profile)
+    {
+        if ($this->hasSubscription($profile)) {
+            $this->removeSubscriptions($profile);
+        } else {
+            $this->addSubscriptions($profile);
+        }
+    }
+
+    public function hasSubscription(Profile $profile): bool
+    {
+        return !!$this->subscriptions()->find($profile);
+    }
+
+    public function hasSubscribers(Profile $profile): bool
+    {
+        return !!$this->subscribers()->find($profile);
+    }
+
+
 
     public function scopeHasSubscriber(Builder $builder, ?Profile $profile): Builder
     {

@@ -1,0 +1,6 @@
+{% for item in items %}
+{% partial '@subscribe-item' profile=item action=options %}
+{% endfor %}
+<script>
+    initTippy()
+</script>

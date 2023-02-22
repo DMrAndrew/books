@@ -26,4 +26,5 @@ class Subscriber extends Model
         'profile_id' => 'required|exists:books_profile_profiles,id',
         'subscriber_id' => 'required|exists:books_profile_profiles,id',
     ];
+
 }
