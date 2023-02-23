@@ -15,11 +15,15 @@ class UserService
     {
         $payload = collect($payload);
 
-        $payload['show_birthday'] = !!$payload['show_birthday'];
-        $payload['see_adult'] = !!$payload['see_adult'];
+        $payload['show_birthday'] = !!($payload['show_birthday'] ?? false);
+        $payload['see_adult'] = !!($payload['see_adult'] ?? false);
 
         if ($this->user->birthday) {
             $payload->forget('birthday');
+        }
+
+        if($payload->has('see_adult')){
+            $payload['see_adult'] = $this->user->canSetAdult() ? $payload['see_adult'] : false;
         }
 
         if ($payload->has('country_id')) {

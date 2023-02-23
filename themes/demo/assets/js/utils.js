@@ -77,6 +77,7 @@ let tabElemInit = function () {
 
 addEventListener('page:before-cache', function() {
     // console.log('page:before-cache')
+    $('.popup-menu').hide()
     reInitSelect()
 });
 

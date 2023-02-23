@@ -1,7 +1,11 @@
 <a href="/author-page/{{author.id}}" class="author-card wrapper">
     <div class="author-card__header">
         <div class="author-card__avatar">
+            {% if author.avatar %}
             <img src="{{author.avatar.getThumb(40,40)}}" alt="">
+            {% else %}
+            {{author.firstLatter}}
+            {% endif %}
         </div>
         <div class="author-card__name ui-text--bold">{{author.username}}</div>
     </div>

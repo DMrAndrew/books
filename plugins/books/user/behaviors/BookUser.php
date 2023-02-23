@@ -34,6 +34,12 @@ class BookUser extends ExtensionBase
             'see_adult',
             'asked_adult_agreement',
         ]);
+        $this->parent->addCasts([
+            'show_birthday' => 'boolean',
+            'see_adult' => 'boolean',
+            'asked_adult_agreement' => 'boolean',
+            'required_post_register' => 'boolean',
+        ]);
         $this->parent->addDateAttribute('birthday');
         $this->parent->addJsonable([
             'favorite_genres',
@@ -49,10 +55,14 @@ class BookUser extends ExtensionBase
             $this->parent->attributes['birthday'] = Carbon::parse($value);
         }
     }
-
     public function canSetAdult(): bool
     {
         return $this->parent->birthday && abs(Carbon::now()->diffInYears($this->parent->birthday)) > 17;
+    }
+
+    public function allowedSeeAdult(): bool
+    {
+        return $this->parent->birthday && $this->parent->see_adult;
     }
 
     public function getNameAttribute()
@@ -68,10 +78,5 @@ class BookUser extends ExtensionBase
     public function scopeUsername($q, $name)
     {
         return $q->whereHas('profiles', fn($profile) => $profile->username($name));
-    }
-
-    public function allowedSeeAdult(): bool
-    {
-        return $this->parent->asked_adult_agreement && $this->parent->birthday && $this->parent->see_adult;
     }
 }

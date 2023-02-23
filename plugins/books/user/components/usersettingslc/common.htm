@@ -16,7 +16,7 @@
         <input class="ui-input-item _size-32"
                {{ user.birthday ? 'disabled' : ''}}
                 type="text" id="datepicker"
-               name="published_at_date"
+               name="birthday"
                value="{{user.birthday ? carbon(user.birthday).format('d.m.Y') : ''}}">
     </div>
     <label class="ui-checkbox">
