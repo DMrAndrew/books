@@ -52,10 +52,12 @@ class Subs extends ComponentBase
             'subscribers' => [
                 'label' => 'Подписаться',
                 'request' => $this->alias . '::onAdd',
+                'empty' => 'У вас пока нет ни одного подписчика'
             ],
             'subscriptions' => [
                 'label' => 'Отписаться',
                 'request' => $this->alias . '::onRemove',
+                'empty' => 'У вас пока нет ни одной подписки'
             ],
         ];
     }
@@ -64,7 +66,7 @@ class Subs extends ComponentBase
     {
         return [
             'items' => $this->profile->{$this->relation}()->get(),
-            'options' => $this->options()[$this->relation]
+            'options' => $this->options()[$this->relation],
         ];
     }
 

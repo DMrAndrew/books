@@ -1,6 +1,10 @@
+{% if items[0] %}
 {% for item in items %}
 {% partial '@subscribe-item' profile=item action=options %}
 {% endfor %}
+{% else %}
+{% partial '@empty' msg = options.empty %}
+{% endif %}
 <script>
     initTippy()
 </script>
