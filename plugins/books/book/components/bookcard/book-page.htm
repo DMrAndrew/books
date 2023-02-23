@@ -1,0 +1,29 @@
+<div class="book-card-full__info book-card-full-info">
+    <div class="book-card-full-info__button-wrapper">
+        {% partial '@card-header-buttons' %}
+
+    </div>
+    <div class="book-card-full-info__rating">
+        <div class="book-card__raiting">
+            <svg>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
+            </svg>
+            <span>{{book.stats.rate|default('0')}}</span>
+        </div>
+        <div class="tags-list">
+            {% for genre in book.genres %}
+            <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#0 в {{genre.name}}</a>
+
+            {% endfor %}
+        </div>
+
+        <button class="book-card-full-info__button-raiting">
+            <span>Рейтинг в категориях</span>
+            <svg class="square-16">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+            </svg>
+        </button>
+
+    </div>
+    {% partial '@book-card-footer' class='book-card-full-info__footer' %}
+</div>

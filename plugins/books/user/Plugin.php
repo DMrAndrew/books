@@ -4,14 +4,16 @@ namespace Books\User;
 
 use Backend;
 use Books\User\Behaviors\BookUser;
+use Books\User\Behaviors\CountryTranslate;
 use Books\User\Classes\SearchManager;
 use Books\User\Classes\UserEventHandler;
-use Books\User\Components\AuthorSpace;
 use Books\User\Components\BookAccount;
 use Books\User\Components\Searcher;
+use Books\User\Components\UserSettingsLC;
 use Books\User\Models\Settings;
 use Event;
 use Illuminate\Foundation\AliasLoader;
+use Monarobase\CountryList\CountryList;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use RainLab\Location\Behaviors\LocationModel;
 use RainLab\Location\Models\Country;
@@ -65,6 +67,10 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('SearchManager', SearchManager::class);
         AliasLoader::getInstance()->alias('Country', Country::class);
         AliasLoader::getInstance()->alias('BookSettings', Settings::class);
+        AliasLoader::getInstance()->alias('CountryList', CountryList::class);
+        Country::extend(function (Country $country) {
+            $country->implementClassWith(CountryTranslate::class);
+        });
         User::extend(function (User $model) {
             $model->implementClassWith(BookUser::class);
             $model->implementClassWith(LocationModel::class);
@@ -81,6 +87,7 @@ class Plugin extends PluginBase
         return [
             BookAccount::class => 'bookAccount',
             Searcher::class => 'searcher',
+            UserSettingsLC::class => 'userSettingsLC',
         ];
     }
 

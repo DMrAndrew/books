@@ -55,11 +55,7 @@ class BookAccount extends Account
     public function should_adult_agreement(): bool
     {
         $user = $this->user();
-        if ($user && $user->birthday && $user->asked_adult_agreement !== 1 && !$user->required_post_register) {
-            return abs(Carbon::now()->diffInYears($user->birthday)) > 17;
-        }
-
-        return false;
+        return  $user && $user->asked_adult_agreement !== 1 && !$user->required_post_register && $user->canSetAdult();
     }
 
     public function onAdultAgreementSave()

@@ -8,6 +8,7 @@ enum BookStatus: string
     case COMPLETE = 'complete';
     case FROZEN = 'frozen';
     case HIDDEN = 'hidden';
+    case PENDING = 'pending';
 
     /**
      * @return string
@@ -19,6 +20,7 @@ enum BookStatus: string
             self::COMPLETE => 'Завершена',
             self::FROZEN => 'Заморожена',
             self::HIDDEN => 'Скрыта',
+            self::PENDING => 'Загружается',
         };
     }
 

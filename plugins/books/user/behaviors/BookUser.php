@@ -15,7 +15,7 @@ class BookUser extends ExtensionBase
 {
     public function __construct(protected User $parent)
     {
-        $this->parent->hasMany['comments'] = [Comment::class,'key' => 'user_id','otherKey' => 'id'];
+        $this->parent->hasMany['comments'] = [Comment::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['tags'] = [Tag::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['cycles'] = [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['settings'] = [Settings::class, 'key' => 'user_id', 'otherKey' => 'id'];
@@ -48,6 +48,11 @@ class BookUser extends ExtensionBase
         if ($value && !$this->parent->birthday) {
             $this->parent->attributes['birthday'] = Carbon::parse($value);
         }
+    }
+
+    public function canSetAdult(): bool
+    {
+        return $this->parent->birthday && abs(Carbon::now()->diffInYears($this->parent->birthday)) > 17;
     }
 
     public function getNameAttribute()

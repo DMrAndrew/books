@@ -105,70 +105,7 @@
                 </div>
             </div>
         </div>
-        <div class="book-card-full__info book-card-full-info">
-            <div class="book-card-full-info__button-wrapper">
-                <button class="ui-button ui-button-size--56 ui-button-view--3 ui-button--full ui-button--column">
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme}}"></use>
-                    </svg>
-                    <span class="ui-text--medium">В библиотеку</span>
-                </button>
-                <button class="ui-button ui-button-size--56 ui-button-view--3 ui-button--full ui-button--column">
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-stroked-16' | theme}}"></use>
-                    </svg>
-                    <span class="ui-text--medium">Нравится 200</span>
-                </button>
-            </div>
-            <div class="book-card-full-info__rating">
-                <div class="book-card__raiting">
-                    <svg>
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
-                    </svg>
-                    <span>12</span>
-                </div>
-                <div class="tags-list">
-                    {% for genre in book.genres %}
-                    <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#0 в {{genre.name}}</a>
-
-                    {% endfor %}
-                </div>
-                <!--                <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#11 в Любовная фантастика,</a>-->
-                <!--                <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#443 в Остросюжетный любовный-->
-                <!--                    роман,</a>-->
-
-                <button class="book-card-full-info__button-raiting">
-                    <span>Рейтинг в категориях</span>
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-                    </svg>
-                </button>
-
-            </div>
-            <div class="book-card-full-info__footer">
-                {% if not book.age_restriction.value == 0 %}
-                <div class="book-card__footer-label">{{book.age_restriction.getLabel()}}</div>
-                {% endif %}
-                <div class="book-card__footer-wrapper">
-                    <svg>
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
-                    </svg>
-                    <span>0</span>
-                </div>
-                <div class="book-card__footer-wrapper">
-                    <svg>
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-16' | theme}}"></use>
-                    </svg>
-                    <span>0</span>
-                </div>
-                <div class="book-card__footer-wrapper">
-                    <svg>
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>
-                    </svg>
-                    <span>0</span>
-                </div>
-            </div>
-        </div>
+      {% ajaxPartial 'bookCard::book-page' book=book %}
     </div>
 </div>
 

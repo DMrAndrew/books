@@ -3,6 +3,8 @@
 namespace Books\User\Models;
 
 
+use Books\User\Classes\BoolOptionsEnum;
+use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Model;
@@ -51,6 +53,12 @@ class Settings extends Model
     {
         return $builder->whereIn('type', collect($types)->pluck('value')->toArray());
     }
+
+    public function scopeValue(Builder $builder, BoolOptionsEnum|PrivacySettingsEnum ...$types): Builder
+    {
+        return $builder->whereIn('value', collect($types)->pluck('value')->toArray());
+    }
+
 
     public function scopeUser(Builder $builder, User $user): Builder
     {

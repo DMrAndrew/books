@@ -47,8 +47,13 @@ class Comments extends ComponentBase
         foreach ($this->vals() as $key => $val) {
             $this->page[$key] = $val;
         }
-        $this->page['comments'] = $this->queryComments()->get()->toNested();
-        $this->page['comments_count'] = $this->queryComments()->count();
+
+        $this->page['comments_allowed'] = $this->model->isCommentAllowed();
+        if($this->model->isCommentAllowed()){
+            $this->page['comments'] = $this->queryComments()->get()->toNested();
+            $this->page['comments_count'] = $this->queryComments()->count();
+
+        }
     }
 
     public function vals(): array

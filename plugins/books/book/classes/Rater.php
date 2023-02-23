@@ -24,23 +24,14 @@ class Rater
         $this->builder = Book::query();
     }
 
-    private function scopeOption(string $stat): ?string
+    private function scopeOption(StatsEnum $stat): string
     {
-        return match (StatsEnum::tryFrom($stat)) {
+        return match ($stat) {
             StatsEnum::LIKES => 'likesCount',
             StatsEnum::LIBS => 'inLibCount',
             StatsEnum::COMMENTS => 'commentsCount',
-            default => null
+            default => 'query'
         };
-    }
-
-    private function applyScopes(): void
-    {
-        foreach (array_keys($this->closures) as $closure) {
-            if ($scope = $this->scopeOption($closure)) {
-                $this->builder->{$scope}();
-            }
-        }
     }
 
     private function canPerform(): bool
@@ -53,19 +44,38 @@ class Rater
         $this->stats->fill([$stat_key => $value ?? $this->book[$book_key ?? $stat_key]]);
     }
 
-    public function apply(): static
+    /**
+     * @return Stats
+     */
+    public function getStats(): Stats
+    {
+        return $this->stats;
+    }
+
+    public function performClosures(): static
     {
         if ($this->canPerform()) {
-
-            $this->applyScopes();
-
             $this->book = $this->builder->find($this->book->id);
 
             foreach ($this->closures as $closure) {
                 $closure();
             }
-            $this->stats->save();
         }
+        return $this;
+    }
+
+    /**
+     * @return Builder
+     */
+    public function getBuilder(): Builder
+    {
+        return $this->builder;
+    }
+
+    public function apply(): static
+    {
+        $this->performClosures();
+        $this->stats->save();
         $this->closures = [];
         return $this;
     }
@@ -133,8 +143,7 @@ class Rater
     public function read(): static
     {
         $this->closures[StatsEnum::READ->value] = function () {
-            $this->book['read_count'] = $this->book->ebook->chapters()->withReadTrackersCount()->get()
-                ->sum('completed_trackers');
+            $this->book['read_count'] = $this->book->ebook->chapters()->withReadTrackersCount()->get()->sum('completed_trackers');
             $this->set('read_count');
         };
         return $this;
@@ -142,6 +151,7 @@ class Rater
 
     public function likes(): static
     {
+        $this->builder->{$this->scopeOption(StatsEnum::LIKES)}();
         $this->closures[StatsEnum::LIKES->value] = fn() => $this->set('likes_count');
 
         return $this;
@@ -149,6 +159,7 @@ class Rater
 
     public function libs(): static
     {
+        $this->builder->{$this->scopeOption(StatsEnum::LIBS)}();
         $this->closures[StatsEnum::LIBS->value] = fn() => $this->set('in_lib_count');
 
         return $this;
@@ -156,6 +167,7 @@ class Rater
 
     public function comments(): static
     {
+        $this->builder->{$this->scopeOption(StatsEnum::COMMENTS)}();
         $this->closures[StatsEnum::COMMENTS->value] = fn() => $this->set('comments_count');
 
         return $this;

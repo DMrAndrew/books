@@ -197,11 +197,20 @@ class Book extends Model
     {
         return new Rater($this);
     }
+
     public function isAuthor(User $user)
     {
         return $this->profiles()->user($user)->exists();
     }
 
+    public function isCommentAllowed(?User $user = null): bool
+    {
+        if ($this->ebook()->value('comment_allowed')) {
+            return true;
+        }
+        $user ??= Auth::getUser();
+        return ($user && $this->profiles()->user($user)->exists());
+    }
 
     public function scopeType(Builder $builder, ?EditionsEnums $type): Builder|\Illuminate\Database\Eloquent\Builder
     {
@@ -322,6 +331,7 @@ class Book extends Model
         $this->setDefaultEdition();
         $this->stats()->add(new Stats());
     }
+
     public function createEventHandler()
     {
         $this->setAdultIfHasOne();

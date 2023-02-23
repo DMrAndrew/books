@@ -4,6 +4,7 @@ use Books\Book\Models\Book;
 use Books\Collections\classes\CollectionEnum;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 
 /**
  * BookCard Component
@@ -12,6 +13,9 @@ use RainLab\User\Facades\Auth;
  */
 class BookCard extends ComponentBase
 {
+    protected ?Book $book;
+    protected ?User $user;
+
     public function componentDetails()
     {
         return [
@@ -28,45 +32,47 @@ class BookCard extends ComponentBase
         return [];
     }
 
+    public function acceptable(): bool
+    {
+        $this->user = Auth::getUser();
+        $this->book = Book::find(post('book_id'));
+        return $this->user && $this->book;
+    }
+
     public function onAddLib()
     {
-        $user = Auth::getUser();
-        $book = Book::find(post('book_id'));
-        if ($user && $book) {
-            $lib = $user->library($book);
-            if(!$lib->has()){
-                if ($lib->get()) {
-                    $lib->interested();
-                    $book->rater()->libs()->apply();
-                }
-            }
-            else{
-                $lib->remove();
-            }
-            $book->rater()->libs()->apply();
+        if (!$this->acceptable()) {
+            return $this->render();
         }
+        $library = $this->user->library($this->book);
+        $library->when($library->has() && !$library->is(CollectionEnum::WATCHED),
+            fn($lib) => $lib->remove(),
+            fn($lib) => $lib->get() && $lib->interested());
 
-        return $this->render(['book' => Book::query()->defaultEager()->find($book->id)]);
+        $this->book->rater()->libs()->apply();
+        return $this->render();
     }
 
     public function onLike()
     {
-        $user = Auth::getUser();
-        $book = Book::find(post('book_id'));
-        if ($user && $book) {
-            $user->toggleFavorite($book);
-            $book->rater()->likes()->apply()
-                ->rate()->queue();
+        if (!$this->acceptable()) {
+            return $this->render();
         }
 
-        return $this->render(['book' => Book::query()->defaultEager()->find($book->id)]);
+        $this->user->toggleFavorite($this->book);
+        $this->book->rater()
+            ->likes()->apply()
+            ->rate()->queue();
+
+        return $this->render();
     }
 
     public function render(array $options = [])
     {
         if ($partial = request()->header('X-OCTOBER-REQUEST-PARTIAL')) {
             return [
-                $partial => $this->renderPartial($partial, $options)
+                $partial => $this->renderPartial($partial,
+                    ['book' => Book::query()->defaultEager()->find($this->book->id), ...$options])
             ];
         }
 

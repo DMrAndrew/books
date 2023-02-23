@@ -6,6 +6,9 @@ use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Profile\Classes\ProfileService;
 use Books\Profile\Traits\Subscribable;
+use Books\User\Classes\PrivacySettingsEnum;
+use Books\User\Classes\UserSettingsEnum;
+use Books\User\Models\Settings;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
@@ -13,6 +16,7 @@ use October\Rain\Database\Relations\BelongsToMany;
 use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use System\Models\File;
 use System\Models\Revision;
@@ -124,6 +128,7 @@ class Profile extends Model
 
     public $hasMany = [
         'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id', 'scope' => 'sortByAuthorOrder'],
+        'settings' => [Settings::class,'key' => 'user_id','otherKey' => 'user_id']
     ];
 
     public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
@@ -136,8 +141,8 @@ class Profile extends Model
             'otherKey' => 'book_id',
             'pivot' => ['percent', 'sort_order', 'is_owner'],
         ],
-        'subscribers' => [Profile::class,'table' => 'books_profile_subscribers', 'key' => 'profile_id', 'otherKey' => 'subscriber_id'],
-        'subscriptions' => [Profile::class,'table' => 'books_profile_subscribers', 'key' => 'subscriber_id', 'otherKey' => 'profile_id'],
+        'subscribers' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'profile_id', 'otherKey' => 'subscriber_id'],
+        'subscriptions' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'subscriber_id', 'otherKey' => 'profile_id'],
     ];
 
     public $morphTo = [];
@@ -158,6 +163,26 @@ class Profile extends Model
     public function service(): ProfileService
     {
         return new ProfileService($this);
+    }
+
+    public function isCommentAllowed(?Profile $profile = null)
+    {
+        $profile ??= Auth::getUser()?->profile;
+        if (!$profile) {
+            return false;
+        }
+        if ($profile->is($this)) {
+            return true;
+        }
+        $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_FIT_ACCOUNT_INDEX_PAGE)->first();
+        if (!$setting) {
+            return false;
+        }
+        return match (PrivacySettingsEnum::tryFrom($setting->value)) {
+            PrivacySettingsEnum::ALL => true,
+            PrivacySettingsEnum::SUBSCRIBERS => $profile->hasSubscription($this),
+            default => false
+        };
     }
 
     public function scopeBooksExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder

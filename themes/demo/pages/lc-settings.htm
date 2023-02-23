@@ -8,6 +8,7 @@ description = "Личный кабинет - Настройки"
 security = "user"
 redirect = "/"
 [favorite_genres]
+[userSettingsLC]
 ==
 {% partial 'profile/personal_area_header' %}
 
@@ -22,8 +23,7 @@ redirect = "/"
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
                     </svg>
                 </div>
-
-                {% partial 'personal-area/settings' %}
+                {% component 'userSettingsLC' %}
             </div>
         </div>
     </div>

@@ -44,7 +44,7 @@ trait Subscribable
         }
     }
 
-    public function hasSubscription(Profile $profile): bool
+        public function hasSubscription(Profile $profile): bool
     {
         return !!$this->subscriptions()->find($profile);
     }

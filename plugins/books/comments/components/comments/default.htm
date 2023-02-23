@@ -1,3 +1,4 @@
+{% if comments_allowed %}
 <div class="comments-spawn">
     <div class="comments">
         <div class="comments-form _indent">
@@ -22,5 +23,5 @@
         initComments()
         initTippy();
     </script>
-
 </div>
+{% endif %}

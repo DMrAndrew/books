@@ -4,15 +4,14 @@ namespace Books\Collections\classes;
 
 use Books\Book\Models\Book;
 use Books\Collections\Models\Lib;
-use Exception;
-use Illuminate\Database\Eloquent\Builder as IlluminateBuilder;
+use Illuminate\Support\Traits\Conditionable;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\HasMany;
 use RainLab\User\Models\User;
 
 class LibraryService
 {
-
+    use Conditionable;
     public function __construct(protected User $user, protected Book $book)
     {
     }

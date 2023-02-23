@@ -3,6 +3,7 @@
 namespace Books\Profile\Classes;
 
 use Books\Book\Models\Chapter;
+use Books\Profile\Models\Profile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -18,10 +19,14 @@ class SlaveScope implements Scope
     public function apply(Builder $builder, Model $model): void
     {
 
-        if ($user = $this->getQueryUser($builder)) {
-            $builder->whereIn('id', $user->profiler($model)->select('slave_id'))
-                ->orWhereIn('id', $user->profile->profiler($model)->select('slave_id'));
+        if($profile = $this->getQueryProfile($builder) ?? $this->getQueryUser($builder)?->profile){
+            $builder->whereIn('id', $profile->profiler($model)->select('slave_id'))
+                ->orWhereIn('id', $profile->user->profiler($model)->select('slave_id'));
         }
+//        if ($user = $this->getQueryUser($builder)) {
+//            $builder->whereIn('id', $user->profiler($model)->select('slave_id'))
+//                ->orWhereIn('id', $user->profile->profiler($model)->select('slave_id'));
+//        }
     }
 
     public function extend(Builder $builder)
@@ -30,6 +35,23 @@ class SlaveScope implements Scope
             return $builder->withoutGlobalScope($this);
         });
     }
+
+    /**
+     * @param Builder $builder
+     * @return mixed
+     */
+    private function getQueryProfile(Builder $builder): mixed
+    {
+        $profile_id = null;
+        foreach ($builder->getQuery()->wheres as $where) {
+            if ($where['type'] === 'Basic' && str_contains($where['column'], 'profile_id')) {
+                $profile_id = $where['value'];
+            }
+        }
+
+        return Profile::find($profile_id);
+    }
+
 
     /**
      * @param Builder $builder

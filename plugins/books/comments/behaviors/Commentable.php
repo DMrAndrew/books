@@ -16,8 +16,15 @@ class Commentable extends ExtensionBase
         $this->model->morphMany['comments'] = [Comment::class, 'name' => 'commentable'];
     }
 
+    public function isCommentAllowed(): bool
+    {
+        return true;
+    }
     public function addComment(User $user, array $payload)
     {
+        if(!$this->model->isCommentAllowed()){
+            return false;
+        }
         $payload['user_id'] = $user->id;
         $comment = $this->model->comments()->create($payload);
         $this->after($comment);
