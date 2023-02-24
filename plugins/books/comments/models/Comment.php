@@ -3,6 +3,7 @@
 use App\traits\ScopeUser;
 use Carbon\Carbon;
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\SimpleTree;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
@@ -51,6 +52,11 @@ class Comment extends Model
     public function isEdited(): bool
     {
         return $this->created_at->notEqualTo($this->updated_at);
+    }
+
+    public function scopeRoot(Builder $builder): Builder
+    {
+        return $builder->where($this->getQualifiedParentColumnName(), '=', null);
     }
 
     public function dateFormated()

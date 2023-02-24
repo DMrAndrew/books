@@ -17,7 +17,7 @@ class CreateProfilersTable extends Migration
             $table->engine = 'InnoDB';
             $table->morphs('master', 'master');
             $table->morphs('slave', 'slave');
-            $table->primary(['master_type', 'slave_type']);
+            $table->primary(['master_type','master_id', 'slave_type','slave_id'],'id');
         });
     }
 

@@ -55,7 +55,7 @@ class BookAccount extends Account
     public function should_adult_agreement(): bool
     {
         $user = $this->user();
-        return  $user && $user->asked_adult_agreement !== 1 && !$user->required_post_register && $user->canSetAdult();
+        return  $user && $user->asked_adult_agreement == 0 && !$user->required_post_register && $user->canSetAdult();
     }
 
     public function onAdultAgreementSave()
