@@ -3,6 +3,7 @@
 namespace Books\User\Behaviors;
 
 use Books\Comments\Models\Comment;
+use Books\User\Classes\UserService;
 use Carbon\Carbon;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Cycle;
@@ -49,12 +50,18 @@ class BookUser extends ExtensionBase
         ]);
     }
 
+    public function service(): UserService
+    {
+        return new UserService($this->parent);
+    }
+
     public function setBirthdayAttribute($value)
     {
         if ($value && !$this->parent->birthday) {
             $this->parent->attributes['birthday'] = Carbon::parse($value);
         }
     }
+
     public function canSetAdult(): bool
     {
         return $this->parent->birthday && abs(Carbon::now()->diffInYears($this->parent->birthday)) > 17;
