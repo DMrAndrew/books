@@ -156,8 +156,10 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'UTC'),
 
-    'version' => '1.0.0'
+    'version' => '0.1.0',
+
+    'foreign_url' => env('APP_FOREIGN_URL')
 
 ];

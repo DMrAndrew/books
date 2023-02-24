@@ -1,9 +1,10 @@
-<?php namespace Books\Book\Components;
+<?php
+
+namespace Books\Book\Components;
 
 use ApplicationException;
 use Books\Book\Classes\BookService;
-use Books\Book\Models\AgeRestrictionsEnum;
-use Books\Book\Models\Author;
+use Books\Book\Classes\Enums\AgeRestrictionsEnum;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
 use Books\Book\Models\Tag;
@@ -14,11 +15,11 @@ use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
 use Illuminate\Support\Facades\Redirect;
-use October\Rain\Database\Collection;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Request;
 use ValidationException;
+use Validator;
 
 /**
  * Booker Component
@@ -28,9 +29,10 @@ use ValidationException;
 class Booker extends ComponentBase
 {
     protected ?Book $book;
-    protected User $user;
-    protected BookService $service;
 
+    protected User $user;
+
+    protected BookService $service;
 
     /**
      * componentDetails
@@ -39,7 +41,7 @@ class Booker extends ComponentBase
     {
         return [
             'name' => 'Booker Component',
-            'description' => 'Компонент создания и редактирования книги'
+            'description' => 'Компонент создания и редактирования книги',
         ];
     }
 
@@ -57,10 +59,9 @@ class Booker extends ComponentBase
                 'description' => 'Книга пользователя',
                 'type' => 'string',
                 'default' => null,
-            ]
+            ],
         ];
     }
-
 
     public function init()
     {
@@ -68,7 +69,7 @@ class Booker extends ComponentBase
             return $redirect;
         }
         $this->user = User::find($this->property('user_id')) ?? Auth::getUser();
-        if (!$this->user) {
+        if (! $this->user) {
             throw new ApplicationException('User required');
         }
         $this->book = $this->user->profile->books()->find($this->property('book_id')) ?? new Book();
@@ -80,7 +81,7 @@ class Booker extends ComponentBase
             'coverUploader',
             [
                 'modelClass' => Book::class,
-                'deferredBinding' => !!!$this->book->id,
+                'deferredBinding' => ! (bool) $this->book->id,
                 'imageWidth' => 168,
                 'imageHeight' => 243,
             ]
@@ -91,7 +92,6 @@ class Booker extends ComponentBase
         $this->page['cycles'] = $this->getCycles();
     }
 
-
     public function onRefreshFiles()
     {
         $this->pageCycle();
@@ -100,16 +100,29 @@ class Booker extends ComponentBase
     public function onSaveBook()
     {
         try {
-            $redirect = !!$this->book->id;
-            $book = $this->service->save(post());
+            $data = post();
+            $book = (new Book());
+            $book->addValidationRule('annotation', 'max:2000');
+            $validator = Validator::make(
+                $data,
+                $book->rules,
+                (array) $book->customMessages
+            );
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+            $book = $this->service->from($data);
+            $redirect = (bool) $this->book->id;
 
-            return $redirect ?
+            return !$redirect ?
                 ['#about-header' => $this->renderPartial('book/about-header', ['book' => $book])]
                 : Redirect::to("/about-book/$book->id");
-
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
     }
 
@@ -122,18 +135,19 @@ class Booker extends ComponentBase
             collect(post('authors'))
                 ->whereNotNull('profile_id')
                 ->whereBetween('percent_value', [0, 100])
-                ->map(fn($i) => [
+                ->map(fn ($i) => [
                     'profile' => Profile::find($i['profile_id']),
-                    'value' => $i['percent_value']
+                    'value' => $i['percent_value'],
                 ])
                 ->each(function ($i) {
                     $this->service->setPercent(...$i);
                 });
-
-
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
     }
 
@@ -148,16 +162,18 @@ class Booker extends ComponentBase
 
             return [
                 '#cycle_input' => $this->renderPartial('@cycle_input', ['cycles' => $this->getCycles(), 'cycle_id' => $this->book->cycle->id]),
-                '#create_cycle_form_partial' => $this->renderPartial('@cycle_create_modal')
+                '#create_cycle_form_partial' => $this->renderPartial('@cycle_create_modal'),
             ];
-
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
     }
 
-    function getCycles()
+    public function getCycles()
     {
         return $this->user?->cycles->toArray() ?? [];
     }
@@ -165,21 +181,21 @@ class Booker extends ComponentBase
     public function onSearchTag()
     {
         $term = post('term');
-        if (!$term || strlen($term) < 3) {
+        if (! $term || strlen($term) < 3) {
             return [];
         }
         $like = $this->user?->tags()->nameLike($term)->get();
         $exists = $this->service->getTags();
         $array = $like->diff($exists);
-        $already_has = !!$exists->first(fn($i) => $i->name === $term);
-        $can_create = !$already_has && !!!$like->first(fn($i) => $i->name === $term);
+        $already_has = (bool) $exists->first(fn ($i) => $i->name === $term);
+        $can_create = ! $already_has && ! (bool) $like->first(fn ($i) => $i->name === $term);
 
         $res = [];
 
         if ($already_has) {
             $res[] = [
                 'disabled' => true,
-                'htm' => $this->renderPartial('select/option', ['placeholder' => "Тэг «" . $term . "» уже добавлен на страницу",])
+                'htm' => $this->renderPartial('select/option', ['placeholder' => 'Тэг «'.$term.'» уже добавлен на страницу']),
             ];
         }
         $res = array_merge($res, collect($array)->map(function ($item) {
@@ -187,36 +203,34 @@ class Booker extends ComponentBase
                 'id' => $item->id,
                 'label' => $item->name,
                 'htm' => $this->renderPartial('select/option', ['label' => $item->name]),
-                'handler' => $this->alias . '::onAddTag'
+                'handler' => $this->alias.'::onAddTag',
             ];
         })->toArray());
 
         if ($can_create) {
             $res[] = [
                 'label' => $term,
-                'handler' => $this->alias . '::onAddTag',
+                'handler' => $this->alias.'::onAddTag',
                 'htm' => $this->renderPartial('select/option', [
                     'prepend_icon' => '#plus-stroked-16',
-                    'text' => "Создать новый тэг «" . $term . "»",
+                    'text' => 'Создать новый тэг «'.$term.'»',
                     'active' => true,
                     'prepend_separator' => $array[0] ?? false,
-                ])
+                ]),
             ];
         }
 
         return $res;
     }
 
-
     public function onSearchGenre()
     {
         $term = post('term');
-        if (!$term && strlen($term) < 3) {
+        if (! $term && strlen($term) < 3) {
             return [];
         }
 
-
-        $array = Genre::active()
+        $array = Genre::public()
             ->name($term)
             ->get()
             ->diff($this->service->getGenres());
@@ -226,7 +240,7 @@ class Booker extends ComponentBase
                 'id' => $item->id,
                 'label' => $item->name,
                 'htm' => $this->renderPartial('select/option', ['label' => $item->name]),
-                'handler' => $this->alias . '::onAddGenre'
+                'handler' => $this->alias.'::onAddGenre',
             ];
         })->toArray();
     }
@@ -235,7 +249,7 @@ class Booker extends ComponentBase
     {
         try {
             $name = post('term');
-            if (!$name && strlen($name) < 1) {
+            if (! $name && strlen($name) < 1) {
                 return [];
             }
 
@@ -247,16 +261,17 @@ class Booker extends ComponentBase
                 return [
                     'id' => $item->id,
                     'label' => $item->username,
-                    'htm' => $this->renderPartial('select/option', ['label' => $item->username . " (id: $item->id)"]),
-                    'handler' => $this->alias . '::onAddAuthor'
+                    'htm' => $this->renderPartial('select/option', ['label' => $item->username." (id: $item->id)"]),
+                    'handler' => $this->alias.'::onAddAuthor',
                 ];
             })->toArray();
-
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
-
     }
 
     public function onAddAuthor()
@@ -270,21 +285,22 @@ class Booker extends ComponentBase
             }
 
             return $this->generateAuthorInput(['autofocus' => true]);
-
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
     }
 
-    /**
-     */
     public function onAddTag(): array
     {
         if ($this->service->getTags()->count() > 7) {
             throw new ValidationException(['tags' => 'Вы можете добавить до 8 тэгов.']);
         }
         $this->service->addTag(Tag::find(post('item')['id'] ?? null) ?? post('item')['value'] ?? null);
+
         return $this->generateTagInput(['autofocus' => true]);
     }
 
@@ -300,8 +316,11 @@ class Booker extends ComponentBase
 
             return $this->generateGenresInput(['autofocus' => true]);
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
     }
 
@@ -309,11 +328,14 @@ class Booker extends ComponentBase
     {
         try {
             $this->service->removeProfile(Profile::find(post('delete_profile_id')));
-            return $this->generateAuthorInput();
 
+            return $this->generateAuthorInput();
         } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
     }
 
@@ -333,16 +355,16 @@ class Booker extends ComponentBase
     {
         if ($tag = $this->user->tags()->find(post('delete_tag_id'))) {
             $this->service->removeTag($tag);
+
             return $this->generateTagInput();
         }
         throw new ValidationException(['tag' => 'Тэг не найден']);
     }
 
-    function generateTagInput(array $options = []): array
+    public function generateTagInput(array $options = []): array
     {
         return ['#input-tags' => $this->renderPartial('@input-tags', ['tags' => $this->service->getTags(), ...$options])];
     }
-
 
     public function generateAuthorInput(array $options = []): array
     {
@@ -361,5 +383,4 @@ class Booker extends ComponentBase
     {
         return post('_session_key');
     }
-
 }

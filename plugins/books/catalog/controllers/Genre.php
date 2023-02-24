@@ -1,11 +1,14 @@
-<?php namespace Books\Catalog\Controllers;
+<?php
 
-use Lang;
-use Flash;
-use BackendMenu;
-use Backend\Classes\Controller;
-use Backend\Behaviors\ListController;
+namespace Books\Catalog\Controllers;
+
 use Backend\Behaviors\FormController;
+use Backend\Behaviors\ListController;
+use Backend\Classes\Controller;
+use BackendMenu;
+use Books\Catalog\Models\Genre as GenreModel;
+use Flash;
+use Lang;
 
 /**
  * Genre Backend Controller
@@ -14,7 +17,7 @@ class Genre extends Controller
 {
     public $implement = [
         FormController::class,
-        ListController::class
+        ListController::class,
     ];
 
     /**
@@ -60,38 +63,17 @@ class Genre extends Controller
             is_array($checkedIds) &&
             count($checkedIds)
         ) {
-
-            foreach ($checkedIds as $genreId) {
-                if (!$genre = \Books\Catalog\Models\Genre::find($genreId)) {
-                    continue;
-                }
-
-                switch ($bulkAction) {
-                    case 'delete':
-                        $genre->forceDelete();
-                        break;
-
-                    case 'activate':
-                        $genre->activate();
-                        break;
-
-                    case 'deactivate':
-                        $genre->deactivate();
-                        break;
-
-                    case 'favorite':
-                        $genre->enableFavorite();
-                        break;
-
-                    case 'unfavorite':
-                        $genre->disableFavorite();
-                        break;
-                }
+            $allowed = ['delete', 'activate', 'deactivate', 'enableFavorite', 'disableFavorite', 'checkAdult', 'uncheckAdult'];
+            if (in_array($bulkAction, $allowed)) {
+                GenreModel::query()
+                    ->whereIn('id', $checkedIds)
+                    ->get()
+                    ->map
+                    ->{$bulkAction}();
             }
-
-            Flash::success(Lang::get('books.catalog::lang.genres.' . $bulkAction . '_selected_success'));
+            Flash::success(Lang::get('books.catalog::lang.genres.'.$bulkAction.'_selected_success'));
         } else {
-            Flash::error(Lang::get('books.catalog::lang.genres.' . $bulkAction . '_selected_empty'));
+            Flash::error(Lang::get('books.catalog::lang.genres.'.$bulkAction.'_selected_empty'));
         }
 
         return $this->listRefresh();

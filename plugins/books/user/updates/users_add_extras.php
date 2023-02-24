@@ -2,32 +2,42 @@
 
 namespace Books\User\Updates;
 
-use Schema;
+use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 class UsersAddBirthday extends Migration
 {
     public function up()
     {
-        Schema::table('users', function ($table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->timestamp('birthday')->nullable();
             $table->boolean('show_birthday')->default(true);
-            $table->unsignedBigInteger('country_id')->nullable();
             $table->boolean('see_adult')->default(false);
-            $table->json('favorite_genres')->default('[]');
-            $table->json('exclude_genres')->nullable();
+            $table->json('loved_genres')->nullable();
+            $table->json('unloved_genres')->nullable();
+            $table->boolean('required_post_register')->default(true);
+            $table->boolean('asked_adult_agreement')->default(0);
+            $table->unsignedBigInteger('country_id')->nullable()->index();
+            $table->unsignedBigInteger('state_id')->nullable()->index();
         });
     }
 
     public function down()
     {
-        Schema::table('users', function ($table) {
-            $table->dropColumn('birthday');
-            $table->dropColumn('show_birthday');
-            $table->dropColumn('country_id');
-            $table->dropColumn('see_adult');
-            $table->dropColumn('favorite_genres');
-            $table->dropColumn('exclude_genres');
-        });
+        foreach ([
+                     'birthday',
+                     'show_birthday',
+                     'see_adult', 'loved_genres',
+                     'unloved_genres',
+                     'required_post_register',
+                     'asked_adult_agreement',
+                     'country_id',
+                     'state_id',
+                 ] as $column) {
+            if (Schema::hasColumn('users', $column)) {
+                Schema::table('users', fn($table) => $table->dropColumn($column));
+            }
+        }
     }
 }

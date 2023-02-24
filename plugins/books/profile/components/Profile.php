@@ -1,155 +1,54 @@
 <?php namespace Books\Profile\Components;
 
-use Db;
-use Event;
-use Flash;
-use Request;
-use Exception;
-use Validator;
-use ValidationException;
-use RainLab\User\Models\User;
 use Cms\Classes\ComponentBase;
+use Illuminate\Http\RedirectResponse;
 use RainLab\User\Facades\Auth;
-use Books\FileUploader\Components\ImageUploader;
-use Books\Profile\Models\Profile as UserProfile;
+use RainLab\User\Models\User;
+use Redirect;
+use Validator;
 
+/**
+ * Profile Component
+ *
+ * @link https://docs.octobercms.com/3.x/extend/cms-components.html
+ */
 class Profile extends ComponentBase
 {
-
-    protected User $user;
-
-    /**
-     * @return mixed
-     */
-    public function componentDetails()
-    {
-        return [
-            'name' => 'Profile',
-            'description' => 'Details'
-        ];
-    }
-
+    protected ?User $user;
 
     public function init()
     {
-        if ($redirect = redirectIfUnauthorized()) {
-            return $redirect;
-        }
         $this->user = Auth::getUser();
-        if ($profile = $this->user?->profile) {
-            $component = $this->addComponent(
-                ImageUploader::class,
-                'avatarUploader',
-                [
-                    'modelClass' => UserProfile::class,
-                    'modelKeyColumn' => 'avatar',
-                    'deferredBinding' => false,
-                    'imageWidth' => 168,
-                    'imageHeight' => 168,
-                ]
-            );
-            $component->bindModel('avatar', $profile);
+    }
 
-            $component = $this->addComponent(
-                ImageUploader::class,
-                'bannerUploader',
-                [
-                    'modelClass' => UserProfile::class,
-                    'modelKeyColumn' => 'banner',
-                    'deferredBinding' => false,
-                    'imageWidth' => 1152,
-                    'imageHeight' => 168,
-
-                ]
-            );
-            $component->bindModel('banner', $profile);
-        }
-        $this->page['userdata'] = $this->user;
+    public function componentDetails()
+    {
+        return [
+            'name' => 'Profile Component',
+            'description' => 'No description provided yet...'
+        ];
     }
 
     /**
-     * @throws \Illuminate\Validation\ValidationException
-     * @throws ValidationException
+     * @link https://docs.octobercms.com/3.x/element/inspector-types.html
      */
-    public function onUpdateProfile()
+    public function defineProperties()
     {
+        return [];
+    }
 
-        try {
-            $profile = $this->user->profile;
-            $data = array_diff_assoc(post(), $profile->only($profile->getFillable()));
-            $profile->removeValidationRule('username', 'required');
-            $profile->addValidationRule('username', 'prohibited');
-            $profile->addValidationRule('username_clipboard', 'prohibited');
-
-            $validation = Validator::make(
-                $data,
-                $profile->rules,
-                (array)(new UserProfile())->customMessages
-            );
-            if ($validation->fails()) {
-                throw new ValidationException($validation);
-            }
-
-            $profile->update($validation->validated(), ['force' => true]);
-            $this->user->refresh();
-
-            return [
-                'profile/primaryInformation' => $this->renderPartial('profile/primaryInformation', ['userdata' => $this->user]),
-                'profile/profileSecondaryInformation' => $this->renderPartial('profile/profileSecondaryInformation', ['userdata' => $this->user])
-            ];
-
-        } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+    public function onSwitchProfile()
+    {
+        $profile = \Books\Profile\Models\Profile::find(post('profile_id')) ?? abort(404);
+        if ($this->user->profiles()->find($profile?->id) && $this->user->profile->id !== $profile->id) {
+            $profile->service()->switch();
+            return Redirect::refresh();
         }
-
-
     }
 
-    /**
-     * @throws ValidationException
-     */
-    public function onUpdateUsername()
+    public function onCreateProfile(): RedirectResponse
     {
-        try {
-
-            Db::transaction(function () {
-                $data = post();
-                $data['username_clipboard'] = $data['username'];
-
-                $user = Auth::getUser();
-                $profile = $user->profile;
-                $rules = $profile->rules;
-                $validation = Validator::make(
-                    $data,
-                    [
-                        'username' => $rules['username'],
-                        'username_clipboard' => $rules['username_clipboard'],
-                        'username_clipboard_comment' => $rules['username_clipboard_comment'],
-                    ],
-                    (array)(new UserProfile())->customMessages
-                );
-                if ($validation->fails()) {
-                    throw new ValidationException($validation);
-                }
-                $profile->update([
-                    'username_clipboard' => $data['username'],
-                    'username_clipboard_comment' => $data['username_clipboard_comment'] ?? null,
-                ], ['force' => true]);
-                Event::fire('books.profile.username.modify.requested', [$user]);
-            });
-
-            return true;
-        } catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
-        }
-
+        $this->user->profile->service()->newProfile(post());
+        return Redirect::refresh();
     }
-
-    public function onRefreshFiles()
-    {
-        $this->pageCycle();
-    }
-
 }

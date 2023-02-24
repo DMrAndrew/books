@@ -6,7 +6,7 @@ description = "Личный кабинет - Приватность"
 [session]
 security = "user"
 redirect = "/"
-[profilePrivacy]
+[privacyLC]
 ==
 
 {% partial 'profile/personal_area_header' %}
@@ -21,7 +21,9 @@ redirect = "/"
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
                     </svg>
                 </div>
-                {% partial 'profile/privacy' %}
+                <div id="profile_privacy_form">
+                    {% component 'privacyLC' %}
+                </div>
             </div>
         </div>
     </div>

@@ -14,7 +14,9 @@ let registerForm = () => toForm('register_form');
 
 let openChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'flex'
 let closeChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'none'
-let closeModal = () => Array.from(document.getElementsByClassName('ui-modal')).forEach(e => e.style.display = 'none')
+// let closeModal = () => {
+//     Array.from(document.getElementsByClassName('ui-modal')).forEach(e => e.style.display = 'none')
+// }
 let openCreateCycleForm = () => document.getElementById('create_cycle_form').style.display = 'flex'
 let closeDropDowns = () => Array.from(document.getElementsByClassName('ui-dropdown')).forEach(e => e.style.display = 'none')
 
@@ -58,6 +60,7 @@ let initSortable = (container, handler) => {
     })
 };
 
+
 let tabElemInit = function () {
     const containerWidth = document.querySelector('.js-container')
     const wrapperWidth = document.querySelector('.js-wrapper')
@@ -71,6 +74,24 @@ let tabElemInit = function () {
         }
     })
 }
+
+addEventListener('page:before-cache', function() {
+    // console.log('page:before-cache')
+    $('.popup-menu').hide()
+    reInitSelect()
+});
+
+// addEventListener('page:render', function() {
+//     console.log('page:render')
+// });
+
+
 addEventListener('page:loaded', function () {
+    // console.log('page:loaded')
     iniSelect()
 });
+
+addEventListener('page:unload', function() {
+    // console.log('page:unload')
+    window.reader && window.reader.clear()
+})

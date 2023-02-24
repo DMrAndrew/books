@@ -29,10 +29,10 @@
 
                     {% for item in tab.items %}
                     {% if item.type == 'Book' %}
-                    {% partial 'book/book' book=item %}
+                    {% ajaxPartial "bookCard::standard-card" book=item  %}
                     {% endif %}
                     {% if tab.type == 'Profile' %}
-                    {% partial '@author' author=item %}
+                    {% partial 'searcher::author' author=item %}
                     {% endif %}
                     {% endfor %}
 

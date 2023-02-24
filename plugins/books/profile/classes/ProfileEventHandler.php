@@ -2,9 +2,9 @@
 
 namespace Books\Profile\Classes;
 
-use Mail;
 use Backend;
 use Backend\Models\User as BackendUser;
+use Mail;
 
 class ProfileEventHandler
 {
@@ -30,18 +30,7 @@ class ProfileEventHandler
                 fn($msg) => $msg->to($recipient)
             );
         }
-
     }
 
-    public function createdProfilableModel($model): void
-    {
-        $profiler = $model->profiler();
-        $profiler->update(['ids' => array_merge($profiler->getIds(), [$model->id])]);
-    }
 
-    public function deletedProfilableModel($model): void
-    {
-        $profiler = $model->profiler();
-        $profiler->update(['ids' => array_values(array_diff($profiler->getIds(), [$model->id]))]);
-    }
 }

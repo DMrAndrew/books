@@ -1,10 +1,17 @@
-<?php namespace Books\Profile\Models;
+<?php
 
-use Model;
+namespace Books\Profile\Models;
+
+use October\Rain\Database\Builder;
+use October\Rain\Database\Model;
+use October\Rain\Database\Relations\MorphMany;
 use October\Rain\Database\Traits\Validation;
 
 /**
  * Profiler Model
+ *
+ * @method MorphMany master
+ * @method MorphMany slave
  */
 class Profiler extends Model
 {
@@ -17,6 +24,8 @@ class Profiler extends Model
      */
     public $table = 'books_profile_profilers';
 
+
+
     /**
      * @var array guarded attributes aren't mass assignable
      */
@@ -25,7 +34,7 @@ class Profiler extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['profile_id', 'entity_type', 'ids'];
+    protected $fillable = [];
 
     /**
      * @var array rules for validation
@@ -40,9 +49,7 @@ class Profiler extends Model
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
      */
-    protected $jsonable = [
-        'ids'
-    ];
+    protected $jsonable = [];
 
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
@@ -59,24 +66,42 @@ class Profiler extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
      * @var array hasOne and other relations
      */
     public $hasOne = [];
+
     public $hasMany = [];
+
     public $belongsTo = [];
+
     public $belongsToMany = [];
-    public $morphTo = [];
+
+    public $morphTo = [
+        'master' => [],
+        'slave' => [],
+    ];
+
     public $morphOne = [];
+
     public $morphMany = [];
+
     public $attachOne = [];
+
     public $attachMany = [];
 
-    public function getIds()
+
+    public function scopeSlaveType(Builder $builder, Model $model): Builder
     {
-        return $this->ids;
+        return $builder->where('slave_type', '=', get_class($model));
     }
+
+    public function scopeMasterType(Builder $builder, Model $model): Builder
+    {
+        return $builder->where('master_type', '=', get_class($model));
+    }
+
 }

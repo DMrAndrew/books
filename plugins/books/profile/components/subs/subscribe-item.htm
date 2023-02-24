@@ -1,0 +1,26 @@
+<div class="personal-subscribe__item">
+    {% if profile.avatar %}
+    <img class="personal-subscribe__img" src="{{profile.avatar.getThumb(40,40)}}" alt="">
+    {% else %}
+    <div class="personal-subscribe__img">{{profile.firstLatter}}</div>
+    {% endif %}
+
+    <div class="personal-subscribe__name">{{profile.username}}</div>
+    <div class="personal-subscribe__controls" data-tippy-continer data-tippy-offset="[0, 0]" data-tippy-placement="bottom-end">
+        <svg class="square-16" data-tippy-init>
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
+        </svg>
+        <div class="ui-dropdown" data-tippy-block>
+            <div class="ui-dropdown-container">
+                <div onclick="oc.ajax('{{action.request}}',{
+                    data:{
+                        id:'{{profile.id}}'
+                    }
+                })"
+                      class="ui-dropdown-item active">
+                    <span>{{action.label}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

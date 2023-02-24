@@ -47,9 +47,6 @@ class Plugin extends PluginBase
         User::extend(function (User $model) {
             $model->implementClassWith(PerformsReviews::class);
         });
-//        Post::extend(function (RainLab\Blog\Models\Post $model) {
-//            $model->implementClassWith(Reviewable::class);
-//        });
     }
 
     /**

@@ -2,7 +2,7 @@
     <a
         href="<?= Backend::url('books/catalog/type/create') ?>"
         class="btn btn-primary oc-icon-plus">
-        <?= e(trans('backend::lang.list.create_button', ['name'=>'Тип книги'])) ?>
+        <?= e(trans('backend::lang.list.create_button', ['name' => 'Тип книги'])) ?>
     </a>
 
     <div class="btn-group dropdown dropdown-fixed" data-control="bulk-actions">

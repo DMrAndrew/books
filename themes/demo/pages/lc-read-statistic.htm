@@ -1,0 +1,400 @@
+title = "Личный кабинет - Статистика прочтений"
+layout = "default"
+url = "/lc-read-statistic"
+meta_title = "Личный кабинет - Статистика прочтений"
+[session]
+security = "user"
+redirect = "/"
+==
+{% partial 'profile/personal_area_header' %}
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
+            {% partial "profile/sidebarmenu" %}
+            <div class="ui-col-sm-9">
+                <div class="personal-area__subtitle">
+                    <span class="ui-text-head--3 ui-text--bold">Статистика прочтений</span>
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                    </svg>
+                </div>
+
+                <!-- Статистика с таблицей "Все произведения" -->
+                <div class="read-statistic wrapper" style="margin-bottom: 32px;">
+                    <div class="read-statistic__select ui-select _indent-large">
+                        <div class="ui-select-container">
+                            <div class="ui-select-item _size-32">
+                                <div class="ui-select-item-option">Все произведения</div>
+                                <svg class="ui-select-item-icon">
+                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="read-statistic__select _max-width ui-select">
+                        <div class="ui-select-header">
+                            <label class="ui-select-label">Период</label>
+                        </div>
+                        <div class="ui-select-container">
+                            <div class="ui-select-item _size-32">
+                                <div class="ui-select-item-option">20.01.2022–21.04.2022</div>
+                                <svg class="ui-select-item-icon">
+                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table">
+                        <div class="table__head">
+                            <div class="table__col _half">Произведение</div>
+                            <div class="table__col">10.08</div>
+                            <div class="table__col">09.08</div>
+                            <div class="table__col">08.08</div>
+                            <div class="table__col">07.08</div>
+                            <div class="table__col">06.08</div>
+                            <div class="table__col">05.08</div>
+                            <div class="table__col">04.08</div>
+                            <div class="table__col">03.08</div>
+                            <div class="table__col">02.08</div>
+                            <div class="table__col">01.08</div>
+                        </div>
+
+                        <div class="table__list">
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Кукла</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Хранитель 1+2 книги</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Воплощая мечты</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Венга 19 Дом. Вернуть право на мечту</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Наивняшка для лорда</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Между льдом и пламенем 2, или Как ...</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Между льдом и пламенем 3, или Как ...</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Эльф, инкуб и поладанка</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Наследие королевской крови. Книга 2</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Котики для мисс Ведьмы</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Наследие королевской крови. Книга 3</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Невеста младшего брата</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half" data-title="Произведение">Зарождение чувств</div>
+                                <div class="table__col" data-title="10.08">73</div>
+                                <div class="table__col" data-title="09.08">136</div>
+                                <div class="table__col" data-title="08.08">126</div>
+                                <div class="table__col" data-title="07.08">9</div>
+                                <div class="table__col" data-title="06.08">119</div>
+                                <div class="table__col" data-title="05.08">165</div>
+                                <div class="table__col" data-title="04.08">273</div>
+                                <div class="table__col" data-title="03.08">121</div>
+                                <div class="table__col" data-title="02.08">212</div>
+                                <div class="table__col" data-title="01.08">83</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _half _bold">Итого</div>
+                                <div class="table__col _bold">474</div>
+                                <div class="table__col _bold">474</div>
+                                <div class="table__col _bold">474</div>
+                                <div class="table__col _bold">474</div>
+                                <div class="table__col _bold">474</div>
+                                <div class="table__col _bold">474</div>
+                                <div class="table__col _bold">474</div>
+                                <div class="table__col _bold">474</div>
+                                <div class="table__col _bold">474</div>
+                                <div class="table__col _bold">474</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- Статистика с таблицей "График" -->
+                <div class="read-statistic wrapper">
+                    <div class="read-statistic__select ui-select _indent-large">
+                        <div class="ui-select-container">
+                            <div class="ui-select-item _size-32">
+                                <div class="ui-select-item-option">Кукла</div>
+                                <svg class="ui-select-item-icon">
+                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="read-statistic__control">
+                        <a href="#" class="ui-link _violet">Статистика по частям</a>
+                    </div>
+
+                    <div class="read-statistic__description">
+                        <p class="ui-text-body--2">Внимание! Если вы удалили часть произведения и добавили ее снова, то статистика прочтений этой части начнет считаться заново.</p>
+                    </div>
+
+                    <div class="read-statistic__select _max-width ui-select">
+                        <div class="ui-select-header">
+                            <label class="ui-select-label">Период</label>
+                        </div>
+                        <div class="ui-select-container">
+                            <div class="ui-select-item _size-32">
+                                <div class="ui-select-item-option">20.01.2022–21.04.2022</div>
+                                <svg class="ui-select-item-icon">
+                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="read-statistic__title ui-text-head--3 ui-text--bold">Всего: 11727</div>
+
+                    <div class="read-statistic__chart">
+                        <canvas id="myChart"></canvas>
+                    </div>
+
+                    <div class="table">
+                        <div class="table__head">
+                            <div class="table__col _wide">Дата</div>
+                            <div class="table__col">Кол-во прочтений</div>
+                        </div>
+
+                        <div class="table__list">
+                            <div class="table__row">
+                                <div class="table__col _wide" data-title="Дата">22.08.10</div>
+                                <div class="table__col" data-title="Кол-во прочтений">79</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _wide" data-title="Дата">22.08.10</div>
+                                <div class="table__col" data-title="Кол-во прочтений">79</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _wide" data-title="Дата">22.08.10</div>
+                                <div class="table__col" data-title="Кол-во прочтений">79</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _wide" data-title="Дата">22.08.10</div>
+                                <div class="table__col" data-title="Кол-во прочтений">79</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _wide" data-title="Дата">22.08.10</div>
+                                <div class="table__col" data-title="Кол-во прочтений">79</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _wide" data-title="Дата">22.08.10</div>
+                                <div class="table__col" data-title="Кол-во прочтений">79</div>
+                            </div>
+                            <div class="table__row">
+                                <div class="table__col _wide _right"></div>
+                                <div class="table__col _bold">Итого: 474</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const chart = document.getElementById('myChart');
+    const ctx = chart.getContext('2d');
+
+    const labels = [
+        '01.09.20', '03.09.20', '05.09.20',
+        '07.09.20', '09.09.20', '11.09.20',
+        '13.09.20', '15.09.20', '17.09.20',
+        '19.09.20', '21.09.20', '23.09.20',
+        '25.09.20', '27.09.20', '29.09.20',
+        '30.09.20',
+    ];
+    const data = [
+        450, 520, 560,
+        530, 280, 260,
+        390, 520, 510,
+        525, 440, 380,
+        385, 330, 325,
+        360
+    ];
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 450);
+    gradient.addColorStop(0, 'rgba(206, 185, 253, 0.33)');
+    gradient.addColorStop(1, 'rgba(105, 56, 221, 0)');
+
+    new Chart(chart, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '',
+                data: data,
+                borderColor: '#6938DD',
+                pointColor: '#6938DD',
+                pointRadius: 4,
+                pointBackgroundColor: '#F3EEFE',
+                cubicInterpolationMode: 'monotone',
+                fill: true,
+                backgroundColor: gradient,
+            }]
+        },
+        options: {
+
+            scales: {
+                y: {
+                    beginAtZero: true,
+                },
+                x: {
+                    ticks: {
+                        autoSkip: false,
+                        maxRotation: 90,
+                        minRotation: 90
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                },
+            },
+        }
+    });
+</script>

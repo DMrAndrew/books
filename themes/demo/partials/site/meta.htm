@@ -12,12 +12,15 @@
 <link href="{{ 'assets/css/helper.css' | theme }}" rel="stylesheet">
 <link href="{{ 'assets/css/slimselect.css' | theme }}" rel="stylesheet">
 <link href="{{ 'assets/css/jquery-ui.min.css' | theme }}" rel="stylesheet">
+<link href="{{ 'assets/css/tippy.css' | theme }}" rel="stylesheet">
+<link href="{{ 'assets/css/tippy.light.css' | theme }}" rel="stylesheet">
 <!-- Временное подключение шрифтов -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
 <!-- Подключение стилей свайпера -->
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
 <script src="https://unpkg.com/slim-select@latest/dist/slimselect.min.js"></script>
 <script src="{{ ['@jquery','@framework','@framework.extras',]|theme}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
@@ -29,7 +32,16 @@
 <script src="{{ 'assets/js/dropdown.js'|theme }}"></script>
 <script src="{{ 'assets/js/modal.js'|theme }}"></script>
 <script src="{{ 'assets/js/reader.js'|theme }}"></script>
+<script src="{{ 'assets/js/restrictCopy.js'|theme }}"></script>
 <script src="{{ 'assets/js/comments.js'|theme }}"></script>
+<script src="{{ 'assets/js/book-card.js'|theme }}"></script>
+<script src="{{ 'assets/js/radio-group.js'|theme }}"></script>
+<script src="{{ 'assets/js/tippy.js'|theme }}"></script>
+<script src="{{ 'assets/js/filter.js'|theme }}"></script>
+<script src="{{ 'assets/js/datepicker.js'|theme }}"></script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 {% styles %}
 {% framework extras turbo %}

@@ -1,10 +1,12 @@
-<?php namespace Books\Book\Updates;
+<?php
 
+namespace Books\Book\Updates;
+
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
-use Books\Book\Models\BookStatus;
-use Schema;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 /**
  * CreateEditionsTable Migration
@@ -31,8 +33,6 @@ class CreateEditionsTable extends Migration
             $table->unsignedBigInteger('price')->default(0);
             $table->timestamp('sales_at')->nullable();
             $table->integer('free_parts')->default(0);
-            $table->boolean('toggled_free')->default(0);
-            $table->boolean('toggled_hidden')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

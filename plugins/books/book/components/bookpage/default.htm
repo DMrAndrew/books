@@ -4,7 +4,7 @@
         <div class="book-card-full__description">
             <h1 class="book-card-full__title ui-text-head--2 ui-text--bold">{{book.title}}</h1>
             <div class="book-card-full__author-wrapper">
-                <div class="book-card-full__author-container tag-list">
+                <div class="book-card-full__author-container tags-list">
                     {% for profile in book.profiles %}
                     <a href="" class="book-card-full__author ui-link _violet">{{profile.username}}</a>
                     {% endfor %}
@@ -105,77 +105,14 @@
                 </div>
             </div>
         </div>
-        <div class="book-card-full__info book-card-full-info">
-            <div class="book-card-full-info__button-wrapper">
-                <button class="ui-button ui-button-size--56 ui-button-view--3 ui-button--full ui-button--column">
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme}}"></use>
-                    </svg>
-                    <span class="ui-text--medium">В библиотеку</span>
-                </button>
-                <button class="ui-button ui-button-size--56 ui-button-view--3 ui-button--full ui-button--column">
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-stroked-16' | theme}}"></use>
-                    </svg>
-                    <span class="ui-text--medium">Нравится 200</span>
-                </button>
-            </div>
-            <div class="book-card-full-info__rating">
-                <div class="book-card__raiting">
-                    <svg>
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
-                    </svg>
-                    <span>12</span>
-                </div>
-                <div class="tags-list">
-                    {% for genre in book.genres %}
-                    <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#0 в {{genre.name}}</a>
-
-                    {% endfor %}
-                </div>
-                <!--                <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#11 в Любовная фантастика,</a>-->
-                <!--                <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#443 в Остросюжетный любовный-->
-                <!--                    роман,</a>-->
-
-                <button class="book-card-full-info__button-raiting">
-                    <span>Рейтинг в категориях</span>
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-                    </svg>
-                </button>
-
-            </div>
-            <div class="book-card-full-info__footer">
-                {% if not book.age_restriction.value == 0 %}
-                <div class="book-card__footer-label">{{book.age_restriction.getLabel()}}</div>
-                {% endif %}
-                <div class="book-card__footer-wrapper">
-                    <svg>
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
-                    </svg>
-                    <span>0</span>
-                </div>
-                <div class="book-card__footer-wrapper">
-                    <svg>
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-16' | theme}}"></use>
-                    </svg>
-                    <span>0</span>
-                </div>
-                <div class="book-card__footer-wrapper">
-                    <svg>
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>
-                    </svg>
-                    <span>0</span>
-                </div>
-            </div>
-        </div>
+      {% ajaxPartial 'bookCard::book-page' book=book %}
     </div>
 </div>
 
 <!-- Дополнительный контент -->
 <div class="ui-container-fluid">
     <div class="ui-grid-container ui-grid-gap">
-        <div class="ui-col-sm-8 ui-col-md-9">
+        <div class="ui-col-12 ui-col-sm-8 ui-col-md-9">
             <div class="book-card-full-description _indent">
                 <div class="ui-tabs" data-tabs="2">
                     <div class="ui-tabs-header">
@@ -707,154 +644,9 @@
                 </div>
             </div>
 
-            <div class="comments">
-                <form class="comments-form _indent">
-                    <h3 class="comments-form__title ui-text--bold"><span class="ui-text-head--3">Комментарии</span> 214
-                    </h3>
-                    <div class="comments-form__container">
-                        <textarea class="comments-form__textarea" placeholder="Оставьте комментарий"></textarea>
-                        <button class="ui-button ui-button-size--32 ui-button-view--2 disabled">Отправить</button>
-
-                    </div>
-                    <div class="comments-form__auth">
-                        <span>Авторизуйтесь, чтобы оставлять комментарии</span>
-                        <button class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Войти</button>
-                    </div>
-                </form>
-
-                <div class="comments__container">
-                    <div class="comments__wrapper _indent comments-comment">
-                        <div class="comments-comment__avatar square-40">
-                            <span class="ui-text-body--1 ui-text--bold">A</span>
-                            <!-- <img class="square-40" src="" alt=""> -->
-                        </div>
-                        <div class="comments-comment__info">
-                            <div class="comments-comment__info-wrapper">
-                                <div class="comments-comment__author ui-text--bold">Терин Рем</div>
-                                <div class="comments-comment__addition">
-                                    <span>10.01.21</span>
-                                    <a href="#" class="ui-link _violet">Автор</a>
-                                    <span>Ред.</span>
-                                </div>
-                                <div class="comments-comment__text">Хорошо, спасибо!</div>
-                                <div class="comments-comment__action">
-                                    <button>Ответить</button>
-                                    <div class="comments-comment__action-wrapper">
-                                        <svg class="square-16">
-                                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="comments__wrapper _indent comments-comment">
-                        <div class="comments-comment__avatar square-40">
-                            <span class="ui-text-body--1 ui-text--bold">A</span>
-                            <!-- <img class="square-40" src="" alt=""> -->
-                        </div>
-                        <div class="comments-comment__info">
-                            <div class="comments-comment__info-wrapper">
-                                <div class="comments-comment__author ui-text--bold">Терин Рем</div>
-                                <div class="comments-comment__addition">
-                                    <span>10.01.21</span>
-                                </div>
-                                <div class="comments-comment__text">Хорошо, спасибо!</div>
-                                <div class="comments-comment__action">
-                                    <button>Ответить</button>
-                                    <div class="comments-comment__action-wrapper">
-                                        <svg class="square-16">
-                                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="comments-comment__sub">
-                                <div class="comments__wrapper _indent comments-comment">
-                                    <div class="comments-comment__avatar square-40">
-                                        <span class="ui-text-body--1 ui-text--bold">A</span>
-                                        <!-- <img class="square-40" src="" alt=""> -->
-                                    </div>
-                                    <div class="comments-comment__info">
-                                        <div class="comments-comment__info-wrapper">
-                                            <div class="comments-comment__author ui-text--bold">Терин Рем</div>
-                                            <div class="comments-comment__addition">
-                                                <span>10.01.21</span>
-                                            </div>
-                                            <div class="comments-comment__text">Хорошо, спасибо!</div>
-                                            <div class="comments-comment__action">
-                                                <button>Ответить</button>
-                                                <div class="comments-comment__action-wrapper">
-                                                    <svg class="square-16">
-                                                        <use
-                                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                                <div class="comments__wrapper _indent comments-comment">
-                                    <div class="comments-comment__avatar square-40">
-                                        <span class="ui-text-body--1 ui-text--bold">A</span>
-                                        <!-- <img class="square-40" src="" alt=""> -->
-                                    </div>
-                                    <div class="comments-comment__info">
-                                        <div class="comments-comment__info-wrapper">
-                                            <div class="comments-comment__author ui-text--bold">Терин Рем</div>
-                                            <div class="comments-comment__addition">
-                                                <span>10.01.21</span>
-                                                <span>Ред.</span>
-                                            </div>
-                                            <div class="comments-comment__text">Хорошо, спасибо!</div>
-                                            <div class="comments-comment__action">
-                                                <button>Ответить</button>
-                                                <div class="comments-comment__action-wrapper">
-                                                    <svg class="square-16">
-                                                        <use
-                                                            xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="comments__wrapper _indent comments-comment">
-                        <div class="comments-comment__avatar square-40">
-                            <span class="ui-text-body--1 ui-text--bold">A</span>
-                            <!-- <img class="square-40" src="" alt=""> -->
-                        </div>
-                        <div class="comments-comment__info">
-                            <div class="comments-comment__info-wrapper">
-                                <div class="comments-comment__author ui-text--bold">Терин Рем</div>
-                                <div class="comments-comment__addition">
-                                    <span>10.01.21</span>
-                                </div>
-                                <div class="comments-comment__text">Хорошо, спасибо!</div>
-                                <div class="comments-comment__action">
-                                    <button>Ответить</button>
-                                    <div class="comments-comment__action-wrapper">
-                                        <svg class="square-16">
-                                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
+           {% component 'comments' %}
         </div>
-        <div class="ui-col-sm-4 ui-col-md-3">
+        <div class="ui-col-12 ui-col-sm-4 ui-col-md-3">
             <div class="advert _trash">
                 <img src="" alt="">
             </div>

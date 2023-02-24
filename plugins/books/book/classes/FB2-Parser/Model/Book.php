@@ -1,9 +1,9 @@
 <?php
 
 namespace Tizis\FB2\Model;
+
 /**
  * Class Book
- * @package FB2\Model
  */
 class Book
 {
@@ -11,14 +11,17 @@ class Book
      * @var array
      */
     private $authors = [];
+
     /**
      * @var array
      */
     private $translators = [];
+
     /**
      * @var array
      */
     private $chapters = [];
+
     /**
      * @var BookInfo
      */
@@ -29,7 +32,6 @@ class Book
      */
     private $cover = '';
 
-
     /**
      * @return BookInfo
      */
@@ -39,7 +41,7 @@ class Book
     }
 
     /**
-     * @param BookInfo $value
+     * @param  BookInfo  $value
      */
     public function setInfo(BookInfo $value): void
     {
@@ -55,7 +57,7 @@ class Book
     }
 
     /**
-     * @param array $value
+     * @param  array  $value
      */
     public function setTranslators(array $value): void
     {
@@ -71,7 +73,7 @@ class Book
     }
 
     /**
-     * @param array $value
+     * @param  array  $value
      */
     public function setChapters(array $value): void
     {
@@ -87,7 +89,7 @@ class Book
     }
 
     /**
-     * @param array $value
+     * @param  array  $value
      */
     public function setAuthors(array $value): void
     {
@@ -96,6 +98,7 @@ class Book
 
     /**
      * Set book cover
+     *
      * @param $cover
      */
     public function setCover($cover): void
@@ -105,6 +108,7 @@ class Book
 
     /**
      * Get book cover
+     *
      * @return mixed
      */
     public function getCover()

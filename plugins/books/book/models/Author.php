@@ -1,12 +1,14 @@
-<?php namespace Books\Book\Models;
+<?php
 
-use Model;
+namespace Books\Book\Models;
+
 use Books\Profile\Models\Profile;
+use Model;
 use October\Rain\Database\Builder;
-use October\Rain\Database\Traits\Sortable;
-use October\Rain\Database\Traits\SoftDelete;
-use October\Rain\Database\Traits\Validation;
 use October\Rain\Database\Relations\BelongsTo;
+use October\Rain\Database\Traits\SoftDelete;
+use October\Rain\Database\Traits\Sortable;
+use October\Rain\Database\Traits\Validation;
 
 /**
  * Author Model
@@ -21,16 +23,20 @@ class Author extends Model
     use Validation;
 
     public const IS_OWNER = 'is_owner';
+
     public const PERCENT = 'percent';
+
     public const PROFILE_ID = 'profile_id';
+
+    public const ACCEPTED = 'accepted';
 
     /**
      * @var string table name
      */
     public $table = 'books_book_authors';
 
+    protected $fillable = ['book_id', 'profile_id', 'percent', 'sort_order', 'is_owner', 'accepted'];
 
-    protected $fillable = ['book_id', 'profile_id', 'percent', 'sort_order', 'is_owner'];
     /**
      * @var array rules for validation
      */
@@ -39,12 +45,13 @@ class Author extends Model
         'profile_id' => 'required|exists:books_profile_profiles,id',
         'percent' => 'integer|min:0|max:100',
         'is_owner' => 'boolean',
-        'sort_order' => 'integer'
+        'sort_order' => 'integer',
+        'accepted' => 'boolean'
     ];
 
     protected $casts = [
         'percent' => 'integer',
-        'is_owner' => 'boolean'
+        'is_owner' => 'boolean',
     ];
 
     public $belongsTo = [
@@ -56,6 +63,22 @@ class Author extends Model
     {
         return $builder->where('is_owner', '=', true);
     }
+    public function scopeAccepted(Builder $builder): Builder
+    {
+        return $builder->where('accepted', '=', true);
+    }
+
+    public function scopeRejected(Builder $builder): Builder
+    {
+        return $builder->where('accepted', '=', false);
+    }
+
+    public function scopeAwait(Builder $builder): Builder
+    {
+        return $builder->where('accepted', '=', null);
+    }
+
+
 
     public function scopeNotOwner(Builder $builder): Builder
     {
@@ -66,6 +89,4 @@ class Author extends Model
     {
         return $builder->orderByDesc('sort_order');
     }
-
-
 }

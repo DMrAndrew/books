@@ -1,4 +1,6 @@
-<?php namespace Books\Catalog\Components;
+<?php
+
+namespace Books\Catalog\Components;
 
 use Cms\Classes\ComponentBase;
 
@@ -11,7 +13,7 @@ class Types extends ComponentBase
     {
         return [
             'name' => 'Types Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 

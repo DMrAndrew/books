@@ -1,7 +1,12 @@
-<?php namespace Books\Book\Components;
+<?php
+
+namespace Books\Book\Components;
 
 use Books\Book\Models\Book;
+use Books\Comments\Components\Comments;
 use Cms\Classes\ComponentBase;
+use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 
 /**
  * BookPage Component
@@ -12,6 +17,8 @@ class BookPage extends ComponentBase
 {
     protected Book $book;
 
+    protected User $user;
+
     /**
      * componentDetails
      */
@@ -19,7 +26,7 @@ class BookPage extends ComponentBase
     {
         return [
             'name' => 'BookPage Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -38,7 +45,15 @@ class BookPage extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
-        $this->book = Book::find($this->param('book_id')) ?? abort(404);
+        $this->user = Auth::getUser();
+        $book_id = $this->param('book_id');
+        $this->book = Book::query()->public()->find($book_id) ?? $this->user->profile->books()->find($book_id)
+            ?? abort(404);
+        $this->user->library($this->book)->get(); //Добавить в библиотеку
+        $this->book = Book::query()->defaultEager()->find($this->book->id);
         $this->page['book'] = $this->book;
+        $comments = $this->addComponent(Comments::class, 'comments');
+        $comments->bindModel($this->book);
+        $comments->bindModelOwner($this->book->profile);
     }
 }

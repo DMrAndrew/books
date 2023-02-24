@@ -1,9 +1,9 @@
-<?php namespace Books\Book\Updates;
+<?php
 
-use Schema;
-use Books\Book\Models\BookStatus;
-use October\Rain\Database\Schema\Blueprint;
+namespace Books\Book\Updates;
+
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 /**
  * CreateEbookEditionsTable Migration

@@ -6,13 +6,15 @@ return [
         'description' => 'Фронтенд управление каталогом.',
         'tab' => 'Каталог',
         'access_catalog' => 'Управление каталогом',
-        'too_many_attempt' => 'Слишком много попыток!'
+        'too_many_attempt' => 'Слишком много попыток!',
 
     ],
 
     'genres' => [
-        'check_as_favorite' =>'Отметить как любимый жанр',
-        'uncheck_as_favorite' =>'Снять отметку любимый жанр',
+        'check_as_adult' => 'Отметить как 18+',
+        'uncheck_as_adult' => 'Снять отметку 18+',
+        'check_as_favorite' => 'Отметить как любимый жанр',
+        'uncheck_as_favorite' => 'Снять отметку любимый жанр',
         'menu_label' => 'Жанры',
         'all_genres' => 'Все жанры',
         'new_genre' => 'Новый жанр',
@@ -36,8 +38,10 @@ return [
         'restore_selected_confirm' => 'Восстановить выбранных жанров?',
         'restore_selected_empty' => 'Нет выбранных жанров для восстановления.',
         'restore_selected_success' => 'Выбранные жанры успешно восстановлены.',
-        'favorite_selected_success' => 'Выбранные жанры успешно помечены как любимые.',
-        'unfavorite_selected_success' => 'Выбранные жанры успешно помечены как обычные.'
+        'enableFavorite_selected_success' => 'Выбранные жанры успешно помечены как любимые.',
+        'checkAdult_selected_success' => 'Выбранные жанры успешно помечены как 18+.',
+        'uncheckAdult_selected_success' => 'Выбранные жанры успешно помечены как не 18+.',
+        'disableFavorite_selected_success' => 'Выбранные жанры успешно помечены как обычные.',
     ],
     'types' => [
         'menu_label' => 'Типы книг',
@@ -71,5 +75,5 @@ return [
         'active' => 'Активен',
         'favorite' => 'Любимый жанр',
 
-    ]
+    ],
 ];

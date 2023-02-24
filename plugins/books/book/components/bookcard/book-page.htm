@@ -1,0 +1,55 @@
+<div class="book-card-full__info book-card-full-info">
+    <div class="book-card-full-info__button-wrapper">
+        {% partial '@card-header-buttons' %}
+
+    </div>
+    <div class="book-card-full-info__rating">
+        <div class="book-card__raiting">
+            <svg>
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
+            </svg>
+            <span>{{book.stats.rate|default('0')}}</span>
+        </div>
+        <div class="tags-list">
+            {% for genre in book.genres %}
+            <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#0 в {{genre.name}}</a>
+
+            {% endfor %}
+        </div>
+
+        {% if genres[0] %}
+        <button class="book-card-full-info__button-raiting"  data-modal="open_category_rating">
+            <span>Рейтинг в категориях</span>
+            <svg class="square-16">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+            </svg>
+        </button>
+        <div class="ui-modal overlay" data-modal="category_rating">
+            <div class="ui-modal-container _mobile-bottom">
+                <div class="ui-modal-content">
+                    <div class="ui-modal-header">
+                        <div class="square-16 "></div>
+                        <div class="ui-text-head--2 ui-text--bold">Рейтинг в категориях</div>
+                        <svg class="square-24" data-modal="close">
+                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#close-stroked-16"></use>
+                        </svg>
+                    </div>
+                    <div class="ui-modal__body tags-list">
+                        {% for genre in book.genres %}
+                        <div>
+                        <a href="#" class="book-card-full-info__link ui-link _violet">#0 в {{genre.name}}</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+
+    </div>
+    {% partial '@book-card-footer' class='book-card-full-info__footer' %}
+    <script>
+        openModal('[data-modal="category_rating"]', '[data-modal="open_category_rating"]');
+    </script>
+</div>

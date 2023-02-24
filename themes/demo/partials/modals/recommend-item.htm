@@ -1,0 +1,28 @@
+ <div class="personal-area-settings-recommend__wrapper">
+        <div class="personal-area-settings-recommend__text {{sub ? '_sub' : 'ui-text--bold'}}">{{genre.name}}</div>
+        <div class="personal-area-settings-recommend__radio-wrapper" data-radio-container data-checked="{{ genre.loved ? 'on' : (genre.unloved ? 'off' : 'null') }} ">
+            <label class="personal-area-settings-recommend__radio">
+                <input type="radio" name="recommend[{{genre.id}}]" value="on" hidden {{ sub ? 'data-radio-child' : 'data-radio-parent'}} {{ genre.loved ? 'checked' : '' }}>
+                <svg class="personal-area-settings-recommend__radio-icon square-16">
+                    <use
+                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-stroked-16' | theme}}"></use>
+                </svg>
+                <svg class="personal-area-settings-recommend__radio-icon active _filled-like square-16">
+                    <use
+                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-filled-16' | theme}}"></use>
+                </svg>
+            </label>
+            <label class="personal-area-settings-recommend__radio">
+                <input type="radio" name="recommend[{{genre.id}}]" value="off" hidden {{ sub ? 'data-radio-child' : 'data-radio-parent'}} {{ genre.unloved ? 'checked' : '' }} >
+                <svg class="personal-area-settings-recommend__radio-icon square-16">
+                    <use
+                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-circle-stroked-16' | theme}}"></use>
+                </svg>
+                <svg
+                    class="personal-area-settings-recommend__radio-icon active _filled-dislike square-16">
+                    <use
+                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-circle-filled-16' | theme}}"></use>
+                </svg>
+            </label>
+        </div>
+    </div>

@@ -7,7 +7,7 @@ enum BoolOptionsEnum: string
     case ON = 'on';
     case OFF = 'off';
 
-    public function getLabel()
+    public function label(): string
     {
         return match ($this) {
             self::ON => 'Да',

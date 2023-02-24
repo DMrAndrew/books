@@ -1,4 +1,6 @@
-<?php namespace Books\Book\Models;
+<?php
+
+namespace Books\Book\Models;
 
 use Model;
 use October\Rain\Database\Traits\Validation;
@@ -59,7 +61,7 @@ class Cycle extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -68,17 +70,25 @@ class Cycle extends Model
     public $hasOne = [
 
     ];
+
     public $hasMany = [
-        'books' => [Book::class]
+        'books' => [Book::class],
     ];
+
     public $belongsTo = [
-        'user' => [User::class]
+        'user' => [User::class],
     ];
+
     public $belongsToMany = [];
+
     public $morphTo = [];
+
     public $morphOne = [];
+
     public $morphMany = [];
+
     public $attachOne = [];
+
     public $attachMany = [];
 
     public function scopeName($q, string $name)

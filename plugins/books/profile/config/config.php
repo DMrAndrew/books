@@ -1,14 +1,13 @@
 <?php
 
-
+use Books\Comments\Models\Comment;
 use Books\Reviews\Models\Review;
-use Mobecan\Favorites\Models\Favorite;
-use Books\Profile\Models\ProfileSettings;
+use Books\User\Models\Settings;
 
 return [
-    'profileable' => [
+    'slavable' => [
         Review::class,
-        Favorite::class,
-        ProfileSettings::class,
-    ]
+        Settings::class,
+        Comment::class
+    ],
 ];

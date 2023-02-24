@@ -3,14 +3,9 @@
 # ===================================
 
 fields:
-    name:
+    label:
         label: Название
-    desc:
-        label: Описание
-        type: textarea
-    active:
-        label: Активный
-        type: checkbox
+        type: text
     icon:
         label: Иконка
         type: fileupload

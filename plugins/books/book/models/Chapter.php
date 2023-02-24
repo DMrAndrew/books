@@ -1,16 +1,27 @@
-<?php namespace Books\Book\Models;
+<?php
 
+namespace Books\Book\Models;
+
+use Books\Book\Classes\ChapterService;
+use Books\Book\Classes\Enums\ChapterSalesType;
+use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
-use DiDom\Document;
-use Illuminate\Support\Collection;
-use Model;
+use Books\Book\Jobs\JobPaginate;
+use Books\Book\Jobs\JobProgress;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
 use October\Rain\Database\Relations\HasMany;
-use October\Rain\Database\Traits\Sortable;
+use October\Rain\Database\Relations\HasOne;
+use October\Rain\Database\Relations\MorphOne;
+use October\Rain\Database\Traits\Purgeable;
 use October\Rain\Database\Traits\SoftDelete;
+use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
+use Queue;
+use RainLab\User\Models\User;
 use System\Models\File;
 
 /**
@@ -18,13 +29,27 @@ use System\Models\File;
  *
  * @method AttachOne file
  * @method HasMany pagination
+ * @method BelongsTo edition
+ *
+ * @property Edition edition
+ *
+ * * @method AttachOne audio
+ * * @method AttachOne picture
+ * @method HasOne next
+ * @method HasOne prev
+ *
+ * @property ?Chapter prev
+ * @property ?Chapter next
+ *
+ * @method MorphOne content
+ * @property  Content content
  */
-class   Chapter extends Model
+class Chapter extends Model
 {
     use Sortable;
     use Validation;
     use SoftDelete;
-
+    use Purgeable;
 
     /**
      * @var string table associated with the model
@@ -35,12 +60,16 @@ class   Chapter extends Model
      * @var array guarded attributes aren't mass assignable
      */
     protected $guarded = ['*'];
+    protected $purgeable = ['new_content'];
+
+    public string $trackerChildRelation = 'pagination';
 
     /**
      * @var array fillable attributes are mass assignable
      */
     protected $fillable = [
-        'title', 'edition_id', 'content', 'published_at', 'length', 'sort_order', 'status', 'sales_type'
+        'title', 'edition_id', 'published_at', 'new_content', 'length', 'sort_order', 'status', 'sales_type', 'type',
+        'next_id', 'prev_id',
     ];
 
     /**
@@ -49,11 +78,11 @@ class   Chapter extends Model
     public $rules = [
         'title' => 'nullable|string',
         'edition_id' => 'required|exists:books_book_editions,id',
-        'content' => 'nullable|string',
         'published_at' => 'nullable|date',
         'length' => 'nullable|integer',
         'sort_order' => 'sometimes|filled|integer',
-        'type'
+        'next_id' => 'nullable|integer|exists:books_book_chapters,id',
+        'prev_id' => 'nullable|integer|exists:books_book_chapters,id',
     ];
 
     /**
@@ -63,6 +92,8 @@ class   Chapter extends Model
         'type' => EditionsEnums::class,
         'status' => ChapterStatus::class,
         'sales_type' => ChapterSalesType::class,
+        'audio' => ['nullable', 'file', 'mimes:mp3,mp4'],
+        'picture' => ['nullable', 'file', 'jpeg,jpg,png'],
     ];
 
     /**
@@ -70,9 +101,6 @@ class   Chapter extends Model
      */
     protected $jsonable = [];
 
-    public $belongsTo = [
-        'edition' => [Edition::class, 'key' => 'id', 'otherKey' => 'edition_id']
-    ];
 
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
@@ -90,24 +118,52 @@ class   Chapter extends Model
     protected $dates = [
         'created_at',
         'updated_at',
-        'published_at'
+        'published_at',
     ];
 
-    /**
-     * @var array hasOne and other relations
-     */
-    public $hasOne = [
-        'file' => [File::class]
-    ];
     public $hasMany = [
-        'pagination' => [Pagination::class, 'key' => 'chapter_id', 'otherKey' => 'id']
+        'pagination' => [Pagination::class, 'key' => 'chapter_id', 'otherKey' => 'id'],
     ];
+    public $belongsTo = [
+        'edition' => [Edition::class, 'key' => 'edition_id', 'otherKey' => 'id'],
+        'next' => [Chapter::class, 'key' => 'next_id', 'otherKey' => 'id'],
+        'prev' => [Chapter::class, 'key' => 'prev_id', 'otherKey' => 'id'],
+    ];
+
     public $belongsToMany = [];
+
     public $morphTo = [];
+
     public $morphOne = [];
+
     public $morphMany = [];
-    public $attachOne = [];
+
+    public $attachOne = [
+        'audio' => File::class,
+        'picture' => File::class,
+    ];
+
     public $attachMany = [];
+
+    public function service(): ChapterService
+    {
+        return new ChapterService($this);
+    }
+
+    public function paginateContent()
+    {
+        Queue::push(JobPaginate::class, ['chapter_id' => $this->id]);
+    }
+
+    public function scopeSortOrder(Builder $builder, int $value): Builder
+    {
+        return $builder->where($this->getSortOrderColumn(), '=', $value);
+    }
+
+    public function scopeWithReadTrackersCount(Builder $builder): Builder
+    {
+        return $builder->withCount(['trackers as completed_trackers' => fn($trackers) => $trackers->withoutTodayScope()->completed()]);
+    }
 
 
     public function scopePublished(Builder $query, bool $until_now = true)
@@ -125,67 +181,42 @@ class   Chapter extends Model
         return $this->status === ChapterStatus::PUBLISHED && $this->published_at->gt(Carbon::now());
     }
 
-    public static function countChapterLength(string $string): int
+    public function lengthRecount()
     {
-        return strlen(strip_tags(preg_replace('/\s+/', '', $string))) ?? 0;
+        $this->length = (int)$this->pagination()->sum('length') ?? 0;
+        $this->save();
     }
 
-    protected function afterCreate()
+
+    public function setNeighbours()
     {
-        $pagination = $this->paginate();
-        $this->pagination()->addMany($pagination);
+        $this->setPrev();
+        $this->setNext();
     }
 
-    public function getPaginationLinks(int $page = 1)
+    public function setPrev()
     {
-        $pagination = $this->pagination;
-        $links = $pagination->map(function ($item) use ($pagination, $page) {
-            if (in_array($item->page, [
-                $page,
-                $page + 1,
-                $page - 1,
-                $pagination->first()->page,
-                $pagination->last()->page
-            ])) {
-                return $item;
-            }
-            return null;
-
-        });
-        return $links->filter(function ($value, $key) use ($links) {
-            return $value || (!!$links[$key + 1] ?? false);
-        })->values();
-    }
-
-    public function paginate()
-    {
-
-        $dom = (new \DOMDocument());
-        libxml_use_internal_errors(true);
-        $dom->loadHTML(mb_convert_encoding($this->content, 'HTML-ENTITIES', 'UTF-8'));
-        $root = $dom->getElementsByTagName('body')[0];
-        $perhapses = collect($root->childNodes)->map(fn($node) => [
-            'html' => $dom->saveHTML($node),
-            'length' => strlen($node->textContent),
+        $this->update([
+            'prev_id' => $this->edition->chapters()->sortOrder($this->{$this->getSortOrderColumn()} - 1)?->first()?->id,
         ]);
-        $pagination = collect([collect([])]);
 
-        foreach ($perhapses as $perhaps) {
+    }
 
-            $length = ($pagination->last()?->sum('length') ?? 0) + $perhaps['length'];
-            if ($length >= 6500 && $length <= 7500) {
-                $pagination->push(collect([]));
-            }
-            $pagination->last()->push($perhaps);
-        }
-        return $pagination->filter(fn($i) => $i->sum('length'))->map(function ($item, $index) {
-            return new Pagination([
-                'page' => $index + 1,
-                'content' => $item->pluck('html')->join(''),
-                'length' => $item->sum('length'),
-            ]);
-        });
+    public function setNext()
+    {
+        $this->update([
+            'next_id' => $this->edition->chapters()->sortOrder($this->{$this->getSortOrderColumn()} + 1)?->first()?->id,
+        ]);
+    }
 
+    public function progress(?User $user = null)
+    {
+        Queue::push(JobProgress::class, ['chapter_id' => $this->id, 'user_id' => $user?->id]);
+    }
+
+    public function getContent()
+    {
+        return $this->deferredContent ?? $this->content;
     }
 
 }

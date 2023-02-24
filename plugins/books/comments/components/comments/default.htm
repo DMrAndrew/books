@@ -1,0 +1,43 @@
+{% if comments_allowed %}
+<div class="comments-spawn">
+    <div class="comments">
+        <div class="comments-form _indent">
+            {% if user %}
+            <h3 class="comments-form__title ui-text--bold"><span class="ui-text-head--3">Комментарии</span>
+                {{comments_count}}</h3>
+            {% partial '@textarea' %}
+            {% endif %}
+            {% if not user %}
+            <div class="comments-form__auth">
+                <span>Авторизуйтесь, чтобы оставлять комментарии</span>
+                <button class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Войти</button>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="comments__container">
+            {% partial '@list' comments=paginator.items()  %}
+        </div>
+
+        <nav class="comments__pagination ui-pagination">
+            <ul class="ui-pagination-list">
+                <li><a class="ui-pagination-item" href="">Назад</a></li>
+                {% for link in paginator.getLinks() %}
+                <li><a class="ui-pagination-item cursor-pointer {{link.active ? 'active':''}}"
+                data-request="{{__SELF__}}::onPage"
+                       data-request-data="page:{{link.label}}"
+                >
+                    {{link.label}}
+                </a></li>
+                {% endfor %}
+                <li><a class="ui-pagination-item" href="">Вперед</a></li>
+            </ul>
+        </nav>
+    </div>
+    <script>
+        initComments()
+        initTippy();
+        $('.comments')[0].scrollIntoView()
+    </script>
+</div>
+{% endif %}

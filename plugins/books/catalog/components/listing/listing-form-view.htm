@@ -1,0 +1,228 @@
+<div class="ui-container">
+    <h1 class="listing-book__title ui-text--bold">
+        <span class="ui-text-head--2">Книги </span>
+        <span>{{bind.books.count()}}</span>
+    </h1>
+    <!--    <div class="listing-book__sort">-->
+    <!--        <span class="listing-book__sort-text">Популярные за неделю</span>-->
+    <!--        <svg class="listing-book__sort-icon">-->
+    <!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>-->
+    <!--        </svg>-->
+
+    <!--        <div class="listing-book-sort">-->
+    <!--            <div class="listing-book-sort__container">-->
+    <!--                <div class="listing-book-sort__item">-->
+    <!--                    <svg>-->
+    <!--                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
+    <!--                    </svg>-->
+    <!--                    <span>Популярные за сегодня</span>-->
+    <!--                </div>-->
+    <!--                <div class="listing-book-sort__item active">-->
+    <!--                    <svg>-->
+    <!--                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
+    <!--                    </svg>-->
+    <!--                    <span>Популярные за сегодня</span>-->
+    <!--                </div>-->
+    <!--                <div class="listing-book-sort__item">-->
+    <!--                    <svg>-->
+    <!--                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
+    <!--                    </svg>-->
+    <!--                    <span>Популярные за сегодня</span>-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--        </div>-->
+
+    <!--    </div>-->
+    <button class="listing-book__filter-button" type="button" onclick="filterOpen(event);">
+        <svg class="listing-book__sort-icon">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#filter-stroked-16' | theme}}"></use>
+        </svg>
+        <span class="ui-text--bold">Фильтры</span>
+<!--        <span class="listing-book__filter-button-label ui-text&#45;&#45;bold">2</span>-->
+    </button>
+</div>
+
+<div class="ui-container-fluid">
+    <div class="listing-book__content ui-grid-container ui-grid-gap">
+
+        <!-- Фильтры -->
+
+        <div class="listing-book__filters ui-col-sm-3">
+            <div class="listing-book-filters__header">
+                <svg class="listing-book-filters__header-icon">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#filter-stroked-16' | theme}}"></use>
+                </svg>
+                <span class="ui-text--bold">Фильтры</span>
+<!--                <span class="listing-book__filter-button-label ui-text&#45;&#45;bold">2</span>-->
+                <button class="listing-book-filters__header-close" type="button" onclick="filterClose(event);">
+                    <svg class="">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="listing-book-filters__body">
+
+                <div class="listing-book-filters__radio-wrapper">
+                    <label class="ui-radio">
+                        <input data-request="listing::onSearch" data-track-input="{{bind.trackInputTime}}" type="radio"
+                               name="type" value="" checked hidden>
+                        <div class="ui-radio-checker"></div>
+                        <span class="ui-radio-text">Все книги</span>
+                    </label>
+                    {% for type in types %}
+                    <label class="ui-radio">
+                        <input data-request="listing::onSearch"
+                               data-track-input="{{bind.trackInputTime}}"
+                               type="radio" name="type" value="{{type.value}}" {{bind.type.value== type.value ?
+                        'checked' : '' }} hidden>
+                        <div class="ui-radio-checker"></div>
+                        <span class="ui-radio-text">{{type.labelPlural}}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                {% partial 'controls/autocomplete'
+                label='Жанры'
+                name='includeGenres'
+                onRequest='listing::onSearchIncludeGenre'
+                onRemove='listing::onRemoveIncludeGenre'
+                onRemoveAll='listing::onRemoveAllIncludeGenre'
+                items=bind.include_genres
+                %}
+
+                {% partial 'controls/autocomplete'
+                label='Исключить жанры'
+                name='excludeGenres'
+                onRequest='listing::onSearchExcludeGenre'
+                onRemove='listing::onRemoveExcludeGenre'
+                onRemoveAll='listing::onRemoveAllExcludeGenre'
+                items=bind.exclude_genres
+                %}
+
+
+                <div class="listing-book-filters__input-wrapper">
+                    <div class="ui-input">
+                        <label class="ui-input-label ui-text--bold">Цена от</label>
+                        <input data-request="listing::onSearch" data-track-input="{{bind.trackInputTime}}"
+                               class="ui-input-item _size-32" name="min_price" value="{{bind.min_price}}"
+                               type="number">
+                    </div>
+                    <div class="ui-input">
+                        <label class="ui-input-label ui-text--bold">Цена до</label>
+                        <input data-request="listing::onSearch"
+                               data-track-input="{{bind.trackInputTime}}" class="ui-input-item _size-32"
+                               name="max_price" value="{{bind.max_price}}" type="number">
+                    </div>
+                </div>
+                <div class="listing-book-filters__checkbox-wrapper">
+                    <!--                <label class="ui-checkbox">-->
+                    <!--                    <input type="hidden" name="best_sellers" value="off">-->
+                    <!--                    <input data-request="listing::onSearch" data-track-input="300" type="checkbox" name="best_sellers" hidden {{bind.best_sellers == 'on' ? 'checked' : ''}}>-->
+                    <!--                    <div class="ui-checkbox-checker">-->
+                    <!--                        <svg>-->
+                    <!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>-->
+                    <!--                        </svg>-->
+                    <!--                    </div>-->
+                    <!--                    <span class="ui-checkbox-text">Бестселлеры</span>-->
+                    <!--                </label>-->
+                    <label class="ui-checkbox">
+                        <input type="hidden" name="free" value="off">
+                        <input data-request="listing::onSearch" data-track-input="{{bind.trackInputTime}}"
+                               type="checkbox"
+                               name="free" hidden {{bind.free== 'on' ? 'checked' : ''}}>
+                        <div class="ui-checkbox-checker">
+                            <svg>
+                                <use
+                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                            </svg>
+                        </div>
+                        <span class="ui-checkbox-text">Бесплатные</span>
+                    </label>
+                    <label class="ui-checkbox">
+                        <input type="hidden" name="complete_only" value="off">
+                        <input data-request="listing::onSearch" data-track-input="{{bind.trackInputTime}}"
+                               type="checkbox"
+                               name="complete_only" hidden {{bind.complete== 'on' ? 'checked' : ''}}>
+                        <div class="ui-checkbox-checker">
+                            <svg>
+                                <use
+                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                            </svg>
+                        </div>
+                        <span class="ui-checkbox-text">Только законченные</span>
+                    </label>
+                </div>
+
+                {% partial 'controls/autocomplete'
+                label='Теги'
+                name='includeTags'
+                onRequest='listing::onSearchIncludeTag'
+                onRemove='listing::onRemoveIncludeTag'
+                onRemoveAll='listing::onRemoveAllIncludeTag'
+                items=bind.include_tags
+                %}
+
+                {% partial 'controls/autocomplete'
+                label='Исключить теги'
+                name='excludeTags'
+                onRequest='listing::onSearchExcludeTag'
+                onRemove='listing::onRemoveExcludeTag'
+                onRemoveAll='listing::onRemoveAllExcludeTag'
+                items=bind.exclude_tags
+                %}
+
+            </div>
+<!--            <div class="listing-book-filters__footer">-->
+<!--                -->
+<!--                <button class="listing-book-filters__footer-button ui-button ui-button-view&#45;&#45;3 ui-button-size&#45;&#45;32" type="reset">Отменить</button>-->
+<!--                <button class="listing-book-filters__footer-button ui-button ui-button-view&#45;&#45;2 ui-button-size&#45;&#45;32" type="submit">Применить</button>-->
+<!--            -->
+<!--            </div>-->
+        </div>
+
+        <div class="ui-col-sm-9">
+            {% if bind.include_genres.first() %}
+            <div class="listing-book__tags">
+                <div class="listing-book__tag ui-tag _size-32"
+                     onclick="oc.request(this,'listing::onRemoveAllIncludeGenre')">
+                    <svg>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                    </svg>
+                </div>
+
+                {% for genre in bind.include_genres %}
+                <div class="listing-book__tag ui-tag _size-32">
+                    <span>{{genre.name}}</span>
+                    <svg onclick="oc.request(this,'listing::onRemoveIncludeGenre')"
+                         data-request-data="remove_id:{{genre.id}}"
+                    >
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                    </svg>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <!-- Карточка книги -->
+
+            {% if bind.books.first() %}
+            {% for book in bind.books %}
+            {% ajaxPartial "bookCard::standard-card" book=book %}
+            {% endfor %}
+            {% else %}
+            <div class="library-placeholder wrapper">
+                <svg class="square-32">
+                    <use
+                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme }}"></use>
+                </svg>
+                <div class="ui-text-head--3 ui-text--bold">Ничего не найдено</div>
+
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        if (document.filterOpened){
+            filterOpen()
+        }
+    </script>
+</div>

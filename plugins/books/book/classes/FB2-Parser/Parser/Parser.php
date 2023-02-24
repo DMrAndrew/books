@@ -9,54 +9,54 @@ use Tizis\FB2\Model\IModel;
 
 /**
  * Class Parser
- * @package FB2\Parser
  */
 abstract class Parser extends FB2AttributesManager
 {
+    protected $xmlDOM;
 
-  protected $xmlDOM;
-  protected $xmlElement;
-  protected $model;
-  protected $response;
+    protected $xmlElement;
 
-  /**
-   * @param IModel $value
-   */
-  public function setModel(IModel $value): void
-  {
-    $this->model = $value;
-  }
+    protected $model;
 
-  /**
-   * @return Document
-   */
-  public function getXmlDOM(): Document
-  {
-    return $this->xmlDOM;
-  }
+    protected $response;
 
-  /**
-   * @param Document $value
-   */
-  public function setXmlDOM(Document $value): void
-  {
-    $this->xmlDOM = $value;
-  }
+    /**
+     * @param  IModel  $value
+     */
+    public function setModel(IModel $value): void
+    {
+        $this->model = $value;
+    }
 
-  /**
-   * @return Element
-   */
-  public function getXmlElement(): Element
-  {
-    return $this->xmlElement;
-  }
+    /**
+     * @return Document
+     */
+    public function getXmlDOM(): Document
+    {
+        return $this->xmlDOM;
+    }
 
-  /**
-   * @param Element $value
-   */
-  public function setXmlElement(Element $value): void
-  {
-    $this->xmlElement = $value;
-  }
+    /**
+     * @param  Document  $value
+     */
+    public function setXmlDOM(Document $value): void
+    {
+        $this->xmlDOM = $value;
+    }
 
+    /**
+     * @return Element
+     */
+    public function getXmlElement(): Element
+    {
+        return $this->xmlElement;
+    }
+
+    /**
+     * @param  Element  $value
+     */
+    public function setXmlElement(Element $value): void
+    {
+        $this->xmlElement = $value;
+    }
 }

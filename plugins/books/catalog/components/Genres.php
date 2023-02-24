@@ -1,19 +1,20 @@
-<?php namespace Books\Catalog\Components;
+<?php
 
-use Cms\Classes\ComponentBase;
+namespace Books\Catalog\Components;
+
 use Books\Catalog\Models\Genre;
+use Cms\Classes\ComponentBase;
 
 /**
  * Genres Component
  */
 class Genres extends ComponentBase
 {
-
     public function componentDetails()
     {
         return [
             'name' => 'Genres Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -22,16 +23,15 @@ class Genres extends ComponentBase
         return [];
     }
 
-    public function parented()
+    public function parented(bool $child = false)
     {
-        return Genre::query()->roots()->active()->get();
+        return Genre::query()->roots()->public()->when($child, fn ($q) => $q->with('children'))->get();
     }
+
+
 
     public function allGenres()
     {
-        $all = $this->parented();
-        $all->load('children');
-        return $all->split(4);
+        return $this->parented(child: true);
     }
-
 }

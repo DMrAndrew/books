@@ -1,16 +1,16 @@
-<div class="adult-modal ui-modal">
+<div class="adult-modal ui-modal {{active ? 'active' : ''}}">
     <div class="ui-modal-container">
         <div class="ui-modal-content adult-modal__content">
-            <svg class="ui-modal-close square-24" onclick="closeModal()">
-                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-            </svg>
+<!--            <svg class="ui-modal-close square-24" onclick="closeModal()">-->
+<!--                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>-->
+<!--            </svg>-->
 
             <div class="adult-modal__limit ui-text--bold adult-modal__wrap ui-text-body--1">18+</div>
             <div class="ui-text-head--2 ui-text--bold adult-modal__wrap">Книги <br> для взрослых</div>
             <div class=" adult-modal__wrap">Вы согласны видеть в рекомендациях книги для взрослых?</div>
 
-            <button class="header__actions-auth-button ui-button ui-button-view--2 ui-button-size--32 ui-button--full" data-request="bookAccount::onAdultAgreementSave" data-request-data="action:'accept'" data-request-success="closeModal()">Показывать книги 18+</button>
-            <button class="header__actions-auth-button ui-button ui-button-view--3 ui-button-size--32 ui-button--full" data-request="bookAccount::onAdultAgreementSave" data-request-success="closeModal()">Скрыть книги 18+</button>
+            <button class="header__actions-auth-button ui-button ui-button-view--2 ui-button-size--32 ui-button--full" data-request="bookAccount::onAdultAgreementSave" data-request-data="action:'accept'">Показывать книги 18+</button>
+            <button class="header__actions-auth-button ui-button ui-button-view--3 ui-button-size--32 ui-button--full" data-request="bookAccount::onAdultAgreementSave">Скрыть книги 18+</button>
         </div>
     </div>
 </div>

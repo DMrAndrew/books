@@ -1,0 +1,15 @@
+{% set action = item ? 'onEdit' : 'onComment' %}
+{{ form_ajax(action,{
+class:'comments-form__container',
+}) }}
+<input type="hidden" name="parent_id" value="{{parent_id}}">
+<input type="hidden" name="comment_id" value="{{item.id}}">
+<textarea class="comments-form__textarea" name="content" placeholder="Оставьте комментарий">{{item.content|raw}}</textarea>
+<button class="ui-button ui-button-size--32 ui-button-view--2 disabled" type="submit">Отправить</button>
+{% if cancel %}
+<button onclick="hideTextArea('{{cancel}}')" type="button"
+        class="ui-button ui-button-size--32 ui-button-view--3">Отменить
+</button>
+{% endif %}
+</form>
+{{ form_close() }}

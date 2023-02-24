@@ -1,6 +1,9 @@
-<?php namespace Books\Book\Models;
+<?php
+
+namespace Books\Book\Models;
 
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 
 /**
@@ -9,7 +12,9 @@ use October\Rain\Database\Traits\Validation;
 class Tag extends Model
 {
     use Validation;
-    public  const NAME = 'name';
+
+    public const NAME = 'name';
+
     /**
      * @var string table associated with the model
      */
@@ -30,7 +35,7 @@ class Tag extends Model
      */
     public $rules = [
         'name' => 'required|string|max:50',
-        'user_id' => 'required|exists:users,id'
+        'user_id' => 'required|exists:users,id',
     ];
 
     /**
@@ -58,27 +63,35 @@ class Tag extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
      * @var array hasOne and other relations
      */
     public $hasOne = [];
+
     public $hasMany = [];
+
     public $belongsTo = [];
+
     public $belongsToMany = [
         'books' => [
             Book::class,
             'table' => 'books_book_tag',
             'key' => 'tag_id',
-            'otherKey' => 'book_id'
-        ]
+            'otherKey' => 'book_id',
+        ],
     ];
+
     public $morphTo = [];
+
     public $morphOne = [];
+
     public $morphMany = [];
+
     public $attachOne = [];
+
     public $attachMany = [];
 
     public function scopeOrderByName($q)
@@ -86,8 +99,20 @@ class Tag extends Model
         return $q->orderBy('name');
     }
 
+    public function scopePublic($q)
+    {
+        return $q;
+    }
+
+
     public function scopeNameLike($q, string $name)
     {
         return $q->where('name', 'like', "%$name%");
     }
+
+    public function scopeAsOption(Builder $builder): Builder
+    {
+        return $builder->select(['id', 'name']);
+    }
+
 }

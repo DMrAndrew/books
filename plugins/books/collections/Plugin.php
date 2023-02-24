@@ -1,6 +1,15 @@
-<?php namespace Books\Collections;
+<?php
+
+namespace Books\Collections;
 
 use Backend;
+use Books\Book\Models\Book;
+use Books\Collections\behaviors\HasLibrary;
+use Books\Collections\Components\Library;
+use Books\Collections\Models\Lib;
+use Illuminate\Foundation\AliasLoader;
+use Mobecan\Favorites\Behaviors\Favorable;
+use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
 /**
@@ -8,6 +17,8 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
+    public $require = ['RainLab.User', 'Books.Book'];
+
     /**
      * Returns information about this plugin.
      *
@@ -16,10 +27,10 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'Collections',
+            'name' => 'Collections',
             'description' => 'No description provided yet...',
-            'author'      => 'Books',
-            'icon'        => 'icon-leaf'
+            'author' => 'Books',
+            'icon' => 'icon-leaf',
         ];
     }
 
@@ -30,7 +41,6 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-
     }
 
     /**
@@ -40,7 +50,16 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+        AliasLoader::getInstance()->alias('Lib', Lib::class);
+        User::extend(function (User $user) {
+            $user->implementClassWith(HasLibrary::class);
+        });
+        Book::extend(function (Book $book) {
+            $book->implementClassWith(Favorable::class);
+        });
+        Lib::extend(function (Lib $lib) {
+            $lib->implementClassWith(Favorable::class);
+        });
     }
 
     /**
@@ -50,10 +69,8 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
         return [
-            'Books\Collections\Components\MyComponent' => 'myComponent',
+            Library::class => 'library',
         ];
     }
 
@@ -69,7 +86,7 @@ class Plugin extends PluginBase
         return [
             'books.collections.some_permission' => [
                 'tab' => 'Collections',
-                'label' => 'Some permission'
+                'label' => 'Some permission',
             ],
         ];
     }
@@ -85,11 +102,11 @@ class Plugin extends PluginBase
 
         return [
             'collections' => [
-                'label'       => 'Collections',
-                'url'         => Backend::url('books/collections/mycontroller'),
-                'icon'        => 'icon-leaf',
+                'label' => 'Collections',
+                'url' => Backend::url('books/collections/mycontroller'),
+                'icon' => 'icon-leaf',
                 'permissions' => ['books.collections.*'],
-                'order'       => 500,
+                'order' => 500,
             ],
         ];
     }

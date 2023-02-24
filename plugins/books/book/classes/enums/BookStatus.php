@@ -1,0 +1,35 @@
+<?php
+
+namespace Books\Book\Classes\Enums;
+
+enum BookStatus: string
+{
+    case WORKING = 'working';
+    case COMPLETE = 'complete';
+    case FROZEN = 'frozen';
+    case HIDDEN = 'hidden';
+    case PENDING = 'pending';
+
+    /**
+     * @return string
+     */
+    public function getLabel(): string
+    {
+        return match ($this) {
+            self::WORKING => 'В работе',
+            self::COMPLETE => 'Завершена',
+            self::FROZEN => 'Заморожена',
+            self::HIDDEN => 'Скрыта',
+            self::PENDING => 'Загружается',
+        };
+    }
+
+    public static function publicCases(): array
+    {
+        return [
+            self::WORKING->value => self::WORKING,
+            self::COMPLETE->value => self::COMPLETE,
+            self::HIDDEN->value => self::HIDDEN,
+        ];
+    }
+}

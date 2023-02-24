@@ -1,23 +1,24 @@
-<?php namespace Books\User;
+<?php
+
+namespace Books\User;
 
 use Backend;
+use Books\User\Behaviors\BookUser;
+use Books\User\Behaviors\CountryTranslate;
 use Books\User\Classes\SearchManager;
-use Books\User\Components\AuthorSpace;
+use Books\User\Classes\UserEventHandler;
+use Books\User\Components\BookAccount;
 use Books\User\Components\Searcher;
-use Config;
+use Books\User\Components\UserSettingsLC;
+use Books\User\Models\Settings;
 use Event;
 use Illuminate\Foundation\AliasLoader;
-use October\Rain\Foundation\Exception\Handler;
+use Monarobase\CountryList\CountryList;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
+use RainLab\Location\Behaviors\LocationModel;
+use RainLab\Location\Models\Country;
 use RainLab\User\Models\User;
-use Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use System\Classes\PluginBase;
-use Books\User\Behaviors\BookUser;
-use Books\User\Components\BookAccount;
-use Books\User\Classes\UserEventHandler;
-use View;
-use function Termwind\render;
 
 /**
  * Plugin Information File
@@ -37,7 +38,7 @@ class Plugin extends PluginBase
             'name' => 'User',
             'description' => 'No description provided yet...',
             'author' => 'Books',
-            'icon' => 'icon-leaf'
+            'icon' => 'icon-leaf',
         ];
     }
 
@@ -49,6 +50,9 @@ class Plugin extends PluginBase
     public function register()
     {
         //test
+        Event::listen('rainlab.user.register', function (User $model) {
+            (new UserEventHandler())->afterCreate($model->fresh());
+        });
     }
 
     /**
@@ -61,11 +65,15 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('User', User::class);
         AliasLoader::getInstance()->alias('Search', Search::class);
         AliasLoader::getInstance()->alias('SearchManager', SearchManager::class);
+        AliasLoader::getInstance()->alias('Country', Country::class);
+        AliasLoader::getInstance()->alias('BookSettings', Settings::class);
+        AliasLoader::getInstance()->alias('CountryList', CountryList::class);
+        Country::extend(function (Country $country) {
+            $country->implementClassWith(CountryTranslate::class);
+        });
         User::extend(function (User $model) {
             $model->implementClassWith(BookUser::class);
-            $model->bindEvent('model.afterCreate', function () use ($model) {
-                (new UserEventHandler())->afterCreate($model);
-            });
+            $model->implementClassWith(LocationModel::class);
         });
     }
 
@@ -78,8 +86,8 @@ class Plugin extends PluginBase
     {
         return [
             BookAccount::class => 'bookAccount',
-            AuthorSpace::class => 'author_space',
-            Searcher::class => 'searcher'
+            Searcher::class => 'searcher',
+            UserSettingsLC::class => 'userSettingsLC',
         ];
     }
 
@@ -95,7 +103,7 @@ class Plugin extends PluginBase
         return [
             'books.user.some_permission' => [
                 'tab' => 'User',
-                'label' => 'Some permission'
+                'label' => 'Some permission',
             ],
         ];
     }

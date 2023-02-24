@@ -4,30 +4,27 @@ namespace Books\Profile\Behaviors;
 
 use RainLab\User\Models\User;
 use Books\Profile\Models\Profile;
-use Books\Profile\Models\Profiler;
 use October\Rain\Extension\ExtensionBase;
 
 class HasProfile extends ExtensionBase
 {
-    public function __construct(protected User $model)
+    public function __construct(protected User $user)
     {
-        $this->model->addFillable(['current_profile_id']);
-        $this->model->hasMany['profilers'] = [Profiler::class, 'key' => 'profile_id', 'otherKey' => 'current_profile_id'];
-        $this->model->hasMany['profiles'] = [Profile::class,'key' => 'user_id','otherKey' => 'id'];
-        $this->model->hasOne['profile'] = [Profile::class, 'key' => 'id', 'otherKey' => 'current_profile_id'];
-        $this->model->append(['profiles_list']);
+        $this->user->addFillable(['current_profile_id']);
+        $this->user->hasMany['profiles'] = [Profile::class, 'key' => 'user_id', 'otherKey' => 'id'];
+        $this->user->hasOne['profile'] = [Profile::class, 'key' => 'id', 'otherKey' => 'current_profile_id'];
     }
 
-    public function getProfilesListAttribute()
+    public function getProfilesAsOptionsAttribute()
     {
-        return $this->model->profiles()->select(['id', 'username'])->get();
+        return $this->user->profiles()->select(['id', 'username'])->get();
     }
 
     public function setUserName(?string $username = null)
     {
-        $profile = $this->model->profile;
-        $profile->username =  $username ?? $this->model->username;
+        $profile = $this->user->profile;
+        $profile->username = $username ?? $this->user->username;
+
         return $profile->save();
     }
-
 }

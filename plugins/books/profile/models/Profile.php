@@ -1,21 +1,34 @@
-<?php namespace Books\Profile\Models;
+<?php
+
+namespace Books\Profile\Models;
 
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
+use Books\Profile\Classes\ProfileService;
+use Books\Profile\Traits\Subscribable;
+use Books\User\Classes\PrivacySettingsEnum;
+use Books\User\Classes\UserSettingsEnum;
+use Books\User\Models\Settings;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
 use October\Rain\Database\Relations\BelongsToMany;
 use October\Rain\Database\Relations\HasMany;
-use System\Models\File;
-use RainLab\User\Models\User;
+use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\Validation;
-
+use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
+use System\Models\File;
+use System\Models\Revision;
+use ValidationException;
+use WordForm;
 
 /**
  * Profile Model
  *
  * @method BelongsToMany books
+ * @method BelongsToMany subscribers
+ * @method BelongsToMany subscriptions
  * @method HasMany authorships
  * @method AttachOne banner
  * @method AttachOne avatar
@@ -23,6 +36,8 @@ use October\Rain\Database\Traits\Validation;
 class Profile extends Model
 {
     use Validation;
+    use Revisionable;
+    use Subscribable;
 
     /**
      * @var string table associated with the model
@@ -34,8 +49,9 @@ class Profile extends Model
      */
     protected $guarded = ['*'];
 
-    public static array $endingArray = ['Автор', 'Автора', 'Авторов'];
+    protected $revisionable = ['username'];
 
+    public static array $endingArray = ['Автор', 'Автора', 'Авторов'];
 
     /**
      * @var array fillable attributes are mass assignable
@@ -79,6 +95,7 @@ class Profile extends Model
         'ok' => 'nullable|url',
         'vk' => 'nullable|url',
     ];
+
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
      */
@@ -99,7 +116,7 @@ class Profile extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -108,33 +125,89 @@ class Profile extends Model
     public $hasOne = [
 
     ];
+
     public $hasMany = [
-        'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id', 'scope' => 'sortByAuthorOrder']
+        'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id', 'scope' => 'sortByAuthorOrder'],
+        'settings' => [Settings::class,'key' => 'user_id','otherKey' => 'user_id']
     ];
 
     public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
+
     public $belongsToMany = [
         'books' => [
             Book::class,
             'table' => 'books_book_authors',
             'key' => 'profile_id',
             'otherKey' => 'book_id',
-            'pivot' => ['percent', 'sort_order', 'is_owner']
-        ]
+            'pivot' => ['percent', 'sort_order', 'is_owner'],
+        ],
+        'subscribers' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'profile_id', 'otherKey' => 'subscriber_id'],
+        'subscriptions' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'subscriber_id', 'otherKey' => 'profile_id'],
     ];
 
     public $morphTo = [];
+
     public $morphOne = [];
-    public $morphMany = [];
+
+    public $morphMany = [
+        'revision_history' => [Revision::class, 'name' => 'revisionable']
+    ];
+
     public $attachOne = [
         'banner' => [File::class],
         'avatar' => [File::class],
     ];
+
     public $attachMany = [];
+
+    public function service(): ProfileService
+    {
+        return new ProfileService($this);
+    }
+
+    public function isCommentAllowed(?Profile $profile = null)
+    {
+        $profile ??= Auth::getUser()?->profile;
+        if (!$profile) {
+            return false;
+        }
+        if ($profile->is($this)) {
+            return true;
+        }
+        $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_FIT_ACCOUNT_INDEX_PAGE)->first();
+        if (!$setting) {
+            return false;
+        }
+        return match (PrivacySettingsEnum::tryFrom($setting->value)) {
+            PrivacySettingsEnum::ALL => true,
+            PrivacySettingsEnum::SUBSCRIBERS => $profile->hasSubscription($this),
+            default => false
+        };
+    }
+
+    public function scopeBooksExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('books', fn($book) => $book->public());
+    }
+
+    public function scopeBooksCount(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->withCount(['books' => fn($book) => $book->public()]);
+    }
 
     public function getIsCurrentAttribute(): bool
     {
-        return !!$this->user->current_profile_id == $this->id;
+        return $this->user->current_profile_id == $this->id;
+    }
+
+    public function acceptClipboardUsername()
+    {
+        $this->service()->replaceUsernameFromClipboard();
+    }
+
+    public function rejectClipboardUsername()
+    {
+        $this->service()->replaceUsernameFromClipboard(reject: true);
     }
 
     public function authorshipsAs(?bool $is_owner): HasMany
@@ -149,7 +222,12 @@ class Profile extends Model
 
     public function scopeSearchByString(Builder $query, string $string): Builder
     {
-        return $query->where('username', 'like', "%$string%")->orWhere('id', 'like', "%$string%");
+        return $query->usernameLike($string)->orWhere('id', '=', $string);
+    }
+
+    public function scopeUsernameLike(Builder $builder, string $username): Builder
+    {
+        return $builder->where('username', 'like', "%$username%");
     }
 
     public function scopeUsername(Builder $builder, string $username): Builder
@@ -157,19 +235,49 @@ class Profile extends Model
         return $builder->where('username', '=', $username);
     }
 
+    public function scopeUsernameClipboard(Builder $builder, string $string): Builder
+    {
+        return $builder->where('username_clipboard', '=', $string);
+    }
+
+    public function scopeUser(Builder $builder, User $user): Builder
+    {
+        return $builder->where('user_id', '=', $user->id);
+    }
+
     public function isEmpty(): bool
     {
-        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => !!$i);
+        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => (bool)$i);
     }
 
     public function isContactsEmpty(): bool
     {
-        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website',]))->some(fn($i) => !!$i);
+        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn($i) => (bool)$i);
     }
 
     public function booksSortedByAuthorOrder(): BelongsToMany
     {
         return $this->books()->orderByPivot('sort_order', 'desc');
+    }
+
+    public static function wordForm(): WordForm
+    {
+        return new WordForm(...self::$endingArray);
+    }
+
+    public function isUsernameExists(string $string): bool
+    {
+        return $this->user->profiles()->username($string)->exists() || $this->user->profiles()->usernameClipboard($string)->exists();
+    }
+
+    protected function beforeCreate()
+    {
+        if ($this->user->profiles()->count() > 3) {
+            throw new ValidationException(['username' => 'Превышен лимит профилей.']);
+        }
+        if ($this->isUsernameExists($this->username)) {
+            throw new ValidationException(['username' => 'Псевдоним уже занят.']);
+        }
     }
 
 

@@ -1,18 +1,21 @@
-<?php namespace Books\Catalog\Models;
+<?php
 
+namespace Books\Catalog\Models;
 
-use Db;
-use Model;
 use Books\Book\Models\Book;
+use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\NestedTree;
 use October\Rain\Database\Traits\Validation;
+use October\Rain\Database\TreeCollection;
 
 /**
  * Genre Model
  *
  * @method HasMany children
+ *
+ * @property  TreeCollection children
  */
 class Genre extends Model
 {
@@ -32,7 +35,7 @@ class Genre extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['name', 'desc', 'active', 'favorite', 'parent_id'];
+    protected $fillable = ['name', 'desc', 'active', 'favorite', 'parent_id', 'adult'];
 
     /**
      * @var array rules for validation
@@ -42,7 +45,7 @@ class Genre extends Model
         'desc' => 'string|nullable',
         'active' => 'boolean',
         'favorite' => 'boolean',
-        'parent_id' => 'nullable|exists:books_catalog_genres,id'
+        'parent_id' => 'nullable|exists:books_catalog_genres,id',
     ];
 
     /**
@@ -70,28 +73,50 @@ class Genre extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
      * @var array hasOne and other relations
      */
     public $hasOne = [];
+
     public $hasMany = [];
+
     public $belongsTo = [];
+
     public $belongsToMany = [
         'books' => [
             Book::class,
             'table' => 'books_book_genre',
             'key' => 'genre_id',
-            'otherKey' => 'book_id'
-        ]
+            'otherKey' => 'book_id',
+        ],
     ];
+
     public $morphTo = [];
+
     public $morphOne = [];
+
     public $morphMany = [];
+
     public $attachOne = [];
+
     public $attachMany = [];
+
+    public function checkAdult(): static
+    {
+        $this->update(['adult' => 1]);
+
+        return $this;
+    }
+
+    public function uncheckAdult(): static
+    {
+        $this->update(['adult' => 0]);
+
+        return $this;
+    }
 
     public function activate(): static
     {
@@ -119,7 +144,6 @@ class Genre extends Model
         $this->update(['favorite' => 0]);
 
         return $this;
-
     }
 
     /**
@@ -129,7 +153,6 @@ class Genre extends Model
     {
         return static::lists('name', 'id');
     }
-
 
     public function scopeRoots(Builder $builder): Builder
     {
@@ -146,6 +169,11 @@ class Genre extends Model
         return $builder->where('favorite', '=', 1);
     }
 
+    public function scopeOrFavorite(Builder $builder): Builder
+    {
+        return $builder->orWhere('favorite', '=', 1);
+    }
+
     public function scopeActive(Builder $builder): Builder
     {
         return $builder->where('active', '=', 1);
@@ -154,5 +182,39 @@ class Genre extends Model
     public function scopeName(Builder $builder, string $name): Builder
     {
         return $builder->where('name', 'like', "%$name%");
+    }
+
+    public function scopeNameLike(Builder $builder, string $name)
+    {
+        return $builder->name($name);
+    }
+
+    public function scopeAsOption(Builder $builder): Builder
+    {
+        return $builder->select(['id', 'name']);
+    }
+
+
+    public function scopeAdult(Builder $builder, bool $value = true): Builder
+    {
+        return $builder->where('adult', '=', $value);
+    }
+
+    public function scopePublic(Builder $builder): Builder
+    {
+        $builder->active();
+        if (shouldRestrictAdult()) {
+            $builder->adult(false);
+        }
+
+        return $builder;
+    }
+
+    public function scopeNestedFavorites(Builder $builder): Builder
+    {
+        return $builder
+            ->where(fn($q) => $q->roots()->whereHas('children', fn($q) => $q->favorite()))
+            ->orWhere(fn($q) => $q->roots()->favorite())
+            ->with('children', fn($q) => $q->favorite());
     }
 }

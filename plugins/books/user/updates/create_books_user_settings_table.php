@@ -1,8 +1,10 @@
-<?php namespace Books\User\Updates;
+<?php
 
-use Schema;
+namespace Books\User\Updates;
+
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 /**
  * CreateAccountSettingsTable Migration
@@ -19,8 +21,8 @@ class CreateAccountSettingsTable extends Migration
         Schema::create('books_user_settings', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->index();
-            $table->unsignedTinyInteger('setting_id')->index();
-            $table->string('value');
+            $table->unsignedTinyInteger('type')->index();
+            $table->string('value')->nullable();
             $table->timestamps();
         });
     }

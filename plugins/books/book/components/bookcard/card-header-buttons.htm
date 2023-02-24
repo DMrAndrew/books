@@ -1,0 +1,31 @@
+<button
+    class="ui-button ui-button-size--56
+         {{book.in_user_lib ? 'ui-button-view--2' : 'ui-button-view--3' }}
+         ui-button--full ui-button--column"
+    data-request="onAddLib"
+    data-request-update="{ _self: true }"
+    data-request-data="book_id:{{book.id}}"
+
+
+>
+    <svg class="square-16">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme}}"></use>
+    </svg>
+    <span class="ui-text--medium">
+                                {% if book.in_user_lib %}
+                                В библиотеке
+                                {% else %}
+                                В библиотеку
+                                {% endif %}
+            </span>
+</button>
+<button
+    data-request="onLike"
+    data-request-update="{ _self: true }"
+    data-request-data="book_id:{{book.id}}"
+    class="ui-button ui-button-size--56 {{book.user_liked ? 'ui-button-view--2' : 'ui-button-view--3' }} ui-button--full ui-button--column">
+    <svg class="square-16">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#like-stroked-16' | theme}}"></use>
+    </svg>
+    <span class="ui-text--medium">Нравится</span>
+</button>

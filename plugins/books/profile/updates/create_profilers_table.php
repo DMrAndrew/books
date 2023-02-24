@@ -2,23 +2,22 @@
 
 namespace Books\Profile\Updates;
 
-use Schema;
+use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 class CreateProfilersTable extends Migration
 {
     public function up()
     {
-        if(Schema::hasTable('books_profile_profilers')){
+        if (Schema::hasTable('books_profile_profilers')) {
             return;
         }
-        Schema::create('books_profile_profilers', function ($table) {
+        Schema::create('books_profile_profilers', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->integer('profile_id')->unsigned();
-            $table->string('entity_type');
-            $table->json('ids')->default("[]");
-            $table->index(['profile_id','entity_type']);
+            $table->morphs('master', 'master');
+            $table->morphs('slave', 'slave');
+            $table->primary(['master_type','master_id', 'slave_type','slave_id'],'id');
         });
     }
 

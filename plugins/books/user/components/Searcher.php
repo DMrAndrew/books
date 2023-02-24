@@ -1,15 +1,17 @@
-<?php namespace Books\User\Components;
+<?php
 
-use Cache;
-use Flash;
-use Request;
-use Redirect;
-use Carbon\Carbon;
-use ValidationException;
-use Cms\Classes\ComponentBase;
-use RainLab\User\Facades\Auth;
+namespace Books\User\Components;
+
 use Books\User\Classes\SearchManager;
+use Cache;
+use Carbon\Carbon;
+use Cms\Classes\ComponentBase;
+use Flash;
 use Illuminate\Support\Facades\RateLimiter;
+use RainLab\User\Facades\Auth;
+use Redirect;
+use Request;
+use ValidationException;
 
 /**
  * Searcher Component
@@ -19,7 +21,8 @@ use Illuminate\Support\Facades\RateLimiter;
 class Searcher extends ComponentBase
 {
     protected $query;
-    protected bool $useCache = true;
+
+    protected bool $useCache = false;
 
     /**
      * componentDetails
@@ -28,7 +31,7 @@ class Searcher extends ComponentBase
     {
         return [
             'name' => 'Searcher Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -46,8 +49,8 @@ class Searcher extends ComponentBase
     {
         $this->query = trim($this->param('query'));
         $this->page['search_query'] = $this->query;
-
     }
+
     public function onRender()
     {
         if (!$this->isRedirectRequire()) {
@@ -67,16 +70,15 @@ class Searcher extends ComponentBase
 
     protected function find()
     {
-
         $attempts = Auth::getUser() ? 20 : 10;
         if (!RateLimiter::attempt('search' . request()->ip(), $attempts, fn() => 1, 20)) {
             $ex = new ValidationException(['rateLimiter' => 'Превышен лимит запросов. Подождите 20 сек.']);
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            if (Request::ajax()) {
+                throw $ex;
+            } else {
+                Flash::error($ex->getMessage());
+            }
         }
-//        if (!$this->query || strlen($this->query) < 2) {
-//            return [];
-//        }
 
         return (new SearchManager())->apply($this->query);
     }
@@ -84,15 +86,14 @@ class Searcher extends ComponentBase
     protected function cached()
     {
         if ($this->useCache) {
-            $sHash = $this->hash();
-            if (Cache::has($sHash)) {
-                return Cache::get($sHash);
+            if (Cache::has($this->hash())) {
+                return Cache::get($this->hash());
             }
         }
 
         $partial = $this->renderPartial('@default', ['results' => $this->find()]);
         if ($this->useCache) {
-            Cache::put($this->hash(), $partial, Carbon::now()->addMinutes());
+            Cache::put($this->hash(), $partial, Carbon::now()->addMinute());
         }
 
         return $partial;
@@ -107,9 +108,8 @@ class Searcher extends ComponentBase
         $this->query = $q;
         $this->page['search_query'] = $this->query;
 
-
         return [
-            '#search_result' => $this->cached()
+            '#search_result' => $this->cached(),
         ];
     }
 }

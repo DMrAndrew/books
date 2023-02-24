@@ -3,11 +3,11 @@
     - create_tags_table.php
     - create_cycles_table.php
     - create_books_table.php
+    - create_editions_table.php
     - create_authors_table.php
     - create_chapters_table.php
     - create_book_genre_table.php
     - create_book_tag_table.php
-    - create_editions_table.php
     - create_ebook_editions_table.php
 1.0.2:
     - 'Пагинация, трекеры, обновления'
@@ -17,3 +17,9 @@
 1.0.3:
     - 'Longtext для content'
     - pagination_content_to_longtext.php
+1.0.4:
+    - 'Статистика книги'
+    - create_stats_table.php
+1.0.5:
+    - 'Контент частей и страниц отдельной таблицей'
+    - create_contents_table.php
