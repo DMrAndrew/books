@@ -61,12 +61,12 @@ class ListingFilter
 
     public function toBind(): array
     {
-        return (array)$this + [
-                'include_genres' => $this->includes(Genre::class),
-                'exclude_genres' => $this->excludes(Genre::class),
-                'include_tags' => $this->includes(Tag::class),
-                'exclude_tags' => $this->excludes(Tag::class),
-            ];
+        return array_merge((array)$this, [
+            'include_genres' => $this->includes(Genre::class),
+            'exclude_genres' => $this->excludes(Genre::class),
+            'include_tags' => $this->includes(Tag::class),
+            'exclude_tags' => $this->excludes(Tag::class),
+        ]);
     }
 
     public function includes(string $model)

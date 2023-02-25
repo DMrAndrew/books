@@ -5,10 +5,13 @@ namespace Books\Profile\Models;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Profile\Classes\ProfileService;
+use Books\Profile\Factories\ProfileFactory;
 use Books\Profile\Traits\Subscribable;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
@@ -38,7 +41,9 @@ class Profile extends Model
     use Validation;
     use Revisionable;
     use Subscribable;
+    use HasFactory;
 
+    public static string $factory = ProfileFactory::class;
     /**
      * @var string table associated with the model
      */
@@ -164,6 +169,7 @@ class Profile extends Model
     {
         return new ProfileService($this);
     }
+
 
     public function isCommentAllowed(?Profile $profile = null)
     {

@@ -9,6 +9,7 @@ use Books\Book\Classes\Rater;
 use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Collection;
@@ -57,6 +58,8 @@ use WordForm;
 class Book extends Model
 {
     use Validation;
+    use HasFactory;
+
 
     /**
      * @var string table associated with the model
@@ -238,7 +241,7 @@ class Book extends Model
 
     public function scopeComplete(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn($e) => $e->status([BookStatus::COMPLETE]));
+        return $builder->whereHas('editions', fn($e) => $e->status(BookStatus::COMPLETE));
     }
 
 

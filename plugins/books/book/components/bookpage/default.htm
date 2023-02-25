@@ -129,7 +129,7 @@
                     <div class="ui-tabs-body _field">
                         <div class="ui-tabs-content active" data-tab-content="1">
                             <div class="book-card-full-description__about">
-                                {{book.annotation|md}}
+                                {{book.annotation|raw}}
                                 <div class="book-card__genres tags-list">
                                     {% for tag in book.tags %}
                                     <a href="#" class="ui-link _violet">{{tag.name}}</a>

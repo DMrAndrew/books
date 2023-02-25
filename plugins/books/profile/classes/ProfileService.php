@@ -4,7 +4,6 @@ namespace Books\Profile\Classes;
 
 use Books\Profile\Models\Profile;
 use Books\User\Classes\UserSettingsEnum;
-use Books\User\Models\Settings;
 use Event;
 use RainLab\User\Models\User;
 use ValidationException;
@@ -88,10 +87,10 @@ class ProfileService
             $this->profile->user->settings->each->delete();
         }
 
-        collect(UserSettingsEnum::cases())->map(function ($setting) {
-            $this->profile->user->settings()->firstOrCreate(['type' => $setting->value]);
+        collect(UserSettingsEnum::cases())->map(function (UserSettingsEnum $setting) {
+            $this->profile->user->settings()
+                ->firstOrCreate(['type' => $setting->value, 'value' => $setting->defaultValue()]);
         });
-
 
         Event::fire('books.profile.settings.initialized', [$this->profile]);
     }

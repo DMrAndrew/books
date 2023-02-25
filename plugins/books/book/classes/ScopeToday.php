@@ -3,16 +3,15 @@
 namespace Books\Book\Classes;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
+use Illuminate\Database\Eloquent\Builder;
 
 class ScopeToday implements Scope
 {
-
     public function apply(Builder $builder, Model $model)
     {
-        return $builder->whereDate('created_at', Carbon::now());
+        return $builder->whereDate('created_at', today());
     }
 
     public function extend(Builder $builder)

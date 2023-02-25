@@ -1,7 +1,10 @@
 <?php namespace App;
 
+use Books\Profile\Models\Profile;
 use Cms\Classes\Controller;
 use Cms\Classes\Theme;
+use Faker\Generator;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use System\Classes\AppBase;
 
@@ -18,6 +21,14 @@ class Provider extends AppBase
     public function register()
     {
         parent::register();
+        Factory::guessFactoryNamesUsing(function ($modelName) {
+            if (property_exists($modelName, 'factory')) {
+                return $modelName::$factory;
+            }
+            throw new \Exception('Factory for '.$modelName.' not found.');
+
+        });
+
     }
 
     /**

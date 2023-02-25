@@ -52,10 +52,10 @@ class Listing extends ComponentBase
 
     public function getBind()
     {
-        return $this->filter->toBind() + [
-                'books' => $this->books(),
-                'trackInputTime' => $this->trackInputTime
-            ];
+        return array_merge($this->filter->toBind(), [
+            'books' => $this->books(),
+            'trackInputTime' => $this->trackInputTime
+        ]);
 
     }
 
