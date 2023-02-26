@@ -178,7 +178,7 @@ class ChapterService
         $root = $dom->getElementsByTagName('body')[0];
         $perhapses = collect($root->childNodes)->map(fn($node) => [
             'html' => $dom->saveHTML($node),
-            'length' => strlen(Str::squish($node->textContent)),
+            'length' => iconv_strlen(Str::squish($node->textContent)),
         ]);
 
         return $perhapses->chunkWhile(function ($value, $key, $chunk) {
