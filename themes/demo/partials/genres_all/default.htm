@@ -12,8 +12,13 @@
                 <div class="book-genres__wrapper book-genres-item" data-list="accordion">
                     <div class="book-genres-item__header">
                         <div class="book-genres-item__title ui-text--bold">
-                            <span class="ui-text-head--3">{{parent.name}}</span>
-                            <span></span>
+
+                                <span class="ui-text-head--3">
+                                                                {{parent.name}}
+
+                            </span>
+
+                            <span>{{parent.children.count()|default('')}}</span>
 
                         </div>
                         <svg>

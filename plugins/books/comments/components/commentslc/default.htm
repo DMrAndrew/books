@@ -22,4 +22,14 @@
         </div>
     </div>
     {% endfor %}
+
+    {% if not comments.count() %}
+    <div class="author__placeholder _indent">
+        <svg class="square-32">
+            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#feather-stroked-24"></use>
+        </svg>
+        <div class="ui-text-head--3 ui-text--bold">У вас пока нет ни одного комментария</div>
+        <span>Когда они появятся, вы увидите их здесь</span>
+    </div>
+    {% endif %}
 </div>

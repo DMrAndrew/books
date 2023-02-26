@@ -59,9 +59,9 @@
         <div class="ui-select-error" data-validate-for="comment_allowed"></div>
         <div class="create-book__check">
             <label class="ui-checkbox">
-                <input type="hidden" value="0" name="comment_allowed">
+                <input type="hidden" value="0"  name="comment_allowed">
                 <input type="checkbox" value="1" hidden name="comment_allowed"
-                       {{ book.ebook.comment_allowed ? 'checked' : ''  }}
+                       {{ not book.ebook or book.ebook.comment_allowed ? 'checked' : ''  }}
                 >
                 <div class="ui-checkbox-checker">
                     <svg>
@@ -71,10 +71,10 @@
                 <span class="ui-checkbox-text">Разрешить комментарии</span>
             </label>
             <label class="ui-checkbox">
-                <input type="hidden" value="0" name="download_allowed">
+                <input type="hidden" value="0"  name="download_allowed">
                 <input type="checkbox" value="1" hidden name="download_allowed"
 
-                       {{ book.ebook.download_allowed ? 'checked' : ''  }}
+                       {{not book.ebook or  book.ebook.download_allowed ? 'checked' : ''  }}
                        >
                 <div class="ui-checkbox-checker">
                     <svg>
