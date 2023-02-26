@@ -49,6 +49,20 @@ services:
             - sail
         depends_on:
             - site.loc
+    queue:
+        restart: unless-stopped
+        image: sail-8.1/app
+        environment:
+            CONTAINER_ROLE: queue
+            COMPOSE_INTERACTIVE_NO_CLI: 1
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sail
+        depends_on:
+            - site.loc
     mysql:
         image: 'mariadb:10.5'
         ports:
