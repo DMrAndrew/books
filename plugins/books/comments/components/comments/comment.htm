@@ -28,9 +28,8 @@
             {% if user %}
             <div class="comments-comment__action">
                 <button onclick="toggleTextArea('#replay_{{comment.id}}')">Ответить</button>
+                {% if user and user.profile.id == comment.profile.id or owner and user and user.profile.id == owner.id %}
                 <div class="comments-comment__action-wrapper" data-tippy-continer data-tippy-offset="[0, 0]">
-
-                    {% if user and user.profile.id == comment.profile.id or owner and user and user.profile.id == owner.id %}
                     <svg class="square-16" data-tippy-init>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
                     </svg>
@@ -43,8 +42,8 @@
                             </div>
                         </div>
                     </div>
-                    {% endif %}
                 </div>
+                {% endif %}
             </div>
             <div class="comment-js-form" id="replay_{{comment.id}}">
                 {% partial '@textarea' parent_id=comment.id cancel='#replay_'~comment.id %}
