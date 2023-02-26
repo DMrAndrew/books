@@ -46,7 +46,7 @@ class Author extends Model
         'percent' => 'integer|min:0|max:100',
         'is_owner' => 'boolean',
         'sort_order' => 'integer',
-        'accepted' => 'boolean'
+        'accepted' => 'nullable|boolean'
     ];
 
     protected $casts = [

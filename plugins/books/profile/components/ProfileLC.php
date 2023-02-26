@@ -92,16 +92,13 @@ class ProfileLC extends ComponentBase
             $profile->update($validation->validated(), ['force' => true]);
             $this->user->refresh();
 
+            Flash::success('Данные успешно сохранены');
             return [
                 '.personal-area__wrapper primary' => $this->renderPartial('@primaryInformation', ['userdata' => $this->user]),
                 '.personal-area__wrapper secondary' => $this->renderPartial('@profileSecondaryInformation', ['userdata' => $this->user]),
             ];
         } catch (Exception $ex) {
-            if (Request::ajax()) {
-                throw $ex;
-            } else {
-                Flash::error($ex->getMessage());
-            }
+            Flash::error($ex->getMessage());
         }
     }
 

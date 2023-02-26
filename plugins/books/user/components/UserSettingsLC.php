@@ -3,6 +3,8 @@
 use Books\User\Classes\UserService;
 use Cms\Classes\ComponentBase;
 use Country;
+use Exception;
+use Flash;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
@@ -55,11 +57,14 @@ class UserSettingsLC extends ComponentBase
 
     public function onUpdateCommon()
     {
-        $this->service->update(post());
-        return  Redirect::refresh();
-        return [
-            '#common-form' => $this->renderPartial('@common'),
-        ];
+        try {
+            $this->service->update(post());
+            Flash::success('Данные успешно сохранены');
+            return Redirect::refresh();
+
+        } catch (Exception $ex) {
+            Flash::error($ex->getMessage());
+        }
     }
 
     public function onChangePassword()
