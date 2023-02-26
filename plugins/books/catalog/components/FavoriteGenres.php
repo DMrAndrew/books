@@ -74,8 +74,7 @@ class FavoriteGenres extends ComponentBase
 
     public function nestedGenres()
     {
-        $roots = $this->queryGenres()
-            ->nestedFavorites()
+        $roots = $this->queryGenres()->with('children')->roots()
             ->get();
 
         $this->mergeWithSelected($roots);

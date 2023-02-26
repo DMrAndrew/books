@@ -152,7 +152,7 @@
                                 <!--                            {% if lib.book.editions.first.progress_length %}-->
                                 <!--                            <div class="book-mini-card__addition">+{{lib.book.editions.first.progress_length}} зн.</div>-->
                                 <!--                            {% endif %}-->
-                                <a href="" class="book-mini-card__title">
+                                <a href="/book-card/{{lib.book.id}}" class="book-mini-card__title">
                                     {{lib.book.title}}
                                 </a>
                                 {% if lib.type.value == 3 and lib.book.editions.first.progress %}
