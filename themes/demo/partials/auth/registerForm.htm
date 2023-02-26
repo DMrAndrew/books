@@ -23,7 +23,7 @@
     </div>
     <div class="auth__body">
         {% if not user %}
-        <a href="#" class="auth__button-back-desktop ui-link _violet" onclick="registerPopup()">
+        <a class="auth__button-back-desktop ui-link _violet cursor-pointer" onclick="registerPopup()">
             <svg class="square-16">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
             </svg>
@@ -116,7 +116,7 @@
 
         {% if not user %}
         <div class="auth__addition auth__action ">
-            Есть аккаунт? <a href="#" class="ui-link _violet"
+            Есть аккаунт? <a class="ui-link _violet cursor-pointer"
                              onclick="loginForm()"
         >Войти</a>
         </div>
