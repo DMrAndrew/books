@@ -25,6 +25,11 @@ class EditionService
             throw new \ValidationException(['status' => 'В данный момент Вы не можете перевести издание в этот статус.']);
         }
 
+        if ($data->get('sales_free') == 0 && ($data->has('price') && !!!$data->get('price')))
+        {
+            $this->edition->addValidationRule('free_parts', 'min:3');
+        }
+
         if (!$this->edition->isPublished()
             && in_array($data->get('status'), [BookStatus::COMPLETE, BookStatus::WORKING])
             && ($data->get('sales_free') == 'on' || ($data->has('price') && $data->has('free_parts')))
@@ -32,7 +37,6 @@ class EditionService
             $this->edition->setPublishAt();
         }
 
-        $this->edition->addValidationRule('free_parts', 'min:3');
         $this->edition->fill($data->toArray());
 
         $this->edition->save();
