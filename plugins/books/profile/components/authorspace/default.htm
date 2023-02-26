@@ -231,8 +231,10 @@
                 </a>
                 {% endif %}
                 {% if profile.ok %}
-                <a href="{{ profile.ok }}" rel="noopener" target="_blank" class="author-contacts__link">
-                    title="{{profile.ok}}"
+                <a href="{{ profile.ok }}" rel="noopener" target="_blank" class="author-contacts__link"
+                   title="{{profile.ok}}"
+                >
+
                     <svg class="square-16">
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-stroked-16' | theme}}"></use>
                     </svg>

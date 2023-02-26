@@ -1,4 +1,4 @@
-<div class="personal-area__wrapper">
+<div class="personal-area__wrapper primary">
     <div class="personal-area__wrap _indent-large ui-text--bold ui-text-head--2">Основная информация</div>
     <div class="personal-area__wrap _indent-small">Фото профиля</div>
     <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">
@@ -20,9 +20,10 @@
 
 
     <div class="personal-area__wrap _separator"></div>
-    {{ form_ajax('profile::onUpdateProfile',{
+    {{ form_ajax('profileLC::onUpdateProfile',{
     id:'primary_profile_information',
-    'data-request-validate':'true'
+    'data-request-validate':'true',
+    'data-request-flash':1,
     }) }}
 
     <div class="personal-area__wrap _indent-small">Имя или псевдоним</div>
@@ -56,11 +57,9 @@
         <textarea class="ui-input-textarea" name="about">{{userdata.profile.about}}</textarea>
         <div class="ui-select-hitn"></div>
         <div class="ui-select-error" data-validate-for="about"></div>
-
     </div>
     <div class="personal-area__wrap _separator"></div>
-
-    <button class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить</button>
+    <button data-attach-loading class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить</button>
     {{ form_close() }}
 </div>
 

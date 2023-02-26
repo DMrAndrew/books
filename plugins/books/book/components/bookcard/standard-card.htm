@@ -39,7 +39,7 @@
                 </div>
             </div>
             {% endif %}
-            <a data-turbo="false" href="{{href_link~book.id}}" class="book-card__title ui-text-head--3 ui-text--bold">{{book.title}}</a>
+            <a data-turbo="false" href="/book-card/{{book.id}}" class="book-card__title ui-text-head--3 ui-text--bold">{{book.title}}</a>
 
             <div class="book-card__genres tags-list">
                 {% for author in book.authors %}

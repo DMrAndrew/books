@@ -1,7 +1,8 @@
 {{ form_ajax('notificationLC::onUpdateNotify',{
 id:'profile_privacy_form',
 'data-request-validate':'true',
-'class':'personal-area__wrapper'
+'class':'personal-area__wrapper',
+'data-request-flash':1,
 }) }}
 
 <div class="personal-area__wrap _indent-large">Выберите типы событий, которые вас интересуют</div>
@@ -30,5 +31,5 @@ id:'profile_privacy_form',
 </label>
 {% endfor %}
 
-<button class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить</button>
+<button data-attach-loading class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить</button>
 {{ form_close() }}

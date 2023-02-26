@@ -2,7 +2,6 @@
 
 namespace Books\User\Components;
 
-use Carbon\Carbon;
 use Cookie;
 use Db;
 use Exception;

@@ -1,4 +1,5 @@
-{{ form_ajax('onUpdateCommon',{id:'common-form',class:'personal-area__wrapper'}) }}
+{{ form_ajax('onUpdateCommon',{id:'common-form',class:'personal-area__wrapper',
+'data-request-flash':1}) }}
 <div class="personal-area__wrap _indent-large ui-text--bold ui-text-head--2">Общие настройки</div>
 
 <div class="ui-grid-container ui-grid-gap">
@@ -76,7 +77,8 @@
     </div>
 </div>
 
-<button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить</button>
+
+<button data-attach-loading type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить</button>
 <script>
     initDatepicker("#datepicker")
     iniSelect()

@@ -43,7 +43,7 @@ class BookService
 
     protected function isNew(): bool
     {
-        return ! $this->book->id;
+        return ! $this->book->exists;
     }
 
     protected function isBounded(): bool

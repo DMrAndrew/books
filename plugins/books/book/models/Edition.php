@@ -186,7 +186,7 @@ class Edition extends Model
 
     public function scopeFree(Builder $builder, $free = true): Builder
     {
-        return $builder->where('sales_free', '=', $free);
+        return $builder->where('sales_free', '=', $free)->orWhere('price','=',0);
     }
 
     public function scopeEbook(Builder $builder): Builder
