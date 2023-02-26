@@ -43,6 +43,7 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
+            - root
         depends_on:
             - site.loc
     queue:
@@ -57,6 +58,7 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
+            - root
         depends_on:
             - site.loc
 networks:
