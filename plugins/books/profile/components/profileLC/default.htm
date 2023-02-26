@@ -1,3 +1,7 @@
-{% partial "@primaryInformation" userdata=userdata %}
-{% partial "@profileSecondaryInformation" userdata=userdata %}
+<div id="primary-spawn">
+    {% partial "@primaryInformation" userdata=userdata %}
+</div>
+<div id="secondary-spawn">
+    {% partial "@profileSecondaryInformation" userdata=userdata %}
+</div>
 {% partial 'modals/username-change' %}

@@ -93,8 +93,8 @@ class ProfileLC extends ComponentBase
             $this->user->refresh();
 
             return [
-                'profile/primaryInformation' => $this->renderPartial('profile/primaryInformation', ['userdata' => $this->user]),
-                'profile/profileSecondaryInformation' => $this->renderPartial('profile/profileSecondaryInformation', ['userdata' => $this->user]),
+                '#primary-spawn' => $this->renderPartial('@primaryInformation', ['userdata' => $this->user]),
+                'secondary-spawn' => $this->renderPartial('@profileSecondaryInformation', ['userdata' => $this->user]),
             ];
         } catch (Exception $ex) {
             if (Request::ajax()) {
