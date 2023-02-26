@@ -26,6 +26,7 @@
                 <li><a class="ui-pagination-item cursor-pointer {{link.active ? 'active':''}}"
                 data-request="{{__SELF__}}::onPage"
                        data-request-data="page:{{link.label}}"
+                       data-request-complete="$('.comments')[0].scrollIntoView()"
                 >
                     {{link.label}}
                 </a></li>
@@ -34,10 +35,9 @@
             </ul>
         </nav>
     </div>
-    <script>
-        initComments()
-        initTippy();
-        $('.comments')[0].scrollIntoView()
-    </script>
 </div>
 {% endif %}
+<script>
+    initComments()
+    initTippy();
+</script>

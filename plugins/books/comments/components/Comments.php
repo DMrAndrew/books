@@ -21,7 +21,7 @@ class Comments extends ComponentBase
     protected Model $model;
     protected ?User $user;
     protected Profile $owner;
-    protected int $perPage = 10;
+    protected int $perPage = 5;
     protected int $currentPage = 1;
 
     public function componentDetails()
@@ -58,6 +58,7 @@ class Comments extends ComponentBase
             $all = $this->queryComments()->get()->toNested();
             $items = $all->forPage($this->currentPage(), $this->perPage);
             $this->page['paginator'] = new PomonPaginator($items, $all->count(), $this->perPage, $this->currentPage());
+            $this->page['current_page'] = $this->currentPage();
 
         }
     }
@@ -167,8 +168,8 @@ class Comments extends ComponentBase
         ];
     }
 
-    public function currentPage()
+    public function currentPage(): int
     {
-        return post('page') ?? $this->currentPage;
+        return (int)(post('page') ?? $this->currentPage);
     }
 }

@@ -154,7 +154,10 @@ class BookService
             }
 
             $this->{($this->isNew() ? 'create' : 'update')}($bookData->toArray());
-            $this->book->ebook?->update($data->only(['comment_allowed', 'download_allowed'])->toArray());
+            $this->book->fresh();
+            $ebook = $this->book->ebook()->first();
+            $ebook?->fill($data->only(['comment_allowed', 'download_allowed'])->toArray());
+            $ebook?->save();
 
             $this->clean();
 

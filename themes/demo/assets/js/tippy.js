@@ -15,7 +15,7 @@ function initTippy(){
         allowHTML: true,
         placement: 'bottom-start',
         maxWidth: 400,
-        content: content.innerHTML
+        content: content?.innerHTML
       });
     }
     // simple tippy init

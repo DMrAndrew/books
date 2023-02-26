@@ -100,7 +100,8 @@ class Booker extends ComponentBase
     public function onSaveBook()
     {
         try {
-            $data = post();
+
+             $data = post();
             $book = (new Book());
             $book->addValidationRule('annotation', 'max:2000');
             $validator = Validator::make(
