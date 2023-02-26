@@ -112,7 +112,12 @@ class Rater
 
     public function applyStatsAll(): static
     {
-        $this->applyStats(...StatsEnum::cases());
+        $this->applyStats(...[
+            StatsEnum::LIBS,
+            StatsEnum::COMMENTS,
+            StatsEnum::READ,
+            StatsEnum::LIKES,
+        ]);
         return $this;
     }
 

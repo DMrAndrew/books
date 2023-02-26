@@ -5,8 +5,15 @@
     <div class="personal-subscribe__img">{{profile.firstLatter}}</div>
     {% endif %}
 
-    <div class="personal-subscribe__name">{{profile.username}}</div>
-    <div class="personal-subscribe__controls" data-tippy-continer data-tippy-offset="[0, 0]" data-tippy-placement="bottom-end">
+
+    <div class="personal-subscribe__name">
+        <a class="ui-link _violet" href="/author-page/{{profile.id}}">
+            {{profile.username}}
+        </a>
+    </div>
+
+    <div class="personal-subscribe__controls" data-tippy-continer data-tippy-offset="[0, 0]"
+         data-tippy-placement="bottom-end">
         <svg class="square-16" data-tippy-init>
             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
         </svg>
@@ -17,7 +24,7 @@
                         id:'{{profile.id}}'
                     }
                 })"
-                      class="ui-dropdown-item active">
+                     class="ui-dropdown-item active">
                     <span>{{action.label}}</span>
                 </div>
             </div>
