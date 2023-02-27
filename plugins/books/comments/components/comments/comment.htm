@@ -21,7 +21,9 @@
             </div>
 
             <div id="comment_{{ comment.id }}" class="comment-js-form">
-                <div class="comments-comment__text">{{comment.content|raw}}</div>
+                <div class="comments-comment__text">
+                    {{comment.content|raw}}
+                </div>
                 {% partial '@textarea' item=comment cancel='#comment_'~comment.id %}
             </div>
 
@@ -50,12 +52,17 @@
             </div>
             {% endif %}
         </div>
+        {% if not comment.parent_id %}
         <div class="comments-comment__sub">
             {% partial '@list' comments=comment.children %}
         </div>
+        {% endif %}
 <!--        <div class="comments-comment__more">-->
 <!--            <a class="ui-link _violet" href="#">Еще 20 ответов</a>-->
 <!--        </div>-->
     </div>
 </div>
 
+{% if comment.parent_id %}
+    {% partial '@list' comments=comment.children %}
+{% endif %}
