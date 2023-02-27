@@ -1,10 +1,13 @@
 <?php namespace App;
 
 use Books\Profile\Models\Profile;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Cms\Classes\Controller;
 use Cms\Classes\Theme;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Foundation\AliasLoader;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use System\Classes\AppBase;
 
@@ -20,6 +23,9 @@ class Provider extends AppBase
      */
     public function register()
     {
+        AliasLoader::getInstance()->alias('Carbon', Carbon::class);
+        AliasLoader::getInstance()->alias('CarbonPeriod', CarbonPeriod::class);
+
         parent::register();
         Factory::guessFactoryNamesUsing(function ($modelName) {
             if (property_exists($modelName, 'factory')) {

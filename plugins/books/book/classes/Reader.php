@@ -6,10 +6,8 @@ use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
-use Books\Collections\classes\CollectionEnum;
 use Event;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -30,7 +28,8 @@ class Reader
         $this->page ??= 1;
         $this->edition = $this->book->ebook;
         $this->chapters = $this->edition->chapters;
-        $this->chapter = $this->edition->chapters()->find($this->chapter?->id) ?? $this->chapters->first();
+        $this->chapter = $this->edition->chapters()->with('content')->find($this->chapter?->id) ?? $this->chapters->first();
+
         $this->setPage($this->page);
     }
 

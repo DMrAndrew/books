@@ -22,6 +22,7 @@ use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
 use Queue;
 use RainLab\User\Models\User;
+use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
 
 /**
@@ -50,6 +51,7 @@ class Chapter extends Model
     use Validation;
     use SoftDelete;
     use Purgeable;
+    use HasRelationships;
 
     /**
      * @var string table associated with the model
@@ -149,6 +151,14 @@ class Chapter extends Model
     {
         return new ChapterService($this);
     }
+
+    public function paginationTrackers()
+    {
+        return $this->hasManyDeepFromRelations(
+            $this->pagination(),
+            [(new Pagination())->trackers()]);
+    }
+
 
     public function paginateContent()
     {

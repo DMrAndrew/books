@@ -25,7 +25,8 @@
         "monarobase/country-list": "^3.3",
         "books/collections-plugin": "*",
         "rainlab/location-plugin": "^1.2",
-        "books/comments-plugin": "*"
+        "books/comments-plugin": "*",
+        "staudenmeir/eloquent-has-many-deep": "1.17"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",

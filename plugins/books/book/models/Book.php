@@ -22,6 +22,7 @@ use October\Rain\Database\Relations\HasOneThrough;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
 use WordForm;
 
@@ -59,6 +60,7 @@ class Book extends Model
 {
     use Validation;
     use HasFactory;
+    use HasRelationships;
 
 
     /**
@@ -200,6 +202,31 @@ class Book extends Model
     {
         return new Rater($this);
     }
+
+    public function paginationTrackers(): \Staudenmeir\EloquentHasManyDeep\HasManyDeep
+    {
+        return $this->hasManyDeepFromRelations(
+            $this->pagination(),
+            ((new Pagination())->trackers()));
+    }
+
+//    public function pagination()
+//    {
+//        return $this->hasManyDeepFromRelations(
+//            $this->editions(),
+//            ((new Edition())->chapters()),
+//            ((new Chapter())->pagination()));
+//    }
+
+    public function pagination(): \Staudenmeir\EloquentHasManyDeep\HasManyDeep
+    {
+        return $this->hasManyDeepFromRelationsWithConstraints(
+            [$this, 'editions'],
+            [new Edition(), 'chapters'],
+            [new Chapter(), 'pagination'],
+        );
+    }
+
 
     public function isAuthor(User $user)
     {
