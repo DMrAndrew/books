@@ -2,20 +2,22 @@
 
 namespace Books\Book\Classes;
 
-use Queue;
-use Exception;
+use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Models\Book;
 use Books\Book\Models\Stats;
-use Books\Book\Classes\Enums\StatsEnum;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Traits\Conditionable;
+use Queue;
 
 class Rater
 {
     use Conditionable;
 
     protected Stats $stats;
+
     protected array $closures = [];
+
     protected Builder $builder;
 
     public function __construct(protected Book $book)
@@ -61,6 +63,7 @@ class Rater
                 $closure();
             }
         }
+
         return $this;
     }
 
@@ -77,12 +80,13 @@ class Rater
         $this->performClosures();
         $this->stats->save();
         $this->closures = [];
+
         return $this;
     }
 
     public function queue(): ?static
     {
-        if (!$this->canPerform()) {
+        if (! $this->canPerform()) {
             return null;
         }
         $actions = array_keys($this->closures);
@@ -99,6 +103,7 @@ class Rater
                 //
             }
         });
+
         return $this;
     }
 
@@ -107,17 +112,14 @@ class Rater
         foreach ($stats as $stat) {
             $this->{$stat->value}();
         }
+
         return $this;
     }
 
     public function applyStatsAll(): static
     {
-        $this->applyStats(...[
-            StatsEnum::LIBS,
-            StatsEnum::COMMENTS,
-            StatsEnum::READ,
-            StatsEnum::LIKES,
-        ]);
+        $this->applyStats(StatsEnum::LIBS, StatsEnum::COMMENTS, StatsEnum::READ, StatsEnum::LIKES);
+
         return $this;
     }
 
@@ -126,12 +128,13 @@ class Rater
         $count = 0;
         foreach (Book::cursor() as $book) {
             $book->rater()
-                ->when(!count($stats),
-                    fn($rater) => $rater->applyStatsAll(),
-                    fn($rater) => $rater->applyStats($stats))
+                ->when(! count($stats),
+                    fn ($rater) => $rater->applyStatsAll(),
+                    fn ($rater) => $rater->applyStats($stats))
                 ->queue();
             $count++;
         }
+
         return $count;
     }
 
@@ -142,6 +145,7 @@ class Rater
             $this->book['rate'] = $this->book['likes_count']; // Пока есть только лайки
             $this->set('rate');
         };
+
         return $this;
     }
 
@@ -151,13 +155,14 @@ class Rater
             $this->book['read_count'] = $this->book->ebook->chapters()->withReadTrackersCount()->get()->sum('completed_trackers');
             $this->set('read_count');
         };
+
         return $this;
     }
 
     public function likes(): static
     {
         $this->builder->{$this->scopeOption(StatsEnum::LIKES)}();
-        $this->closures[StatsEnum::LIKES->value] = fn() => $this->set('likes_count');
+        $this->closures[StatsEnum::LIKES->value] = fn () => $this->set('likes_count');
 
         return $this;
     }
@@ -165,7 +170,7 @@ class Rater
     public function libs(): static
     {
         $this->builder->{$this->scopeOption(StatsEnum::LIBS)}();
-        $this->closures[StatsEnum::LIBS->value] = fn() => $this->set('in_lib_count');
+        $this->closures[StatsEnum::LIBS->value] = fn () => $this->set('in_lib_count');
 
         return $this;
     }
@@ -173,10 +178,8 @@ class Rater
     public function comments(): static
     {
         $this->builder->{$this->scopeOption(StatsEnum::COMMENTS)}();
-        $this->closures[StatsEnum::COMMENTS->value] = fn() => $this->set('comments_count');
+        $this->closures[StatsEnum::COMMENTS->value] = fn () => $this->set('comments_count');
 
         return $this;
     }
-
-
 }

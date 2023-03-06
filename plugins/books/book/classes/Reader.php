@@ -34,7 +34,7 @@ class Reader
     }
 
     /**
-     * @param int|null $page
+     * @param  int|null  $page
      */
     public function setPage(?int $page): void
     {
@@ -44,16 +44,17 @@ class Reader
 
     public function track(?int $ms, int $paginator_id)
     {
-        if (!$this->user) {
+        if (! $this->user) {
             return null;
         }
 
-        $sec = (int)floor(($ms ?? 0) / 1000);
+        $sec = (int) floor(($ms ?? 0) / 1000);
         if ($paginator = $this->chapter?->pagination()->find($paginator_id)) {
             if ($tracker = $paginator->trackByUser($this->user)) {
                 $tracker->update(['time' => $tracker->time + $sec, 'length' => $paginator->length, 'progress' => 100]);
                 Event::fire('books.paginator.tracked');
                 $paginator->chapter->progress($this->user);
+
                 return $tracker;
             }
         }
@@ -64,9 +65,9 @@ class Reader
         return [
             'book' => $this->book->newQuery()->defaultEager()->find($this->book->id),
             'pagination' => [
-                'prev' => !!($this->prevPage() ?? $this->prevChapter()),
+                'prev' => (bool) ($this->prevPage() ?? $this->prevChapter()),
                 'links' => $this->chapter->service()->getPaginationLinks($this->page),
-                'next' => !!($this->nextPage() ?? $this->nextChapter()),
+                'next' => (bool) ($this->nextPage() ?? $this->nextChapter()),
             ],
             'chapters' => $this->chapters,
             'reader' => [

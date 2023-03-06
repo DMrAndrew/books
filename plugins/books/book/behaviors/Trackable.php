@@ -20,18 +20,16 @@ class Trackable extends ExtensionBase
     public function trackByUser(User $user): Tracker
     {
         return $this->model->trackers()->firstOrCreate(['user_id' => $user->id]);
-
     }
 
     public function scopeCountUserTrackers(Builder $builder, User $user): Builder
     {
-        return $builder->withCount(['trackers' => fn($i) => $i->user($user)]);
+        return $builder->withCount(['trackers' => fn ($i) => $i->user($user)]);
     }
-
 
     public function computeProgress(?User $user = null)
     {
-        if (!$this->model->trackerChildRelation || !$this->model->hasRelation($this->model->trackerChildRelation)) {
+        if (! $this->model->trackerChildRelation || ! $this->model->hasRelation($this->model->trackerChildRelation)) {
             return false;
         }
 
@@ -40,13 +38,13 @@ class Trackable extends ExtensionBase
             ->with('trackers')->get()
             ->pluck('trackers')
             ->flatten(1)
-            ->filter(fn($i) => !$user || $i['user_id'] === $user->id)
+            ->filter(fn ($i) => ! $user || $i['user_id'] === $user->id)
             ->groupBy('user_id')
             ->map(function ($trackers, $user_id) {
                 $user = User::find($user_id);
                 $tracker = $this->model->trackByUser($user);
 
-                $progress = (int)ceil(
+                $progress = (int) ceil(
                     $trackers->pluck('progress') //прогресс по всем трекнутым
                     ->pad($this->model->{$this->model->trackerChildRelation}()->count(), 0)// добиваем до общего кол-ва
                     ->avg() // profit
@@ -55,9 +53,8 @@ class Trackable extends ExtensionBase
                 $tracker->update([
                     'length' => $trackers->sum('length'),
                     'time' => $trackers->sum('time'),
-                    'progress' => $progress
+                    'progress' => $progress,
                 ]);
-
 
                 //когда пользователь открыл книгу и начал читать (от 3-х страниц) добавляем в раздел "читаю сейчас" если книга в библиотеке и в разделе "Хочу прочесть"
                 if ($this->model instanceof Edition) {
@@ -67,7 +64,7 @@ class Trackable extends ExtensionBase
                         $trackers_count = $this->model
                             ->chapters()
                             ->select('id')
-                            ->with(['pagination' => fn($p) => $p->select(['id', 'chapter_id'])->countUserTrackers($user)])
+                            ->with(['pagination' => fn ($p) => $p->select(['id', 'chapter_id'])->countUserTrackers($user)])
                             ->get()->pluck('pagination')
                             ->flatten(1)
                             ->pluck('trackers_count')->sum();
@@ -78,7 +75,6 @@ class Trackable extends ExtensionBase
                 }
 
                 return $progress;
-
             });
     }
 }

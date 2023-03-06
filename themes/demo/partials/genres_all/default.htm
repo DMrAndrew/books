@@ -13,10 +13,10 @@
                     <div class="book-genres-item__header">
                         <div class="book-genres-item__title ui-text--bold">
 
-                                <span class="ui-text-head--3">
-                                                                {{parent.name}}
+                            <a href="/listing?genre={{parent.id}}" class="ui-text-head--3">
+                                {{parent.name}}
 
-                            </span>
+                            </a>
 
                             <span>{{parent.children.count()|default('')}}</span>
 
