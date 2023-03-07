@@ -45,7 +45,7 @@ class ListingFilter
         $this->include($this->fromPost(Tag::class, $query['tag'] ?? null));
         $this->include($this->fromPost(Genre::class, $query['genre'] ?? null));
         $this->type = ($query['type'] ?? null) ? EditionsEnums::tryFrom($query['type']) : null;
-        info($this->getFilters());
+        info($query);
     }
 
     public function save(): void
