@@ -26,14 +26,14 @@ class ListingFilter
     public function __construct(protected ?string $session_key = null)
     {
         $this->filters = collect();
-        if (! $this->getSessionKey()) {
+        if (!$this->getSessionKey()) {
             $this->fromQuery();
         } else {
             $this->type = post('type') ? EditionsEnums::tryFrom(post('type')) : null;
             $this->complete = post('complete_only') == 'on';
             $this->free = post('free') == 'on';
-            $this->max_price = (int) post('max_price') ?: null;
-            $this->min_price = (int) post('min_price') ?: null;
+            $this->max_price = (int)post('max_price') ?: null;
+            $this->min_price = (int)post('min_price') ?: null;
             $this->filters = collect(Cache::get($this->getSessionKey()) ?? []);
         }
         info($this->getSessionKey());
@@ -45,13 +45,13 @@ class ListingFilter
         $this->include($this->fromPost(Tag::class, $query['tag'] ?? null));
         $this->include($this->fromPost(Genre::class, $query['genre'] ?? null));
         $this->type = ($query['type'] ?? null) ? EditionsEnums::tryFrom($query['type']) : null;
+        info($this->getFilters());
     }
 
     public function save(): void
     {
         if ($this->getSessionKey()) {
             Cache::put($this->getSessionKey(), $this->filters->toArray());
-            info($this->getFilters());
         }
     }
 
@@ -65,7 +65,7 @@ class ListingFilter
 
     public function toBind(): array
     {
-        return array_merge((array) $this, [
+        return array_merge((array)$this, [
             'include_genres' => $this->includes(Genre::class),
             'exclude_genres' => $this->excludes(Genre::class),
             'include_tags' => $this->includes(Tag::class),
@@ -85,7 +85,7 @@ class ListingFilter
 
     public function push(?Model $model, string $type): void
     {
-        if (! $model) {
+        if (!$model) {
             return;
         }
         $model['class'] = get_class($model);
