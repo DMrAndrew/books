@@ -1,4 +1,6 @@
-<?php namespace Books\Catalog\Components;
+<?php
+
+namespace Books\Catalog\Components;
 
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Models\Book;
@@ -16,13 +18,14 @@ use Illuminate\Support\Collection;
 class Listing extends ComponentBase
 {
     protected ListingFilter $filter;
+
     protected int $trackInputTime = 620;
 
     public function componentDetails()
     {
         return [
             'name' => 'Listing Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -48,117 +51,125 @@ class Listing extends ComponentBase
     public function onInitQueryString()
     {
         $this->filter->fromQuery();
+        $this->filter->save();
     }
 
     public function getBind()
     {
         return array_merge($this->filter->toBind(), [
             'books' => $this->books(),
-            'trackInputTime' => $this->trackInputTime
+            'trackInputTime' => $this->trackInputTime,
         ]);
-
     }
 
     public function onSearchIncludeGenre()
     {
-        return $this->renderOptions($this->byTerm(Genre::class), ['handler' => $this->alias . '::onAddIncludeGenre']);
-
+        return $this->renderOptions($this->byTerm(Genre::class), ['handler' => $this->alias.'::onAddIncludeGenre']);
     }
 
     public function onSearchExcludeGenre()
     {
-        return $this->renderOptions($this->byTerm(Genre::class), ['handler' => $this->alias . '::onAddExcludeGenre']);
-
+        return $this->renderOptions($this->byTerm(Genre::class), ['handler' => $this->alias.'::onAddExcludeGenre']);
     }
 
     public function onSearchIncludeTag()
     {
-        return $this->renderOptions($this->byTerm(Tag::class), ['handler' => $this->alias . '::onAddIncludeTag']);
-
+        return $this->renderOptions($this->byTerm(Tag::class), ['handler' => $this->alias.'::onAddIncludeTag']);
     }
 
     public function onSearchExcludeTag()
     {
-        return $this->renderOptions($this->byTerm(Tag::class), ['handler' => $this->alias . '::onAddExcludeTag']);
+        return $this->renderOptions($this->byTerm(Tag::class), ['handler' => $this->alias.'::onAddExcludeTag']);
     }
 
     public function onAddIncludeTag()
     {
         $this->filter->include($this->filter->fromPost(Tag::class));
+
         return $this->onSearch();
     }
 
     public function onAddExcludeTag()
     {
         $this->filter->exclude($this->filter->fromPost(Tag::class));
+
         return $this->onSearch();
     }
 
     public function onAddIncludeGenre()
     {
         $this->filter->include($this->filter->fromPost(Genre::class));
+
         return $this->onSearch();
     }
-
 
     public function onAddExcludeGenre()
     {
         $this->filter->exclude($this->filter->fromPost(Genre::class));
+
         return $this->onSearch();
     }
 
     public function onRemoveIncludeGenre()
     {
         $this->filter->removeInclude($this->filter->fromPost(Genre::class));
+
         return $this->onSearch();
     }
 
     public function onRemoveExcludeGenre()
     {
         $this->filter->removeExclude($this->filter->fromPost(Genre::class));
+
         return $this->onSearch();
     }
 
     public function onRemoveIncludeTag()
     {
         $this->filter->removeInclude($this->filter->fromPost(Tag::class));
+
         return $this->onSearch();
     }
 
     public function onRemoveExcludeTag()
     {
         $this->filter->removeExclude($this->filter->fromPost(Tag::class));
+
         return $this->onSearch();
     }
 
     public function onRemoveAllIncludeGenre()
     {
         $this->filter->removeAllInclude(Genre::class);
+
         return $this->onSearch();
     }
 
     public function onRemoveAllExcludeGenre()
     {
         $this->filter->removeAllExclude(Genre::class);
+
         return $this->onSearch();
     }
 
     public function onRemoveAllExcludeTag()
     {
         $this->filter->removeAllExclude(Tag::class);
+
         return $this->onSearch();
     }
 
     public function onRemoveAllIncludeTag()
     {
         $this->filter->removeAllInclude(Tag::class);
+
         return $this->onSearch();
     }
-
 
     public function byTerm(string $class)
     {
         $term = post('term');
+
         return $class::nameLike($term)
             ->public()
             ->asOption()
@@ -171,7 +182,7 @@ class Listing extends ComponentBase
         return [
             '#listing-form' => $this->renderPartial('@listing-form-view', [
                 'bind' => $this->getBind(),
-            ])
+            ]),
         ];
     }
 
@@ -182,11 +193,11 @@ class Listing extends ComponentBase
             ->hasGenres($this->filter->includes(Genre::class)->pluck('id')->toArray())
             ->hasTags($this->filter->excludes(Tag::class)->pluck('id')->toArray(), 'exclude')
             ->hasTags($this->filter->includes(Tag::class)->pluck('id')->toArray())
-            ->when($this->filter->complete, fn($q) => $q->complete())
-            ->when(!$this->filter->free && $this->filter->min_price, fn($q) => $q->minPrice($this->filter->min_price))
-            ->when(!$this->filter->free && $this->filter->max_price, fn($q) => $q->maxPrice($this->filter->max_price))
-            ->when($this->filter->free, fn($q) => $q->free())
-            ->when($this->filter->type, fn($q) => $q->type($this->filter->type))
+            ->when($this->filter->complete, fn ($q) => $q->complete())
+            ->when(! $this->filter->free && $this->filter->min_price, fn ($q) => $q->minPrice($this->filter->min_price))
+            ->when(! $this->filter->free && $this->filter->max_price, fn ($q) => $q->maxPrice($this->filter->max_price))
+            ->when($this->filter->free, fn ($q) => $q->free())
+            ->when($this->filter->type, fn ($q) => $q->type($this->filter->type))
             ->defaultEager()
             ->get();
     }
@@ -195,10 +206,10 @@ class Listing extends ComponentBase
     {
         return $options->map(function ($item) use ($itemOptions) {
             return $itemOptions + [
-                    'id' => $item['id'],
-                    'label' => $item['name'],
-                    'htm' => $this->renderPartial('select/option', ['label' => $item['name']])
-                ];
+                'id' => $item['id'],
+                'label' => $item['name'],
+                'htm' => $this->renderPartial('select/option', ['label' => $item['name']]),
+            ];
         })->toArray();
     }
 

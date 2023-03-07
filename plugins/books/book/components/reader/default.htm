@@ -18,7 +18,11 @@
         <!-- Тело страницы -->
         <div class="ui-grid-container ui-grid-gap">
             <div class="ui-col-sm-8 ui-col-md-9">
-                <h1 class="reader__title ui-text-head--2 ui-text--bold">{{book.title}}</h1>
+                <a href="/book-card/{{book.id}}">
+                <h1 class="reader__title ui-text-head--2 ui-text--bold">
+                    {{book.title}}
+                </h1>
+                </a>
                 <div class="reader__header reader-header">
 
                     <div class="reader-header__dropdown">

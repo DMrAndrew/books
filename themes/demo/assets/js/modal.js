@@ -6,10 +6,7 @@ function openModal(container, buttonOpenModal) {
     if (!buttonOpen || !buttonOpen || !buttonClose) return
 
     buttonOpen.addEventListener('click', e => {
-        e.preventDefault();
-
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        openModalFn(e, modal)
     })
 
     modal.addEventListener('click', e => {
@@ -21,8 +18,19 @@ function openModal(container, buttonOpenModal) {
     })
 
     buttonClose.addEventListener('click', () => {
-        modal.classList.remove('active');
-        document.body.style.overflow = 'initial';
+        closeModalFn(modal)
     })
+}
+
+function openModalFn(e, modal) {
+    e.preventDefault();
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModalFn(modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = 'initial';
 }
 

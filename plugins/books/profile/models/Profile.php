@@ -10,7 +10,6 @@ use Books\Profile\Traits\Subscribable;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
 use October\Rain\Database\Builder;
@@ -44,6 +43,7 @@ class Profile extends Model
     use HasFactory;
 
     public static string $factory = ProfileFactory::class;
+
     /**
      * @var string table associated with the model
      */
@@ -133,7 +133,7 @@ class Profile extends Model
 
     public $hasMany = [
         'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id', 'scope' => 'sortByAuthorOrder'],
-        'settings' => [Settings::class,'key' => 'user_id','otherKey' => 'user_id']
+        'settings' => [Settings::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
     ];
 
     public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
@@ -155,7 +155,7 @@ class Profile extends Model
     public $morphOne = [];
 
     public $morphMany = [
-        'revision_history' => [Revision::class, 'name' => 'revisionable']
+        'revision_history' => [Revision::class, 'name' => 'revisionable'],
     ];
 
     public $attachOne = [
@@ -170,20 +170,20 @@ class Profile extends Model
         return new ProfileService($this);
     }
 
-
     public function isCommentAllowed(?Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
-        if (!$profile) {
+        if (! $profile) {
             return false;
         }
         if ($profile->is($this)) {
             return true;
         }
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_FIT_ACCOUNT_INDEX_PAGE)->first();
-        if (!$setting) {
+        if (! $setting) {
             return false;
         }
+
         return match (PrivacySettingsEnum::tryFrom($setting->value)) {
             PrivacySettingsEnum::ALL => true,
             PrivacySettingsEnum::SUBSCRIBERS => $profile->hasSubscription($this),
@@ -193,12 +193,12 @@ class Profile extends Model
 
     public function scopeBooksExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('books', fn($book) => $book->public());
+        return $builder->whereHas('books', fn ($book) => $book->public());
     }
 
     public function scopeBooksCount(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->withCount(['books' => fn($book) => $book->public()]);
+        return $builder->withCount(['books' => fn ($book) => $book->public()]);
     }
 
     public function getIsCurrentAttribute(): bool
@@ -218,7 +218,7 @@ class Profile extends Model
 
     public function authorshipsAs(?bool $is_owner): HasMany
     {
-        return $this->authorships()->when(!is_null($is_owner), fn(Builder $builder) => $is_owner ? $builder->owner() : $builder->notOwner());
+        return $this->authorships()->when(! is_null($is_owner), fn (Builder $builder) => $is_owner ? $builder->owner() : $builder->notOwner());
     }
 
     public function getFirstLatterAttribute(): string
@@ -253,12 +253,12 @@ class Profile extends Model
 
     public function isEmpty(): bool
     {
-        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => (bool)$i);
+        return ! collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn ($i) => (bool) $i);
     }
 
     public function isContactsEmpty(): bool
     {
-        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn($i) => (bool)$i);
+        return ! collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn ($i) => (bool) $i);
     }
 
     public function booksSortedByAuthorOrder(): BelongsToMany
@@ -278,13 +278,11 @@ class Profile extends Model
 
     protected function beforeCreate()
     {
-        if ($this->user->profiles()->count() > 3) {
+        if ($this->user->profiles()->count() > 4) {
             throw new ValidationException(['username' => 'Превышен лимит профилей.']);
         }
         if ($this->isUsernameExists($this->username)) {
             throw new ValidationException(['username' => 'Псевдоним уже занят.']);
         }
     }
-
-
 }

@@ -74,14 +74,7 @@
                                     <div class="ui-dropdown" data-tippy-block>
 
                                         <div class="ui-dropdown-container">
-                                            {% if item.type.value == 4 and not lib.loved%}
-                                            <div class="ui-dropdown-item active" onclick="switchLib({
-                                            id:'{{lib.book.id}}',
-                                            action:'loved'
-                                        })">
-                                                <span>Добавить в любимые</span>
-                                            </div>
-                                            {% endif %}
+
 
                                             {% if item.type.value == 5 %}
                                             <div class="ui-dropdown-item active" onclick="switchLib({
@@ -92,51 +85,53 @@
                                             </div>
                                             {% endif %}
 
-                                            {% if item.type.value == 3 %}
-                                            <div class="ui-dropdown-item active" onclick="switchLib({
-                                            id:'{{lib.book.id}}',
-                                            action:'read'
-                                        })">
-                                                <span>Прочитано</span>
-                                            </div>
-                                            {% endif %}
 
-                                            {% if item.type.value == 3 %}
-                                            <div class="ui-dropdown-item active" onclick="switchLib({
+                                            <div class="ui-dropdown-item active">
+                                                <span>Добавить в</span>
+                                                <svg>
+                                                    <use
+                                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
+                                                </svg>
+                                                <div class="ui-dropdown-container">
+
+                                                    {% if item.type.value in [1,3,4,5] %}
+                                                    <div class="ui-dropdown-item active" onclick="switchLib({
                                             id:'{{lib.book.id}}',
                                             action:'interested'
                                         })">
-                                                <span>Хочу прочесть</span>
-                                            </div>
-                                            {% endif %}
+                                                        <span>Хочу прочесть</span>
+                                                    </div>
+                                                    {% endif %}
 
-<!--                                            <div class="ui-dropdown-item active">-->
-<!--                                                <span>Добавить в</span>-->
-<!--                                                <svg>-->
-<!--                                                    <use-->
-<!--                                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>-->
-<!--                                                </svg>-->
-<!--                                                <div class="ui-dropdown-container">-->
-<!--                                                    <div class="ui-dropdown-item active" onclick="switchLib({-->
-<!--                                            id:'{{lib.book.id}}',-->
-<!--                                            action:'interested'-->
-<!--                                        })">-->
-<!--                                                        <span>Хочу прочесть</span>-->
-<!--                                                    </div>-->
-<!--                                                    <div class="ui-dropdown-item active" onclick="switchLib({-->
-<!--                                            id:'{{lib.book.id}}',-->
-<!--                                            action:'reading'-->
-<!--                                        })">-->
-<!--                                                        <span>Читаю сейчас</span>-->
-<!--                                                    </div>-->
-<!--                                                    <div class="ui-dropdown-item active" onclick="switchLib({-->
-<!--                                            id:'{{lib.book.id}}',-->
-<!--                                            action:'read'-->
-<!--                                        })">-->
-<!--                                                        <span>Прочитано</span>-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
+                                                    {% if item.type.value in [1,2,4,5] %}
+                                                    <div class="ui-dropdown-item active" onclick="switchLib({
+                                            id:'{{lib.book.id}}',
+                                            action:'reading'
+                                        })">
+                                                        <span>Читаю сейчас</span>
+                                                    </div>
+                                                    {% endif %}
+
+                                                    {% if item.type.value in [1,2,3] %}
+                                                    <div class="ui-dropdown-item active" onclick="switchLib({
+                                            id:'{{lib.book.id}}',
+                                            action:'read'
+                                        })">
+                                                        <span>Прочитано</span>
+                                                    </div>
+                                                    {% endif %}
+
+                                                    {% if item.type.value in [1,2,3,4] %}
+                                                    <div class="ui-dropdown-item active" onclick="switchLib({
+                                            id:'{{lib.book.id}}',
+                                            action:'loved'
+                                        })">
+                                                        <span>Любимые</span>
+                                                    </div>
+                                                    {% endif %}
+
+                                                </div>
+                                            </div>
                                             <div class="ui-dropdown-separate"></div>
                                             <div class="ui-dropdown-item active" onclick="switchLib({
                                             id:'{{lib.book.id}}',
@@ -155,14 +150,14 @@
                                 <a href="/book-card/{{lib.book.id}}" class="book-mini-card__title">
                                     {{lib.book.title}}
                                 </a>
-                                {% if lib.type.value == 3 and lib.book.editions.first.progress %}
+                                {% if item.type.value == 3  %}
                                 <div class="book-mini-card__progress book-mini-card-progress">
                                     <div class="book-mini-card-progress__item-wrapper">
                                         <div class="book-mini-card-progress__line" {{
-                                        'style=width:'~lib.book.editions.first.progress~'%'}} >
+                                        'style=width:'~lib.book.editions.first.progress|default('0')~'%'}} >
                                     </div>
                                 </div>
-                                <div class="book-mini-card-progress__text">{{lib.book.editions.first.progress}} %</div>
+                                <div class="book-mini-card-progress__text">{{lib.book.editions.first.progress|default('0')}} %</div>
                             </div>
                             {% endif %}
                         </div>
@@ -209,19 +204,19 @@
         <div class="library-auth__wrap _indent-large">
             <div class="library-auth__wrap _indent-small ui-text-head--3 ui-text--bold">Для чего мне Библиотека?
             </div>
-            <div>Тут будет будет просто немного текста.</div>
+            <div>Тут будет просто немного текста.</div>
         </div>
         <div class="library-auth__wrap _indent-large">
             <div class="library-auth__wrap _indent-small ui-text-head--3 ui-text--bold">Как добавить книгу в мою
                 библиотеку
             </div>
-            <div>Тут будет будет просто немного текста.</div>
+            <div>Тут будет просто немного текста.</div>
         </div>
         <div class="library-auth__wrap _indent-large">
             <div class="library-auth__wrap _indent-small ui-text-head--3 ui-text--bold">Чем еще полезна
                 библиотека?
             </div>
-            <div>Тут будет будет просто немного текста.</div>
+            <div>Тут будет просто немного текста.</div>
         </div>
     </div>
     {% endif %}

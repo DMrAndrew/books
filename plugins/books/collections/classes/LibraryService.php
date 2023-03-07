@@ -12,6 +12,7 @@ use RainLab\User\Models\User;
 class LibraryService
 {
     use Conditionable;
+
     public function __construct(protected User $user, protected Book $book)
     {
     }
@@ -19,7 +20,7 @@ class LibraryService
     public function build(): HasMany
     {
         return $this->user->libs()
-            ->whereHasMorph('favorable', [Lib::class], fn(Builder $builder) => $builder->book($this->book));
+            ->whereHasMorph('favorable', [Lib::class], fn (Builder $builder) => $builder->book($this->book));
     }
 
     public function watched(): bool
@@ -44,11 +45,7 @@ class LibraryService
 
     public function loved(): bool
     {
-        $lib = $this->get();
-        if ($lib->type !== CollectionEnum::READ) {
-            return false;
-        }
-        return $lib->update(['loved' => 1]);
+        return $this->get()->update(['loved' => 1]);
     }
 
     public function unloved()
@@ -77,7 +74,6 @@ class LibraryService
     {
         return ($this->build()?->first() ?? $this->add())->favorable;
     }
-
 
     public function add()
     {

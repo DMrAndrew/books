@@ -6,7 +6,7 @@
             <div class="book-card-full__author-wrapper">
                 <div class="book-card-full__author-container tags-list">
                     {% for profile in book.profiles %}
-                    <a href="" class="book-card-full__author ui-link _violet">{{profile.username}}</a>
+                    <a href="/author-page/{{profile.id}}" class="book-card-full__author ui-link _violet">{{profile.username}}</a>
                     {% endfor %}
                 </div>
                 <a href="" class="ui-link _violet _icon book-card-full__author-support">
@@ -105,7 +105,7 @@
                 </div>
             </div>
         </div>
-      {% ajaxPartial 'bookCard::book-page' book=book %}
+        {% ajaxPartial 'bookCard::book-page' book=book %}
     </div>
 </div>
 
@@ -644,7 +644,7 @@
                 </div>
             </div>
 
-           {% component 'comments' %}
+            {% component 'comments' %}
         </div>
         <div class="ui-col-12 ui-col-sm-4 ui-col-md-3">
             <div class="advert _trash">

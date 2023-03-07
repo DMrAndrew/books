@@ -7,10 +7,3 @@
 <div class="personal-area__wrap _indent-medium"><span class="personal-area__wrap _color-gray">Не нравится: </span>
     {{ collect(unloved_genres).pluck('name').join(', ') }}
 </div>
-<button type="button" class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium"
-        data-modal="open-recommend">
-    Изменить
-</button>
-
-{% partial 'modals/recommend' nestedGenres=nestedGenres %}
-

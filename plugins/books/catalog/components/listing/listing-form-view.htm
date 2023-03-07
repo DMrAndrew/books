@@ -104,13 +104,13 @@
                     <div class="ui-input">
                         <label class="ui-input-label ui-text--bold">Цена от</label>
                         <input data-request="listing::onSearch" data-track-input="{{bind.trackInputTime}}"
-                               class="ui-input-item _size-32" name="min_price" value="{{bind.min_price}}"
+                               class="ui-input-item _size-32" min="0" name="min_price" value="{{bind.min_price}}"
                                type="number">
                     </div>
                     <div class="ui-input">
                         <label class="ui-input-label ui-text--bold">Цена до</label>
                         <input data-request="listing::onSearch"
-                               data-track-input="{{bind.trackInputTime}}" class="ui-input-item _size-32"
+                               data-track-input="{{bind.trackInputTime}}" min="0" class="ui-input-item _size-32"
                                name="max_price" value="{{bind.max_price}}" type="number">
                     </div>
                 </div>

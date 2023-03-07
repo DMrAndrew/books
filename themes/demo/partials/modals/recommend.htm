@@ -1,7 +1,10 @@
 <div class="personal-area-settings-recommend ui-modal ui-modal-scrollable-body overlay" data-modal="recommend">
     <div class="ui-modal-container">
         <div class="buy-book-modal__container ui-modal-content">
-            {{form_ajax('onChangeGenres')}}
+            {{form_ajax('onChangeGenres',
+            {'data-request-flash':1,
+            'data-request-success' : 'closeModalFn( document.querySelector(`[data-modal="recommend"]`))'
+            })}}
             <div class="buy-book-modal__header ui-modal-header">
                 <div class="ui-text-head--2 ui-text--bold">Рекомендации</div>
                 <svg class="square-24" data-modal="close">
@@ -26,7 +29,7 @@
             </div>
 
             <div class="buy-book-modal__footer ui-modal-footer">
-                <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                <button data-attach-loading class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
                     <span class="ui-text--medium">Сохранить</span>
                 </button>
                 <button class="ui-button ui-button-size--32 ui-button-view--3 ui-button--full " type="reset">
@@ -41,4 +44,5 @@
     openModal('[data-modal="recommend"]', '[data-modal="open-recommend"]');
     document.body.style.overflow = 'initial';
     radioGroupTabs()
+
 </script>
