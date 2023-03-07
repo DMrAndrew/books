@@ -1,4 +1,4 @@
-function initDatepicker(container) {
+function initDatepicker(container, options) {
     $.datepicker.regional['ru'] = {
         closeText: "Закрыть",
         prevText: "Пред",
@@ -20,7 +20,11 @@ function initDatepicker(container) {
 
     $.datepicker.setDefaults($.datepicker.regional['ru']);
     $(container).datepicker({
-        changeMonth: true,
-        changeYear: true
+        ...options,
+        ...{
+
+            changeMonth: true,
+            changeYear: true
+        }
     });
 }

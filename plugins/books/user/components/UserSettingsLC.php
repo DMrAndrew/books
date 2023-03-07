@@ -1,5 +1,8 @@
-<?php namespace Books\User\Components;
+<?php
 
+namespace Books\User\Components;
+
+use AjaxException;
 use Books\User\Classes\UserService;
 use Cms\Classes\ComponentBase;
 use Country;
@@ -7,7 +10,7 @@ use Exception;
 use Flash;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
-use Redirect;
+use ValidationException;
 
 /**
  * UserSettingsLC Component
@@ -17,13 +20,14 @@ use Redirect;
 class UserSettingsLC extends ComponentBase
 {
     protected User $user;
+
     protected UserService $service;
 
     public function componentDetails()
     {
         return [
             'name' => 'UserSettingsLC Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -59,11 +63,16 @@ class UserSettingsLC extends ComponentBase
     {
         try {
             $this->service->update(post());
-            Flash::success('Данные успешно сохранены');
-            return Redirect::refresh();
-
+            Flash::success('Настройки успешно сохранены');
         } catch (Exception $ex) {
+            if ($ex instanceof ValidationException) {
+                throw $ex;
+            }
             Flash::error($ex->getMessage());
+            $this->vals();
+            throw new AjaxException([
+                '#common-form' => $this->renderPartial('@common'),
+            ]);
         }
     }
 

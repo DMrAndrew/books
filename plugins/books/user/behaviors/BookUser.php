@@ -2,15 +2,15 @@
 
 namespace Books\User\Behaviors;
 
+use Books\Book\Models\Cycle;
+use Books\Book\Models\Tag;
 use Books\Comments\Models\Comment;
 use Books\User\Classes\UserService;
-use Carbon\Carbon;
-use Books\Book\Models\Tag;
-use Books\Book\Models\Cycle;
-use RainLab\User\Models\User;
 use Books\User\Models\Settings;
+use Carbon\Carbon;
 use October\Rain\Extension\ExtensionBase;
-use Books\Profile\Classes\ProfileService;
+use RainLab\User\Models\User;
+use ValidationException;
 
 class BookUser extends ExtensionBase
 {
@@ -57,8 +57,9 @@ class BookUser extends ExtensionBase
 
     public function setBirthdayAttribute($value)
     {
-        if ($value && !$this->parent->birthday) {
+        if ($value && ! $this->parent->birthday) {
             $this->parent->attributes['birthday'] = Carbon::parse($value);
+            $this->parent->birthday->lessThan(Carbon::now()) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть больше текущего дня']);
         }
     }
 
@@ -79,11 +80,11 @@ class BookUser extends ExtensionBase
 
     public function scopeUsernameLike($q, $name)
     {
-        return $q->whereHas('profiles', fn($profile) => $profile->usernameLike($name));
+        return $q->whereHas('profiles', fn ($profile) => $profile->usernameLike($name));
     }
 
     public function scopeUsername($q, $name)
     {
-        return $q->whereHas('profiles', fn($profile) => $profile->username($name));
+        return $q->whereHas('profiles', fn ($profile) => $profile->username($name));
     }
 }

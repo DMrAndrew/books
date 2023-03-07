@@ -40,7 +40,7 @@ class ListingFilter
 
     public function fromQuery(): void
     {
-        $query = collect(request()->input())->only(['type', 'genre', 'tag']);
+        $query = collect(request()->query())->only(['type', 'genre', 'tag']);
         $this->include($this->fromPost(Tag::class, $query['tag'] ?? null));
         $this->include($this->fromPost(Genre::class, $query['genre'] ?? null));
         $this->type = ($query['type'] ?? null) ? EditionsEnums::tryFrom($query['type']) : null;

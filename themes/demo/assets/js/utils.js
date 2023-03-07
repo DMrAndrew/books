@@ -60,7 +60,6 @@ let initSortable = (container, handler) => {
     })
 };
 
-
 let tabElemInit = function () {
     const containerWidth = document.querySelector('.js-container')
     const wrapperWidth = document.querySelector('.js-wrapper')
@@ -75,7 +74,7 @@ let tabElemInit = function () {
     })
 }
 
-addEventListener('page:before-cache', function() {
+addEventListener('page:before-cache', function () {
     // console.log('page:before-cache')
     $('*[data-header-action]').removeClass('active')
     reInitSelect()
@@ -91,7 +90,7 @@ addEventListener('page:loaded', function () {
     iniSelect()
 });
 
-addEventListener('page:unload', function() {
+addEventListener('page:unload', function () {
     // console.log('page:unload')
     window.reader && window.reader.clear()
 })

@@ -76,7 +76,7 @@
                                         <div class="ui-dropdown-container">
 
 
-                                            {% if item.type.value == 5 %}
+                                            {% if lib.loved or  item.type.value == 5 %}
                                             <div class="ui-dropdown-item active" onclick="switchLib({
                                             id:'{{lib.book.id}}',
                                             action:'unloved'
@@ -121,7 +121,7 @@
                                                     </div>
                                                     {% endif %}
 
-                                                    {% if item.type.value in [1,2,3,4] %}
+                                                    {% if not lib.loved and  item.type.value in [1,2,3,4] %}
                                                     <div class="ui-dropdown-item active" onclick="switchLib({
                                             id:'{{lib.book.id}}',
                                             action:'loved'

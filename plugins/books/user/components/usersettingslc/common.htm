@@ -1,11 +1,13 @@
 {{ form_ajax('onUpdateCommon',{id:'common-form',class:'personal-area__wrapper',
-'data-request-flash':1}) }}
+'data-request-flash':1,'data-request-validate':'1'}) }}
 <div class="personal-area__wrap _indent-large ui-text--bold ui-text-head--2">Общие настройки</div>
 
 <div class="ui-grid-container ui-grid-gap">
     <div class="personal-area__wrap _indent-large ui-input ui-col-md-7">
         <label class="ui-input-label">Электронная почта</label>
         <input class="ui-input-item _size-32" type="email" name="email" value="{{user.email}}">
+        <div class="ui-select-hitn"></div>
+        <div class="ui-select-error" data-validate-for="email"></div>
     </div>
 
 </div>
@@ -19,6 +21,8 @@
                 type="text" id="datepicker"
                name="birthday"
                value="{{user.birthday ? carbon(user.birthday).format('d.m.Y') : ''}}">
+        <div class="ui-select-hitn"></div>
+        <div class="ui-select-error" data-validate-for="birthday"></div>
     </div>
     <label class="ui-checkbox">
         <input type="hidden" name="show_birthday" value="" hidden>

@@ -2,6 +2,7 @@
 
 namespace Books\Book\Components;
 
+use AjaxException;
 use ApplicationException;
 use Books\Book\Classes\EditionService;
 use Books\Book\Models\Edition;
@@ -19,6 +20,7 @@ use Request;
 class EBooker extends ComponentBase
 {
     protected Edition $ebook;
+
     protected EditionService $service;
 
     /**
@@ -38,11 +40,10 @@ class EBooker extends ComponentBase
             return $redirect;
         }
         $this->ebook = Auth::getUser()->profile->books()->find($this->property('book_id'))?->ebook;
-        if (!$this->ebook) {
+        if (! $this->ebook) {
             throw new ApplicationException('Электронное издание книги не найден.');
         }
         $this->service = new EditionService($this->ebook);
-
     }
 
     public function onRun()
@@ -76,7 +77,6 @@ class EBooker extends ComponentBase
     public function onUpdateSortOrder()
     {
         try {
-
             $this->service->changeChaptersOrder(post('sequence'));
 
             return [
@@ -84,9 +84,9 @@ class EBooker extends ComponentBase
             ];
         } catch (Exception $ex) {
             if (Request::ajax()) {
-                throw new \AjaxException([
+                Flash::error($ex->getMessage());
+                throw new AjaxException([
                     '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook->fresh()]),
-                    'error' => $ex->getMessage()
                 ]);
             } else {
                 Flash::error($ex->getMessage());
@@ -100,6 +100,7 @@ class EBooker extends ComponentBase
             $this->service->update(post());
             $this->ebook = $this->ebook->fresh();
             $this->vals();
+
             return [
                 '#about-header' => $this->renderPartial('book/about-header'),
                 '#ebooker-chapters' => $this->renderPartial('@chapters'),
