@@ -1,12 +1,14 @@
-<?php namespace Books\Comments\Models;
+<?php
+
+namespace Books\Comments\Models;
 
 use App\traits\ScopeUser;
-use Carbon\Carbon;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\SimpleTree;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
+use WordForm;
 
 /**
  * Comment Model
@@ -26,6 +28,7 @@ class Comment extends Model
     public $table = 'books_comments_comments';
 
     protected $fillable = ['parent_id', 'user_id', 'content'];
+
     /**
      * @var array rules for validation
      */
@@ -36,22 +39,27 @@ class Comment extends Model
     ];
 
     public $morphTo = [
-        'commentable' => []
+        'commentable' => [],
     ];
 
     protected static function booted()
     {
-        static::addGlobalScope('orderByDesc', fn($q) => $q->orderByDesc('id'));
-    }
-
-    protected function beforeDelete()
-    {
-        $this->children->each->delete();
+        static::addGlobalScope('orderByDesc', fn ($q) => $q->orderByDesc('id'));
     }
 
     public function isEdited(): bool
     {
         return $this->created_at->notEqualTo($this->updated_at);
+    }
+
+    public function addition(): string
+    {
+        return $this->isDeleted() ? 'Deleted' : ($this->isEdited() ? 'Edited' : '');
+    }
+
+    public function isDeleted(): bool
+    {
+        return (bool) $this->{$this->getDeletedAtColumn()};
     }
 
     public function scopeRoot(Builder $builder): Builder
@@ -64,4 +72,8 @@ class Comment extends Model
         return $this->updated_at->diffForHumans();
     }
 
+    public function replayWordForm(): WordForm
+    {
+        return new WordForm(...['ответ', 'ответа', 'ответов']);
+    }
 }

@@ -65,7 +65,7 @@ let tabElemInit = function () {
     const wrapperWidth = document.querySelector('.js-wrapper')
     const tabElem = document.querySelectorAll('.js-wrapper > .ui-tabs-link')
 
-    tabElem.forEach(item => {
+    tabElem.forEach(() => {
         if (wrapperWidth.clientWidth > containerWidth.clientWidth) {
 
             const lastTab = wrapperWidth.lastElementChild;
@@ -94,3 +94,4 @@ addEventListener('page:unload', function () {
     // console.log('page:unload')
     window.reader && window.reader.clear()
 })
+

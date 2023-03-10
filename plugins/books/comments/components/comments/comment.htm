@@ -1,4 +1,4 @@
-<div class="comments__wrapper _indent comments-comment">
+<div class="comments__wrapper _indent comments-comment" id="comment_container_{{comment.id}}">
     <div class="comments-comment__avatar square-40">
         {% if comment.profile.avatar %}
         <img class="square-40" src="{{comment.profile.avatar.getThumb(40,40)}}" alt="avatar">
@@ -11,26 +11,32 @@
             <div class="comments-comment__author ui-text--bold">{{ comment.profile.getAttribute('username') }}</div>
 
             <div class="comments-comment__addition">
-                <span>{{comment.isEdited() ? 'edited ':''}} {{comment.dateFormated()}}</span>
+                <span>{{comment.addition()}} {{comment.dateFormated()}}</span>
                 {% if owner and owner.id == comment.profile.id %}
                 <a href="/author-page/{{comment.profile.id}}" class="ui-link _violet">Автор</a>
                 {% endif %}
-                {% if user and user.profile.id == comment.profile.id %}
+                {% if not comment.isDeleted() and user and user.profile.id == comment.profile.id %}
                 <span class="cursor-pointer" onclick="toggleTextArea('#comment_{{ comment.id }}')">Ред.</span>
                 {% endif %}
             </div>
-
+            {% if comment.deleted_at %}
+            <div class="comments-comment__text deleted">Комментарий удалён</div>
+            {% else %}
             <div id="comment_{{ comment.id }}" class="comment-js-form">
                 <div class="comments-comment__text">
                     {{comment.content|raw}}
                 </div>
                 {% partial '@textarea' item=comment cancel='#comment_'~comment.id %}
             </div>
+            {% endif %}
 
             {% if user %}
             <div class="comments-comment__action">
                 <button onclick="toggleTextArea('#replay_{{comment.id}}')">Ответить</button>
-                {% if user and user.profile.id == comment.profile.id or owner and user and user.profile.id == owner.id %}
+                {% if not comment.isDeleted()
+                and( user and user.profile.id == comment.profile.id
+                or owner and user and user.profile.id == owner.id)
+                %}
                 <div class="comments-comment__action-wrapper" data-tippy-continer data-tippy-offset="[0, 0]">
                     <svg class="square-16" data-tippy-init>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
@@ -39,7 +45,7 @@
                         <div class="ui-dropdown-container">
 
                             <div class="ui-dropdown-item active"
-                                 onclick="oc.ajax('onRemove',{data:{id:'{{comment.id}}'}})">
+                                 onclick="oc.ajax('onRemove',{data:{id:'{{comment.id}}',...getUnCollapsed()}})">
                                 <span>Удалить</span>
                             </div>
                         </div>
@@ -53,16 +59,29 @@
             {% endif %}
         </div>
         {% if not comment.parent_id %}
-        <div class="comments-comment__sub">
+
+        <div class="comments-comment__sub {{ comment.id in opened ? '' : 'collapsed'}} "
+             data-collapse-more-id="{{comment.id}}">
             {% partial '@list' comments=comment.children %}
         </div>
+
+        {% set child_count = comment.getChildCount() %}
+        {% set more_count = max(0,child_count - 5) %}
+        {% if more_count %}
+        {% if comment.id in opened %}
+
+        {% else %}
+        <div class="comments-comment__more" data-collapse-more>
+            <a class="ui-link _violet cursor-pointer">Ещё {{ more_count }}
+                {{comment.replayWordForm().getCorrectSuffix(more_count) }}</a>
+        </div>
+
         {% endif %}
-<!--        <div class="comments-comment__more">-->
-<!--            <a class="ui-link _violet" href="#">Еще 20 ответов</a>-->
-<!--        </div>-->
+        {% endif %}
+        {% endif %}
     </div>
 </div>
 
 {% if comment.parent_id %}
-    {% partial '@list' comments=comment.children %}
+{% partial '@list' comments=comment.children %}
 {% endif %}

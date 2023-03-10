@@ -16,20 +16,22 @@
         </div>
 
         <div class="comments__container">
-            {% partial '@list' comments=paginator.items()  %}
+            {% partial '@list' comments=paginator.items() %}
         </div>
 
         <nav class="comments__pagination ui-pagination">
             <ul class="ui-pagination-list">
                 <li><a class="ui-pagination-item" href="">Назад</a></li>
                 {% for link in paginator.getLinks() %}
-                <li><a class="ui-pagination-item cursor-pointer {{link.active ? 'active':''}}"
-                data-request="{{__SELF__}}::onPage"
-                       data-request-data="page:{{link.label}}"
-                       data-request-complete="$('.comments')[0].scrollIntoView()"
-                >
-                    {{link.label}}
-                </a></li>
+                <li>
+                    <a class="ui-pagination-item cursor-pointer {{ link.active ? 'active' : '' }} "
+                       data-request="{{__SELF__}}::onPage"
+                       data-request-data="page:{{ link.label }}"
+                       data-request-complete=" $('.comments')[0].scrollIntoView() "
+                    >
+                        {{link.label}}
+                    </a>
+                </li>
                 {% endfor %}
                 <li><a class="ui-pagination-item" href="">Вперед</a></li>
             </ul>
