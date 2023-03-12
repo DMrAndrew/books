@@ -5,6 +5,7 @@ namespace Books\Book\Components;
 use Books\Book\Classes\StatisticService;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
+use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -24,6 +25,10 @@ class ReadStatistic extends ComponentBase
 
     protected StatisticService $service;
 
+    protected Carbon $from;
+
+    protected Carbon $to;
+
     public function componentDetails()
     {
         return [
@@ -42,11 +47,41 @@ class ReadStatistic extends ComponentBase
 
     public function init()
     {
-//        $this->service = new StatisticService();
-//        $this->user = Auth::getUser();
-//        $books = $this->user->profile->books;
-//        $this->page['books'] = $books;
-//        $this->page['statistic'] = $this->service->get(...$books);
-//        $this->page['dates'] = $this->service->getDates();
+        if ($r = redirectIfUnauthorized()) {
+            return $r;
+        }
+        $dates = explode('-', post('dates'));
+        if (isset($dates[0]) && isset($dates[1])) {
+            $this->from = Carbon::parse($dates[0]);
+            $this->to = Carbon::parse($dates[1]);
+        } else {
+            $this->from = $this->to = today();
+        }
+        $this->service = new StatisticService($this->from, $this->to);
+
+        $this->user = Auth::getUser();
+    }
+
+    public function onRender()
+    {
+        $this->prepareVals();
+    }
+
+    public function prepareVals()
+    {
+        $this->page['from'] = $this->from->format('d.m.Y');
+        $this->page['to'] = $this->to->format('d.m.Y');
+        $this->page['books'] = $this->user->profile->books()->get();
+        $this->page['current_book'] = post('book_id');
+        $this->page['statistic'] = $this->service->get(...array_wrap($this->user->profile->books()->find(post('book_id')) ?: []));
+    }
+
+    public function onCount()
+    {
+        $this->prepareVals();
+
+        return [
+            '#statistic_spawn' => $this->renderPartial('@default'),
+        ];
     }
 }

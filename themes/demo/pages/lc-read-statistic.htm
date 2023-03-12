@@ -8,7 +8,7 @@ redirect = "/"
 [readStatistic]
 ==
 {% partial 'profile/personal_area_header' %}
-<script type="module" src="{{ 'assets/js/vue/read-statistic.js'|theme }}"></script>
+<!--<script type="module" src="{{ 'assets/js/vue/read-statistic.js'|theme }}"></script>-->
 <div class="personal-area">
     <div class="ui-container-fluid">
         <div class="personal-area__container ui-grid-container ui-grid-gap">
@@ -20,7 +20,9 @@ redirect = "/"
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
                     </svg>
                 </div>
-                {% component 'readStatistic' %}
+                <div id="statistic_spawn">
+                    {% component 'readStatistic' %}
+                </div>
             </div>
         </div>
     </div>

@@ -72,7 +72,6 @@ class Tracker extends Model
         return $builder->where('progress', '<=', $progress);
     }
 
-
     public function scopeType(Builder $builder, string $class): Builder
     {
         return $builder->where('trackable_type', '=', $class);
