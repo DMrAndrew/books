@@ -5,12 +5,15 @@ namespace Books\Book\Classes;
 use Books\Book\Models\Book;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use October\Rain\Database\Model;
 
 class StatisticService
 {
     protected string $format = 'd.m.y';
 
     protected CarbonPeriod $period;
+
+    protected string $class = Book::class;
 
     public function __construct(protected Carbon $from, protected ?Carbon $to = null)
     {
@@ -28,6 +31,14 @@ class StatisticService
     }
 
     /**
+     * @param  string  $class
+     */
+    public function setClass(string $class): void
+    {
+        $this->class = $class;
+    }
+
+    /**
      * @return CarbonPeriod
      */
     public function getPeriod(): CarbonPeriod
@@ -35,21 +46,25 @@ class StatisticService
         return $this->period;
     }
 
-    public function get(Book ...$needle)
+    public function get(Model ...$needle)
     {
         $dates = collect($this->period->toArray());
-        $books = Book::query()
+        $books = $this->class::query()
             ->when(count($needle), fn ($q) => $q->whereIn('id', collect($needle)->pluck('id')))
-            ->with('paginationTrackers')
+            ->with(['trackers' => fn ($trackers) => $trackers->withoutGlobalScope(new ScopeToday())])
             ->get();
 
-        $books->each(fn ($book) => $book->trackers = $book->paginationTrackers->groupBy(fn ($i) => $i->created_at->format($this->format)));
+        $books->map(function ($book) {
+            $book->tracks = $book->trackers->groupBy(fn ($i) => $i->created_at->format($this->format));
+
+            return $book;
+        });
 
         $common = $dates->map(function ($date) use ($books) {
             $key = $date->format($this->format);
             $filtered = $books
-                ->filter(fn ($i) => $i->trackers->has($key))
-                ->each(fn ($book) => $book['count'] = $book->trackers->get($key)->count() ?? 0);
+                ->filter(fn ($i) => $i->tracks->has($key))
+                ->each(fn ($book) => $book['count'] = $book->tracks->get($key)->count() ?? 0);
 
             return [
                 'date' => $this->format === 'd.m.y' ? $date->format('d.m') : $key,
@@ -66,7 +81,7 @@ class StatisticService
 
                     return [
                         'date' => $date->format($this->format),
-                        'count' => $book->trackers->get($key)?->count() ?? 0,
+                        'count' => $book->tracks->get($key)?->count() ?? 0,
                     ];
                 }),
             ];
@@ -82,14 +97,5 @@ class StatisticService
             'graph' => $graph,
             'byBooks' => $byBooks,
         ];
-
-        $books->map(function ($book) use ($dates) {
-            return [
-                'title' => $book->title,
-                'dates' => $dates->map(function ($date) {
-                    return ['date' => $date->format()];
-                }),
-            ];
-        });
     }
 }

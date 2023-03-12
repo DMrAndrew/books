@@ -43,6 +43,7 @@ use System\Models\File;
  * @property ?Chapter next
  *
  * @method MorphOne content
+ *
  * @property  Content content
  */
 class Chapter extends Model
@@ -62,6 +63,7 @@ class Chapter extends Model
      * @var array guarded attributes aren't mass assignable
      */
     protected $guarded = ['*'];
+
     protected $purgeable = ['new_content'];
 
     public string $trackerChildRelation = 'pagination';
@@ -103,7 +105,6 @@ class Chapter extends Model
      */
     protected $jsonable = [];
 
-
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
      */
@@ -126,6 +127,7 @@ class Chapter extends Model
     public $hasMany = [
         'pagination' => [Pagination::class, 'key' => 'chapter_id', 'otherKey' => 'id'],
     ];
+
     public $belongsTo = [
         'edition' => [Edition::class, 'key' => 'edition_id', 'otherKey' => 'id'],
         'next' => [Chapter::class, 'key' => 'next_id', 'otherKey' => 'id'],
@@ -159,7 +161,6 @@ class Chapter extends Model
             [(new Pagination())->trackers()]);
     }
 
-
     public function paginateContent()
     {
         Queue::push(JobPaginate::class, ['chapter_id' => $this->id]);
@@ -172,9 +173,8 @@ class Chapter extends Model
 
     public function scopeWithReadTrackersCount(Builder $builder): Builder
     {
-        return $builder->withCount(['trackers as completed_trackers' => fn($trackers) => $trackers->withoutTodayScope()->completed()]);
+        return $builder->withCount(['trackers as completed_trackers' => fn ($trackers) => $trackers->withoutTodayScope()->completed()]);
     }
-
 
     public function scopePublished(Builder $query, bool $until_now = true)
     {
@@ -193,10 +193,9 @@ class Chapter extends Model
 
     public function lengthRecount()
     {
-        $this->length = (int)$this->pagination()->sum('length') ?? 0;
+        $this->length = (int) $this->pagination()->sum('length') ?? 0;
         $this->save();
     }
-
 
     public function setNeighbours()
     {
@@ -209,7 +208,6 @@ class Chapter extends Model
         $this->update([
             'prev_id' => $this->edition->chapters()->sortOrder($this->{$this->getSortOrderColumn()} - 1)?->first()?->id,
         ]);
-
     }
 
     public function setNext()
@@ -228,5 +226,4 @@ class Chapter extends Model
     {
         return $this->deferredContent ?? $this->content;
     }
-
 }

@@ -50,7 +50,7 @@ class ReadStatistic extends ComponentBase
         if ($r = redirectIfUnauthorized()) {
             return $r;
         }
-        $dates = explode('-', post('dates'));
+        $dates = explode('-', request()->query('dates') ?? post('dates'));
         if (isset($dates[0]) && isset($dates[1])) {
             $this->from = Carbon::parse($dates[0]);
             $this->to = Carbon::parse($dates[1]);
@@ -59,7 +59,11 @@ class ReadStatistic extends ComponentBase
         }
         $this->service = new StatisticService($this->from, $this->to);
 
+        if ($this->param('book_id')) {
+            $this->service->setClass(Chapter::class);
+        }
         $this->user = Auth::getUser();
+        $this->book = $this->user->profile->books()->find($this->param('book_id') ?? post('book_id'));
     }
 
     public function onRender()
@@ -67,13 +71,25 @@ class ReadStatistic extends ComponentBase
         $this->prepareVals();
     }
 
+    public function isParts()
+    {
+        return (bool) $this->param('book_id');
+    }
+
     public function prepareVals()
     {
+        $item = [$this->book];
+        if ($this->isParts()) {
+            $this->service->setClass(Chapter::class);
+            $item = $this->book->chapters()->get();
+            $this->page->meta_title = $this->page->meta_title.' - '.$this->book->title;
+        }
+
         $this->page['from'] = $this->from->format('d.m.Y');
         $this->page['to'] = $this->to->format('d.m.Y');
         $this->page['books'] = $this->user->profile->books()->get();
-        $this->page['current_book'] = post('book_id');
-        $this->page['statistic'] = $this->service->get(...array_wrap($this->user->profile->books()->find(post('book_id')) ?: []));
+        $this->page['current_book'] = $this->book;
+        $this->page['statistic'] = $this->service->get(...$item);
     }
 
     public function onCount()
@@ -81,7 +97,7 @@ class ReadStatistic extends ComponentBase
         $this->prepareVals();
 
         return [
-            '#statistic_spawn' => $this->renderPartial('@default'),
+            '#statistic_spawn' => $this->renderPartial($this->isParts() ? 'parts/default' : '@default'),
         ];
     }
 }
