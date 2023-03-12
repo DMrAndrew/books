@@ -211,14 +211,6 @@ class Book extends Model
         )->withoutGlobalScope(new ScopeToday());
     }
 
-//    public function pagination()
-//    {
-//        return $this->hasManyDeepFromRelations(
-//            $this->editions(),
-//            ((new Edition())->chapters()),
-//            ((new Chapter())->pagination()));
-//    }
-
     public function pagination(): HasManyDeep
     {
         return $this->hasManyDeepFromRelationsWithConstraints(
