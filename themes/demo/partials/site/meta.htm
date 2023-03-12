@@ -15,6 +15,9 @@
 <link href="{{ 'assets/css/jquery-ui.min.css' | theme }}" rel="stylesheet">
 <link href="{{ 'assets/css/tippy.css' | theme }}" rel="stylesheet">
 <link href="{{ 'assets/css/tippy.light.css' | theme }}" rel="stylesheet">
+<link href="{{ 'assets/css/quasar.css' | theme }}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet"
+      type="text/css">
 <!-- Временное подключение шрифтов -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,6 +48,19 @@
 <script src="https://unpkg.com/tippy.js@6"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script type="importmap">
+      {
+        "imports": {
+          "vue": "https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.47/vue.esm-browser.prod.min.js",
+          "quasar": "https://cdn.jsdelivr.net/npm/quasar@2.11.7/dist/quasar.esm.prod.js"
+        }
+      }
+
+
+
+
+</script>
+<script type="module" src="{{ 'assets/js/vue/quasar.js'|theme }}"></script>
 {% styles %}
 {% framework extras turbo %}
 {% scripts %}

@@ -21,17 +21,13 @@
         </div>
     </div>
 
+
     <div class="read-statistic__select _max-width ui-select">
         <div class="ui-select-header">
             <label class="ui-select-label">Период</label>
         </div>
         <div class="ui-select-container">
-            <div class="ui-select-item _size-32">
-                <div class="ui-select-item-option">20.01.2022–21.04.2022</div>
-                <svg class="ui-select-item-icon">
-                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
-                </svg>
-            </div>
+            <div id="date-range-picker"></div>
         </div>
     </div>
 
@@ -74,9 +70,15 @@
             <div class="ui-select-item _size-32">
                 <div class="ui-select-item-option">Кукла</div>
                 <svg class="ui-select-item-icon">
-                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
                 </svg>
             </div>
+        </div>
+    </div>
+
+    <div class="read-statistic__select ui-select _indent-large">
+        <div class="ui-select-container">
+            <div id="select"></div>
         </div>
     </div>
 
@@ -96,10 +98,11 @@
             <div class="ui-select-item _size-32">
                 <div class="ui-select-item-option">20.01.2022–21.04.2022</div>
                 <svg class="ui-select-item-icon">
-                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
                 </svg>
             </div>
         </div>
+        <div id="date-range-picker2"></div>
     </div>
 
     <div class="read-statistic__title ui-text-head--3 ui-text--bold">Всего: 11727</div>

@@ -73,14 +73,14 @@ let tabElemInit = function () {
         }
     })
 }
-
 addEventListener('page:before-cache', function () {
     // console.log('page:before-cache')
     $('*[data-header-action]').removeClass('active')
     reInitSelect()
+
 });
 
-// addEventListener('page:render', function() {
+// addEventListener('page:render', function () {
 //     console.log('page:render')
 // });
 
@@ -88,6 +88,9 @@ addEventListener('page:before-cache', function () {
 addEventListener('page:loaded', function () {
     // console.log('page:loaded')
     iniSelect()
+});
+addEventListener(`DOMContentLoaded`, function () {
+    // console.log(`DOMContentLoaded`)
 });
 
 addEventListener('page:unload', function () {

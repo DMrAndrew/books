@@ -1,4 +1,6 @@
-<?php namespace Books\Book\Components;
+<?php
+
+namespace Books\Book\Components;
 
 use Books\Book\Classes\StatisticService;
 use Books\Book\Models\Book;
@@ -15,15 +17,18 @@ use RainLab\User\Models\User;
 class ReadStatistic extends ComponentBase
 {
     protected User $user;
+
     protected ?Book $book;
+
     protected ?Chapter $chapter;
+
     protected StatisticService $service;
 
     public function componentDetails()
     {
         return [
             'name' => 'ReadStatistic Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -37,13 +42,11 @@ class ReadStatistic extends ComponentBase
 
     public function init()
     {
-        $this->service = new StatisticService();
-        $this->user = Auth::getUser();
-        $books = $this->user->profile->books;
-        $this->page['books'] = $books;
-        $this->page['statistic'] = $this->service->get(...$books);
-        $this->page['dates'] = $this->service->getDates();
-
+//        $this->service = new StatisticService();
+//        $this->user = Auth::getUser();
+//        $books = $this->user->profile->books;
+//        $this->page['books'] = $books;
+//        $this->page['statistic'] = $this->service->get(...$books);
+//        $this->page['dates'] = $this->service->getDates();
     }
-
 }
