@@ -5,6 +5,7 @@ namespace Books\Book\Classes;
 use Books\Book\Models\Book;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use October\Rain\Database\Collection;
 use October\Rain\Database\Model;
 
 class StatisticService
@@ -46,7 +47,7 @@ class StatisticService
         return $this->period;
     }
 
-    public function get(Model ...$needle)
+    public function get(Model|Collection ...$needle)
     {
         $dates = collect($this->period->toArray());
         $books = $this->class::query()

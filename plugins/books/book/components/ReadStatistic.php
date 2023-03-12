@@ -78,11 +78,12 @@ class ReadStatistic extends ComponentBase
 
     public function prepareVals()
     {
-        $item = $this->book ? [$this->book] : [];
         if ($this->isParts()) {
             $this->service->setClass(Chapter::class);
             $item = $this->book->chapters()->get();
             $this->page->meta_title = $this->page->meta_title.' - '.$this->book->title;
+        } else {
+            $item = $this->book ? [$this->book] : $this->user->profile->books()->get();
         }
 
         $this->page['from'] = $this->from->format('d.m.Y');
