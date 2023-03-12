@@ -78,7 +78,7 @@ class ReadStatistic extends ComponentBase
 
     public function prepareVals()
     {
-        $item = [$this->book];
+        $item = $this->book ? [$this->book] : [];
         if ($this->isParts()) {
             $this->service->setClass(Chapter::class);
             $item = $this->book->chapters()->get();
