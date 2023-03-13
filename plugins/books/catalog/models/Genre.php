@@ -194,7 +194,6 @@ class Genre extends Model
         return $builder->select(['id', 'name']);
     }
 
-
     public function scopeAdult(Builder $builder, bool $value = true): Builder
     {
         return $builder->where('adult', '=', $value);
@@ -213,8 +212,8 @@ class Genre extends Model
     public function scopeNestedFavorites(Builder $builder): Builder
     {
         return $builder
-            ->where(fn($q) => $q->roots()->whereHas('children', fn($q) => $q->favorite()))
-            ->orWhere(fn($q) => $q->roots()->favorite())
-            ->with('children', fn($q) => $q->favorite());
+            ->where(fn ($q) => $q->roots()->whereHas('children', fn ($q) => $q->favorite()))
+            ->orWhere(fn ($q) => $q->roots()->favorite())
+            ->with('children', fn ($q) => $q->favorite());
     }
 }
