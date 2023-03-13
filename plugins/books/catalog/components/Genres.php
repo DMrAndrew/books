@@ -35,7 +35,7 @@ class Genres extends ComponentBase
 
     public function allGenres()
     {
-        $genres = $this->query(child: true)->withCount('books')->getNested();
+        $genres = $this->query(child: true)->withCount(['books' => fn ($books) => $books->public()])->getNested();
         $genres->each(function ($genre) {
             $genre['books_count'] += $genre->children->sum('books_count');
         });
