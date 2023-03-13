@@ -293,7 +293,7 @@ class Book extends Model
         }
 
         return $builder->{$mode == 'include' ? 'whereHas' : 'whereDoesntHave'}('genres',
-            fn ($genres) => $genres->whereIn('id', $ids));
+            fn ($genres) => $genres->where(fn ($q) => $q->whereIn('id', $ids))->orWhereIn('parent_id', $ids));
     }
 
     public function scopeHasTags(Builder $builder, array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
