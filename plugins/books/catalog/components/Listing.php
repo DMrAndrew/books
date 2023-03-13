@@ -198,6 +198,7 @@ class Listing extends ComponentBase
             ->when(! $this->filter->free && $this->filter->max_price, fn ($q) => $q->maxPrice($this->filter->max_price))
             ->when($this->filter->free, fn ($q) => $q->free())
             ->when($this->filter->type, fn ($q) => $q->type($this->filter->type))
+            ->public()
             ->defaultEager()
             ->get();
     }
