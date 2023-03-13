@@ -25,7 +25,7 @@
     </div>
     {% if current_book %}
     <div class="read-statistic__control">
-        <a href="/lc-read-statistic-parts/{{current_book.id}}?dates={{from~'-'~to}}" target="_blank" class="ui-link _violet">Статистика по частям</a>
+        <a href="/lc-read-statistic-parts/{{current_book.id}}?dates={{from~'-'~to}}"  class="ui-link _violet">Статистика по частям</a>
     </div>
     <div class="read-statistic__description">
         <p class="ui-text-body--2">Внимание! Если вы удалили часть произведения и добавили ее снова, то статистика прочтений этой части начнет считаться заново.</p>
@@ -45,33 +45,34 @@
     </div>
     <button data-attach-loading type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium" style="margin-bottom: 10px">Применить</button>
 
+
     <div class="table">
-        <div class="table__head">
-            <div class="table__col _half">Произведение</div>
-            {% for stat in statistic.common %}
-            <div class="table__col">{{stat.date}}</div>
-            {% endfor %}
-        </div>
-
-        <div class="table__list">
-
-            {% for book in statistic.byBooks %}
-            <div class="table__row">
-                <div class="table__col _half" data-title="Произведение">{{book.title}}</div>
-                {% for item in book.dates %}
-                <div class="table__col" data-title="{{item.date}}">{{item.count}}</div>
-                {% endfor %}
-
-            </div>
-            {% endfor %}
-
-            <div class="table__row">
-                <div class="table__col _half _bold _right">Итого:</div>
+        <table class="table-static">
+            <thead>
+            <tr>
+                <td class="_half">Произведение</td>
                 {% for stat in statistic.common %}
-                <div class="table__col _bold">{{stat.total}}</div>
+                <td>{{stat.date}}</td>
                 {% endfor %}
-            </div>
-        </div>
+            </tr>
+            </thead>
+            <tbody>
+            {% for book in statistic.byBooks %}
+            <tr>
+                <td class="_half" data-title="Произведение">{{book.title}}</td>
+                {% for item in book.dates %}
+                <td data-title="{{item.date}}">{{item.count}}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            <tr>
+                <td class="_half _bold _right" style="font-weight: bold" data-title="Произведение">Итого</td>
+                {% for stat in statistic.common %}
+                <td class="_bold" style="font-weight: bold">{{ stat.total }}</td>
+                {% endfor %}
+            </tr>
+            </tbody>
+        </table>
     </div>
     {{form_close()}}
 </div>
