@@ -11,7 +11,9 @@ class NeighboursFkConstraint extends Migration
     public function up()
     {
         foreach (['books_book_chapters', 'books_book_pagination'] as $table) {
-            collect(['next_id', 'prev_id'])->each(fn ($сolumn) => Schema::hasColumn($table, $сolumn) && Schema::dropColumns($table, $сolumn));
+            foreach (['next_id', 'prev_id'] as $column) {
+                Schema::hasColumn($table, $column) && Schema::dropColumns($table, $column);
+            }
 
             Schema::table($table, function (Blueprint $blueprint) use ($table) {
                 $blueprint->unsignedBigInteger('next_id')->nullable();
