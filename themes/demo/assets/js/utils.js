@@ -38,11 +38,11 @@ addEventListener('page:before-cache', function () {
     }
 });
 let initUserStuff = function () {
-    console.log('init onPageLoad function')
-    if (['post_register_accepted', 'adult_agreement_accepted']
-        .some(e => !Cookies.get(e))) {
-        console.log('send onPageLoad request')
-        oc.ajax('bookAccount::onPageLoad', {flash: true})
+    console.log('fetch_required function')
+    if (Cookies.get('fetch_required')) {
+        console.log('send fetch_required request')
+        Cookies.remove('fetch_required')
+        oc.ajax('bookAccount::onFetch', {flash: true})
     }
 }
 let initSortable = (container, handler) => {

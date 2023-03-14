@@ -1,11 +1,14 @@
-<?php namespace App;
+<?php
 
-use Books\Profile\Models\Profile;
+namespace App;
+
+use App\middleware\FetchRequired;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Cms\Classes\Controller;
 use Cms\Classes\Theme;
-use Faker\Generator;
+use Exception;
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\AliasLoader;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -31,10 +34,15 @@ class Provider extends AppBase
             if (property_exists($modelName, 'factory')) {
                 return $modelName::$factory;
             }
-            throw new \Exception('Factory for '.$modelName.' not found.');
-
+            throw new Exception('Factory for '.$modelName.' not found.');
         });
 
+        $this->app[Kernel::class]
+            ->prependMiddleware(FetchRequired::class);
+
+        // Add a new middleware to end of the stack.
+        $this->app[Kernel::class]
+            ->pushMiddleware(FetchRequired::class);
     }
 
     /**

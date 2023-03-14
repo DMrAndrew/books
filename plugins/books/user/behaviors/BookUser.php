@@ -73,6 +73,21 @@ class BookUser extends ExtensionBase
         return $this->parent->birthday && $this->parent->see_adult;
     }
 
+    public function fetchRequired(): bool
+    {
+        return $this->requiredPostRegister() || $this->requiredAskAdult();
+    }
+
+    public function requiredPostRegister()
+    {
+        return $this->parent->required_post_register;
+    }
+
+    public function requiredAskAdult(): bool
+    {
+        return $this->parent->asked_adult_agreement == 0 && $this->parent->canSetAdult();
+    }
+
     public function getNameAttribute()
     {
         return $this->parent->username;
