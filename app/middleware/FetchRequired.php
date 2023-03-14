@@ -2,15 +2,12 @@
 
 namespace App\middleware;
 
-use Closure;
 use Cookie;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use RainLab\User\Facades\Auth;
 
 class FetchRequired
 {
-    public function handle(Request $request, Closure $next): Response
+    public function handle($request, $next)
     {
         $response = $next($request);
         if (Auth::getUser()?->fetchRequired()) {
