@@ -38,9 +38,7 @@ addEventListener('page:before-cache', function () {
     }
 });
 let initUserStuff = function () {
-    console.log('fetch_required function')
     if (Cookies.get('fetch_required')) {
-        console.log('send fetch_required request')
         Cookies.remove('fetch_required')
         oc.ajax('bookAccount::onFetch', {flash: true})
     }
@@ -82,21 +80,35 @@ addEventListener('page:before-cache', function () {
 
 });
 
-// addEventListener('page:render', function () {
-//     console.log('page:render')
-// });
+addEventListener('page:render', function () {
+    // console.log('page:render')
+});
 
 
 addEventListener('page:loaded', function () {
-    iniSelect()
+    // console.log('page:loaded')
     initUserStuff()
+    iniSelect()
+
 });
 addEventListener(`DOMContentLoaded`, function () {
     // console.log(`DOMContentLoaded`)
 });
 
+addEventListener(`ajax:done`, function () {
+});
+addEventListener(`page:before-render`, function () {
+    // console.log(`page:before-render`)
+});
+
+addEventListener(`page:updated`, function () {
+    // console.log(`page:updated`)
+});
+
+
 addEventListener('page:unload', function () {
     // console.log('page:unload')
+
     window.reader && window.reader.clear()
 })
 

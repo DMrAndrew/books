@@ -5,13 +5,13 @@ class Reader {
     fzEncrcBtn = null;
     bgDcrBtn = null;
     bgEncrBtn = null;
-    curBgIndex = 0;
+    curBgIndex = 2;
     bgClasses = ['_bg-black', '_bg-gray', '_bg-yellow', '_bg-white'];
     maxFont = 24;
     curFont = 16;
     minFont = 12;
     #tracker_id = null;
-    #trackerInterval = 45000;
+    #trackerInterval = 30000;
 
     #paginator_id = null
 

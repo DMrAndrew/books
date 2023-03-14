@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\middleware\FetchRequired;
+use App\middleware\FetchCheckUp;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Cms\Classes\Controller;
@@ -37,12 +37,12 @@ class Provider extends AppBase
             throw new Exception('Factory for '.$modelName.' not found.');
         });
 
-        $this->app[Kernel::class]
-            ->prependMiddleware(FetchRequired::class);
+//        $this->app[Kernel::class]
+//            ->prependMiddleware(FetchCheckUp::class);
 
         // Add a new middleware to end of the stack.
         $this->app[Kernel::class]
-            ->pushMiddleware(FetchRequired::class);
+            ->pushMiddleware(FetchCheckUp::class);
     }
 
     /**

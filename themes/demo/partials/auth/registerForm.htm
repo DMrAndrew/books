@@ -43,7 +43,7 @@
                 <div class="ui-input-wrapper">
                     <div class="ui-input-label">Дата рождения</div>
                     <input name="birthday" class="ui-input-item _size-32" type="text" id="datepicker"
-                           value="{{ user and user.birthday ? carbon(userdata.birthday).format('Y-m-d') : ''}}"
+                           value="{{ user and user.birthday ? carbon(user.birthday).format('d.m.Y') : ''}}"
                     >
 
                     <div class="ui-select-hitn"></div>

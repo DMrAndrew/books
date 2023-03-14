@@ -5,7 +5,7 @@ namespace App\middleware;
 use Cookie;
 use RainLab\User\Facades\Auth;
 
-class FetchRequired
+class FetchCheckUp
 {
     public function handle($request, $next)
     {

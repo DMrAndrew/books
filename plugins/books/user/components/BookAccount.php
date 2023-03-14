@@ -11,7 +11,6 @@ use RainLab\User\Components\Session;
 use RainLab\User\Facades\Auth;
 use Redirect;
 use Request;
-use Response;
 use ValidationException;
 
 class BookAccount extends Account
@@ -32,9 +31,7 @@ class BookAccount extends Account
     public function onSignin()
     {
         try {
-            $redirect = parent::onSignin();
-
-            return $redirect;
+            return parent::onSignin();
         } catch (AuthException $authException) {
             throw new ValidationException(['auth' => $authException->getMessage()]);
         }
@@ -42,26 +39,24 @@ class BookAccount extends Account
 
     public function onAdultAgreementSave()
     {
-        $action = post('action');
-        $val = $action === 'accept' ? 1 : 0;
-        $this->user()->update(['see_adult' => $val, 'asked_adult_agreement' => 1]);
+        $this->user()->update(['see_adult' => post('action') === 'accept', 'asked_adult_agreement' => 1]);
 
         return Redirect::refresh();
     }
 
-    public function onFetch()
+    public function onFetch(): array
     {
-        $partials = [];
-
         if ($this->user()?->required_post_register) {
-            $partials['#post_register_container'] = $this->renderPartial('auth/postRegisterContainer', ['user' => $this->user()]);
+            return [
+                '#post_register_container' => $this->renderPartial('auth/postRegisterContainer', ['user' => $this->user()]),
+            ];
         }
 
         if ($this->user()?->requiredAskAdult()) {
-            $partials['#adult_modal_spawn'] = $this->renderPartial('auth/adult-modal', ['active' => 1]);
+            return ['#adult_modal_spawn' => $this->renderPartial('auth/adult-modal', ['active' => 1])];
         }
 
-        return Response::make($partials);
+        return [];
     }
 
     public function onRegisterProxy()
