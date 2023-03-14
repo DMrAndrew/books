@@ -51,7 +51,7 @@ class StatisticService
     {
         $dates = collect($this->period->toArray());
         $books = $this->class::query()
-            ->when(count($needle), fn ($q) => $q->whereIn('id', collect($needle)->pluck('id')))
+            ->whereIn('id', collect($needle)->pluck('id'))
             ->with(['trackers' => fn ($trackers) => $trackers->withoutGlobalScope(new ScopeToday())])
             ->get();
 

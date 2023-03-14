@@ -10,7 +10,6 @@ use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
 use RainLab\User\Facades\Auth;
-use Request;
 
 /**
  * EBooker Component
@@ -74,23 +73,23 @@ class EBooker extends ComponentBase
         ];
     }
 
+    /**
+     * @throws AjaxException
+     */
     public function onUpdateSortOrder()
     {
+        $partial = fn () => [
+            '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook->fresh()]),
+        ];
+
         try {
             $this->service->changeChaptersOrder(post('sequence'));
 
-            return [
-                '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook->fresh()]),
-            ];
+            return $partial();
         } catch (Exception $ex) {
-            if (Request::ajax()) {
-                Flash::error($ex->getMessage());
-                throw new AjaxException([
-                    '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook->fresh()]),
-                ]);
-            } else {
-                Flash::error($ex->getMessage());
-            }
+            Flash::error($ex->getMessage());
+
+            return $partial();
         }
     }
 
@@ -107,11 +106,12 @@ class EBooker extends ComponentBase
                 '#ebook-settings' => $this->renderPartial('@settings'),
             ];
         } catch (Exception $ex) {
-            if (Request::ajax()) {
-                throw $ex;
-            } else {
-                Flash::error($ex->getMessage());
-            }
+            Flash::error($ex->getMessage());
+            $this->vals();
+
+            return [
+                '#ebook-settings' => $this->renderPartial('@settings'),
+            ];
         }
     }
 }

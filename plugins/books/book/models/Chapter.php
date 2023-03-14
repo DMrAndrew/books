@@ -199,21 +199,9 @@ class Chapter extends Model
 
     public function setNeighbours()
     {
-        $this->setPrev();
-        $this->setNext();
-    }
-
-    public function setPrev()
-    {
         $this->update([
-            'prev_id' => $this->edition->chapters()->sortOrder($this->{$this->getSortOrderColumn()} - 1)?->first()?->id,
-        ]);
-    }
-
-    public function setNext()
-    {
-        $this->update([
-            'next_id' => $this->edition->chapters()->sortOrder($this->{$this->getSortOrderColumn()} + 1)?->first()?->id,
+            'prev_id' => $this->edition->chapters()->sortOrder($this->{$this->getSortOrderColumn()} - 1)?->first()?->id ?? null,
+            'next_id' => $this->edition->chapters()->sortOrder($this->{$this->getSortOrderColumn()} + 1)?->first()?->id ?? null,
         ]);
     }
 

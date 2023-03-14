@@ -23,3 +23,6 @@
 1.0.5:
     - 'Контент частей и страниц отдельной таблицей'
     - create_contents_table.php
+1.0.6:
+    - 'CascadeOnDelete FK для next/prev'
+    - neighbours_fk_constraint.php

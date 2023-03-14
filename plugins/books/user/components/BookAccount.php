@@ -28,6 +28,7 @@ class BookAccount extends Account
     public function onLogout()
     {
         $this->forgetCookie();
+
         return (new Session())->onLogout();
     }
 
@@ -37,7 +38,6 @@ class BookAccount extends Account
         Cookie::queue(Cookie::forget(name: 'adult_agreement_accepted'));
         Cookie::queue(Cookie::forget(name: 'loved_genres'));
         Cookie::queue(Cookie::forget(name: 'unloved_genres'));
-
     }
 
     public function onSignin()
@@ -45,6 +45,7 @@ class BookAccount extends Account
         try {
             $redirect = parent::onSignin();
             $this->forgetCookie();
+
             return $redirect;
         } catch (AuthException $authException) {
             throw new ValidationException(['auth' => $authException->getMessage()]);
@@ -54,7 +55,8 @@ class BookAccount extends Account
     public function should_adult_agreement(): bool
     {
         $user = $this->user();
-        return  $user && $user->asked_adult_agreement == 0 && !$user->required_post_register && $user->canSetAdult();
+
+        return $user && $user->asked_adult_agreement == 0 && ! $user->required_post_register && $user->canSetAdult();
     }
 
     public function onAdultAgreementSave()
@@ -84,7 +86,7 @@ class BookAccount extends Account
         }
 
         $response = Response::make($partials);
-        collect($cookies)->each(fn($cookie) => $response->withCookie($cookie));
+        collect($cookies)->each(fn ($cookie) => $response->withCookie($cookie));
 
         return $response;
     }
@@ -128,6 +130,8 @@ class BookAccount extends Account
                     $user->profile->update(['username' => $data['username']]);
                 }
             });
+
+            $this->forgetCookie();
 
             return $this->makeRedirection();
         } catch (Exception $ex) {

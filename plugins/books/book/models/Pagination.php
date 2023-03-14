@@ -13,8 +13,8 @@ use October\Rain\Database\Traits\Validation;
  * Pagination Model
  *
  * @method HasOne chapter
- * @property  ?Chapter chapter
  *
+ * @property  ?Chapter chapter
  * @property ?Pagination next
  * @property ?Pagination prev
  *
@@ -56,9 +56,8 @@ class Pagination extends Model
         'prev_id' => 'nullable|integer|exists:books_book_pagination,id',
     ];
 
-
     public $belongsTo = [
-        'chapter' => [Chapter::class,'key' => 'chapter_id','otherKey' => 'id'],
+        'chapter' => [Chapter::class, 'key' => 'chapter_id', 'otherKey' => 'id'],
         'next' => [Pagination::class, 'key' => 'next_id', 'otherKey' => 'id'],
         'prev' => [Pagination::class, 'key' => 'prev_id', 'otherKey' => 'id'],
     ];
@@ -70,15 +69,8 @@ class Pagination extends Model
 
     public function setNeighbours()
     {
-        $this->setPrev();
-        $this->setNext();
-    }
-
-    public function setNext(){
-        $this->update(['next_id' => $this->chapter->pagination()->page($this->page + 1)?->first()?->id]);
-    }
-
-    public function setPrev(){
-        $this->update(['prev_id' => $this->chapter->pagination()->page($this->page - 1)?->first()?->id]);
+        $this->update(['next_id' => $this->chapter->pagination()->page($this->page + 1)->first()?->id ?? null,
+            'prev_id' => $this->chapter->pagination()->page($this->page - 1)->first()?->id ?? null,
+        ]);
     }
 }

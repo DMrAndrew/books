@@ -37,7 +37,7 @@ class Genres extends ComponentBase
     {
         $genres = $this->query(child: true)->with(['books' => fn ($books) => $books->public()->select(['id', 'title'])])->getNested();
         $genres->each(function ($genre) {
-            $genre['books_count'] = $genre->children->pluck('books')->flatten(1)->concat($genre->books)->unique(fn ($i) => $i->id)->count();
+            $genre['books_count'] = $genre->children->pluck('books')->flatten(1)->concat($genre->books)->unique(fn ($i) => $i->id)->count() ?: '';
         });
 
         return $genres;

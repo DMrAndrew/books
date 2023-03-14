@@ -33,14 +33,14 @@ addEventListener('page:before-cache', function () {
     let annotation = document.getElementById('cke_annotation')
     let chapter_content = document.getElementById('cke_chapter_content')
     let editors = [annotation, chapter_content].filter(e => !!e)
-    if (editors[0] || false) {
+    if (editors[0]) {
         editors.forEach(editor => editor.remove())
     }
 });
 let initUserStuff = function () {
     if (['post_register_accepted', 'adult_agreement_accepted']
         .some(e => !document.cookie.includes(e))) {
-        oc.ajax('bookAccount::onPageLoad')
+        oc.ajax('bookAccount::onPageLoad', {flash: true})
     }
 }
 let initSortable = (container, handler) => {
@@ -54,7 +54,7 @@ let initSortable = (container, handler) => {
                 let arr = $(container).find('input').map(function () {
                     return $(this).val();
                 }).get()
-                oc.ajax(handler, {data: {sequence: arr, is_owner: $(`input[name=is_owner]`).val()}})
+                oc.ajax(handler, {flash: true, data: {sequence: arr, is_owner: $(`input[name=is_owner]`).val()}})
             }
         });
     })
@@ -86,8 +86,8 @@ addEventListener('page:before-cache', function () {
 
 
 addEventListener('page:loaded', function () {
-    // console.log('page:loaded')
     iniSelect()
+    initUserStuff()
 });
 addEventListener(`DOMContentLoaded`, function () {
     // console.log(`DOMContentLoaded`)

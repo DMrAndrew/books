@@ -55,7 +55,8 @@ class ReadStatistic extends ComponentBase
             $this->from = Carbon::parse($dates[0]);
             $this->to = Carbon::parse($dates[1]);
         } else {
-            $this->from = $this->to = today();
+            $this->to = today();
+            $this->from = $this->to->copy()->subWeeks(2);
         }
         $this->service = new StatisticService($this->from, $this->to);
 

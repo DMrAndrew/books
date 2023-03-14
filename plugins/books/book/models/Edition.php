@@ -2,7 +2,6 @@
 
 namespace Books\Book\Models;
 
-
 use Books\Book\Classes\EditionService;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterSalesType;
@@ -27,6 +26,7 @@ use System\Models\Revision;
  * * @method HasMany chapters
  * * @method AttachOne fb2
  * * @method BelongsTo book
+ *
  * * @property  Book book
  */
 class Edition extends Model
@@ -41,6 +41,7 @@ class Edition extends Model
     public $table = 'books_book_editions';
 
     protected $revisionable = ['length', 'status'];
+
     public string $trackerChildRelation = 'chapters';
 
     protected $fillable = [
@@ -52,7 +53,7 @@ class Edition extends Model
         'status',
         'price',
         'book_id',
-        'length'
+        'length',
     ];
 
     protected $casts = [
@@ -91,7 +92,7 @@ class Edition extends Model
     ];
 
     public $morphMany = [
-        'revision_history' => [Revision::class, 'name' => 'revisionable']
+        'revision_history' => [Revision::class, 'name' => 'revisionable'],
     ];
 
     public function service(): EditionService
@@ -99,14 +100,27 @@ class Edition extends Model
         return new EditionService($this);
     }
 
+    public function getUpdateHistoryAttribute()
+    {
+        return $this->revision_history()->where('field', '=', 'length')->get()->each(function (Revision $revision) {
+            $revision['value'] = (int) $revision->new_value - (int) $revision->old_value;
+        });
+    }
+
+    public function frozen()
+    {
+        $this->fill(['status' => BookStatus::FROZEN]);
+        $this->save();
+    }
+
     public function editAllowed(): bool
     {
-        return !$this->isPublished() || $this->status === BookStatus::WORKING || $this->sales_free;
+        return ! $this->isPublished() || $this->status === BookStatus::WORKING || $this->sales_free;
     }
 
     public function isPublished(): bool
     {
-        return !!$this->sales_at;
+        return (bool) $this->sales_at;
     }
 
     public function setPublishAt()
@@ -118,25 +132,20 @@ class Edition extends Model
     {
         $cases = collect(BookStatus::publicCases());
 
-        if ($this->status === BookStatus::WORKING && $this->hasSales()) {
-            $cases = $cases->forget(BookStatus::HIDDEN); //нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
-        }
-        if ($this->status === BookStatus::FROZEN) {
-            $cases = collect();
-        }
+        $cases = match ($this->status) {
+            BookStatus::WORKING => $this->hasSales() ? $cases->forget(BookStatus::HIDDEN) : $cases,//нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
+            BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value), // Из “Завершено” можем перевести только в статус “Скрыто”.
+            BookStatus::FROZEN => collect(),
+            default => $cases
+        };
 
-        if ($this->status === BookStatus::COMPLETE) {
-            $cases = $cases->only(BookStatus::HIDDEN->value); // Из “Завершено” можем перевести только в статус “Скрыто”.
-        }
         $cases[$this->status->value] = $this->status;
 
         return $cases->toArray();
     }
 
-
     public function shouldDeferredUpdate(): bool
     {
-        return false;
         return $this->status === BookStatus::COMPLETE;
     }
 
@@ -147,7 +156,7 @@ class Edition extends Model
 
     public function shouldRevision(): bool
     {
-        return !$this->shouldDeferredUpdate();
+        return ! $this->shouldDeferredUpdate();
     }
 
     protected function beforeUpdate()
@@ -162,16 +171,14 @@ class Edition extends Model
         }
     }
 
-
     public function scopeWithProgress(Builder $builder, User $user): Builder
     {
-        return $builder->withMax(['trackers as progress' => fn($trackers) => $trackers->user($user)->withoutTodayScope()], 'progress');
+        return $builder->withMax(['trackers as progress' => fn ($trackers) => $trackers->user($user)->withoutTodayScope()], 'progress');
     }
-
 
     public function getRealPriceAttribute()
     {
-        return (bool)$this->sales_free ? 0 : $this->price;
+        return (bool) $this->sales_free ? 0 : $this->price;
     }
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder
@@ -186,7 +193,7 @@ class Edition extends Model
 
     public function scopeFree(Builder $builder, $free = true): Builder
     {
-        return $builder->where('sales_free', '=', $free)->orWhere('price','=',0);
+        return $builder->where('sales_free', '=', $free)->orWhere('price', '=', 0);
     }
 
     public function scopeEbook(Builder $builder): Builder
@@ -209,7 +216,6 @@ class Edition extends Model
         return $builder->type(EditionsEnums::Comics);
     }
 
-
     public function scopeType(Builder $builder, EditionsEnums $type): Builder
     {
         return $builder->where('type', '=', $type->value);
@@ -220,7 +226,6 @@ class Edition extends Model
         return $builder->where('status', '=', $status->value);
     }
 
-
     public function nextChapterSortOrder()
     {
         return ($this->chapters()->max('sort_order') ?? 0) + 1;
@@ -229,7 +234,7 @@ class Edition extends Model
     public function lengthRecount()
     {
         $this->chapters()->get()->each->lengthRecount();
-        $this->length = (int)$this->chapters()->sum('length');
+        $this->length = (int) $this->chapters()->sum('length');
         $this->save();
     }
 
