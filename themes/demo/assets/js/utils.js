@@ -40,7 +40,7 @@ addEventListener('page:before-cache', function () {
 let initUserStuff = function () {
     console.log('init onPageLoad function')
     if (['post_register_accepted', 'adult_agreement_accepted']
-        .some(e => !document.cookie.includes(e))) {
+        .some(e => !Cookies.get(e))) {
         console.log('send onPageLoad request')
         oc.ajax('bookAccount::onPageLoad', {flash: true})
     }
