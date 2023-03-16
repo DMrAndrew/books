@@ -6,6 +6,7 @@ use Backend;
 use Books\Book\Behaviors\Fillable;
 use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;
+use Books\Book\Classes\ChapterService;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\FB2Manager;
 use Books\Book\Classes\Rater;
@@ -87,8 +88,8 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Rater', Rater::class);
         AliasLoader::getInstance()->alias('StatisticService', StatisticService::class);
 
-        Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
-        Event::listen('books.book.updated', fn(Book $book) => $book->updateEventHandler());
+        Event::listen('books.book.created', fn (Book $book) => $book->createEventHandler());
+        Event::listen('books.book.updated', fn (Book $book) => $book->updateEventHandler());
 
         Book::extend(function (Book $book) {
             $book->implementClassWith(Favorable::class);
@@ -98,7 +99,6 @@ class Plugin extends PluginBase
             $class::extend(function ($model) {
                 $model->implementClassWith(Fillable::class);
             });
-
         }
 
         foreach ([Edition::class, Chapter::class, Pagination::class] as $class) {
@@ -126,6 +126,13 @@ class Plugin extends PluginBase
             BookCard::class => 'bookCard',
             ReadStatistic::class => 'readStatistic',
         ];
+    }
+
+    public function registerSchedule($schedule)
+    {
+        $schedule->call(function () {
+            ChapterService::audit();
+        })->everyMinute();
     }
 
     /**

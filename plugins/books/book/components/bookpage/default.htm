@@ -41,7 +41,7 @@
                                     <span class="book-card-full-type__description-dot"></span>
                                     <span>{{book.ebook.length}} зн.</span>
                                     <span class="book-card-full-type__description-dot"></span>
-                                    <a href="#" class="ui-link _violet">История</a>
+                                    <a class="ui-link _violet cursor-pointer" data-modal="open-history">История</a>
                                 </div>
 
                                 <div class="book-card-full-type__link-wrapper ">
@@ -692,8 +692,54 @@
 
         </div>
     </div>
+    <div class="ui-modal personal-area-discount-modal overlay" data-modal="history">
+        <div class="ui-modal-container book-card-history-modal__container">
+            <div class="ui-modal-content book-card-history-modal">
+                <div class="ui-modal-header book-card-history-modal__header">
+                    <div class="square-16 "></div>
+                    <div class="ui-text-head--2 ui-text--bold">История обновлений произведения</div>
+                    <svg class="square-24" data-modal="close">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                    </svg>
+                </div>
+                <div class="book-card-history-modal__body">
+                    {% set history = book.ebook.updateHistory %}
+                    <div class="book-card-history-modal__data">
+                        <!--                        <dl class="book-card-history-modal__data-list">-->
+                        <!--                            <dt class="book-card-history-modal__data-title">Частота обновлений:</dt>-->
+                        <!--                            <dd>раз в 2 дня</dd>-->
+                        <!--                        </dl>-->
+                        <dl class="book-card-history-modal__data-list">
+                            <dt class="book-card-history-modal__data-title">Начало публикации:</dt>
+                            <dd>{{ history.start }}</dd>
+                        </dl>
+                    </div>
+                    <div class="book-card-history-modal__table-container">
+                        <table class="book-card-history-modal__table">
+                            <thead>
+                            <td>Дата</td>
+                            <td>Добавлено знаков</td>
+                            <td>Всего знаков</td>
+                            </thead>
+                            <tbody>
+                            {% for item in history.items %}
+                            <tr>
+                                <td>{{item.date}}</td>
+                                <td>{{item.value}}</td>
+                                <td>{{item.new_value}}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         initTabs('[data-tabs="1"]');
+        openModal('[data-modal="history"]', '[data-modal="open-history"]');
+        openModal('[data-modal="category_rating"]', '[data-modal="open_category_rating"]');
         (() => {
             new Swiper('.swiper', {
                 // Optional parameters

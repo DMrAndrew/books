@@ -8,7 +8,6 @@ use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Jobs\JobPaginate;
 use Books\Book\Jobs\JobProgress;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Model;
 use October\Rain\Database\Builder;
@@ -45,6 +44,9 @@ use System\Models\File;
  * @method MorphOne content
  *
  * @property  Content content
+ * @property  EditionsEnums type
+ * @property  ChapterStatus status
+ * @property  ChapterSalesType sales_type
  */
 class Chapter extends Model
 {
@@ -171,24 +173,29 @@ class Chapter extends Model
         return $builder->where($this->getSortOrderColumn(), '=', $value);
     }
 
+    public function scopeMinSortOrder(Builder $builder, int $value): Builder
+    {
+        return $builder->where($this->getSortOrderColumn(), '>', $value);
+    }
+
+    public function scopeMaxSortOrder(Builder $builder, int $value): Builder
+    {
+        return $builder->where($this->getSortOrderColumn(), '<', $value);
+    }
+
     public function scopeWithReadTrackersCount(Builder $builder): Builder
     {
         return $builder->withCount(['trackers as completed_trackers' => fn ($trackers) => $trackers->withoutTodayScope()->completed()]);
     }
 
-    public function scopePublished(Builder $query, bool $until_now = true)
+    public function scopePlanned(Builder $builder): Builder
     {
-        return $query
-            ->where('status', ChapterStatus::PUBLISHED)
-            ->whereNotNull('published_at')
-            ->when($until_now, function (Builder $builder) {
-                return $builder->where('published_at', '<', Carbon::now());
-            });
+        return $builder->where('status', ChapterStatus::PLANNED);
     }
 
-    public function getIsWillPublishedAttribute(): bool
+    public function scopePublished(Builder $query)
     {
-        return $this->status === ChapterStatus::PUBLISHED && $this->published_at->gt(Carbon::now());
+        return $query->where('status', ChapterStatus::PUBLISHED);
     }
 
     public function lengthRecount()
@@ -199,10 +206,22 @@ class Chapter extends Model
 
     public function setNeighbours()
     {
+        $builder = fn () => $this->edition()->first()->chapters()->published();
+        $sort_order = $this->{$this->getSortOrderColumn()};
         $this->update([
-            'prev_id' => $this->edition->chapters()->sortOrder($this->{$this->getSortOrderColumn()} - 1)?->first()?->id ?? null,
-            'next_id' => $this->edition->chapters()->sortOrder($this->{$this->getSortOrderColumn()} + 1)?->first()?->id ?? null,
+            'prev_id' => $builder()->maxSortOrder($sort_order)->latest($this->getSortOrderColumn())->first()?->id,
+            'next_id' => $builder()->minSortOrder($sort_order)->first()?->id,
         ]);
+    }
+
+    protected function afterSave()
+    {
+        if ($this->isDirty(['status'])) {
+            $this->prev?->setNeighbours();
+            $this->next?->setNeighbours();
+            $this->fresh()->setNeighbours();
+            $this->edition->setFreeParts();
+        }
     }
 
     public function progress(?User $user = null)

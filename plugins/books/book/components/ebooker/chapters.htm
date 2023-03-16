@@ -34,6 +34,7 @@
                             <div class="chapter-book__status">
                                 <span>{{chapter.sales_type.getLabel()}}</span>
                             </div>
+
                             <div class="chapter-book__status">
                                 <span>{{carbon(chapter.created_at).format('d.m.y')}}</span>
                             </div>
@@ -56,19 +57,19 @@
                             </div>
                         </div>
                     </div>
-<!--                    <div class="chapter-book__action">-->
-<!--                        <a data-dropdown="button" >-->
-<!--                            <svg class="square-16">-->
-<!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>-->
-<!--                            </svg>-->
-<!--                            <div class="dropdown-menu__container" data-dropdown="menu">-->
-<!--                                <div class="dropdown-menu__wrapper">-->
-<!--                                    <div class="dropdown-menu__item"  data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">Редактировать</div>-->
-<!--                                    <div class="dropdown-menu__item">Удалить</div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </a>-->
-<!--                    </div>-->
+                    <!--                    <div class="chapter-book__action">-->
+                    <!--                        <a data-dropdown="button" >-->
+                    <!--                            <svg class="square-16">-->
+                    <!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>-->
+                    <!--                            </svg>-->
+                    <!--                            <div class="dropdown-menu__container" data-dropdown="menu">-->
+                    <!--                                <div class="dropdown-menu__wrapper">-->
+                    <!--                                    <div class="dropdown-menu__item"  data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">Редактировать</div>-->
+                    <!--                                    <div class="dropdown-menu__item">Удалить</div>-->
+                    <!--                                </div>-->
+                    <!--                            </div>-->
+                    <!--                        </a>-->
+                    <!--                    </div>-->
                 </div>
             </li>
             {% endfor %}
@@ -101,8 +102,8 @@
     </style>
 
     <script>
-        if(initSortable){
-            initSortable('#sortable','ebooker::onUpdateSortOrder')
+        if (initSortable) {
+            initSortable('#sortable', 'ebooker::onUpdateSortOrder')
         }
         openDropdown();
     </script>

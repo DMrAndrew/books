@@ -102,9 +102,19 @@ class Edition extends Model
 
     public function getUpdateHistoryAttribute()
     {
-        return $this->revision_history()->where('field', '=', 'length')->get()->each(function (Revision $revision) {
-            $revision['value'] = (int) $revision->new_value - (int) $revision->old_value;
-        });
+        $history = $this->revision_history()->where('field', '=', 'length')->get();
+
+        return [
+            'start' => $history->first()?->created_at->format('d.m.y') ?? '-',
+            'freq' => '2',
+            'items' => $history->map(function (Revision $revision) {
+                return [
+                    'date' => $revision->created_at->format('d.m.y'),
+                    'value' => (int) $revision->new_value - (int) $revision->old_value,
+                    'new_value' => (int) $revision->new_value,
+                ];
+            })->reverse(),
+        ];
     }
 
     public function frozen()
@@ -234,7 +244,7 @@ class Edition extends Model
     public function lengthRecount()
     {
         $this->chapters()->get()->each->lengthRecount();
-        $this->length = (int) $this->chapters()->sum('length');
+        $this->length = (int) $this->chapters()->published()->sum('length');
         $this->save();
     }
 
@@ -251,9 +261,9 @@ class Edition extends Model
     public function setFreeParts()
     {
         Db::transaction(function () {
-            $this->chapters()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
+            $this->chapters()->published()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
 //            $this->chapters()->offset($this->free_parts); ошибка?
-            $this->chapters()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
+            $this->chapters()->published()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
         });
     }
 
