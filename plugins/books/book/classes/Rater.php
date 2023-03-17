@@ -26,16 +26,6 @@ class Rater
         $this->builder = Book::query();
     }
 
-    private function scopeOption(StatsEnum $stat): string
-    {
-        return match ($stat) {
-            StatsEnum::LIKES => 'likesCount',
-            StatsEnum::LIBS => 'inLibCount',
-            StatsEnum::COMMENTS => 'commentsCount',
-            default => 'query'
-        };
-    }
-
     private function canPerform(): bool
     {
         return $this->stats->exists && count($this->closures);
@@ -161,7 +151,7 @@ class Rater
 
     public function likes(): static
     {
-        $this->builder->{$this->scopeOption(StatsEnum::LIKES)}();
+        $this->builder->likesCount();
         $this->closures[StatsEnum::LIKES->value] = fn () => $this->set('likes_count');
 
         return $this;
@@ -169,7 +159,7 @@ class Rater
 
     public function libs(): static
     {
-        $this->builder->{$this->scopeOption(StatsEnum::LIBS)}();
+        $this->builder->inLibCount();
         $this->closures[StatsEnum::LIBS->value] = fn () => $this->set('in_lib_count');
 
         return $this;
@@ -177,7 +167,7 @@ class Rater
 
     public function comments(): static
     {
-        $this->builder->{$this->scopeOption(StatsEnum::COMMENTS)}();
+        $this->builder->commentsCount($this->book->profile);
         $this->closures[StatsEnum::COMMENTS->value] = fn () => $this->set('comments_count');
 
         return $this;
