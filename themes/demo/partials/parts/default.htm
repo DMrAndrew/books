@@ -30,7 +30,7 @@
                     class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium" style="margin-bottom: 10px">
                 Применить
             </button>
-            <div class="table">
+            <div class="table __container-shift">
                 <table class="table-static">
                     <thead>
                     <tr>
@@ -50,9 +50,9 @@
                     </tr>
                     {% endfor %}
                     <tr>
-                        <td class="_half _bold _right" style="font-weight: bold" data-title="Часть">Итого</td>
+                        <td class="_half _bold _right" data-title="Часть">Итого</td>
                         {% for stat in statistic.common %}
-                        <td class="_bold" style="font-weight: bold">{{stat.total}}</td>
+                        <td class="_bold">{{stat.total}}</td>
                         {% endfor %}
                     </tr>
                     </tbody>
