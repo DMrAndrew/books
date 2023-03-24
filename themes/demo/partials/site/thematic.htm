@@ -2,110 +2,20 @@
 <div class="thematic _indent ui-container-fluid">
     <div class="ui-grid-container ui-grid-gap">
         <div class="ui-col-md-9">
-            <div class="thematic-section ">
-                <div class="thematic-section__header">
-                    <div class="ui-text-head--3 ui-text--bold">Бестселлеры</div>
-                    <a href="#" class="thematic-section__link ui-link _violet">Все</a>
-                </div>
-                <div class="thematic-section__container swiper">
-                    <div class="thematic-section__card-container swiper-wrapper">
-                        {% for item in collect([1,2,3,4,5,6,7,8]) %}
-                        <a href="#" class="book-mini-card _mobile-size swiper-slide">
-                            <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""
-                                 loading="lazy"></img>
-                            <div class="book-mini-card__title">
-                                Влезает только три строчки. Влезает только три строчки
-                            </div>
-                        </a>
-                        {% endfor %}
+            {% component 'popular' %}
+            {% component 'gainingPopularity' %}
+            {% component 'otherAuthorBook' %}
+            {% component 'widget_new' %}
+            {% component 'with_this' %}
+            {% component 'interested' %}
 
-
-                    </div>
-                    <div class="thematic-section__nav _left">
-                        <svg>
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
-                        </svg>
-                    </div>
-                    <div class="thematic-section__nav _right">
-                        <svg>
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-            <div class="thematic-section ">
-                <div class="thematic-section__header">
-                    <div class="ui-text-head--3 ui-text--bold">Скидки сегодня</div>
-                    <a href="#" class="thematic-section__link ui-link _violet">Все</a>
-                </div>
-                <div class="thematic-section__container swiper">
-                    <div class="thematic-section__card-container swiper-wrapper">
-                        {% for item in collect([1,2,3,4,5,6,7,8]) %}
-                        <div class="book-mini-card swiper-slide">
-                            <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-mini-card__image" alt=""
-                                 loading="lazy"></img>
-                            <div class="book-mini-card__title">
-                                Влезает только три строчки. Влезает только три строчки
-                            </div>
-                            <div class="book-mini-card__price">
-                                <svg>
-                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-16' | theme}}"></use>
-                                </svg>
-                                <span class="ui-text--bold">139 ₽ <span class="ui-text--lt">211 ₽</span></span>
-                            </div>
-                        </div>
-                        {% endfor %}
-
-                    </div>
-                    <div class="thematic-section__nav _left">
-                        <svg>
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
-                        </svg>
-                    </div>
-                    <div class="thematic-section__nav _right">
-                        <svg>
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
-                        </svg>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="ui-col-md-3">
             <div class="ui-grid-container ui-grid-gap">
-                {% for item in collect([1,2]) %}
                 <div class="ui-col-md-12 ui-col-sm-6">
-                    <div class="thematic-section">
-                        <div class="thematic-section__header">
-                            <div class="ui-text-head--3 ui-text--bold">Рекомендуем</div>
-                            <a href="#" class="thematic-section__link ui-link _violet">Все</a>
-                        </div>
-                        <div class="thematic-section__container ">
-                            <a href="#" class="book-sidebar-card _indent">
-                                <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-sidebar-card__image" alt="" loading="lazy">
-                                <div class="book-sidebar-card__description">
-                                    <div class="book-sidebar-card__label">ЛитРПГ</div>
-                                    <div class="book-sidebar-card__title">Сага о неудачнике 3</div>
-                                </div>
-                            </a>
-                            <a href="#" class="book-sidebar-card _indent">
-                                <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-sidebar-card__image" alt="" loading="lazy">
-                                <div class="book-sidebar-card__description">
-                                    <div class="book-sidebar-card__label">ЛитРПГ</div>
-                                    <div class="book-sidebar-card__title">История бессмертного-3. Свобода или смерть</div>
-                                </div>
-                            </a>
-                            <a href="#" class="book-sidebar-card _indent">
-                                <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}" class="book-sidebar-card__image" alt="" loading="lazy">
-                                <div class="book-sidebar-card__description">
-                                    <div class="book-sidebar-card__label">ЛитРПГ</div>
-                                    <div class="book-sidebar-card__title">История бессмертного-8. Ключевой мир</div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
+                    {% component 'recommend' %}
+                    {% component 'hotNew' %}
                 </div>
-                {% endfor %}
-
             </div>
         </div>
     </div>
@@ -129,29 +39,31 @@
 <!--</div>-->
 
 <script>
-    (() => {new Swiper('.swiper', {
-        // Optional parameters
-        direction: 'horizontal',
-        loop: false,
+    (() => {
+        new Swiper('.swiper', {
+            // Optional parameters
+            direction: 'horizontal',
+            loop: false,
 
-        // draggable: true,
-        spaceBetween: 16,
-        breakpoints: {
-            0: {
-                slidesPerView: 2.5,
+            // draggable: true,
+            spaceBetween: 16,
+            breakpoints: {
+                0: {
+                    slidesPerView: 2.5,
+                },
+                768: {
+                    slidesPerView: 5,
+                },
+                1280: {
+                    slidesPerView: 6,
+                }
             },
-            768: {
-                slidesPerView: 5,
-            },
-            1280: {
-                slidesPerView: 6,
-            }
-        },
 
-        // Navigation arrows
-        navigation: {
-            nextEl: '.thematic-section__nav._right',
-            prevEl: '.thematic-section__nav._left',
-        },
-    });})()
+            // Navigation arrows
+            navigation: {
+                nextEl: '.thematic-section__nav._right',
+                prevEl: '.thematic-section__nav._left',
+            },
+        });
+    })()
 </script>

@@ -3,6 +3,7 @@
 namespace Books\Catalog;
 
 use Backend;
+use Books\Book\Models\Stats;
 use Books\Catalog\Classes\ListingFilter;
 use Books\Catalog\Components\FavoriteGenres;
 use Books\Catalog\Components\Genres;
@@ -51,6 +52,7 @@ class Plugin extends PluginBase
     {
         AliasLoader::getInstance()->alias('Genre', Genre::class);
         AliasLoader::getInstance()->alias('ListingFilter', ListingFilter::class);
+        AliasLoader::getInstance()->alias('Stats', Stats::class);
     }
 
     /**

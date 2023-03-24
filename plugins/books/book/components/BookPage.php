@@ -2,6 +2,7 @@
 
 namespace Books\Book\Components;
 
+use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Models\Book;
 use Books\Comments\Components\Comments;
 use Cms\Classes\ComponentBase;
@@ -47,13 +48,36 @@ class BookPage extends ComponentBase
         }
         $this->user = Auth::getUser();
         $book_id = $this->param('book_id');
-        $this->book = Book::query()->public()->find($book_id) ?? $this->user->profile->books()->find($book_id)
+        $this->book = Book::query()->public()->find($book_id) ?? $this->user?->profile->books()->find($book_id)
             ?? abort(404);
-        $this->user->library($this->book)->get(); //Добавить в библиотеку
-        $this->book = Book::query()->defaultEager()->find($this->book->id);
+        $this->user?->library($this->book)->get(); //Добавить в библиотеку
+        $this->book = Book::query()
+            ->defaultEager()
+            ->withChapters()
+            ->with(['cycle' => fn ($cycle) => $cycle->with(['books'])])
+            ->find($this->book->id);
+
         $this->page['book'] = $this->book;
         $comments = $this->addComponent(Comments::class, 'comments');
         $comments->bindModel($this->book);
         $comments->bindModelOwner($this->book->profile);
+
+        $otherAuthorBook = $this->addComponent(Widget::class, 'otherAuthorBook');
+        $otherAuthorBook->setUpWidget(WidgetEnum::otherAuthorBook, book: $this->book, withHeader: false);
+
+        $with = $this->addComponent(Widget::class, 'with_this');
+        $with->setUpWidget(WidgetEnum::readingWithThisOne, book: $this->book, withHeader: false);
+
+        $hot_new = $this->addComponent(Widget::class, 'hotNew');
+        $hot_new->setUpWidget(WidgetEnum::hotNew, withHeader: false);
+
+        $popular = $this->addComponent(Widget::class, 'popular');
+        $popular->setUpWidget(WidgetEnum::popular, book: $this->book, withHeader: false);
+
+        $cycle = $this->addComponent(Widget::class, 'cycle');
+        $cycle->setUpWidget(WidgetEnum::cycle, book: $this->book, withHeader: false);
+
+        $recommend = $this->addComponent(Widget::class, 'recommend');
+        $recommend->setUpWidget(WidgetEnum::recommend, short: true);
     }
 }

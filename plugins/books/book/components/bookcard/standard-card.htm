@@ -1,7 +1,7 @@
 <div class="book-card">
     <div class="book-card__body">
         <div class="book-card__column-left">
-            <a  href="/book-card/{{book.id}}">
+            <a href="/book-card/{{book.id}}">
                 <img class="book-card__image" src="{{book.cover.getThumb(104,150)}}" alt="" loading="lazy">
             </a>
 
@@ -39,7 +39,12 @@
                 </div>
             </div>
             {% endif %}
-            <a data-turbo="false" href="/book-card/{{book.id}}" class="book-card__title ui-text-head--3 ui-text--bold">{{book.title}}</a>
+            <a data-turbo="false" href="/book-card/{{book.id}}" class="book-card__title ui-text-head--3 ui-text--bold">
+                {% if index_number %}
+                <span class="book-card__number ui-text-body--2">{{index_number}}</span>
+                {% endif %}
+                {{book.title}}
+            </a>
 
             <div class="book-card__genres tags-list">
                 {% for author in book.authors %}
@@ -66,11 +71,15 @@
                 </div>
                 <div class="book-card__book-list tags-list">
                     {% for genre in book.genres %}
-                    <a href="/listing?genre={{genre.id}}" class="ui-link _violet">#0 {{genre.name}}</a>
+                    <a href="/listing?genre={{genre.id}}" class="ui-link _violet">
+                        {% if genre.pivot.rate_number %}
+                        #{{genre.pivot.rate_number}} в
+                        {% endif %}
+                        {{genre.name}}</a>
                     {% endfor %}
                 </div>
             </div>
         </div>
     </div>
-   {% partial '@book-card-footer' %}
+    {% partial '@book-card-footer' %}
 </div>

@@ -2,12 +2,16 @@
 
 namespace Books\Book\Models;
 
+use Books\Book\Classes\Enums\BookStatus;
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 
 /**
  * Cycle Model
+ *
+ * @property $books
  */
 class Cycle extends Model
 {
@@ -94,5 +98,20 @@ class Cycle extends Model
     public function scopeName($q, string $name)
     {
         return $q->where('name', '=', $name);
+    }
+
+    public function scopeBooksEager(Builder $builder): Builder
+    {
+        return $builder->with(['books' => fn ($books) => $books->defaultEager()]);
+    }
+
+    public function getStatusAttribute(): BookStatus
+    {
+        return $this->books->pluck('status')->some(fn ($i) => $i === BookStatus::WORKING) ? BookStatus::WORKING : BookStatus::COMPLETE;
+    }
+
+    public function getLastUpdatedAtAttribute()
+    {
+        return $this->books->map->ebook->pluck('last_updated_at')->sortDesc()?->first();
     }
 }

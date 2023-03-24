@@ -1,16 +1,7 @@
 <div class="book-card__info">
     <div class="book-card__info-wrapper">
-        <div class="book-card__info-wrap _color-green ui-tooltip" data-tooltip="Электронная книга">
-            <svg class="book-card__favorit-active">
-                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>
-            </svg>
-            {% if book.ebook.realPrice %}
-            <span class="ui-text--bold">{{ book.ebook.realPrice }} &thinsp;₽</span>
-            {% else %}
-            <span class="ui-text--bold">Бесплатно</span>
-            {% endif %}
 
-        </div>
+        {% partial 'book/edition-info' edition=book.ebook %}
         {% partial 'site/book-status' status=book.ebook.status %}
         {% if book.ebook.sales_at %}
         <div class="book-card__info-dot"></div>

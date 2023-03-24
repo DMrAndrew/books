@@ -3,40 +3,42 @@
 namespace Books\Book\Classes;
 
 use Books\Book\Classes\Enums\BookStatus;
-use Books\Book\Classes\Enums\StatsEnum;
+use Books\Book\Jobs\GenreRating;
 use Books\Book\Models\Book;
-use Books\Book\Models\Stats;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
+use Books\Book\Models\BookGenre;
+use Books\Catalog\Models\Genre;
+use Db;
+use Queue;
 
 class GenreRater
 {
-    protected Stats $stats;
-
-    protected Book $book;
-
-    protected Builder $builder;
-
     public function __construct()
     {
     }
 
-    public function collectRate(): \October\Rain\Support\Collection|Collection
+    public function compute()
     {
-        return collect([
-            $this->stats->rate,
-            min(15, $this->stats[StatsEnum::READ_TIME->value]) * 3,
-            $this->stats->comments,
-            $this->stats[StatsEnum::READ_INITIAL->value] * 3,
-            $this->stats[StatsEnum::READ->value],
-            $this->stats[StatsEnum::READ_FINAL->value] * 3,
-            $this->book->ebook->status === BookStatus::WORKING ? $this->stats[StatsEnum::UPDATE_FREQUENCY->value] * 3 : 0,
-            $this->stats[StatsEnum::LIBS->value],
-        ]);
+        return Genre::query()
+            ->with(['books', 'books.ebook', 'books.stats'])
+            ->whereHas('books')
+            ->get()
+            ->map(function ($genre) {
+                $books = $genre->books->sortByDesc(fn (Book $book) => $book->stats->forGenres($book->status === BookStatus::WORKING));
+
+                Db::transaction(function () use ($books) {
+                    $books->map->pivot->each->update(['rate_number' => null]);
+                    BookGenre::query()->upsert(
+                        $books->values()
+                            ->map(fn ($book, $key) => array_merge($book->pivot->only(['book_id', 'genre_id']), ['rate_number' => $key + 1]))
+                            ->toArray(),
+                        ['book_id', 'genre_id'],
+                        ['rate_number']);
+                });
+            });
     }
 
-    public function getRate(): int
+    public static function queue(): void
     {
-        return $this->collectRate()->sum();
+        Queue::push(GenreRating::class);
     }
 }

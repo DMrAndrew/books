@@ -3,6 +3,7 @@
 namespace Books\Catalog\Models;
 
 use Books\Book\Models\Book;
+use Books\Book\Models\BookGenre;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\HasMany;
@@ -89,8 +90,10 @@ class Genre extends Model
         'books' => [
             Book::class,
             'table' => 'books_book_genre',
+            'pivotModel' => BookGenre::class,
             'key' => 'genre_id',
             'otherKey' => 'book_id',
+            'pivot' => ['rate_number'],
         ],
     ];
 

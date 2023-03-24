@@ -11,6 +11,7 @@ use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\FB2Manager;
 use Books\Book\Classes\Rater;
 use Books\Book\Classes\StatisticService;
+use Books\Book\Classes\WidgetService;
 use Books\Book\Components\AboutBook;
 use Books\Book\Components\BookCard;
 use Books\Book\Components\Booker;
@@ -20,6 +21,7 @@ use Books\Book\Components\EBooker;
 use Books\Book\Components\LCBooker;
 use Books\Book\Components\Reader;
 use Books\Book\Components\ReadStatistic;
+use Books\Book\Components\Widget;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
@@ -87,6 +89,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('EditionsEnums', EditionsEnums::class);
         AliasLoader::getInstance()->alias('Rater', Rater::class);
         AliasLoader::getInstance()->alias('StatisticService', StatisticService::class);
+        AliasLoader::getInstance()->alias('WidgetService', WidgetService::class);
 
         Event::listen('books.book.created', fn (Book $book) => $book->createEventHandler());
         Event::listen('books.book.updated', fn (Book $book) => $book->updateEventHandler());
@@ -125,6 +128,8 @@ class Plugin extends PluginBase
             Reader::class => 'reader',
             BookCard::class => 'bookCard',
             ReadStatistic::class => 'readStatistic',
+            Widget::class => 'widget',
+            Components\Cycle::class => 'cycle',
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace Books\Book\Models;
 
+use Illuminate\Support\Collection;
 use Model;
 use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\Validation;
@@ -13,6 +14,10 @@ use System\Models\Revision;
  * @property int likes
  * @property int rate
  * @property int comments
+ * @property int freq
+ * @property int libs
+ * @property int read_time
+ * @property int read_count
  *
  * @link https://docs.octobercms.com/3.x/extend/system/models.html
  */
@@ -28,7 +33,15 @@ class Stats extends Model
 
     protected $revisionable = ['rate'];
 
-    protected $fillable = ['likes_count', 'in_lib_count', 'read_count', 'rate', 'book_id', 'comments_count'];
+    protected $fillable = [
+        'book_id',
+        'likes_count',
+        'in_lib_count',
+        'read_count',
+        'rate',
+        'comments_count',
+        'freq',
+        'read_time', 'history'];
 
     /**
      * @var array rules for validation
@@ -45,6 +58,8 @@ class Stats extends Model
         'book' => [Book::class, 'key' => 'id', 'otherKey' => 'book_id'],
     ];
 
+    protected $jsonable = ['history'];
+
     public $morphMany = [
         'revision_history' => [Revision::class, 'name' => 'revisionable'],
     ];
@@ -52,6 +67,11 @@ class Stats extends Model
     public function getLikesAttribute()
     {
         return $this->likes_count;
+    }
+
+    public function getLibsAttribute()
+    {
+        return $this->in_lib_count;
     }
 
     public function getCommentsAttribute()

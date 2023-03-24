@@ -57,7 +57,9 @@ class Lib extends Model
 
     public function prunable()
     {
-        return static::where('created_at', '<=', now()->subWeeks(2));
+        return static::query()
+            ->where('created_at', '<=', now()->subWeeks(2))
+            ->type(CollectionEnum::WATCHED);
     }
 
     protected function beforeDelete()

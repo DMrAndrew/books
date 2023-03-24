@@ -156,6 +156,11 @@ class Chapter extends Model
         return new ChapterService($this);
     }
 
+    public function isFree(): bool
+    {
+        return $this->sales_type === ChapterSalesType::FREE;
+    }
+
     public function paginationTrackers()
     {
         return $this->hasManyDeepFromRelations(
@@ -221,6 +226,9 @@ class Chapter extends Model
             $this->next?->setNeighbours();
             $this->fresh()->setNeighbours();
             $this->edition->setFreeParts();
+            if ($this->status === ChapterStatus::PUBLISHED) {
+                $this->edition->lengthRecount();
+            }
         }
     }
 

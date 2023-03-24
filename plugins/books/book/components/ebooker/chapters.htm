@@ -21,7 +21,7 @@
                     <span class="ui-text--bold chapter-title">
                       {{chapter.title|raw}}
                     </span>
-                            {% if chapter.status.value == 'draft' %}
+                            {% if not chapter.isFree %}
                             <svg class="square-16">
                                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#lock-filled-16' | theme}}"></use>
                             </svg>

@@ -7,6 +7,7 @@ use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Db;
 use Model;
 use October\Rain\Database\Builder;
@@ -42,6 +43,8 @@ class Edition extends Model
 
     protected $revisionable = ['length', 'status'];
 
+    public $revisionableLimit = 5000;
+
     public string $trackerChildRelation = 'chapters';
 
     protected $fillable = [
@@ -65,6 +68,8 @@ class Edition extends Model
         'comment_allowed' => 'boolean',
         'status' => BookStatus::class,
     ];
+
+    protected $dates = ['sales_at'];
 
     /**
      * @var array rules for validation
@@ -100,20 +105,37 @@ class Edition extends Model
         return new EditionService($this);
     }
 
+    public function getLastUpdatedAtAttribute()
+    {
+        return $this->revision_history()->where('field', '=', 'length')->orderByDesc('created_at')->first()?->created_at;
+    }
+
     public function getUpdateHistoryAttribute()
     {
-        $history = $this->revision_history()->where('field', '=', 'length')->get();
+        $items = $this->revision_history()
+            ->where('field', '=', 'length')
+            ->get()
+            ->chunkWhile(function ($value, $key, $chunk) {
+                return ((int) $chunk->sum('new_value') - (int) $chunk->sum('old_value')) <= 5000;
+            })->map(function ($collection) {
+                return [
+                    'date' => $collection->last()->created_at->format('d.m.y'),
+                    'value' => (int) $collection->last()->new_value - (int) $collection->first()->old_value,
+                    'new_value' => (int) $collection->last()->new_value,
+                ];
+            })->filter(fn ($i) => (int) $i['value'] > 0)->reverse();
+
+        $count = $items->count();
+        $days = $count ? CarbonPeriod::create($items->last()['date'], $items->first()['date'])->count() : 0;
+        $freq_string = $count ? getFreqString($count, $days) : '';
+        $freq = $count ? $count / $days : 0;
 
         return [
-            'start' => $history->first()?->created_at->format('d.m.y') ?? '-',
-            'freq' => '2',
-            'items' => $history->map(function (Revision $revision) {
-                return [
-                    'date' => $revision->created_at->format('d.m.y'),
-                    'value' => (int) $revision->new_value - (int) $revision->old_value,
-                    'new_value' => (int) $revision->new_value,
-                ];
-            })->reverse(),
+            'freq' => $freq,
+            'freq_string' => $freq_string,
+            'items' => $items,
+            'count' => $count,
+            'days' => $days,
         ];
     }
 
@@ -186,9 +208,9 @@ class Edition extends Model
         return $builder->withMax(['trackers as progress' => fn ($trackers) => $trackers->user($user)->withoutTodayScope()], 'progress');
     }
 
-    public function getRealPriceAttribute()
+    public function getPriceAttribute()
     {
-        return (bool) $this->sales_free ? 0 : $this->price;
+        return (bool) $this->sales_free ? 0 : $this->attributes['price'];
     }
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder

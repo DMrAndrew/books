@@ -16,13 +16,17 @@
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
                     </svg>
-                    <span>0</span>
+                    <span>{{book.stats.rate ?:0}}</span>
                 </div>
                 <div class="book-card__body-footer">
 
                     <div class="book-card__book-list tags-list">
                         {% for genre in book.genres %}
-                        <a href="#" class="ui-link _violet">#0 {{genre.name}}</a>
+                        <a href="#" class="ui-link _violet">
+                            {% if genre.pivot.rate_number %}
+                            #{{genre.pivot.rate_number}} в
+                            {% endif %}
+                            {{genre.name}}</a>
                         {% endfor %}
 
                     </div>

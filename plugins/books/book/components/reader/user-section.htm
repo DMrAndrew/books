@@ -22,7 +22,11 @@
 
     <div class="reader-user__books tags-list">
         {% for genre in book.genres %}
-        <a href="#" class="book-card-full-info__link _desktop ui-link _violet">#0 в {{genre.name}}</a>
+        <a href="/listing?genre={{genre.id}}" class="book-card-full-info__link _desktop ui-link _violet">
+            {% if genre.pivot.rate_number %}
+            #{{genre.pivot.rate_number}} в
+            {% endif %}
+            {{genre.name}}</a>
         {% endfor %}
 
     </div>

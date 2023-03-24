@@ -5,6 +5,7 @@
  * и включено расширение mbstring (Multibyte String Functions)
  */
 
+use Carbon\CarbonInterval;
 use RainLab\User\Facades\Auth;
 
 if (! function_exists('mb_ucfirst') && extension_loaded('mbstring')) {
@@ -79,6 +80,15 @@ function shouldRestrictContent(): bool
     $foreign = parse_url(config('app.foreign_url') ?? '');
 
     return request()->host() !== $foreign['host'] ?? $foreign['path'];
+}
+
+function getFreqString(int $count, int $days): string
+{
+    return $count
+        .' '
+        .(new WordForm(...['раз', 'раза', 'раз']))->getCorrectSuffix($count)
+        .' в '
+        .str_replace('неделя', 'неделю', CarbonInterval::days($days)->cascade()->forHumans(['parts' => 1, 'aUnit' => true]));
 }
 
 ?>

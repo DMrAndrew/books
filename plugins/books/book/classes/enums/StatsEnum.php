@@ -12,7 +12,7 @@ enum StatsEnum: string
     case READ_FINAL = 'read_final'; //показатель прочтения последней главы
     case RATE = 'rate';
 
-    case READ_TIME = 'time'; //показатель прочтения последней главы
+    case READ_TIME = 'time';
 
     case UPDATE_FREQUENCY = 'frequency';
 }

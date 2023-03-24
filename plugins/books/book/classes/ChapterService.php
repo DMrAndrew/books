@@ -211,7 +211,6 @@ class ChapterService
         $event = Db::transaction(function () {
             $this->chapter->fill(['status' => ChapterStatus::PUBLISHED]);
             $this->chapter->save();
-            $this->chapter->edition->lengthRecount();
 
             return fn () => Event::fire('books.chapter.published', [$this->chapter]);
         });

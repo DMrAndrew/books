@@ -14,6 +14,12 @@ class Rater
 {
     use Conditionable;
 
+    const MAX_READ_TIME_MINUTES_PER_PAGE = 15;
+
+    const SHIFT_LENGTH = 5000;
+
+    protected bool $withDump = false;
+
     protected Stats $stats;
 
     protected array $closures = [];
@@ -24,6 +30,16 @@ class Rater
     {
         $this->stats = $this->book->exists ? $this->book->stats : new Stats();
         $this->builder = Book::query();
+    }
+
+    /**
+     * @param  bool  $withDump
+     */
+    public function setWithDump(bool $withDump): static
+    {
+        $this->withDump = $withDump;
+
+        return $this;
     }
 
     private function canPerform(): bool
@@ -71,6 +87,10 @@ class Rater
         $this->stats->save();
         $this->closures = [];
 
+        if ($this->withDump) {
+            $this->stats->dump();
+        }
+
         return $this;
     }
 
@@ -108,20 +128,28 @@ class Rater
 
     public function applyStatsAll(): static
     {
-        $this->applyStats(StatsEnum::LIBS, StatsEnum::COMMENTS, StatsEnum::READ, StatsEnum::LIKES);
+        $this->applyStats(
+            StatsEnum::LIBS,
+            StatsEnum::COMMENTS,
+            StatsEnum::READ,
+            StatsEnum::LIKES,
+            StatsEnum::UPDATE_FREQUENCY,
+            StatsEnum::READ_TIME
+        );
 
         return $this;
     }
 
-    public static function queueAllBook(StatsEnum ...$stats): int
+    public function applyAllBook(StatsEnum ...$stats): int
     {
         $count = 0;
         foreach (Book::cursor() as $book) {
             $book->rater()
-                ->when(! count($stats),
-                    fn ($rater) => $rater->applyStatsAll(),
-                    fn ($rater) => $rater->applyStats($stats))
-                ->queue();
+                ->setWithDump($this->withDump)
+                ->when(count($stats),
+                    fn ($rater) => $rater->applyStats($stats),
+                    fn ($rater) => $rater->applyStatsAll())
+                ->apply();
             $count++;
         }
 
@@ -134,6 +162,31 @@ class Rater
         $this->closures[StatsEnum::RATE->value] = function () {
             $this->book['rate'] = $this->book['likes_count']; // Пока есть только лайки
             $this->set('rate');
+        };
+
+        return $this;
+    }
+
+    public function frequency(): static
+    {
+        $this->closures[StatsEnum::UPDATE_FREQUENCY->value] = function () {
+            $this->book['freq'] = $this->book->ebook->updateHistory['freq'];
+            $this->set('freq');
+        };
+
+        return $this;
+    }
+
+    public function time(): static
+    {
+        $this->closures[StatsEnum::READ_TIME->value] = function () {
+            $this->book['read_time'] = (int) ceil($this->book
+                    ->paginationTrackers()
+                    ->where('time', '>', 0)
+                    ->get()
+                    ->where('time', '<', self::MAX_READ_TIME_MINUTES_PER_PAGE * 60)
+                    ->sum('time') / 60);
+            $this->set('read_time');
         };
 
         return $this;

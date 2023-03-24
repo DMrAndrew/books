@@ -106,7 +106,7 @@ class AuthorSpace extends ComponentBase
         return Redirect::refresh();
 
         return [
-            '#sub-button' => $this->renderPartial('@sub-button', ['sub' => $this->user->profile->hasSubscription($this->profile)])
+            '#sub-button' => $this->renderPartial('@sub-button', ['sub' => $this->user->profile->hasSubscription($this->profile)]),
         ];
     }
 }

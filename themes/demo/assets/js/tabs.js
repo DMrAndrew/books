@@ -14,5 +14,11 @@ function initTabs(container) {
                 link.classList.toggle('active', activeTabIndex === link.dataset.tab)
             }
         });
+
+        for (let tab of tabPanes) {
+            if (tab.childElementCount === 0 && curLink.dataset.tab === tab.dataset.tabContent) {
+                curLink.style.display = 'none';
+            }
+        }
     }
 }
