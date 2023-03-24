@@ -3,6 +3,8 @@
 namespace Books\Comments\Models;
 
 use App\traits\ScopeUser;
+use Books\Book\Models\Book;
+use Books\Profile\Models\Profile;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\SimpleTree;
@@ -75,5 +77,21 @@ class Comment extends Model
     public function replayWordForm(): WordForm
     {
         return new WordForm(...['ответ', 'ответа', 'ответов']);
+    }
+
+    public function toShortString(): string
+    {
+        return match (get_class($this->commentable)) {
+            Book::class => 'к книге '.$this->commentable->title,
+            Profile::class => 'в профиле пользователя '.$this->commentable->username,
+        };
+    }
+
+    public function toCommentableLink(): string
+    {
+        return match (get_class($this->commentable)) {
+            Book::class => '/book-card/',
+            Profile::class => '/author-page/',
+        }.$this->commentable->id;
     }
 }

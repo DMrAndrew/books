@@ -132,7 +132,7 @@ class Profile extends Model
     ];
 
     public $hasMany = [
-        'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id', 'scope' => 'sortByAuthorOrder'],
+        'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id'],
         'settings' => [Settings::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
     ];
 
@@ -191,6 +191,32 @@ class Profile extends Model
         };
     }
 
+    public function canSeeCommentFeed(?Profile $profile = null)
+    {
+        $profile ??= Auth::getUser()?->profile;
+        if (! $profile) {
+            return false;
+        }
+        if ($profile->is($this)) {
+            return true;
+        }
+        $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_COMMENT_FEED)->first();
+        if (! $setting) {
+            return false;
+        }
+
+        return match (PrivacySettingsEnum::tryFrom($setting->value)) {
+            PrivacySettingsEnum::ALL => true,
+            PrivacySettingsEnum::SUBSCRIBERS => $profile->hasSubscription($this),
+            default => false
+        };
+    }
+
+    public function scopeShortPublicEager(Builder $builder)
+    {
+        return $builder->booksCount()->withSubscriberCount()->with(['avatar']);
+    }
+
     public function scopeBooksExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
         return $builder->whereHas('books', fn ($book) => $book->public());
@@ -214,11 +240,6 @@ class Profile extends Model
     public function rejectClipboardUsername()
     {
         $this->service()->replaceUsernameFromClipboard(reject: true);
-    }
-
-    public function authorshipsAs(?bool $is_owner): HasMany
-    {
-        return $this->authorships()->when(! is_null($is_owner), fn (Builder $builder) => $is_owner ? $builder->owner() : $builder->notOwner());
     }
 
     public function getFirstLatterAttribute(): string
@@ -259,11 +280,6 @@ class Profile extends Model
     public function isContactsEmpty(): bool
     {
         return ! collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn ($i) => (bool) $i);
-    }
-
-    public function booksSortedByAuthorOrder(): BelongsToMany
-    {
-        return $this->books()->orderByPivot('sort_order', 'desc');
     }
 
     public static function wordForm(): WordForm

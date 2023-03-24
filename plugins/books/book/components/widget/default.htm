@@ -1,0 +1,38 @@
+{% if widget.items[0] %}
+{% if not widget.short %}
+{% if widget.withHeader %}
+<div class="thematic-section ">
+    <div class="thematic-section__header">
+        <div class="ui-text-head--3 ui-text--bold">{{widget.enum.label}}</div>
+        {% if widget.withAll %}
+        <a href="/listing/?widget={{widget.enum.value}}" class="thematic-section__link ui-link _violet">Все</a>
+        {% endif %}
+    </div>
+    {% partial 'controls/thematic-section-container' withPrice=true books=widget.items %}
+</div>
+{% else %}
+{% partial 'controls/thematic-section-container' books=widget.items %}
+{% endif %}
+{% else %}
+<div class="thematic-section">
+    <div class="thematic-section__header">
+        <div class="ui-text-head--3 ui-text--bold">{{widget.enum.label}}</div>
+        {% if widget.withAll %}
+        <a href="/listing/?widget={{widget.enum.value}}" class="thematic-section__link ui-link _violet">Все</a>
+        {% endif %}
+    </div>
+    <div class="thematic-section__container ">
+        {% for item in collect(widget.items).slice(0,3) %}
+        <a href="/book-card/{{item.id}}" class="book-sidebar-card _indent">
+            <img src="{{item.cover_thumb}}"
+                 class="book-sidebar-card__image" alt="Обложка" loading="lazy">
+            <div class="book-sidebar-card__description">
+                <div class="book-sidebar-card__label">{{item.author.profile.username}}</div>
+                <div class="book-sidebar-card__title">{{item.title}}</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endif %}

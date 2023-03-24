@@ -42,8 +42,6 @@
                     <!--                        автора</button>-->
                     {% endif %}
                     {% endif %}
-
-
                 </div>
             </div>
         </div>
@@ -54,17 +52,32 @@
                     <div class="ui-tabs-line"></div>
                     <div class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
                         <div class="ui-tabs-link active" data-tab="1">Профиль</div>
-                        <div class="ui-tabs-link " data-tab="2">Книги <span> {{ books_count }} </span>
+                        <div class="ui-tabs-link " data-tab="2">Книги
+                            {% if books.count %}
+                            <span>{{books.count?:''}}</span>
+                            {% endif %}
                         </div>
 
                         <!--                        <div class="ui-tabs-link " data-tab="3">Магазин<span>12</span></div>-->
                         <!--                        <div class="ui-tabs-link " data-tab="4">Циклы</div>-->
                         <!--                        <div class="ui-tabs-link " data-tab="5">Блог</div>-->
                         <!--                        <div class="ui-tabs-link " data-tab="6">Видеоблог</div>-->
-                        <!--                        <div class="ui-tabs-link " data-tab="7">Подписки</div>-->
-                        <!--                        <div class="ui-tabs-link " data-tab="8">Подписчики</div>-->
+                        <div class="ui-tabs-link " data-tab="7">Подписки
+                            {% if subscriptions.count %}
+                            <span>{{subscriptions.count?:''}}</span>
+                            {% endif %}
+                        </div>
+                        <div class="ui-tabs-link " data-tab="8">Подписчики
+                            {% if subscribers.count %}
+                            <span>{{subscribers.count?:''}}</span>
+                            {% endif %}
+                        </div>
                         <!--                        <div class="ui-tabs-link " data-tab="9">Награды</div>-->
-                        <!--                        <div class="ui-tabs-link " data-tab="10">Комментарии</div>-->
+                        <div class="ui-tabs-link " data-tab="10">Комментарии
+                            {% if comments.count %}
+                            <span>{{comments.count?:''}}</span>
+                            {% endif %}
+                        </div>
                         <!--                        <div class="ui-tabs-link " data-tab="11">Репосты</div>-->
                     </div>
                 </div>
@@ -80,6 +93,18 @@
         <div class="ui-tabs-content" data-tab-content="2">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Книги <span
                 class="ui-text-body--2"> {{ books_count }}</span></div>
+        </div>
+        <div class="ui-tabs-content" data-tab-content="7">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписки <span
+                class="ui-text-body--2">{{subscriptions.count?:''}}</span></div>
+        </div>
+        <div class="ui-tabs-content" data-tab-content="8">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписчики <span
+                class="ui-text-body--2">{{subscribers.count?:''}}</span></div>
+        </div>
+        <div class="ui-tabs-content" data-tab-content="10">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Комментарии <span
+                class="ui-text-body--2">{{comments.count?:''}}</span></div>
         </div>
     </div>
     <div class="ui-grid-container ui-grid-gap">
@@ -154,29 +179,11 @@
                 </div>
                 <!-- Книги -->
                 <div class="author-books ui-tabs-content" data-tab-content="2">
-
-                    {% if books_count == 0 %}
-                    <div class="author__placeholder _indent">
-                        <svg class="square-32">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
-                        </svg>
-                        {% if isOwner %}
-                        <div class="ui-text-head--3 ui-text--bold">У вас нет книг</div>
-                        <span>Тут будет какой-нибудь привлекающий текст, как в литмаркете</span>
-                        <a href="/create-book" data-turbo="false">
-                            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile"
-                                    type="submit">Добавить книгу
-                            </button>
-                        </a>
-                        {% else %}
-                        <div class="ui-text-head--3 ui-text--bold">У автора нет книг</div>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-
+                    {% if books.count %}
                     {% for book in books %}
                     {% ajaxPartial "bookCard::standard-card" book=book %}
                     {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -243,41 +250,7 @@
                 {% endif %}
             </div>
             {% endif %}
-            <div class="thematic-section">
-                <div class="thematic-section__header">
-                    <div class="ui-text-head--3 ui-text--bold">Рекомендуем</div>
-                    <a href="#" class="thematic-section__link ui-link _violet">Все</a>
-                </div>
-                <div class="thematic-section__container ">
-                    <a href="#" class="book-sidebar-card _indent">
-                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
-                             class="book-sidebar-card__image" alt=""
-                             loading="lazy">
-                        <div class="book-sidebar-card__description">
-                            <div class="book-sidebar-card__label">ЛитРПГ</div>
-                            <div class="book-sidebar-card__title">Сага о неудачнике 3</div>
-                        </div>
-                    </a>
-                    <a href="#" class="book-sidebar-card _indent">
-                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
-                             class="book-sidebar-card__image" alt=""
-                             loading="lazy">
-                        <div class="book-sidebar-card__description">
-                            <div class="book-sidebar-card__label">ЛитРПГ</div>
-                            <div class="book-sidebar-card__title">История бессмертного-3. Свобода или смерть</div>
-                        </div>
-                    </a>
-                    <a href="#" class="book-sidebar-card _indent">
-                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
-                             class="book-sidebar-card__image" alt=""
-                             loading="lazy">
-                        <div class="book-sidebar-card__description">
-                            <div class="book-sidebar-card__label">ЛитРПГ</div>
-                            <div class="book-sidebar-card__title">История бессмертного-8. Ключевой мир</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
+            {% component 'recommend' %}
         </div>
     </div>
 </div>

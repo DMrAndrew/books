@@ -1,38 +1,36 @@
 <div class="ui-container">
     <h1 class="listing-book__title ui-text--bold">
         <span class="ui-text-head--2">Книги </span>
-        <span>{{bind.books.count()}}</span>
+        <span>{{bind.books.count}}</span>
     </h1>
-    <!--    <div class="listing-book__sort">-->
-    <!--        <span class="listing-book__sort-text">Популярные за неделю</span>-->
-    <!--        <svg class="listing-book__sort-icon">-->
-    <!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>-->
-    <!--        </svg>-->
+        <div class="listing-book__sort">
+            <input type="hidden" name="sort" value="{{bind.sort.value}}"/>
+            <span class="listing-book__sort-text">{{bind.sort.label}}</span>
+            <svg class="listing-book__sort-icon">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+            </svg>
 
-    <!--        <div class="listing-book-sort">-->
-    <!--            <div class="listing-book-sort__container">-->
-    <!--                <div class="listing-book-sort__item">-->
-    <!--                    <svg>-->
-    <!--                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
-    <!--                    </svg>-->
-    <!--                    <span>Популярные за сегодня</span>-->
-    <!--                </div>-->
-    <!--                <div class="listing-book-sort__item active">-->
-    <!--                    <svg>-->
-    <!--                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
-    <!--                    </svg>-->
-    <!--                    <span>Популярные за сегодня</span>-->
-    <!--                </div>-->
-    <!--                <div class="listing-book-sort__item">-->
-    <!--                    <svg>-->
-    <!--                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>-->
-    <!--                    </svg>-->
-    <!--                    <span>Популярные за сегодня</span>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--        </div>-->
+            <div class="listing-book-sort" style="z-index: 100">
+                <div class="listing-book-sort__container">
+                    {% for sort in bind.sorts %}
+                    <div class="listing-book-sort__item {{bind.sort.value == sort.value ? 'active' : '' }}"
 
-    <!--    </div>-->
+                    >
+                        <svg>
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>
+                        </svg>
+                        <span  onclick="oc.request(this,'listing::onSearch',{
+                            data:{
+                                sort:`{{sort.value}}`
+                            }
+                        })"
+                               >{{sort.label}}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
     <button class="listing-book__filter-button" type="button" onclick="filterOpen(event);">
         <svg class="listing-book__sort-icon">
             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#filter-stroked-16' | theme}}"></use>
@@ -115,16 +113,7 @@
                     </div>
                 </div>
                 <div class="listing-book-filters__checkbox-wrapper">
-                    <!--                <label class="ui-checkbox">-->
-                    <!--                    <input type="hidden" name="best_sellers" value="off">-->
-                    <!--                    <input data-request="listing::onSearch" data-track-input="300" type="checkbox" name="best_sellers" hidden {{bind.best_sellers == 'on' ? 'checked' : ''}}>-->
-                    <!--                    <div class="ui-checkbox-checker">-->
-                    <!--                        <svg>-->
-                    <!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>-->
-                    <!--                        </svg>-->
-                    <!--                    </div>-->
-                    <!--                    <span class="ui-checkbox-text">Бестселлеры</span>-->
-                    <!--                </label>-->
+
                     <label class="ui-checkbox">
                         <input type="hidden" name="free" value="off">
                         <input data-request="listing::onSearch" data-track-input="{{bind.trackInputTime}}"
@@ -152,7 +141,47 @@
                         <span class="ui-checkbox-text">Только законченные</span>
                     </label>
                 </div>
-
+                <div class="listing-book-filters__radio-wrapper">
+                    <label class="ui-radio">
+                        <input data-request="listing::onSearch"
+                               data-track-input="{{bind.trackInputTime}}"
+                               type="radio" name="widget" value="" checked  hidden>
+                        <div class="ui-radio-checker"></div>
+                        <span class="ui-radio-text">Без подборки</span>
+                    </label>
+                    <label class="ui-radio">
+                        <input data-request="listing::onSearch"
+                               data-track-input="{{bind.trackInputTime}}"
+                               type="radio" name="widget" value="recommend" {{bind.widget.value == 'recommend' ?
+                        'checked' : '' }} hidden>
+                        <div class="ui-radio-checker"></div>
+                        <span class="ui-radio-text">Рекомендуем</span>
+                    </label>
+                    <label class="ui-radio">
+                        <input data-request="listing::onSearch"
+                               data-track-input="{{bind.trackInputTime}}"
+                               type="radio" name="widget" value="new" {{bind.widget.value == 'new' ?
+                        'checked' : '' }} hidden>
+                        <div class="ui-radio-checker"></div>
+                        <span class="ui-radio-text">Новинки</span>
+                    </label>
+                    <label class="ui-radio">
+                        <input data-request="listing::onSearch"
+                               data-track-input="{{bind.trackInputTime}}"
+                               type="radio" name="widget" value="hotNew" {{bind.widget.value == 'hotNew' ?
+                        'checked' : '' }} hidden>
+                        <div class="ui-radio-checker"></div>
+                        <span class="ui-radio-text">Горячие новинки</span>
+                    </label>
+                    <label class="ui-radio">
+                        <input data-request="listing::onSearch"
+                               data-track-input="{{bind.trackInputTime}}"
+                               type="radio" name="widget" value="gainingPopularity" {{bind.widget.value == 'gainingPopularity' ?
+                        'checked' : '' }} hidden>
+                        <div class="ui-radio-checker"></div>
+                        <span class="ui-radio-text">Набирают популярность</span>
+                    </label>
+                </div>
                 {% partial 'controls/autocomplete'
                 label='Теги'
                 name='includeTags'

@@ -58,4 +58,68 @@ class Stats extends Model
     {
         return $this->comments_count;
     }
+
+    public function dump()
+    {
+        $h = $this->history;
+        $h[$this->updated_at->format('d.m.y')] = $this->attributes;
+        $this->history = $h;
+        $this->save();
+    }
+
+    public function forGenres(bool $includeFreq = true): float|int
+    {
+        return $this->toRateValue(collect([
+            $this->rate,
+            $this->comments,
+            $this->libs,
+            $this->likes,
+            $this->read_time,
+            $this->read_count,
+            $includeFreq ? $this->freq : 0,
+        ]));
+    }
+
+    public function gainingPopularity(bool $includeFreq = true): float|int
+    {
+        return $this->toRateValue(collect([
+            $this->rate,
+            $this->comments * 2,
+            $this->libs * 2,
+            $this->likes,
+            $this->read_time * 3,
+            $this->read_count,
+            $includeFreq ? $this->freq : 0,
+        ]));
+    }
+
+    public function popular(): float|int
+    {
+        return $this->toRateValue(collect([
+            $this->rate,
+            $this->read_time * 3,
+            $this->comments * 2,
+            $this->read_count,
+        ]));
+    }
+
+    public function hotNew(bool $includeFreq = true): float|int
+    {
+        return $this->toRateValue(collect([
+            $this->rate,
+            $this->comments,
+            $this->libs,
+            $this->likes,
+            $this->read_time * 3,
+            $this->read_count,
+            $includeFreq ? $this->freq * 3 : 0,
+        ]));
+    }
+
+    public function toRateValue(Collection $collection): float|int
+    {
+        $collection = $collection->filter(fn ($i) => (bool) $i);
+
+        return $collection->count() ? $collection->sum() / $collection->count() : 0;
+    }
 }

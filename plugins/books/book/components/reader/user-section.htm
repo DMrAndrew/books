@@ -8,17 +8,16 @@
             {{profile.firstLatter}}
             {% endif %}
         </div>
-
         <span class="ui-text--bold">{{profile.username}}</span>
     </div>
     {% endfor %}
 
-    <a href="" class="reader-user__support ui-link _violet disabled">
-        <svg class="square-16">
-            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#coins-stroked-16' | theme}}"></use>
-        </svg>
-        <span>Поддержать автора</span>
-    </a>
+    <!--    <a href="" class="reader-user__support ui-link _violet disabled">-->
+    <!--        <svg class="square-16">-->
+    <!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#coins-stroked-16' | theme}}"></use>-->
+    <!--        </svg>-->
+    <!--        <span>Поддержать автора</span>-->
+    <!--    </a>-->
     {% ajaxPartial "bookCard::reader-card" book=book %}
 
     <div class="reader-user__books tags-list">
@@ -27,5 +26,8 @@
         {% endfor %}
 
     </div>
-    <!--                    <div>Отредактировано: 05.09.2022</div>-->
+    {% set last_updated_at = book.ebook.last_updated_at %}
+    {% if last_updated_at %}
+    <div>Отредактировано: {{last_updated_at.format('d.m.y')}}</div>
+    {% endif %}
 </div>

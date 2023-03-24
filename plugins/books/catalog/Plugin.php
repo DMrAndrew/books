@@ -93,13 +93,19 @@ class Plugin extends PluginBase
     {
         return [
             'catalog' => [
-                'label' => 'Каталог',
+                'label' => 'Время книг',
                 'url' => Backend::url('books/catalog/catalog'),
                 'icon' => 'icon-leaf',
                 'permissions' => ['books.catalog.*'],
                 'order' => 500,
 
                 'sideMenu' => [
+                    'books' => [
+                        'label' => 'Книги',
+                        'icon' => 'icon-leaf',
+                        'url' => Backend::url('books/book/book'),
+                        'permissions' => ['books.book.*'],
+                    ],
                     'types' => [
                         'label' => 'Типы книг',
                         'icon' => 'icon-leaf',

@@ -1,7 +1,9 @@
-<?php namespace Books\Profile\Components;
+<?php
 
+namespace Books\Profile\Components;
 
 use Cms\Classes\ComponentBase;
+use Exception;
 use RainLab\User\Facades\Auth;
 
 /**
@@ -11,15 +13,15 @@ use RainLab\User\Facades\Auth;
  */
 class Subs extends ComponentBase
 {
-
     protected \Books\Profile\Models\Profile $profile;
+
     protected string $relation;
 
     public function componentDetails()
     {
         return [
             'name' => 'Subs Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -51,13 +53,13 @@ class Subs extends ComponentBase
         return [
             'subscribers' => [
                 'label' => 'Подписаться',
-                'request' => $this->alias . '::onAdd',
-                'empty' => 'У вас пока нет ни одного подписчика'
+                'request' => $this->alias.'::onAdd',
+                'empty' => 'У вас пока нет ни одного подписчика',
             ],
             'subscriptions' => [
                 'label' => 'Отписаться',
-                'request' => $this->alias . '::onRemove',
-                'empty' => 'У вас пока нет ни одной подписки'
+                'request' => $this->alias.'::onRemove',
+                'empty' => 'У вас пока нет ни одной подписки',
             ],
         ];
     }
@@ -65,15 +67,15 @@ class Subs extends ComponentBase
     public function getVals()
     {
         return [
-            'items' => $this->profile->{$this->relation}()->get(),
+            'items' => $this->profile->{$this->relation}()->with(['avatar'])->get(),
             'options' => $this->options()[$this->relation],
         ];
     }
 
     public function bind(string $relation)
     {
-        if (!in_array(strtolower($relation), ['subscribers', 'subscriptions'])) {
-            throw new \Exception('Subscribers или Subscriptions');
+        if (! in_array(strtolower($relation), ['subscribers', 'subscriptions'])) {
+            throw new Exception('Subscribers или Subscriptions');
         }
         $this->relation = strtolower($relation);
     }
@@ -82,8 +84,9 @@ class Subs extends ComponentBase
     {
         $profile = \Books\Profile\Models\Profile::find(post('id'));
         if ($profile) {
-            $profile->{'add' .ucfirst( $this->relation)}($this->profile);
+            $profile->{'add'.ucfirst($this->relation)}($this->profile);
         }
+
         return $this->render();
     }
 
@@ -91,13 +94,14 @@ class Subs extends ComponentBase
     {
         $profile = \Books\Profile\Models\Profile::find(post('id'));
         if ($profile) {
-            $this->profile->{'remove' . ucfirst( $this->relation)}($profile);
+            $this->profile->{'remove'.ucfirst($this->relation)}($profile);
         }
+
         return $this->render();
     }
 
     public function render()
     {
-        return ['#sub-spawn' => $this->renderPartial('@default',$this->getVals())];
+        return ['#sub-spawn' => $this->renderPartial('@default', $this->getVals())];
     }
 }

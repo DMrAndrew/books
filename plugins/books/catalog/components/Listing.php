@@ -3,11 +3,15 @@
 namespace Books\Catalog\Components;
 
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Enums\SortEnum;
+use Books\Book\Classes\Enums\WidgetEnum;
+use Books\Book\Classes\WidgetService;
 use Books\Book\Models\Book;
 use Books\Book\Models\Tag;
 use Books\Catalog\Classes\ListingFilter;
 use Books\Catalog\Models\Genre;
 use Cms\Classes\ComponentBase;
+use Exception;
 use Illuminate\Support\Collection;
 
 /**
@@ -59,6 +63,7 @@ class Listing extends ComponentBase
         return array_merge($this->filter->toBind(), [
             'books' => $this->books(),
             'trackInputTime' => $this->trackInputTime,
+            'sorts' => SortEnum::cases(),
         ]);
     }
 
@@ -186,9 +191,12 @@ class Listing extends ComponentBase
         ];
     }
 
+    /**
+     * @throws Exception
+     */
     public function books()
     {
-        return Book::query()
+        $query = Book::query()
             ->hasGenres($this->filter->excludes(Genre::class)->pluck('id')->toArray(), 'exclude')
             ->hasGenres($this->filter->includes(Genre::class)->pluck('id')->toArray())
             ->hasTags($this->filter->excludes(Tag::class)->pluck('id')->toArray(), 'exclude')
@@ -199,8 +207,32 @@ class Listing extends ComponentBase
             ->when($this->filter->free, fn ($q) => $q->free())
             ->when($this->filter->type, fn ($q) => $q->type($this->filter->type))
             ->public()
-            ->defaultEager()
-            ->get();
+            ->defaultEager();
+
+        $books = null;
+        if ($this->filter->widget && in_array($this->filter->widget, [
+            WidgetEnum::recommend,
+            WidgetEnum::hotNew,
+            WidgetEnum::new,
+            WidgetEnum::gainingPopularity])) {
+            $service = new WidgetService($this->filter->widget);
+
+            $books = $service
+                ->setQuery($query)
+                ->setDisableCache(true)
+                ->setDiffWithUser(false)
+                ->get();
+        }
+
+        $books ??= $query->get();
+
+        return match ($this->filter->sort) {
+            SortEnum::popular_day, SortEnum::popular_week, SortEnum::popular_month => $books->sortByDesc(fn ($book) => $book->stats->popular()),
+            SortEnum::new => $this->filter->widget === WidgetEnum::new ? $books : Book::sortCollectionBySalesAt($books),
+            SortEnum::hotNew, SortEnum::gainingPopularity => $books->sortByDesc(fn ($book) => $book->getCollectedRate($this->filter->sort === SortEnum::hotNew ? WidgetEnum::hotNew : WidgetEnum::gainingPopularity)),
+            SortEnum::topRate => $books->sortByDesc(fn ($book) => $book->stats->rate),
+            default => $books
+        };
     }
 
     public function renderOptions(Collection $options, array $itemOptions = []): array

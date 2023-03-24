@@ -46,7 +46,7 @@ class Author extends Model
         'percent' => 'integer|min:0|max:100',
         'is_owner' => 'boolean',
         'sort_order' => 'integer',
-        'accepted' => 'nullable|boolean'
+        'accepted' => 'nullable|boolean',
     ];
 
     protected $casts = [
@@ -59,10 +59,16 @@ class Author extends Model
         'profile' => [Profile::class, 'key' => 'profile_id', 'otherKey' => 'id'],
     ];
 
-    public function scopeOwner(Builder $builder): Builder
+    public function scopeOwner(Builder $builder, $value = true): Builder
     {
-        return $builder->where('is_owner', '=', true);
+        return $builder->when(is_bool($value), fn ($b) => $b->where('is_owner', '=', $value));
     }
+
+    public function scopeCoAuthors(Builder $builder): Builder
+    {
+        return $builder->whereNull('is_owner');
+    }
+
     public function scopeAccepted(Builder $builder): Builder
     {
         return $builder->where('accepted', '=', true);
@@ -76,13 +82,6 @@ class Author extends Model
     public function scopeAwait(Builder $builder): Builder
     {
         return $builder->where('accepted', '=', null);
-    }
-
-
-
-    public function scopeNotOwner(Builder $builder): Builder
-    {
-        return $builder->where('is_owner', '=', false);
     }
 
     public function scopeSortByAuthorOrder(Builder $builder): Builder

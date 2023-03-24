@@ -2,12 +2,14 @@
 
 namespace Books\Book\Components;
 
+use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Reader as Service;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Redirect;
 use Response;
 
 /**
@@ -48,7 +50,6 @@ class Reader extends ComponentBase
 
     public function init()
     {
-
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
@@ -64,6 +65,8 @@ class Reader extends ComponentBase
         );
 
         $this->prepareVals();
+        $recommend = $this->addComponent(Widget::class, 'recommend');
+        $recommend->setUpWidget(WidgetEnum::recommend, short: true);
     }
 
     public function prepareVals()
@@ -81,7 +84,7 @@ class Reader extends ComponentBase
             return $this->onMove();
         }
         if ($chapter = $this->service->nextChapter()) {
-            return \Redirect::to('/reader/' . $this->book->id . '/' . $chapter->id);
+            return Redirect::to('/reader/'.$this->book->id.'/'.$chapter->id);
         }
         $this->user->library($this->book)->read();
 
@@ -96,7 +99,7 @@ class Reader extends ComponentBase
             return $this->onMove();
         }
         if ($chapter = $this->service->prevChapter()) {
-            return \Redirect::to('/reader/' . $this->book->id . '/' . $chapter->id);
+            return Redirect::to('/reader/'.$this->book->id.'/'.$chapter->id);
         }
 
         return false;
@@ -105,7 +108,7 @@ class Reader extends ComponentBase
     public function onChapter()
     {
         if ($chapter = post('value')) {
-            return \Redirect::to('/reader/' . $this->book->id . '/' . $chapter);
+            return Redirect::to('/reader/'.$this->book->id.'/'.$chapter);
         }
     }
 
@@ -115,13 +118,13 @@ class Reader extends ComponentBase
 
         return Response::make([
             '#reader-body-spawn' => $this->renderPartial('@body'),
-            '.reader-user-section' => $this->renderPartial('@user-section')
+            '.reader-user-section' => $this->renderPartial('@user-section'),
         ]);
     }
 
     public function onTrack()
     {
-        return $this->service->track((int)post('ms'),(int)post('paginator_id'));
+        return $this->service->track((int) post('ms'), (int) post('paginator_id'));
     }
 
     public function getCurrentPaginatorKey()

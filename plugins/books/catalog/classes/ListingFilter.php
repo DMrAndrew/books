@@ -3,6 +3,8 @@
 namespace Books\Catalog\Classes;
 
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Enums\SortEnum;
+use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Models\Tag;
 use Books\Catalog\Models\Genre;
 use Cache;
@@ -23,6 +25,10 @@ class ListingFilter
 
     public ?int $max_price = null;
 
+    public ?WidgetEnum $widget = null;
+
+    public ?SortEnum $sort = null;
+
     public function __construct(protected ?string $session_key = null)
     {
         $this->filters = collect();
@@ -30,6 +36,8 @@ class ListingFilter
             $this->fromQuery();
         } else {
             $this->type = post('type') ? EditionsEnums::tryFrom(post('type')) : null;
+            $this->widget = WidgetEnum::tryFrom(post('widget')) ?? null;
+            $this->sort = SortEnum::tryFrom(post('sort')) ?? SortEnum::default();
             $this->complete = post('complete_only') == 'on';
             $this->free = post('free') == 'on';
             $this->max_price = (int) post('max_price') ?: null;
@@ -40,10 +48,17 @@ class ListingFilter
 
     public function fromQuery(): void
     {
-        $query = collect(request()->query())->only(['type', 'genre', 'tag']);
+        $query = collect(request()->query())->only(['type', 'genre', 'tag', 'widget']);
         $this->include($this->fromPost(Tag::class, $query['tag'] ?? null));
         $this->include($this->fromPost(Genre::class, $query['genre'] ?? null));
         $this->type = ($query['type'] ?? null) ? EditionsEnums::tryFrom($query['type']) : null;
+        $this->widget = WidgetEnum::tryFrom($query['widget'] ?? '');
+        $this->sort = SortEnum::tryFrom($query['sort'] ?? '') ?? match ($this->widget) {
+            WidgetEnum::hotNew => SortEnum::hotNew,
+            WidgetEnum::new => SortEnum::new,
+            WidgetEnum::gainingPopularity => SortEnum::gainingPopularity,
+            default => SortEnum::default()
+        };
     }
 
     public function save(): void

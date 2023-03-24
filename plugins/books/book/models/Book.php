@@ -5,10 +5,13 @@ namespace Books\Book\Models;
 use Books\Book\Classes\Enums\AgeRestrictionsEnum;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Rater;
+use Books\Book\Classes\ScopeToday;
 use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
 use October\Rain\Database\Builder;
@@ -56,6 +59,7 @@ use WordForm;
  * @method AttachOne cover
  *
  * @property  File cover
+ * @property  Stats stats
  */
 class Book extends Model
 {
@@ -83,6 +87,7 @@ class Book extends Model
         'annotation',
         'age_restriction',
         'cycle_id',
+        'recommend',
     ];
 
     /**
@@ -137,7 +142,7 @@ class Book extends Model
 
     public $hasMany = [
         'authors' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id'],
-        'coauthors' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'notOwner'],
+        'coauthors' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'coAuthors'],
         'editions' => [Edition::class, 'key' => 'book_id', 'id'],
         'libs' => [Lib::class, 'key' => 'book_id', 'otherKey' => 'id'],
     ];
@@ -197,6 +202,16 @@ class Book extends Model
 
     public $attachMany = [];
 
+    public static function sortCollectionBySalesAt($collection)
+    {
+        return $collection->sortByDesc(fn ($b) => $b->ebook->sales_at);
+    }
+
+    public static function sortCollectionByPopularGenre($collection)
+    {
+        return $collection->sortBy(fn ($book) => $book->genres->pluck('pivot')->min('rate_number') ?: 10000);
+    }
+
     public function rater(): Rater
     {
         return new Rater($this);
@@ -207,7 +222,7 @@ class Book extends Model
         return $this->hasManyDeepFromRelationsWithConstraints(
             [$this, 'pagination'],
             [new Pagination(), 'trackers']
-        );
+        )->withoutGlobalScope(new ScopeToday());
     }
 
     public function chaptersTrackers(): HasManyDeep
@@ -264,6 +279,11 @@ class Book extends Model
         }
 
         return $builder->whereHas('editions', fn ($e) => $e->type($type));
+    }
+
+    public function scopeRecommend(Builder $builder, ?bool $value = true): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->where('recommend', $value);
     }
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder|\Illuminate\Database\Eloquent\Builder
@@ -331,9 +351,19 @@ class Book extends Model
 
     public function scopeDefaultEager(Builder $q): Builder
     {
-        return $q->with(['cover', 'tags', 'genres', 'stats', 'ebook', 'author.profile'])
+        return $q->with(['cover', 'tags', 'genres', 'stats', 'ebook', 'author.profile', 'authors.profile'])
             ->inLibExists()
             ->likeExists();
+    }
+
+    public function scopeWithChapters(Builder $builder): Builder
+    {
+        return $builder->with(['ebook.chapters' => fn ($i) => $i->published()]);
+    }
+
+    public function scopeAfterPublishedAtDate(Builder $builder, Carbon $carbon): Builder
+    {
+        return $builder->whereHas('editions', fn ($editions) => $editions->whereDate('sales_at', '>=', $carbon));
     }
 
     public function scopeLikesCount(Builder $builder): Builder
@@ -365,6 +395,14 @@ class Book extends Model
     public function scopeWithProgress(Builder $builder, User $user): Builder
     {
         return $builder->with(['editions' => fn ($edition) => $edition->withProgress($user)]);
+    }
+
+    public function getCollectedRate(WidgetEnum $widget)
+    {
+        return match ($widget) {
+            WidgetEnum::hotNew, WidgetEnum::gainingPopularity => $this->stats->{$widget->value}($this->status === BookStatus::WORKING),
+            default => 0
+        };
     }
 
     protected function afterCreate()
@@ -448,5 +486,17 @@ class Book extends Model
         return $this->getDeferredAuthors($key)
             ?->first(fn ($bind) => $bind->slave_id == (is_int($profile) ? $profile : $profile->id))
             ?? null;
+    }
+
+    public function recommend()
+    {
+        $this->recommend = true;
+        $this->save();
+    }
+
+    public function unrecommend()
+    {
+        $this->recommend = false;
+        $this->save();
     }
 }

@@ -6,3 +6,10 @@ columns:
     id:
         label: ID
         searchable: true
+    title:
+        label: Название
+        searchable: true
+    recommend:
+        label: В рекомендованных
+        searchable: true
+        type: switch

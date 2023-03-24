@@ -2,7 +2,8 @@
     {% for comment in comments %}
     <div class="cb-mini-card _avatar">
         <div class="cb-mini-card__wrapper">
-            <div class="">Вы написали комментарий <a class="ui-link _violet" href="{{comment.link}}">{{comment.label}}</a></div>
+            <div class="">Вы написали комментарий <a class="ui-link _violet" href="{{comment.toCommentableLink}}">{{comment.toShortString}}</a>
+            </div>
             <div class="cb-mini-card__date">{{comment.isEdited() ? 'edited ':''}} {{comment.dateFormated()}}</div>
             <div class="cb-mini-card__text">
                 {{ comment.content | raw }}
@@ -14,9 +15,10 @@
             </svg>
             <div class="personal-area-blacklist-action">
                 <div class="personal-area-blacklist-action__wrapper">
-<!--                    <button class="personal-area-blacklist-action__item">Редактировать</button>-->
+                    <!--                    <button class="personal-area-blacklist-action__item">Редактировать</button>-->
                     <button onclick="oc.ajax('onRemove',{data:{id:'{{comment.id}}'}})"
-                        class="personal-area-blacklist-action__item">Удалить</button>
+                            class="personal-area-blacklist-action__item">Удалить
+                    </button>
                 </div>
             </div>
         </div>

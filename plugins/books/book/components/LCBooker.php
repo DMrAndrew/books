@@ -44,7 +44,9 @@ class LCBooker extends ComponentBase
 
     public function getAuthorships(): Collection
     {
-        return $this->user->profile->authorshipsAs($this->getIsOwner())
+        return $this->user->profile
+            ->authorships()
+            ->owner($this->getIsOwner())
             ->with(['book' => fn ($q) => $q->defaultEager(), 'book.profile'])
             ->get();
     }
