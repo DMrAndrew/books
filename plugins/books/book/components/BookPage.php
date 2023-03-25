@@ -18,7 +18,7 @@ class BookPage extends ComponentBase
 {
     protected Book $book;
 
-    protected User $user;
+    protected ?User $user;
 
     /**
      * componentDetails
@@ -43,9 +43,6 @@ class BookPage extends ComponentBase
 
     public function init()
     {
-        if ($redirect = redirectIfUnauthorized()) {
-            return $redirect;
-        }
         $this->user = Auth::getUser();
         $book_id = $this->param('book_id');
         $this->book = Book::query()->public()->find($book_id) ?? $this->user?->profile->books()->find($book_id)
@@ -54,7 +51,7 @@ class BookPage extends ComponentBase
         $this->book = Book::query()
             ->defaultEager()
             ->withChapters()
-            ->with(['cycle' => fn ($cycle) => $cycle->with(['books'])])
+            ->with(['cycle' => fn ($cycle) => $cycle->booksEager()])
             ->find($this->book->id);
 
         $this->page['book'] = $this->book;

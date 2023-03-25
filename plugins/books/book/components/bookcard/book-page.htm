@@ -1,14 +1,15 @@
 <div class="book-card-full__info book-card-full-info">
     <div class="book-card-full-info__button-wrapper">
+        {% if user %}
         {% partial '@card-header-buttons' %}
-
+        {% endif %}
     </div>
     <div class="book-card-full-info__rating">
         <div class="book-card__raiting">
             <svg>
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
             </svg>
-            <span>{{book.stats.rate|default('0')}}</span>
+            <span>{{book.stats.rate?:0}}</span>
         </div>
         <div class="tags-list">
             {% for genre in book.genres %}

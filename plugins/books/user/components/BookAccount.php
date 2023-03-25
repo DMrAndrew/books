@@ -38,7 +38,7 @@ class BookAccount extends Account
         $gainingPopularity->setUpWidget(WidgetEnum::gainingPopularity, withAll: true);
 
         $hot_new = $this->addComponent(Widget::class, 'hotNew');
-        $hot_new->setUpWidget(WidgetEnum::hotNew, short: true, withAll: true);
+        $hot_new->setUpWidget(WidgetEnum::hotNew, withAll: true);
 
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true, withAll: true);

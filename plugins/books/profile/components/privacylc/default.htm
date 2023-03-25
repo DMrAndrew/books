@@ -9,15 +9,15 @@ class:'personal-area__wrapper ui-grid-container ui-grid-gap',
         {% for setting in settings %}
         <div class="personal-area__wrap _indent-large ui-select">
             <div class="ui-select-header">
-                <label class="ui-select-label">{{ setting.type.label() }}</label>
+                <label class="ui-select-label">{{ setting.type.label }}</label>
             </div>
             <div class="ui-select-container">
                 <div class="ui-select-item _size-32">
                     <select class="book-select" name="options[{{setting.type.value}}]" style="display: none">
-                        {% for option in setting.type.options() %}
+                        {% for option in setting.type.options %}
                         <option style="display: none"
                                 {{ setting.value == option.value ? 'selected' : ''  }}
-                        value="{{option.value}}">{{option.label()}}</option>
+                        value="{{option.value}}">{{option.label}}</option>
                         {% endfor %}
 
                     </select>

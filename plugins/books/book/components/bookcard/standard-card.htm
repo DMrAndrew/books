@@ -5,7 +5,7 @@
                 <img class="book-card__image" src="{{book.cover.getThumb(104,150)}}" alt="" loading="lazy">
             </a>
 
-            {% if not is_not_public_view %}
+            {% if user and not is_not_public_view %}
             <button class="book-card__bookmark"
                     data-request="onAddLib"
                     data-request-update="{ _self: true }"
