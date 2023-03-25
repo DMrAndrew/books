@@ -49,7 +49,7 @@
                                             </div>
                                             <div class="tippymodal-block tags-list"><span class="tippymodal-title">Жанры:</span>
                                                 {% for genre in lib.book.genres %}
-                                                <a href="" class="ui-link _violet">{{genre.name}}</a>
+                                                <a href="/listing?genre={{genre.id}}" class="ui-link _violet">{{genre.name}}</a>
                                                 {% endfor %}
                                             </div>
                                             <div class="tippymodal-block truncate-text">Аннотация:
@@ -58,7 +58,7 @@
                                             </div>
                                             <div class="tippymodal-block tags-list">
                                                 {% for tag in lib.book.tags %}
-                                                <a href="" class="ui-link _violet">{{tag.name}}</a>
+                                                <a href="/listing?tag={{tag.id}}" class="ui-link _violet">{{tag.name}}</a>
                                                 {% endfor %}
                                             </div>
                                         </div>

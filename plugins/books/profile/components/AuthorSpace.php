@@ -76,7 +76,6 @@ class AuthorSpace extends ComponentBase
                 'subscriptions' => fn ($subscribers) => $subscribers->shortPublicEager(),
                 'books' => fn ($books) => $books->public()->defaultEager()->orderByPivot('sort_order', 'desc'),
                 'user.cycles' => fn ($cycles) => $cycles->whereHas('books')->booksEager()])
-            ->when($can_see_comments, fn ($p) => $p->with(['comments' => fn ($comments) => $comments->with('commentable')]))
             ->find($this->profile->id);
 
         $this->page['profile'] = $this->profile;
@@ -86,7 +85,7 @@ class AuthorSpace extends ComponentBase
         $this->page['subscriptions'] = $this->profile->subscriptions;
 
         $this->page['can_see_comments'] = $can_see_comments;
-        $this->page['comments'] = $can_see_comments ? $this->profile->comments : collect();
+        $this->page['comments'] = $can_see_comments ? $this->profile->user->comments()->with('commentable')->get() : collect();
     }
 
     /**
