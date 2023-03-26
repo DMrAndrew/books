@@ -2,7 +2,7 @@
 
 namespace Books\Comments\Components;
 
-use App\classes\PomonPaginator;
+use App\classes\CustomPaginator;
 use Books\Comments\behaviors\Commentable;
 use Books\Comments\Models\Comment;
 use Books\Profile\Models\Profile;
@@ -26,7 +26,7 @@ class Comments extends ComponentBase
 
     protected Profile $owner;
 
-    protected int $perPage = 15;
+    protected int $perPage = 4;
 
     protected int $currentPage = 1;
 
@@ -62,7 +62,7 @@ class Comments extends ComponentBase
             $this->page['comments_count'] = $this->queryComments()->count();
             $all = $this->queryComments()->get()->toNested();
             $items = $all->forPage($this->currentPage(), $this->perPage);
-            $this->page['paginator'] = new PomonPaginator($items, $all->count(), $this->perPage, $this->currentPage());
+            $this->page['paginator'] = new CustomPaginator($items, $all->count(), $this->perPage, $this->currentPage());
             $this->page['current_page'] = $this->currentPage();
         }
         $this->page['opened'] = (array) post('opened');

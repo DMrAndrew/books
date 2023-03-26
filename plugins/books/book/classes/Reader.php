@@ -2,6 +2,7 @@
 
 namespace Books\Book\Classes;
 
+use Books\Book\Classes\Exceptions\ChapterIsClosed;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
@@ -21,6 +22,8 @@ class Reader
 
     protected Pagination $paginator;
 
+    protected bool $contentGuard = true;
+
     public function __construct(protected Book $book, protected ?Chapter $chapter, protected ?int $page = 1, protected ?User $user = null)
     {
         //TODO refactor
@@ -29,17 +32,31 @@ class Reader
         $this->edition = $this->book->ebook;
         $this->chapters = $this->edition->chapters;
         $this->chapter = $this->edition->chapters()->with('content')->find($this->chapter?->id) ?? $this->chapters->first();
-
         $this->setPage($this->page);
     }
 
     /**
+     * @param  bool  $contentGuard
+     */
+    public function setContentGuard(bool $contentGuard): void
+    {
+        $this->contentGuard = $contentGuard;
+    }
+
+    /**
      * @param  int|null  $page
+     *
+     * @throws ChapterIsClosed
      */
     public function setPage(?int $page): void
     {
         $this->page = $page;
         $this->paginator = $this->chapter?->pagination()->page($this->page)?->first() ?? abort(404);
+    }
+
+    public function isPageAllowed(): bool
+    {
+        return ! $this->contentGuard || $this->chapter->isFree();
     }
 
     public function track(?int $ms, int $paginator_id)
@@ -60,8 +77,15 @@ class Reader
         }
     }
 
+    /**
+     * @throws ChapterIsClosed
+     */
     public function getReaderPage(): array
     {
+        if (! $this->isPageAllowed()) {
+            throw new ChapterIsClosed();
+        }
+
         return [
             'book' => $this->book->newQuery()->defaultEager()->find($this->book->id),
             'pagination' => [

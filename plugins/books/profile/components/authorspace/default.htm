@@ -78,8 +78,8 @@
                         </div>
                         <!--                        <div class="ui-tabs-link " data-tab="9">Награды</div>-->
                         <div class="ui-tabs-link " data-tab="10">Комментарии
-                            {% if comments.count %}
-                            <span>{{comments.count?:''}}</span>
+                            {% if comments_paginator.total %}
+                            <span>{{comments_paginator.total?:''}}</span>
                             {% endif %}
                         </div>
                         <!--                        <div class="ui-tabs-link " data-tab="11">Репосты</div>-->
@@ -112,7 +112,7 @@
         </div>
         <div class="ui-tabs-content" data-tab-content="10">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Комментарии <span
-                class="ui-text-body--2">{{comments.count?:''}}</span></div>
+                class="ui-text-body--2">{{comments_paginator.total?:''}}</span></div>
         </div>
     </div>
     <div class="ui-grid-container ui-grid-gap">
@@ -277,22 +277,8 @@
                     {% endif %}
                 </div>
                 <!-- Комментарии -->
-                <div class="ui-tabs-content" data-tab-content="10">
-                    {% if can_see_comments and comments.count %}
-                    <div class="author-awards__container">
-                        {% for comment in comments %}
-                        <div class="cb-mini-card _avatar">
-                            <div class="cb-mini-card__wrapper">
-                                <div class="">Написал комментарий <a class="ui-link _violet"
-                                                                     href="{{comment.toCommentableLink}}">{{comment.toShortString}}</a>
-                                </div>
-                                <div class="cb-mini-card__date">{{dateFormated}}</div>
-                                <div class="cb-mini-card__text">{{ comment.content | raw }}</div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
+                <div class="ui-tabs-content" id="author-comments" data-tab-content="10">
+                    {% partial 'author_space::author-comments-tab' comments_paginator=comments_paginator %}
                 </div>
             </div>
         </div>

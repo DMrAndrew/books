@@ -138,7 +138,7 @@
                         <div class="ui-tabs-content" data-tab-content="2">
                             {% for chapter in book.ebook.chapters %}
                             <div class="book-card-full-description__content {{chapter.isFree ? '' : '_disabled'}}">
-                                <a href="/reader/{{book.id}}/{{chapter.id}}"
+                                <a  href="/reader/{{book.id}}/{{chapter.id}}"
                                    class="ui-link _violet {{chapter.isFree ? '' : 'ui-tooltip _disabled'}}"
                                    {{chapter.isFree ? '': 'data-tooltip="Платный доступ"'}}>{{chapter.title|raw}}</a>
                                 <span>{{carbon(chapter.published_at).format('d.m.y')}}</span>

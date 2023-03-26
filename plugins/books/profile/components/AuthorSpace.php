@@ -2,6 +2,7 @@
 
 namespace Books\Profile\Components;
 
+use App\classes\CustomPaginator;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Components\Widget;
 use Books\Comments\Components\Comments;
@@ -22,7 +23,11 @@ class AuthorSpace extends ComponentBase
 
     protected ?Profile $profile;
 
-    protected ?User $user;
+    protected ?User $authUser;
+
+    protected $commentsCurrentPage = 1;
+
+    protected int $perPage = 15;
 
     /**
      * componentDetails
@@ -38,9 +43,9 @@ class AuthorSpace extends ComponentBase
     public function init()
     {
         $this->profile_id = $this->param('profile_id');
-        $this->user = Auth::getUser();
+        $this->authUser = Auth::getUser();
         if (! $this->profile = Profile::query()
-            ->find($this->profile_id ?? $this->user?->profile->id)) {
+            ->find($this->profile_id ?? $this->authUser?->profile->id)) {
             abort(404);
         }
 
@@ -53,23 +58,18 @@ class AuthorSpace extends ComponentBase
 
     public function onRender()
     {
-        $this->prepareVals();
+        foreach ($this->prepareVals() as $key => $val) {
+            $this->page[$key] = $val;
+        }
     }
 
     protected function prepareVals()
     {
-        $authUser = $this->user;
-        $isOwner = (bool) $authUser && $this->profile->is($authUser->profile);
-        $sameAccount = (bool) $authUser && $this->profile->user->is($authUser);
-        $this->page['isLoggedIn'] = (bool) $authUser;
+        $isOwner = $this->authUser && $this->profile->is($this->authUser->profile);
+        $sameAccount = $this->authUser && $this->profile->user->is($this->authUser);
 
-        $this->page['isOwner'] = $isOwner;
-        $this->page['sameAccount'] = $sameAccount;
-        $this->page['hasContacts'] = ! $this->profile->isContactsEmpty();
-        $this->page['should_call_fit_profile'] = $isOwner && $this->profile->isEmpty();
-        $can_see_comments = $this->profile->canSeeCommentFeed($authUser->profile);
         $this->profile = Profile::query()
-            ->hasSubscriber($this->user?->profile)
+            ->hasSubscriber($this->authUser?->profile)
             ->with([
                 'banner', 'avatar',
                 'subscribers' => fn ($subscribers) => $subscribers->shortPublicEager(),
@@ -78,14 +78,18 @@ class AuthorSpace extends ComponentBase
                 'user.cycles' => fn ($cycles) => $cycles->whereHas('books')->booksEager()])
             ->find($this->profile->id);
 
-        $this->page['profile'] = $this->profile;
-        $this->page['books'] = $this->profile->books;
-        $this->page['cycles'] = $this->profile->user->cycles;
-        $this->page['subscribers'] = $this->profile->subscribers->groupBy(fn ($i) => $i->books_count ? 'authors' : 'readers');
-        $this->page['subscriptions'] = $this->profile->subscriptions;
-
-        $this->page['can_see_comments'] = $can_see_comments;
-        $this->page['comments'] = $can_see_comments ? $this->profile->user->comments()->with('commentable')->get() : collect();
+        return array_merge([
+            'isLoggedIn' => (bool) $this->authUser,
+            'isOwner' => $isOwner,
+            'sameAccount' => $sameAccount,
+            'hasContacts' => ! $this->profile->isContactsEmpty(),
+            'should_call_fit_profile' => $isOwner && $this->profile->isEmpty(),
+            'profile' => $this->profile,
+            'books' => $this->profile->books,
+            'cycles' => $this->profile->user->cycles,
+            'subscribers' => $this->profile->subscribers->groupBy(fn ($i) => $i->books_count ? 'authors' : 'readers'),
+            'subscriptions' => $this->profile->subscriptions,
+        ], $this->getAuthorComments());
     }
 
     /**
@@ -98,14 +102,38 @@ class AuthorSpace extends ComponentBase
         return [];
     }
 
+    public function getAuthorComments(): array
+    {
+        $can_see_comments = $this->profile->canSeeCommentFeed($this->authUser->profile);
+
+        return [
+            'can_see_comments' => $can_see_comments,
+            'comments_paginator' => $can_see_comments ? CustomPaginator::fromLengthAwarePaginator(
+                $this->profile->user->comments()->with('commentable')->orderBy('updated_at', 'desc')->paginate(perPage: $this->perPage, page: $this->commentsCurrentPage())
+            ) : collect(),
+        ];
+    }
+
+    public function onCommentsPage()
+    {
+        return [
+            '#author-comments' => $this->renderPartial('@author-comments-tab', $this->getAuthorComments()),
+        ];
+    }
+
     public function onToggleSubscribe()
     {
-        $this->user->profile->toggleSubscriptions($this->profile);
+        $this->authUser->profile->toggleSubscriptions($this->profile);
 
         return Redirect::refresh();
 
         return [
-            '#sub-button' => $this->renderPartial('@sub-button', ['sub' => $this->user->profile->hasSubscription($this->profile)]),
+            '#sub-button' => $this->renderPartial('@sub-button', ['sub' => $this->authUser->profile->hasSubscription($this->profile)]),
         ];
+    }
+
+    public function commentsCurrentPage(): int
+    {
+        return (int) (post('page') ?? $this->commentsCurrentPage);
     }
 }

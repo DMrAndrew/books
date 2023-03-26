@@ -23,7 +23,7 @@ class Reader extends ComponentBase
 
     protected ?Chapter $chapter;
 
-    protected User $user;
+    protected ?User $user;
 
     protected Service $service;
 
@@ -50,10 +50,6 @@ class Reader extends ComponentBase
 
     public function init()
     {
-        if ($redirect = redirectIfUnauthorized()) {
-            return $redirect;
-        }
-
         $this->user = Auth::getUser();
         $this->book = Book::query()->public()->find($this->param('book_id'))
             ?? $this->user?->profile->books()->find($this->param('book_id')) ?? abort(404);
@@ -64,9 +60,20 @@ class Reader extends ComponentBase
             page: $this->getCurrentPaginatorKey()
         );
 
-        $this->prepareVals();
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
+    }
+
+    public function onRun()
+    {
+        if (! $this->service->isPageAllowed()) {
+            return Redirect::to('/out-of-free/'.$this->book->id.'/'.$this->chapter?->id);
+        }
+    }
+
+    public function onRender()
+    {
+        $this->prepareVals();
     }
 
     public function prepareVals()

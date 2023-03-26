@@ -79,7 +79,7 @@ function shouldRestrictContent(): bool
 {
     $foreign = parse_url(config('app.foreign_url') ?? '');
 
-    return request()->host() !== $foreign['host'] ?? $foreign['path'];
+    return request()->host() !== ($foreign['host'] ?? $foreign['path']);
 }
 
 function getFreqString(int $count, int $days): string

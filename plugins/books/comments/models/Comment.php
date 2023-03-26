@@ -56,7 +56,7 @@ class Comment extends Model
 
     public function addition(): string
     {
-        return $this->isDeleted() ? 'Deleted' : ($this->isEdited() ? 'Edited' : '');
+        return $this->isDeleted() ? 'Удалён' : ($this->isEdited() ? 'Редактирован' : '');
     }
 
     public function isDeleted(): bool

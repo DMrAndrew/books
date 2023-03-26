@@ -18,8 +18,9 @@
     <!--        </svg>-->
     <!--        <span>Поддержать автора</span>-->
     <!--    </a>-->
+    {% if user %}
     {% ajaxPartial "bookCard::reader-card" book=book %}
-
+    {% endif %}
     <div class="reader-user__books tags-list">
         {% for genre in book.genres %}
         <a href="/listing?genre={{genre.id}}" class="book-card-full-info__link _desktop ui-link _violet">
