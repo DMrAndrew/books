@@ -72,8 +72,10 @@
                             {% endif %}
                         </div>
                         <div class="ui-tabs-link " data-tab="8">Подписчики
-                            {% if subscribers.count %}
-                            <span>{{subscribers.count?:''}}</span>
+                            {% set subscribers_count = collect(subscribers.authors).count +
+                            collect(subscribers.readers).count %}
+                            {% if subscribers_count %}
+                            <span>{{subscribers_count}}</span>
                             {% endif %}
                         </div>
                         <!--                        <div class="ui-tabs-link " data-tab="9">Награды</div>-->
@@ -108,7 +110,7 @@
         </div>
         <div class="ui-tabs-content" data-tab-content="8">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписчики <span
-                class="ui-text-body--2">{{subscribers.count?:''}}</span></div>
+                class="ui-text-body--2">{{subscribers_count}}</span></div>
         </div>
         <div class="ui-tabs-content" data-tab-content="10">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Комментарии <span
