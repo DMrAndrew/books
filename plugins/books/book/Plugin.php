@@ -19,6 +19,7 @@ use Books\Book\Components\BookPage;
 use Books\Book\Components\Chapterer;
 use Books\Book\Components\EBooker;
 use Books\Book\Components\LCBooker;
+use Books\Book\Components\OutOfFree;
 use Books\Book\Components\Reader;
 use Books\Book\Components\ReadStatistic;
 use Books\Book\Components\Widget;
@@ -129,6 +130,7 @@ class Plugin extends PluginBase
             BookCard::class => 'bookCard',
             ReadStatistic::class => 'readStatistic',
             Widget::class => 'widget',
+            OutOfFree::class => 'OutOfFree',
             Components\Cycle::class => 'cycle',
         ];
     }

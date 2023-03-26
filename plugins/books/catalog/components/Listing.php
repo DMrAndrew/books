@@ -219,9 +219,13 @@ class Listing extends ComponentBase
 
             $books = $service
                 ->setQuery($query)
-                ->setDisableCache(true)
-                ->setDiffWithUser(false)
-                ->get();
+                ->setUseSort(! in_array($this->filter->widget, [
+                    WidgetEnum::hotNew,
+                    WidgetEnum::new,
+                    WidgetEnum::gainingPopularity]))
+                ->collect()
+                ->sort()
+                ->getValues();
         }
 
         $books ??= $query->get();

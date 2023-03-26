@@ -24,7 +24,7 @@
     <div class="thematic-section__container ">
         {% for item in collect(widget.items).slice(0,3) %}
         <a href="/book-card/{{item.id}}" class="book-sidebar-card _indent">
-            <img src="{{item.cover_thumb}}"
+            <img src="{{item.cover.getThumb(50,70)}}"
                  class="book-sidebar-card__image" alt="Обложка" loading="lazy">
             <div class="book-sidebar-card__description">
                 <div class="book-sidebar-card__label">{{item.author.profile.username}}</div>

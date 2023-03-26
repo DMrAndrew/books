@@ -343,10 +343,14 @@ class Book extends Model
 
     public function scopePublic(Builder $q)
     {
-        return $q->adult()
-            ->whereHas('editions', function ($query) {
-                return $query->whereNotIn('status', [BookStatus::HIDDEN->value]);
-            });
+        return $q->adult()->onlyPublicStatus();
+    }
+
+    public function scopeOnlyPublicStatus(Builder $q): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $q->whereHas('editions', function ($query) {
+            return $query->whereNotIn('status', [BookStatus::HIDDEN->value]);
+        });
     }
 
     public function scopeDefaultEager(Builder $q): Builder

@@ -18,12 +18,19 @@ use RainLab\User\Models\User;
 
 class WidgetService
 {
-    protected bool $forceCache = true;
+    protected bool $forceCache = false;
 
     protected string $cacheKey;
 
+    protected string $cacheName = 'compilations';
+
     protected Builder $query;
 
+    protected $values;
+
+    /**
+     * @throws Exception
+     */
     public function __construct(protected WidgetEnum $enum,
                                 protected ?User $user = null,
                                 protected ?Carbon $cacheTTL = null,
@@ -33,21 +40,27 @@ class WidgetService
                                 protected bool $disableCache = false,
                                 protected bool $diffWithUser = false,
                                 protected bool $withAll = false,
+                                protected bool $useSort = true,
     ) {
-        $this->cacheTTL ??= Carbon::now()->copy()->addHour();
-        $this->cacheKey ??= $this->enum->value;
-        $this->query = Book::query();
+        $this->cacheTTL ??= Carbon::now()->copy()->addMinutes(10);
+        $this->values = collect();
+        $this->cacheKey = $this->enum->value;
+        if (in_array($this->enum, [WidgetEnum::readingWithThisOne, WidgetEnum::cycle, WidgetEnum::otherAuthorBook, WidgetEnum::popular])) {
+            $this->validate();
+            $this->cacheKey .= $this->book->id;
+        }
+        $this->query = Book::query()->onlyPublicStatus(); // Не использовать scope Public, который содержит scope adult, иначе в кэш не попадут 18+
     }
 
-    private function toArray(array $items): array
+    /**
+     * @param  bool  $useSort
+     * @return WidgetService
+     */
+    public function setUseSort(bool $useSort): static
     {
-        return [
-            'enum' => $this->enum,
-            'items' => $items,
-            'short' => $this->short,
-            'withHeader' => $this->withHeader,
-            'withAll' => $this->withAll,
-        ];
+        $this->useSort = $useSort;
+
+        return $this;
     }
 
     /**
@@ -135,36 +148,117 @@ class WidgetService
         return $this->cacheTTL;
     }
 
-    public function get()
+    /**
+     * @return mixed
+     */
+    public function getValues()
     {
-        if ($this->disableCache || $this->forceCache || ! Cache::has($this->enum->value)) {
-            $values = match ($this->enum) {
-                WidgetEnum::hotNew, WidgetEnum::gainingPopularity => $this->getFor(),
-                WidgetEnum::otherAuthorBook, WidgetEnum::readingWithThisOne,
-                WidgetEnum::new, WidgetEnum::interested, WidgetEnum::popular, WidgetEnum::cycle, WidgetEnum::recommend => $this->{$this->enum->value}(),
-                WidgetEnum::top => throw new Exception('To be implemented'),
-                WidgetEnum::todayDiscount => throw new Exception('To be implemented'),
-                WidgetEnum::bestsellers => throw new Exception('To be implemented'),
-            };
+        return $this->values;
+    }
 
-            if ($this->disableCache) {
-                return $this->diffWithUser($values);
-            }
-            $values = $values->map(function (Book $book) {
-                $book['cover_thumb'] = $book->cover->getThumb(104, 150);
+    public static function clearCompilationsCache(): void
+    {
+        foreach ([WidgetEnum::hotNew, WidgetEnum::new, WidgetEnum::gainingPopularity] as $widget) {
+            $widget->service()->clearCache();
+        }
+    }
 
-                return $book;
-            })->toArray();
+    public function clearCache(): void
+    {
+        Cache::forget($this->cacheName);
+    }
 
-            if (in_array($this->enum, [WidgetEnum::interested, WidgetEnum::cycle])) {
-                return $this->toArray($values);
-            }
+    private function query()
+    {
+        return $this->query;
+    }
 
-            Cache::forget($this->cacheKey);
-            Cache::remember($this->cacheKey, $this->cacheTTL, fn () => $values);
+    protected function validate()
+    {
+        if (! $this->book?->exists) {
+            throw new Exception('Book required.');
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function toWidgetParams(): array
+    {
+        return [
+            'enum' => $this->enum,
+            'items' => $this->apply()->getValues(),
+            'short' => $this->short,
+            'withHeader' => $this->withHeader,
+            'withAll' => $this->withAll,
+        ];
+    }
+
+    public function diffWithUser(): static
+    {
+        if (! $this->user || ! $this->diffWithUser || in_array($this->enum, [WidgetEnum::interested, WidgetEnum::cycle])) {
+            return $this;
         }
 
-        return $this->toArray($this->diffWithUser(Cache::get($this->cacheKey)));
+        //diff
+        return $this;
+    }
+
+    public function apply(): static
+    {
+        if ($this->disableCache || $this->forceCache || ! (Cache::get($this->cacheName)[$this->cacheKey] ?? false)) {
+            $this->collect();
+            if ($this->enum === WidgetEnum::interested) {
+                return $this;
+            }
+            if (! $this->disableCache) {
+                $this->cache();
+            }
+            $ids = $this->values->pluck('id')->toArray();
+        } else {
+            $ids = Cache::get($this->cacheName)[$this->cacheKey] ?? collect();
+        }
+        $this->values = $this->query->public()->defaultEager()->whereIn('id', $ids)->get();
+
+        return $this->diffWithUser()->sort();
+    }
+
+    public function cache(): static
+    {
+        $array = array_replace(Cache::get($this->cacheName) ?? [], [
+            $this->cacheKey => $this->values->pluck('id')->toArray(),
+        ]);
+        $this->clearCache();
+        Cache::remember($this->cacheName, $this->cacheTTL, fn () => $array);
+
+        return $this;
+    }
+
+    public function collect(): static
+    {
+        $this->values = match ($this->enum) {
+            WidgetEnum::hotNew, WidgetEnum::gainingPopularity => $this->getFor(),
+            WidgetEnum::otherAuthorBook, WidgetEnum::readingWithThisOne,
+            WidgetEnum::new, WidgetEnum::interested, WidgetEnum::popular, WidgetEnum::cycle, WidgetEnum::recommend => $this->{$this->enum->value}(),
+            default => collect()
+        };
+
+        return $this;
+    }
+
+    public function sort(): static
+    {
+        if ($this->useSort) {
+            $this->values = match ($this->enum) {
+                WidgetEnum::hotNew, WidgetEnum::gainingPopularity => $this->values->sortByDesc(fn (Book $book) => $book->getCollectedRate($this->enum)),
+                WidgetEnum::popular, WidgetEnum::recommend, WidgetEnum::otherAuthorBook => Book::sortCollectionByPopularGenre($this->values),
+                WidgetEnum::new => $this->values->sortByDesc(fn ($b) => $b->ebook->sales_at),
+                WidgetEnum::interested => $this->values->sortByDesc('created_at'),
+                default => $this->values
+            };
+        }
+
+        return $this;
     }
 
     private function getFor()
@@ -177,78 +271,47 @@ class WidgetService
             ->when(in_array($this->enum, [WidgetEnum::hotNew, WidgetEnum::gainingPopularity]), fn ($q) => $q->afterPublishedAtDate(Carbon::now()
                 ->copy()
                 ->subDays($this->enum === WidgetEnum::hotNew ? 10 : 30)))
-            ->get()
-            ->sortByDesc(fn (Book $book) => $book->getCollectedRate($this->enum));
+            ->get();
     }
 
     public function recommend()
     {
-        return Book::sortCollectionByPopularGenre($this->query()->recommend()->get());
-
-        return $this->query()->recommend()->get()->sortBy(fn ($book) => $book->genres->pluck('pivot')->min('rate_number') ?: 10000);
+        return $this->query()->recommend()->get();
     }
 
     public function new()
     {
-        return $this->query()->get()->sortByDesc(fn ($b) => $b->ebook->sales_at);
+        return $this->query()->get();
     }
 
     public function interested()
     {
         $collection = $this->user?->getLib()[CollectionEnum::WATCHED->value] ?? collect();
 
-        return $collection?->pluck('book')?->sortByDesc('created_at') ?? collect();
+        return $collection->pluck('book');
     }
 
     public function popular()
     {
-        $this->validate();
-
-        return Book::sortCollectionByPopularGenre($this->query()
-            ->whereHas('genres', fn ($genres) => $genres->whereIn('id', $this->book->genres->pluck('id')->toArray()))
-            ->whereNotIn('id', [$this->book->id])
-            ->get());
-
         return $this->query()
             ->whereHas('genres', fn ($genres) => $genres->whereIn('id', $this->book->genres->pluck('id')->toArray()))
             ->whereNotIn('id', [$this->book->id])
-            ->get()
-            ->sortBy(fn ($book) => $book->genres->pluck('pivot')->min('rate_number') ?: 10000);
+            ->get();
     }
 
     public function otherAuthorBook()
     {
-        $this->validate();
-
-        return Book::sortCollectionByPopularGenre($this->query()
-            ->whereNotIn('id', [$this->book->id])
-            ->whereHas('author', fn ($author) => $author->where('profile_id', '=', $this->book->author->profile_id))
-            ->whereHas('genres', fn ($genres) => $genres
-                ->whereIn('id', ($this->user?->loved_genres
-                    ?? json_decode(Cookie::get('loved_genres')) ?: (new FavoritesManager())->getDefaultGenres())))
-            ->get());
-
         return $this->query()
             ->whereNotIn('id', [$this->book->id])
             ->whereHas('author', fn ($author) => $author->where('profile_id', '=', $this->book->author->profile_id))
             ->whereHas('genres', fn ($genres) => $genres
                 ->whereIn('id', ($this->user?->loved_genres
                     ?? json_decode(Cookie::get('loved_genres')) ?: (new FavoritesManager())->getDefaultGenres())))
-            ->get()
-            ->sortBy(fn ($book) => $book->genres->pluck('pivot')->min('rate_number') ?: 10000);
-    }
-
-    protected function validate()
-    {
-        if (! $this->book?->exists) {
-            throw new Exception('Book required.');
-        }
+            ->get();
     }
 
     public function readingWithThisOne()
     {
-        $this->validate();
-        $this->cacheKey = $this->enum->value.$this->book->id;
         $readingWithIds = Lib::query()
             ->where('type', '=', CollectionEnum::READ)
             ->with('favorites')
@@ -271,23 +334,6 @@ class WidgetService
 
     public function cycle()
     {
-        $this->validate();
-        $this->cacheKey = $this->enum->value.$this->book->id;
-
         return $this->book->cycle?->books()->defaultEager()->get() ?? collect();
-    }
-
-    private function query()
-    {
-        return $this->query->defaultEager()->public();
-    }
-
-    public function diffWithUser($collection)
-    {
-        if (! $this->user || ! $this->diffWithUser) {
-            return $collection;
-        }
-
-        return $collection;
     }
 }

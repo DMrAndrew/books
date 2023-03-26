@@ -2,6 +2,8 @@
 
 namespace Books\Book\Classes\Enums;
 
+use Books\Book\Classes\WidgetService;
+
 enum WidgetEnum: string
 {
     case cycle = 'cycle';
@@ -33,5 +35,10 @@ enum WidgetEnum: string
             self::otherAuthorBook => 'Другие книги автора',
             self::cycle => 'Циклы',
         };
+    }
+
+    public function service(): WidgetService
+    {
+        return new WidgetService($this);
     }
 }

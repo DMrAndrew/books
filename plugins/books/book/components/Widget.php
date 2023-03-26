@@ -44,22 +44,19 @@ class Widget extends ComponentBase
     /**
      * @param  WidgetEnum  $widget
      * @param  mixed  ...$options
+     *
+     * @throws Exception
      */
     public function setUpWidget(WidgetEnum $widget, ...$options): void
     {
         $this->service = new WidgetService($widget, $this->user, ...$options);
     }
 
-    public function onRender()
-    {
-        $this->getValues();
-    }
-
     /**
      * @throws Exception
      */
-    public function getValues()
+    public function onRender()
     {
-        $this->page['widget'] = $this->service->get();
+        $this->page['widget'] = $this->service->toWidgetParams();
     }
 }
