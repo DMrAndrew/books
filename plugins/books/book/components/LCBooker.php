@@ -47,7 +47,7 @@ class LCBooker extends ComponentBase
         return $this->user->profile
             ->authorships()
             ->owner($this->getIsOwner())
-            ->with(['book' => fn($q) => $q->defaultEager(), 'book.profile'])
+            ->with(['book' => fn ($q) => $q->defaultEager(), 'book.profile'])
             ->get()
             ->sortByDesc('sort_order');
     }
@@ -79,7 +79,7 @@ class LCBooker extends ComponentBase
     {
         try {
             $uploadedFile = (new Edition())->fb2()->withDeferred($this->getSessionKey())->get()?->first();
-            if (!$uploadedFile) {
+            if (! $uploadedFile) {
                 throw new ValidationException(['fb2' => 'Файл не найден.']);
             }
 

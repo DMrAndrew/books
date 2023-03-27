@@ -151,10 +151,9 @@ class Edition extends Model
     public function editAllowed(): bool
     {
         return ! $this->isPublished()
-            || $this->status === BookStatus::WORKING
-            || $this->sales_free
-            || ($this->status === BookStatus::HIDDEN
-                && ! $this->hadCompleted());
+            || $this->getOriginal('sales_free')
+            || $this->getOriginal('status') === BookStatus::WORKING
+            || ($this->getOriginal('status') === BookStatus::HIDDEN && ! $this->hadCompleted());
     }
 
     public function hadCompleted()
@@ -164,7 +163,7 @@ class Edition extends Model
 
     public function isPublished(): bool
     {
-        return (bool) $this->sales_at;
+        return (bool) $this->getOriginal('sales_free');
     }
 
     public function setPublishAt()
@@ -176,7 +175,7 @@ class Edition extends Model
     {
         $cases = collect(BookStatus::publicCases());
 
-        $cases = match ($this->status) {
+        $cases = match ($this->getOriginal('status')) {
             BookStatus::WORKING => $this->hasSales() ? $cases->forget(BookStatus::HIDDEN) : $cases,//нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
             BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value), // Из “Завершено” можем перевести только в статус “Скрыто”.
             BookStatus::FROZEN => collect(),
@@ -184,14 +183,14 @@ class Edition extends Model
             default => $cases
         };
 
-        $cases[$this->status->value] = $this->status;
+        $cases[$this->status->value] = $this->getOriginal('status');
 
         return $cases->toArray();
     }
 
     public function shouldDeferredUpdate(): bool
     {
-        return $this->status === BookStatus::COMPLETE;
+        return $this->getOriginal('status') === BookStatus::COMPLETE;
     }
 
     public function hasSales()
@@ -201,7 +200,7 @@ class Edition extends Model
 
     public function shouldRevisionLength(): bool
     {
-        return $this->isDirty('length') && ! $this->shouldDeferredUpdate() && in_array($this->status, [BookStatus::WORKING, BookStatus::FROZEN]);
+        return $this->isDirty('length') && ! $this->shouldDeferredUpdate() && in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN]);
     }
 
     protected function beforeUpdate()
