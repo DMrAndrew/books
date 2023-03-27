@@ -142,9 +142,9 @@ class Plugin extends PluginBase
             ChapterService::audit();
         })->everyMinute();
 
-        $schedule->call(function () {
-            GenreRater::queue();
-        })->everyTenMinutes();
+//        $schedule->call(function () {
+//            GenreRater::queue();
+//        })->everyTenMinutes();
     }
 
     /**
