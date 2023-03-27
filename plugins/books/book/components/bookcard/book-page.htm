@@ -12,14 +12,7 @@
             <span>{{book.stats.rate?:0}}</span>
         </div>
         <div class="tags-list">
-            {% for genre in book.genres %}
-            <a href="/listing?genre={{genre.id}}" class="book-card-full-info__link _desktop ui-link _violet">
-                {% if genre.pivot.rate_number %}
-                #{{genre.pivot.rate_number}} в
-                {% endif %}
-                {{genre.name}}</a>
-
-            {% endfor %}
+            {% partial 'controls/genres-link-list' genres=book.genres linkClass='book-card-full-info__link _desktop' %}
         </div>
 
         {% if genres[0] %}
@@ -40,15 +33,8 @@
                         </svg>
                     </div>
                     <div class="ui-modal__body tags-list">
-                        {% for genre in book.genres %}
-                        <div>
-                            <a href="/listing?genre={{genre.id}}" class="book-card-full-info__link ui-link _violet">
-                                {% if genre.pivot.rate_number %}
-                                #{{genre.pivot.rate_number}} в
-                                {% endif %}
-                                {{genre.name}}</a>
-                        </div>
-                        {% endfor %}
+                        {% partial 'controls/genres-link-list' genres=book.genres linkClass='book-card-full-info__link'
+                        %}
                     </div>
                 </div>
             </div>

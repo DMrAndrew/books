@@ -122,7 +122,7 @@ class Edition extends Model
                 return ((int) $chunk->sum('new_value') - (int) $chunk->sum('old_value')) <= 5000;
             })->map(function ($collection) {
                 return [
-                    'date' => $collection->last()->created_at->format('d.m.y'),
+                    'date' => $collection->last()->created_at,
                     'value' => (int) $collection->last()->new_value - (int) $collection->first()->old_value,
                     'new_value' => (int) $collection->last()->new_value,
                 ];
@@ -130,6 +130,7 @@ class Edition extends Model
 
         $count = $items->count();
         $days = $count ? CarbonPeriod::create($items->last()['date'], $items->first()['date'])->count() : 0;
+
         $freq_string = $count ? getFreqString($count, $days) : '';
         $freq = $count ? $count / $days : 0;
 

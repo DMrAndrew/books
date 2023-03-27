@@ -219,7 +219,7 @@
                         </dl>
                         <dl class="book-card-history-modal__data-list">
                             <dt class="book-card-history-modal__data-title">Начало публикации:</dt>
-                            <dd>{{ history.items.first.date }}</dd>
+                            <dd>{{ history.items.first.date.format('d.m.y') }}</dd>
                         </dl>
                     </div>
                     <div class="book-card-history-modal__table-container">
@@ -232,7 +232,7 @@
                             <tbody>
                             {% for item in history.items %}
                             <tr>
-                                <td>{{item.date}}</td>
+                                <td>{{item.date.format('d.m.y')}}</td>
                                 <td>{{item.value}}</td>
                                 <td>{{item.new_value}}</td>
                             </tr>

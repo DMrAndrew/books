@@ -58,9 +58,7 @@
                 {{book.annotation|raw}}
             </div>
             <div class="book-card__genres tags-list">
-                {% for tag in book.tags %}
-                <a href="/listing?tag={{tag.id}}" class="ui-link _violet">{{tag.name}}</a>
-                {% endfor %}
+                {% partial 'controls/tags-link-list' tags=book.tags %}
             </div>
             <div class="book-card__body-footer">
                 <div class="book-card__raiting">
@@ -70,13 +68,7 @@
                     <span>{{book.stats.rate|default('0')}}</span>
                 </div>
                 <div class="book-card__book-list tags-list">
-                    {% for genre in book.genres %}
-                    <a href="/listing?genre={{genre.id}}" class="ui-link _violet">
-                        {% if genre.pivot.rate_number %}
-                        #{{genre.pivot.rate_number}} в
-                        {% endif %}
-                        {{genre.name}}</a>
-                    {% endfor %}
+                    {% partial 'controls/genres-link-list' genres=book.genres %}
                 </div>
             </div>
         </div>
