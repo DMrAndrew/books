@@ -34,6 +34,7 @@ class Rater
 
     /**
      * @param  bool  $withDump
+     * @return Rater
      */
     public function setWithDump(bool $withDump): static
     {
