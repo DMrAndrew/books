@@ -223,6 +223,7 @@ class ChapterService
 
     public static function audit(): void
     {
+        info('audit');
         Db::transaction(function () {
             return Chapter::query()
                 ->planned()

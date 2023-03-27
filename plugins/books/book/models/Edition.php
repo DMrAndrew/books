@@ -291,6 +291,6 @@ class Edition extends Model
 
     public function paginateContent()
     {
-        $this->chapters()->get()->each->paginateContent(true);
+        $this->chapters()->get()->each->paginateContent();
     }
 }
