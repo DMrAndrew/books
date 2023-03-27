@@ -156,6 +156,11 @@ class Chapter extends Model
         return new ChapterService($this);
     }
 
+    public function getTitleAttribute()
+    {
+        return $this->attributes['title'] ?: '№'.$this->{$this->getSortOrderColumn()};
+    }
+
     public function isFree(): bool
     {
         return $this->sales_type === ChapterSalesType::FREE;
