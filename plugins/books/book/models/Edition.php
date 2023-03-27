@@ -119,14 +119,14 @@ class Edition extends Model
             ->where('field', '=', 'length')
             ->get()
             ->chunkWhile(function ($value, $key, $chunk) {
-                return ((int) $chunk->sum('new_value') - (int) $chunk->sum('old_value')) <= 5000;
+                return ((int)$chunk->sum('new_value') - (int)$chunk->sum('old_value')) <= 5000;
             })->map(function ($collection) {
                 return [
                     'date' => $collection->last()->created_at->format('d.m.y'),
-                    'value' => (int) $collection->last()->new_value - (int) $collection->first()->old_value,
-                    'new_value' => (int) $collection->last()->new_value,
+                    'value' => (int)$collection->last()->new_value - (int)$collection->first()->old_value,
+                    'new_value' => (int)$collection->last()->new_value,
                 ];
-            })->filter(fn ($i) => (int) $i['value'] > 0)->reverse();
+            })->filter(fn($i) => (int)$i['value'] > 0)->reverse();
 
         $count = $items->count();
         $days = $count ? CarbonPeriod::create($items->last()['date'], $items->first()['date'])->count() : 0;
@@ -150,10 +150,10 @@ class Edition extends Model
 
     public function editAllowed(): bool
     {
-        return ! $this->isPublished()
+        return !$this->isPublished()
             || $this->getOriginal('sales_free')
             || in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN])
-            || ($this->getOriginal('status') === BookStatus::HIDDEN && ! $this->hadCompleted());
+            || ($this->getOriginal('status') === BookStatus::HIDDEN && !$this->hadCompleted());
     }
 
     public function hadCompleted()
@@ -163,7 +163,7 @@ class Edition extends Model
 
     public function isPublished(): bool
     {
-        return (bool) $this->getOriginal('sales_at');
+        return (bool)$this->getOriginal('sales_at');
     }
 
     public function setPublishAt()
@@ -179,7 +179,7 @@ class Edition extends Model
             BookStatus::WORKING => $this->hasSales() ? $cases->forget(BookStatus::HIDDEN) : $cases,// нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
             BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value), // Из “Завершено” можем перевести только в статус “Скрыто”.
             BookStatus::FROZEN => collect(),
-            BookStatus::HIDDEN => ! $this->isPublished() && $this->hadCompleted() ? collect() : $cases,//Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”, то книгу можно вернуть в статус “Скрыто” но редактирование и удаление глав будет невозможным.
+            BookStatus::HIDDEN => !$this->isPublished() && $this->hadCompleted() ? collect() : $cases,//Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”, то книгу можно вернуть в статус “Скрыто” но редактирование и удаление глав будет невозможным.
             default => $cases
         };
 
@@ -200,12 +200,12 @@ class Edition extends Model
 
     public function shouldRevisionLength(): bool
     {
-        return $this->isDirty('length') && ! $this->shouldDeferredUpdate() && in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN]);
+        return $this->isDirty('length') && !$this->shouldDeferredUpdate() && in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN]);
     }
 
     protected function beforeUpdate()
     {
-        if (! $this->shouldRevisionLength()) {
+        if (!$this->shouldRevisionLength()) {
             $this->revisionable = ['status'];
         }
     }
@@ -219,12 +219,12 @@ class Edition extends Model
 
     public function scopeWithProgress(Builder $builder, User $user): Builder
     {
-        return $builder->withMax(['trackers as progress' => fn ($trackers) => $trackers->user($user)->withoutTodayScope()], 'progress');
+        return $builder->withMax(['trackers as progress' => fn($trackers) => $trackers->user($user)->withoutTodayScope()], 'progress');
     }
 
     public function getPriceAttribute()
     {
-        return (bool) $this->sales_free ? 0 : $this->attributes['price'];
+        return (bool)$this->sales_free ? 0 : $this->attributes['price'];
     }
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder
@@ -280,7 +280,7 @@ class Edition extends Model
     public function lengthRecount()
     {
         $this->chapters()->get()->each->lengthRecount();
-        $this->length = (int) $this->chapters()->published()->sum('length');
+        $this->length = (int)$this->chapters()->published()->sum('length');
         $this->save();
     }
 
@@ -300,9 +300,9 @@ class Edition extends Model
             if ($this->getOriginal('sales_free') || $this->getOriginal('status') === BookStatus::FROZEN) {
                 $this->chapters()->published()->update(['sales_type' => ChapterSalesType::FREE]);
             } else {
-                $this->chapters()->published()->limit($this->getOriginal('sales_free'))->update(['sales_type' => ChapterSalesType::FREE]);
+                $this->chapters()->published()->limit($this->getOriginal('free_parts'))->update(['sales_type' => ChapterSalesType::FREE]);
 //            $this->chapters()->offset($this->free_parts); ошибка?
-                $this->chapters()->published()->get()->skip($this->getOriginal('sales_free'))->each->update(['sales_type' => ChapterSalesType::PAY]);
+                $this->chapters()->published()->get()->skip($this->getOriginal('free_parts'))->each->update(['sales_type' => ChapterSalesType::PAY]);
             }
         });
     }
