@@ -9,6 +9,7 @@ use Books\Book\Classes\BookService;
 use Books\Book\Classes\ChapterService;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\FB2Manager;
+use Books\Book\Classes\GenreRater;
 use Books\Book\Classes\Rater;
 use Books\Book\Classes\StatisticService;
 use Books\Book\Classes\WidgetService;
@@ -140,6 +141,10 @@ class Plugin extends PluginBase
         $schedule->call(function () {
             ChapterService::audit();
         })->everyMinute();
+
+        $schedule->call(function () {
+            GenreRater::queue();
+        })->everyTenMinutes();
     }
 
     /**
