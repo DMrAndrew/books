@@ -82,7 +82,9 @@ class Stats extends Model
     public function dump()
     {
         $h = $this->history;
-        $h[$this->updated_at->format('d.m.y')] = $this->attributes;
+        $attributes = $this->attributes;
+        unset($attributes['history']);
+        $h[$this->updated_at->format('d.m.y')] = $attributes;
         $this->history = $h;
         $this->save();
     }

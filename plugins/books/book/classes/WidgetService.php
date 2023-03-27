@@ -216,7 +216,7 @@ class WidgetService
             }
             $ids = $this->values->pluck('id')->toArray();
         } else {
-            $ids = Cache::get($this->cacheName)[$this->cacheKey] ?? collect();
+            $ids = Cache::get($this->cacheName)[$this->cacheKey] ?? collect()->toArray();
         }
         $this->values = $this->query->public()->defaultEager()->whereIn('id', $ids)->get();
 
