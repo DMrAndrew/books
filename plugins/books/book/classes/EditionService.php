@@ -15,11 +15,12 @@ class EditionService
 
     public function update(array $payload)
     {
-        if (! $this->edition->editAllowed()) {
+        $data = collect($payload)->only(['price', 'status', 'free_parts', 'sales_free']);
+        $this->edition->fill($data->toArray());
+
+        if ($this->edition->isDirty(['price', 'free_parts', 'sales_free']) && ! $this->edition->editAllowed()) {
             throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование продаж.']);
         }
-
-        $data = collect($payload)->only(['price', 'status', 'free_parts', 'sales_free']);
 
         if ($status = BookStatus::tryFrom($data->get('status')) ?? false) {
             $data['status'] = $status;
@@ -41,9 +42,6 @@ class EditionService
         ) {
             $this->edition->setPublishAt();
         }
-
-        $this->edition->fill($data->toArray());
-
         $this->edition->save();
         Event::fire('books.edition.updated', [$this->edition]);
     }

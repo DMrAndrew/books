@@ -98,6 +98,9 @@ class ChapterService
 
     public function dataPrepare(array|Collection $data): array
     {
+        if (! $this->edition->editAllowed()) {
+            throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование глав.']);
+        }
         $data = collect($data);
 
         if ($data->has('status')) {

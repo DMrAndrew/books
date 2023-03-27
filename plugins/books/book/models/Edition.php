@@ -29,6 +29,7 @@ use System\Models\Revision;
  * * @method BelongsTo book
  *
  * * @property  Book book
+ * * @property  BookStatus status
  */
 class Edition extends Model
 {
@@ -44,6 +45,8 @@ class Edition extends Model
     protected $revisionable = ['length', 'status'];
 
     public $revisionableLimit = 5000;
+
+    public bool $forceRevision = false;
 
     public string $trackerChildRelation = 'chapters';
 
@@ -147,7 +150,16 @@ class Edition extends Model
 
     public function editAllowed(): bool
     {
-        return ! $this->isPublished() || $this->status === BookStatus::WORKING || $this->sales_free;
+        return ! $this->isPublished()
+            || $this->status === BookStatus::WORKING
+            || $this->sales_free
+            || ($this->status === BookStatus::HIDDEN
+                && ! $this->hadCompleted());
+    }
+
+    public function hadCompleted()
+    {
+        return $this->revision_history()->where(['field' => 'status', 'old_value' => BookStatus::COMPLETE->value])->exists();
     }
 
     public function isPublished(): bool
@@ -168,6 +180,7 @@ class Edition extends Model
             BookStatus::WORKING => $this->hasSales() ? $cases->forget(BookStatus::HIDDEN) : $cases,//нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
             BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value), // Из “Завершено” можем перевести только в статус “Скрыто”.
             BookStatus::FROZEN => collect(),
+            BookStatus::HIDDEN => ! $this->isPublished() && $this->hadCompleted() ? collect() : $cases,
             default => $cases
         };
 
@@ -186,19 +199,21 @@ class Edition extends Model
         return false;
     }
 
-    public function shouldRevision(): bool
+    public function shouldRevisionLength(): bool
     {
-        return ! $this->shouldDeferredUpdate();
+        return $this->isDirty('length') && ! $this->shouldDeferredUpdate() && in_array($this->status, [BookStatus::WORKING, BookStatus::FROZEN]);
     }
 
     protected function beforeUpdate()
     {
-        $this->revisionsEnabled = $this->shouldRevision();
+        if (! $this->shouldRevisionLength()) {
+            $this->revisionable = ['status'];
+        }
     }
 
     protected function afterUpdate()
     {
-        if ($this->wasChanged('free_parts')) {
+        if ($this->wasChanged(['free_parts', 'status'])) {
             $this->setFreeParts();
         }
     }
@@ -283,9 +298,13 @@ class Edition extends Model
     public function setFreeParts()
     {
         Db::transaction(function () {
-            $this->chapters()->published()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
+            if ($this->sales_free || $this->status === BookStatus::FROZEN) {
+                $this->chapters()->published()->update(['sales_type' => ChapterSalesType::FREE]);
+            } else {
+                $this->chapters()->published()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
 //            $this->chapters()->offset($this->free_parts); ошибка?
-            $this->chapters()->published()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
+                $this->chapters()->published()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
+            }
         });
     }
 

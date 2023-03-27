@@ -15,7 +15,6 @@ use Flash;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
-use Request;
 use ValidationException;
 use Validator;
 
@@ -130,11 +129,8 @@ class Chapterer extends ComponentBase
 
             return Redirect::to('/about-book/'.$this->book->id)->withFragment('#tab-electronic');
         } catch (Exception $ex) {
-            if (Request::ajax()) {
-                throw $ex;
-            } else {
-                Flash::error($ex->getMessage());
-            }
+            Flash::error($ex->getMessage());
+            throw $ex;
         }
     }
 }

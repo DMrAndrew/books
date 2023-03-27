@@ -2,7 +2,10 @@
     <div class="create-book__title ui-text-head--2 ui-text--bold">Добавление текста</div>
 </div>
 
-<form class="lc-book-text ui-container-fluid wrapper" data-request="{{__SELF__}}::onSave" data-request-validate>
+<form class="lc-book-text ui-container-fluid wrapper"
+      data-request-flash
+      data-request="{{__SELF__}}::onSave"
+      data-request-validate>
     <div class="personal-area__wrap _indent-large ui-input">
         <label class="ui-input-label">Название части</label>
         <input class="ui-input-item _size-32" value="{{chapter.title}}" name="title" type="text">
