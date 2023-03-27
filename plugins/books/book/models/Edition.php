@@ -152,7 +152,7 @@ class Edition extends Model
     {
         return ! $this->isPublished()
             || $this->getOriginal('sales_free')
-            || $this->getOriginal('status') === BookStatus::WORKING
+            || in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN])
             || ($this->getOriginal('status') === BookStatus::HIDDEN && ! $this->hadCompleted());
     }
 
@@ -163,7 +163,7 @@ class Edition extends Model
 
     public function isPublished(): bool
     {
-        return (bool) $this->getOriginal('sales_free');
+        return (bool) $this->getOriginal('sales_at');
     }
 
     public function setPublishAt()
@@ -176,10 +176,10 @@ class Edition extends Model
         $cases = collect(BookStatus::publicCases());
 
         $cases = match ($this->getOriginal('status')) {
-            BookStatus::WORKING => $this->hasSales() ? $cases->forget(BookStatus::HIDDEN) : $cases,//нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
+            BookStatus::WORKING => $this->hasSales() ? $cases->forget(BookStatus::HIDDEN) : $cases,// нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
             BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value), // Из “Завершено” можем перевести только в статус “Скрыто”.
             BookStatus::FROZEN => collect(),
-            BookStatus::HIDDEN => ! $this->isPublished() && $this->hadCompleted() ? collect() : $cases,
+            BookStatus::HIDDEN => ! $this->isPublished() && $this->hadCompleted() ? collect() : $cases,//Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”, то книгу можно вернуть в статус “Скрыто” но редактирование и удаление глав будет невозможным.
             default => $cases
         };
 
@@ -287,7 +287,7 @@ class Edition extends Model
     public function changeChaptersOrder(array $ids, ?array $order = null)
     {
         Db::transaction(function () use ($ids, $order) {
-            $order ??= $this->chapters()->pluck('sort_order')->toArray();
+            $order ??= $this->chapters()->pluck((new Chapter())->getSortOrderColumn())->toArray();
             $this->chapters()->first()->setSortableOrder($ids, $order);
             $this->chapters()->get()->each->setNeighbours();
             $this->setFreeParts();
@@ -297,12 +297,12 @@ class Edition extends Model
     public function setFreeParts()
     {
         Db::transaction(function () {
-            if ($this->sales_free || $this->status === BookStatus::FROZEN) {
+            if ($this->getOriginal('sales_free') || $this->getOriginal('status') === BookStatus::FROZEN) {
                 $this->chapters()->published()->update(['sales_type' => ChapterSalesType::FREE]);
             } else {
-                $this->chapters()->published()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
+                $this->chapters()->published()->limit($this->getOriginal('sales_free'))->update(['sales_type' => ChapterSalesType::FREE]);
 //            $this->chapters()->offset($this->free_parts); ошибка?
-                $this->chapters()->published()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
+                $this->chapters()->published()->get()->skip($this->getOriginal('sales_free'))->each->update(['sales_type' => ChapterSalesType::PAY]);
             }
         });
     }

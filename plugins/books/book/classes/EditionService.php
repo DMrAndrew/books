@@ -51,7 +51,7 @@ class EditionService
      */
     public function changeChaptersOrder(array $sequence)
     {
-        if (! $this->edition->editAllowed() && $this->edition->status !== BookStatus::FROZEN) {
+        if (! $this->edition->editAllowed()) {
             throw new ValidationException(['chapters' => 'В данный момент Вы не можете изменить порядок частей.']);
         }
         $this->edition->changeChaptersOrder($sequence);
