@@ -41,7 +41,8 @@ class Reader {
                 data: {
                     paginator_id: this.#paginator_id,
                     ms: ms || this.#trackerInterval
-                }
+                },
+                progressBar: false
             })
         }
     }

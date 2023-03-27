@@ -1,4 +1,4 @@
-{% set aClass = linkClass?:'personal-area__sidebar-separator' %}
+{% set aClass = linkClass?:'personal-area__sidebar-link' %}
 <div class="{{containerClass ?:'personal-area__sidebar ui-col-sm-3'}}">
     {% for link in collect([
     {name:'Профиль',href:'/lc-profile',turbo:'false'},
