@@ -74,7 +74,8 @@ redirect = "/"
             <div class="popup-menu__content">
                 <div class="popup-menu__header popup-menu__wrapper">
                     <div class="ui-text-head--3 ui-text--bold">Уведомления</div>
-                    <a href="#" class="popup-menu__settings">
+                    <a href="/lc-notification" class="popup-menu__settings">
+
                         <svg class="square-16">
                             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#settings-stroked-16' | theme}}"></use>
                         </svg>
@@ -89,136 +90,22 @@ redirect = "/"
                         <span>Здесь пока ничего нет</span>
                     </div>
 
-                    <div class="notification-menu">
-                        <div class="notification-menu__wrapper">
-                            <div class="notification-menu__detector active"></div>
-                            <div class="notification-menu__icon-wrapper">
-                                <svg class="square-24">
-                                    <use
-                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
-                                </svg>
-                            </div>
-                            <div class="notification-menu__content">
-                                <div class="notification-menu__text notification-menu__content-wrapper">
-                                    <a href="#" class="ui-link _violet">Александр Алексон</a> опубликовал
-                                    новую книгу «<a href="#" class="ui-link _violet">Мужская вакансия, или
-                                    Женщина на борту – к несчастью</a>»
-                                </div>
-                                <div class="notification-menu__date">6 часов назад</div>
-                            </div>
-                        </div>
 
-                        <div class="notification-menu__wrapper">
-                            <div class="notification-menu__detector active"></div>
-                            <div class="notification-menu__icon-wrapper">
-                                <svg class="square-24">
-                                    <use
-                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#refresh-stroked-24' | theme}}"></use>
-                                </svg>
-                            </div>
-                            <div class="notification-menu__content">
-                                <div class="notification-menu__text notification-menu__content-wrapper">
-                                    <a href="#" class="ui-link _violet">Александр Алексон</a> обновил книгу
-                                    «<a href="#" class="ui-link _violet">Мужская вакансия, или Женщина на
-                                    борту – к несчастью</a>»
-                                </div>
-                                <div class="notification-menu__content-wrapper">+400 знаков</div>
-                                <div class="notification-menu__date">6 часов назад</div>
-                            </div>
-                        </div>
-                        <div class="notification-menu__wrapper">
-                            <div class="notification-menu__detector "></div>
-                            <div class="notification-menu__icon-wrapper">
-                                <svg class="square-24">
-                                    <use
-                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#blog-stroked-32' | theme}}"></use>
-                                </svg>
-                            </div>
-                            <div class="notification-menu__content">
-                                <div class="notification-menu__text notification-menu__content-wrapper">
-                                    <a href="#" class="ui-link _violet">Александр Алексон</a> опубликовал
-                                    новую запись в блоге «<a href="#" class="ui-link _violet">Дизайн
-                                    обложки</a>»
-                                </div>
-                                <div class="notification-menu__date">6 часов назад</div>
-                            </div>
-                        </div>
-                        <div class="notification-menu__wrapper">
-                            <div class="notification-menu__detector "></div>
-                            <div class="notification-menu__icon-wrapper">
-                                <svg class="square-24">
-                                    <use
-                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#shop-stroked-32' | theme}}"></use>
-                                </svg>
-                            </div>
-                            <div class="notification-menu__content">
-                                <div class="notification-menu__text notification-menu__content-wrapper">
-                                    <a href="#" class="ui-link _violet">Александр Алексон</a> Александр
-                                    Алексон разместил товар в магазине «<a href="#" class="ui-link _violet">Дизайн
-                                    обложки</a>»
-                                </div>
-                                <div class="notification-menu__date">6 часов назад</div>
-                            </div>
-                        </div>
-                        <div class="notification-menu__wrapper">
-                            <div class="notification-menu__detector "></div>
-                            <div class="notification-menu__icon-wrapper">
-                                <svg class="square-24">
-                                    <use
-                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
-                                </svg>
-                            </div>
-                            <div class="notification-menu__content">
-                                <div class="notification-menu__message notification-menu__content-wrapper">
-                                    <p class="notification-menu__content-wrapper">
-                                        Тут будет какой-то текст от администрации. Этот текст будет
-                                        располагаться максимум на 3 строчки. Не больше не меньше. Далее
-                                        просто будет обрезаться
-                                    </p>
-                                    <a href="#" class="ui-link _violet">Подробнее</a>
-                                </div>
-                                <div class="notification-menu__date">6 часов назад</div>
-                            </div>
-                        </div>
-                        <div class="notification-menu__wrapper">
-                            <div class="notification-menu__detector active"></div>
-                            <div class="notification-menu__icon-wrapper">
-                                <svg class="square-24">
-                                    <use
-                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#sale-stroked-24' | theme}}"></use>
-                                </svg>
-                            </div>
-                            <div class="notification-menu__content">
-                                <div class="notification-menu__text notification-menu__content-wrapper">
-                                    Скидка на книгу <a href="#" class="ui-link _violet">«Мужская вакансия,
-                                    или Женщина на борту – к несчастью»</a> от <a href="#"
-                                                                                  class="ui-link _violet">Александр
-                                    Алексон</a>
-                                </div>
-                                <div
-                                    class="notification-menu__price notification-menu__content-wrapper ui-text--bold">
-                                    139 ₽ <span class="ui-text--lt">111 ₽</span></div>
-                                <a href="#"
-                                   class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Купить</a>
-                                <div class="notification-menu__date">12.02.22</div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="popup-menu__footer popup-menu__wrapper">
-                    <a href="/frontend/all-notifications.html" class="popup-menu__link ui-link _violet">Все
+                    <a href="/notifications" class="popup-menu__link ui-link _violet">Все
                         уведомления</a>
                 </div>
             </div>
         </div>
     </div>
-    <div class="header__actions-wrapper">
-        <div class="header__actions-item">
-            <svg class="square-24">
-                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bag-stroked-24' | theme}}"></use>
-            </svg>
-        </div>
-    </div>
+<!--    <div class="header__actions-wrapper">-->
+<!--        <div class="header__actions-item">-->
+<!--            <svg class="square-24">-->
+<!--                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bag-stroked-24' | theme}}"></use>-->
+<!--            </svg>-->
+<!--        </div>-->
+<!--    </div>-->
     <div class="header__actions-wrapper">
         <div class="header__actions-item" data-header-action="wallet">
             <svg class="square-24">
@@ -239,38 +126,12 @@ redirect = "/"
                         <span>Здесь пока ничего нет</span>
                     </div>
 
-                    <div class="notification-menu">
-                        <div class="notification-menu__wrapper">
-                            <div class="notification-menu__content">
-                                <div class="notification-menu__text notification-menu__content-wrapper">
-                                    Баланс пополнен на 1000 ₽
-                                </div>
-                                <div class="notification-menu__date">6 часов назад</div>
-                            </div>
-                        </div>
-                        <div class="notification-menu__wrapper">
-                            <div class="notification-menu__content">
-                                <div class="notification-menu__text notification-menu__content-wrapper">
-                                    Куплена книга <a href="" class="ui-link _violet">«Творческое перегорание
-                                    или затишье перед бурей»</a>
-                                </div>
-                                <div class="notification-menu__date">6 часов назад</div>
-                            </div>
-                        </div>
-                        <div class="notification-menu__wrapper">
-                            <div class="notification-menu__content">
-                                <div class="notification-menu__text notification-menu__content-wrapper">
-                                    Вы получили 200 ₽ от <a href="#" class="ui-link _violet">Виктор</a>
-                                </div>
-                                <div class="notification-menu__date">6 часов назад</div>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
                 <div class="popup-menu__footer popup-menu__wrapper">
                     <a href="#" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full">Пополнить
                         баланс</a>
-                    <a href="#" class="popup-menu__link ui-link _violet">Вся история операций</a>
+                    <a href="/all-operations" class="popup-menu__link ui-link _violet">Вся история операций</a>
                 </div>
             </div>
         </div>
@@ -304,6 +165,7 @@ redirect = "/"
                         </a>
                         <div class="dropwdown-profile _dropdown">
                             <ul class="dropwdown-profile__list _dropdown">
+                                {% if user.profilesAsOptions.count < user.maxProfilesCount %}
                                 <li data-modal="open-new-profile-modal">
                                     <a class="dropwdown-profile__link active cursor-pointer">
                                         <svg class="square-16">
@@ -314,6 +176,7 @@ redirect = "/"
                                     </a>
                                 </li>
                                 <li class="dropwdown-profile__separator"></li>
+                                {% endif %}
                                 {% for profile in user.profilesAsOptions %}
                                 <li>
                                     <a

@@ -42,6 +42,8 @@ class Profile extends Model
     use Subscribable;
     use HasFactory;
 
+    const MAX_USER_PROFILES_COUNT = 5;
+
     public static string $factory = ProfileFactory::class;
 
     /**
@@ -292,9 +294,14 @@ class Profile extends Model
         return $this->user->profiles()->username($string)->exists() || $this->user->profiles()->usernameClipboard($string)->exists();
     }
 
+    public function maxProfilesCount(): int
+    {
+        return self::MAX_USER_PROFILES_COUNT;
+    }
+
     protected function beforeCreate()
     {
-        if ($this->user->profiles()->count() > 4) {
+        if ($this->user->profiles()->count() >= self::MAX_USER_PROFILES_COUNT) {
             throw new ValidationException(['username' => 'Превышен лимит профилей.']);
         }
         if ($this->isUsernameExists($this->username)) {

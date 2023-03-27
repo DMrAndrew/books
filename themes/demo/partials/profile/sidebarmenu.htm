@@ -1,4 +1,5 @@
-<div class="personal-area__sidebar ui-col-sm-3">
+{% set aClass = linkClass?:'personal-area__sidebar-separator' %}
+<div class="{{containerClass ?:'personal-area__sidebar ui-col-sm-3'}}">
     {% for link in collect([
     {name:'Профиль',href:'/lc-profile',turbo:'false'},
     {name:'Приватность',href:'/lc-privacy'},
@@ -24,13 +25,13 @@
     {name:'Настройки',href:'/lc-settings'},
     ]) %}
     {% if link.separator %}
-    <div class="personal-area__sidebar-separator"></div>
+    <div class="{{separatorClass ?:personal-area__sidebar-separator}}"></div>
     {% else %}
     {% if link.href %}
-    <a class="personal-area__sidebar-link {{this.page.url == link.href ? 'active' : '' }} "
+    <a class="{{aClass}} {{this.page.url == link.href ? 'active' : '' }} "
        data-turbo="{{link.turbo|default('true')}}" href="{{link.href}}">{{link.name}}</a>
     {% else %}
-    <a class="personal-area__sidebar-link disabled">{{link.name}}</a>
+    <a class="{{aClass}} disabled">{{link.name}}</a>
     {% endif %}
 
     {% endif %}

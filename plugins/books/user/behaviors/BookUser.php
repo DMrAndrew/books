@@ -5,6 +5,7 @@ namespace Books\User\Behaviors;
 use Books\Book\Models\Cycle;
 use Books\Book\Models\Tag;
 use Books\Comments\Models\Comment;
+use Books\Profile\Models\Profile;
 use Books\User\Classes\UserService;
 use Books\User\Models\Settings;
 use Carbon\Carbon;
@@ -53,6 +54,11 @@ class BookUser extends ExtensionBase
     public function service(): UserService
     {
         return new UserService($this->parent);
+    }
+
+    public function maxProfilesCount(): int
+    {
+        return Profile::MAX_USER_PROFILES_COUNT;
     }
 
     public function setBirthdayAttribute($value)

@@ -28,6 +28,22 @@ let openTab = function (default_tab) {
     }
 }
 
+function initAccordion(container, accordionclickableArea) {
+    const nodes = document.querySelectorAll(container);
+    const MOBILE_POINT = 768;
+    if (document.body.offsetWidth > MOBILE_POINT) return
+
+    nodes[0].classList.add('active');
+
+    Array.from(nodes).forEach(item => {
+        item.addEventListener('click', e => {
+            let target = e.target.closest(accordionclickableArea);
+            if (target) {
+                item.classList.toggle('active');
+            }
+        })
+    })
+}
 
 addEventListener('page:before-cache', function () {
     let annotation = document.getElementById('cke_annotation')
