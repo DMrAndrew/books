@@ -32,9 +32,7 @@
                     </a>
                     {% else %}
                     {% if not sameAccount %}
-                    <div id="sub-button">
-                        {% partial '@sub-button' sub=profile.subscribers_exists %}
-                    </div>
+                    {% partial '@sub-button' sub=profile.subscribers_exists %}
                     {% endif %}
                     <!--                    <button-->
                     <!--                        class="author-promo-info__button _half ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3">Сообщение</button>-->

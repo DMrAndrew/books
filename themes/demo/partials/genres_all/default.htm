@@ -21,9 +21,11 @@
                             <span>{{parent.books_count|default('')}}</span>
 
                         </div>
+                        {% if parent.children[0] %}
                         <svg>
                             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
                         </svg>
+                        {% endif %}
                     </div>
                     <div class="book-genres-item__body">
 
