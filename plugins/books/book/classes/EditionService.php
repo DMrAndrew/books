@@ -15,12 +15,8 @@ class EditionService
 
     public function update(array $payload)
     {
-        $data = collect($payload)->only(['price', 'status', 'free_parts', 'sales_free']);
+        $data = collect($payload)->only(['price', 'status', 'free_parts']);
         $this->edition->fill($data->toArray());
-
-        if ($this->edition->isDirty(['price', 'free_parts', 'sales_free']) && ! $this->edition->editAllowed()) {
-            throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование продаж.']);
-        }
 
         if ($status = BookStatus::tryFrom($data->get('status')) ?? false) {
             $data['status'] = $status;
@@ -28,11 +24,14 @@ class EditionService
             $data->forget('status');
         }
 
-        if ($data->has('status') && ! in_array($data->get('status'), $this->edition->getAllowedStatusCases())) {
+        if ($this->edition->isDirty(['status']) && ! in_array($this->edition->status, $this->edition->getAllowedStatusCases())) {
             throw new ValidationException(['status' => 'В данный момент Вы не можете перевести издание в этот статус.']);
         }
+        if ($this->edition->isDirty(['free_parts']) && ! $this->edition->editAllowed()) {
+            throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование продаж.']);
+        }
 
-        if ($data->get('sales_free') == 0 && ($data->has('price') && ! (bool) $data->get('price'))) {
+        if (! $this->edition->price) {
             $this->edition->addValidationRule('free_parts', 'min:3');
         }
 

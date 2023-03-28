@@ -42,9 +42,9 @@ class Edition extends Model
      */
     public $table = 'books_book_editions';
 
-    protected $revisionable = ['length', 'status'];
+    protected $revisionable = ['length', 'status', 'price'];
 
-    public $revisionableLimit = 5000;
+    public $revisionableLimit = 10000;
 
     public bool $forceRevision = false;
 
@@ -54,7 +54,7 @@ class Edition extends Model
         'type',
         'download_allowed',
         'comment_allowed',
-        'sales_free',
+        //        'sales_free',
         'free_parts',
         'status',
         'price',
@@ -66,7 +66,7 @@ class Edition extends Model
         'type' => EditionsEnums::class,
         'free_parts' => 'integer',
         'price' => 'integer',
-        'sales_free' => 'boolean',
+        //        'sales_free' => 'boolean',
         'download_allowed' => 'boolean',
         'comment_allowed' => 'boolean',
         'status' => BookStatus::class,
@@ -83,7 +83,7 @@ class Edition extends Model
         'free_parts' => 'filled|integer',
         'download_allowed' => 'boolean',
         'comment_allowed' => 'boolean',
-        'sales_free' => 'boolean',
+        //        'sales_free' => 'boolean',
         'fb2' => ['nullable', 'file', 'mimes:xml'],
     ];
 
@@ -152,9 +152,14 @@ class Edition extends Model
     public function editAllowed(): bool
     {
         return ! $this->isPublished()
-            || $this->getOriginal('sales_free')
+            || $this->isFree()
             || in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN])
             || ($this->getOriginal('status') === BookStatus::HIDDEN && ! $this->hadCompleted());
+    }
+
+    public function isFree(): bool
+    {
+        return $this->getOriginal('price') == 0;
     }
 
     public function hadCompleted()
@@ -191,7 +196,7 @@ class Edition extends Model
 
     public function shouldDeferredUpdate(): bool
     {
-        return $this->getOriginal('status') === BookStatus::COMPLETE;
+        return $this->status === BookStatus::COMPLETE;
     }
 
     public function hasSales()
@@ -201,19 +206,19 @@ class Edition extends Model
 
     public function shouldRevisionLength(): bool
     {
-        return $this->isDirty('length') && ! $this->shouldDeferredUpdate() && in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN]);
+        return $this->isDirty('length') && ! $this->shouldDeferredUpdate() && in_array($this->status, [BookStatus::WORKING, BookStatus::FROZEN]);
     }
 
     protected function beforeUpdate()
     {
         if (! $this->shouldRevisionLength()) {
-            $this->revisionable = ['status'];
+            unset($this->revisionable['length']);
         }
     }
 
     protected function afterUpdate()
     {
-        if ($this->wasChanged(['free_parts', 'status'])) {
+        if ($this->wasChanged(['free_parts', 'status', 'price'])) {
             $this->setFreeParts();
         }
     }
@@ -221,11 +226,6 @@ class Edition extends Model
     public function scopeWithProgress(Builder $builder, User $user): Builder
     {
         return $builder->withMax(['trackers as progress' => fn ($trackers) => $trackers->user($user)->withoutTodayScope()], 'progress');
-    }
-
-    public function getPriceAttribute()
-    {
-        return (bool) $this->sales_free ? 0 : $this->attributes['price'];
     }
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder
@@ -240,7 +240,7 @@ class Edition extends Model
 
     public function scopeFree(Builder $builder, $free = true): Builder
     {
-        return $builder->where('sales_free', '=', $free)->orWhere('price', '=', 0);
+        return $builder->where('price', '=', 0);
     }
 
     public function scopeEbook(Builder $builder): Builder
@@ -298,12 +298,12 @@ class Edition extends Model
     public function setFreeParts()
     {
         Db::transaction(function () {
-            if ($this->getOriginal('sales_free') || $this->getOriginal('status') === BookStatus::FROZEN) {
+            if (! $this->price || $this->status === BookStatus::FROZEN) {
                 $this->chapters()->published()->update(['sales_type' => ChapterSalesType::FREE]);
             } else {
-                $this->chapters()->published()->limit($this->getOriginal('free_parts'))->update(['sales_type' => ChapterSalesType::FREE]);
+                $this->chapters()->published()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
 //            $this->chapters()->offset($this->free_parts); ошибка?
-                $this->chapters()->published()->get()->skip($this->getOriginal('free_parts'))->each->update(['sales_type' => ChapterSalesType::PAY]);
+                $this->chapters()->published()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
             }
         });
     }
