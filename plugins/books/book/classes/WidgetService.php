@@ -165,7 +165,7 @@ class WidgetService
 
     public function clearCache(): void
     {
-        Cache::forget($this->cacheName);
+        Cache::forget($this->cacheKey);
     }
 
     private function query()
@@ -206,7 +206,7 @@ class WidgetService
 
     public function apply(): static
     {
-        if ($this->disableCache || $this->forceCache || ! (Cache::get($this->cacheName)[$this->cacheKey] ?? false)) {
+        if ($this->disableCache || $this->forceCache || ! Cache::has($this->cacheKey)) {
             $this->collect();
             if ($this->enum === WidgetEnum::interested) {
                 return $this;
@@ -216,7 +216,7 @@ class WidgetService
             }
             $ids = $this->values->pluck('id')->toArray();
         } else {
-            $ids = Cache::get($this->cacheName)[$this->cacheKey] ?? collect()->toArray();
+            $ids = Cache::get($this->cacheKey) ?? collect()->toArray();
         }
         $this->values = $this->query->public()->defaultEager()->whereIn('id', $ids)->get();
 
@@ -225,11 +225,8 @@ class WidgetService
 
     public function cache(): static
     {
-        $array = array_replace(Cache::get($this->cacheName) ?? [], [
-            $this->cacheKey => $this->values->pluck('id')->toArray(),
-        ]);
         $this->clearCache();
-        Cache::remember($this->cacheName, $this->cacheTTL, fn () => $array);
+        Cache::remember($this->cacheKey, $this->cacheTTL, fn () => $this->values->pluck('id')->toArray());
 
         return $this;
     }
