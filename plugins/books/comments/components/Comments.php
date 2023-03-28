@@ -26,7 +26,7 @@ class Comments extends ComponentBase
 
     protected Profile $owner;
 
-    protected int $perPage = 4;
+    protected int $perPage = 15;
 
     protected int $currentPage = 1;
 
