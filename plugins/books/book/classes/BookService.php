@@ -98,6 +98,7 @@ class BookService
             $this->fromTizis($tizisBook);
             $this->book->ebook->fb2()->save($payload);
             Event::fire('books.book.parsed', [$this->book]);
+
             return $this->book;
         }
         throw new UnknownFormatException();
@@ -112,9 +113,11 @@ class BookService
                 'annotation' => $info->getAnnotation(),
             ];
 
-            $cover = (new File())->fromData(base64_decode($book->getCover()), 'cover.jpg');
-            $cover->save();
-            $this->book->cover()->add($cover, $this->session_key);
+            if ($cover = $book->getCover()) {
+                $cover = (new File())->fromData(base64_decode($cover), 'cover.jpg');
+                $cover->save();
+                $this->book->cover()->add($cover, $this->session_key);
+            }
 
             collect(explode(',', $info->getKeywords()))->each(fn ($tag) => $this->addTag($tag));
             $this->save($data);

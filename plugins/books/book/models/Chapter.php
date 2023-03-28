@@ -158,7 +158,7 @@ class Chapter extends Model
 
     public function getTitleAttribute()
     {
-        return $this->attributes['title'] ?: '№'.$this->{$this->getSortOrderColumn()};
+        return $this->attributes['title'] ?? false ?: ($this->exists ? '№'.$this->{$this->getSortOrderColumn()} : '');
     }
 
     public function isFree(): bool
