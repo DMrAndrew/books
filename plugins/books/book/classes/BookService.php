@@ -109,7 +109,7 @@ class BookService
         return Db::transaction(function () use ($book) {
             $info = $book->getInfo();
             $data = [
-                'title' => strip_tags($info->getTitle()),
+                'title' => strip_tags($info->getTitle()) ?: 'Без названия',
                 'annotation' => $info->getAnnotation(),
             ];
 
@@ -120,6 +120,12 @@ class BookService
             }
 
             collect(explode(',', $info->getKeywords()))->each(fn ($tag) => $this->addTag($tag));
+
+            foreach ($info->getGenres() as $item) {
+                if ($genre = Genre::query()->where('name', $item)->first()) {
+                    $this->addGenre($genre);
+                }
+            }
             $this->save($data);
 
             collect($book->getChapters())->map(function ($chapter) {

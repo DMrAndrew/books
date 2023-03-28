@@ -184,7 +184,7 @@ class Edition extends Model
             default => $cases
         };
 
-        $cases[$this->status->value] = $this->getOriginal('status');
+        $cases[$this->getOriginal('status')->value] = $this->getOriginal('status');
 
         return $cases->toArray();
     }

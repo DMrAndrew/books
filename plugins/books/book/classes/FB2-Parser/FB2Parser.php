@@ -3,6 +3,7 @@
 namespace Tizis\FB2;
 
 use DiDom\Document;
+use DiDom\Element;
 use Tizis\FB2\Helpers\DocumentFormatter;
 use Tizis\FB2\Model\Book;
 
@@ -112,7 +113,7 @@ class FB2Parser extends FB2AttributesManager
 
     private function parseBookInfo(): void
     {
-        $this->book->setInfo((new Parser\BookInfo($this->xmlDOM->first('description')))->parse());
+        $this->book->setInfo((new Parser\BookInfo($this->xmlDOM->first('description') ?? new Element('description')))->parse());
     }
 
     private function parseChapters(): void
