@@ -52,7 +52,7 @@ class EBooker extends ComponentBase
 
     public function vals()
     {
-        $this->page['ebook'] = $this->ebook;
+        $this->page['ebook'] = $this->ebook->fresh();
         $this->page['bookStatusCases'] = $this->ebook->getAllowedStatusCases();
     }
 
