@@ -32,17 +32,16 @@ class WidgetService
      * @throws Exception
      */
     public function __construct(protected WidgetEnum $enum,
-                                protected ?User      $user = null,
-                                protected ?Carbon    $cacheTTL = null,
-                                protected Book       $book = (new Book()),
-                                protected bool       $short = false,
-                                protected bool       $withHeader = true,
-                                protected bool       $disableCache = false,
-                                protected bool       $diffWithUser = false,
-                                protected bool       $withAll = false,
-                                protected bool       $useSort = true,
-    )
-    {
+                                protected ?User $user = null,
+                                protected ?Carbon $cacheTTL = null,
+                                protected Book $book = (new Book()),
+                                protected bool $short = false,
+                                protected bool $withHeader = true,
+                                protected bool $disableCache = false,
+                                protected bool $diffWithUser = false,
+                                protected bool $withAll = false,
+                                protected bool $useSort = true,
+    ) {
         $this->cacheTTL ??= Carbon::now()->copy()->addMinutes(3);
         $this->values = collect();
         $this->cacheKey = $this->enum->value;
@@ -54,7 +53,7 @@ class WidgetService
     }
 
     /**
-     * @param bool $useSort
+     * @param  bool  $useSort
      * @return WidgetService
      */
     public function setUseSort(bool $useSort): static
@@ -65,7 +64,7 @@ class WidgetService
     }
 
     /**
-     * @param bool $withAll
+     * @param  bool  $withAll
      * @return WidgetService
      */
     public function setWithAll(bool $withAll): static
@@ -76,7 +75,7 @@ class WidgetService
     }
 
     /**
-     * @param bool $diffWithUser
+     * @param  bool  $diffWithUser
      * @return WidgetService
      */
     public function setDiffWithUser(bool $diffWithUser): static
@@ -87,7 +86,7 @@ class WidgetService
     }
 
     /**
-     * @param Builder $query
+     * @param  Builder  $query
      * @return WidgetService
      */
     public function setQuery(Builder $query): static
@@ -98,7 +97,7 @@ class WidgetService
     }
 
     /**
-     * @param bool $disableCache
+     * @param  bool  $disableCache
      * @return WidgetService
      */
     public function setDisableCache(bool $disableCache): static
@@ -109,7 +108,7 @@ class WidgetService
     }
 
     /**
-     * @param bool $forceCache
+     * @param  bool  $forceCache
      * @return WidgetService
      */
     public function setForceCache(bool $forceCache): static
@@ -120,7 +119,7 @@ class WidgetService
     }
 
     /**
-     * @param Carbon $cacheTTL
+     * @param  Carbon  $cacheTTL
      * @return WidgetService
      */
     public function setCacheTTL(Carbon $cacheTTL): static
@@ -131,7 +130,7 @@ class WidgetService
     }
 
     /**
-     * @param User|null $user
+     * @param  User|null  $user
      * @return WidgetService
      */
     public function setUser(?User $user): static
@@ -176,7 +175,7 @@ class WidgetService
 
     protected function validate()
     {
-        if (!$this->book?->exists) {
+        if (! $this->book?->exists) {
             throw new Exception('Book required.');
         }
     }
@@ -197,7 +196,7 @@ class WidgetService
 
     public function diffWithUser(): static
     {
-        if (!$this->user || !$this->diffWithUser || in_array($this->enum, [WidgetEnum::interested, WidgetEnum::cycle])) {
+        if (! $this->user || ! $this->diffWithUser || in_array($this->enum, [WidgetEnum::interested, WidgetEnum::cycle])) {
             return $this;
         }
 
@@ -207,12 +206,12 @@ class WidgetService
 
     public function apply(): static
     {
-        if ($this->disableCache || $this->forceCache || !Cache::has($this->cacheKey)) {
+        if ($this->disableCache || $this->forceCache || ! Cache::has($this->cacheKey)) {
             $this->collect();
             if ($this->enum === WidgetEnum::interested) {
                 return $this;
             }
-            if (!$this->disableCache) {
+            if (! $this->disableCache) {
                 $this->cache();
             }
             $ids = $this->values->pluck('id')->toArray();
@@ -227,7 +226,7 @@ class WidgetService
     public function cache(): static
     {
         $this->clearCache();
-        Cache::remember($this->cacheKey, $this->cacheTTL, fn() => $this->values->pluck('id')->toArray());
+        Cache::remember($this->cacheKey, $this->cacheTTL, fn () => $this->values->pluck('id')->toArray());
 
         return $this;
     }
@@ -248,9 +247,9 @@ class WidgetService
     {
         if ($this->useSort) {
             $this->values = match ($this->enum) {
-                WidgetEnum::hotNew, WidgetEnum::gainingPopularity => $this->values->sortByDesc(fn(Book $book) => $book->getCollectedRate($this->enum)),
+                WidgetEnum::hotNew, WidgetEnum::gainingPopularity => $this->values->sortByDesc(fn (Book $book) => $book->getCollectedRate($this->enum)),
                 WidgetEnum::popular, WidgetEnum::recommend, WidgetEnum::otherAuthorBook => Book::sortCollectionByPopularGenre($this->values),
-                WidgetEnum::new => $this->values->sortByDesc(fn($b) => $b->ebook->sales_at),
+                WidgetEnum::new => $this->values->sortByDesc(fn ($b) => $b->ebook->sales_at),
                 WidgetEnum::interested => $this->values->sortByDesc('created_at'),
                 default => $this->values
             };
@@ -261,12 +260,12 @@ class WidgetService
 
     private function getFor()
     {
-        if (!method_exists((new Stats()), $this->enum->value)) {
+        if (! method_exists((new Stats()), $this->enum->value)) {
             throw new BadMethodCallException();
         }
 
         return $this->query()
-            ->when(in_array($this->enum, [WidgetEnum::hotNew, WidgetEnum::gainingPopularity]), fn($q) => $q->afterPublishedAtDate(Carbon::now()
+            ->when(in_array($this->enum, [WidgetEnum::hotNew, WidgetEnum::gainingPopularity]), fn ($q) => $q->afterPublishedAtDate(Carbon::now()
                 ->copy()
                 ->subDays($this->enum === WidgetEnum::hotNew ? 10 : 30)))
             ->get();
@@ -292,7 +291,7 @@ class WidgetService
     public function popular()
     {
         return $this->query()
-            ->whereHas('genres', fn($genres) => $genres->whereIn('id', $this->book->genres->pluck('id')->toArray()))
+            ->whereHas('genres', fn ($genres) => $genres->whereIn('id', $this->book->genres->pluck('id')->toArray()))
             ->whereNotIn('id', [$this->book->id])
             ->get();
     }
@@ -301,8 +300,8 @@ class WidgetService
     {
         return $this->query()
             ->whereNotIn('id', [$this->book->id])
-            ->whereHas('author', fn($author) => $author->where('profile_id', '=', $this->book->author->profile_id))
-            ->whereHas('genres', fn($genres) => $genres
+            ->whereHas('author', fn ($author) => $author->where('profile_id', '=', $this->book->author->profile_id))
+            ->whereHas('genres', fn ($genres) => $genres
                 ->whereIn('id', ($this->user?->loved_genres
                     ?? json_decode(Cookie::get('loved_genres')) ?: (new FavoritesManager())->getDefaultGenres())))
             ->get();
@@ -314,11 +313,11 @@ class WidgetService
             ->where('type', '=', CollectionEnum::READ)
             ->with('favorites')
             ->get()
-            ->each(fn($i) => $i['user'] = $i->favorites->first()->user_id)->groupBy('user')
+            ->each(fn ($i) => $i['user'] = $i->favorites->first()->user_id)->groupBy('user')
             ->map->pluck('book_id')
-            ->filter(fn($i) => !is_bool($i->search($this->book->id)))
+            ->filter(fn ($i) => ! is_bool($i->search($this->book->id)))
             ->flatten(1)
-            ->groupBy(fn($i) => $i)
+            ->groupBy(fn ($i) => $i)
             ->map->count()
             ->sortDesc()
             ->values()

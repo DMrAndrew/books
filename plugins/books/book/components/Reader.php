@@ -81,6 +81,7 @@ class Reader extends ComponentBase
         foreach ($this->service->getReaderPage() as $key => $item) {
             $this->page[$key] = $item;
         }
+        $this->page['user'] = $this->user;
     }
 
     public function onNext()
