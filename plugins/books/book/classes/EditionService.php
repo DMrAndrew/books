@@ -24,10 +24,10 @@ class EditionService
             $data->forget('status');
         }
 
-        if ($this->edition->isDirty(['status']) && !in_array($this->edition->status, $this->edition->getAllowedStatusCases())) {
+        if ($this->edition->isDirty(['status']) && ! in_array($this->edition->status, $this->edition->getAllowedStatusCases())) {
             throw new ValidationException(['status' => 'В данный момент Вы не можете перевести издание в этот статус.']);
         }
-        if ($this->edition->isDirty(['free_parts']) && !$this->edition->editAllowed()) {
+        if ($this->edition->isDirty(['free_parts']) && ! $this->edition->editAllowed()) {
             throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование продаж.']);
         }
 
@@ -35,7 +35,7 @@ class EditionService
             $this->edition->addValidationRule('free_parts', 'min:3');
         }
 
-        if (!$this->edition->isPublished()
+        if (! $this->edition->isPublished()
             && in_array($data->get('status'), [BookStatus::COMPLETE, BookStatus::WORKING])
             && ($data->get('sales_free') == 'on' || ($data->has('price') && $data->has('free_parts')))
         ) {
@@ -50,7 +50,7 @@ class EditionService
      */
     public function changeChaptersOrder(array $sequence)
     {
-        if (!$this->edition->editAllowed()) {
+        if (! $this->edition->editAllowed()) {
             throw new ValidationException(['chapters' => 'В данный момент Вы не можете изменить порядок частей.']);
         }
         $this->edition->changeChaptersOrder($sequence);

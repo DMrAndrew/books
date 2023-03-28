@@ -26,6 +26,7 @@ class Reader
 
     public function __construct(protected Book $book, protected ?Chapter $chapter, protected ?int $page = 1, protected ?User $user = null)
     {
+        $this->book = Book::query()->public()->withChapters()->defaultEager()->find($this->book->id);
         //TODO refactor
         $this->user ??= Auth::getUser();
         $this->page ??= 1;
@@ -90,8 +91,8 @@ class Reader
             'book' => $this->book->newQuery()->defaultEager()->find($this->book->id),
             'pagination' => [
                 'prev' => (bool) ($this->prevPage() ?? $this->prevChapter()),
-                'links' => $this->chapter->service()->getPaginationLinks($this->page),
                 'next' => (bool) ($this->nextPage() ?? $this->nextChapter()),
+                'links' => $this->chapter->service()->getPaginationLinks($this->page),
             ],
             'chapters' => $this->chapters,
             'reader' => [

@@ -77,8 +77,8 @@ class ChapterService
         $this->chapter->sales_type ??= ChapterSalesType::PAY;
         $this->chapter['edition_id'] = $this->edition->id;
         $this->chapter->save();
-        $this->chapter->setNeighbours();
-        $this->chapter->prev?->setNeighbours();
+        $this->chapter->edition->chapters->each->setNeighbours();
+
         Event::fire('books.chapter.created', [$this->chapter]);
 
         return $this->chapter;
