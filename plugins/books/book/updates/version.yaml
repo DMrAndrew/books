@@ -32,3 +32,6 @@
 1.0.8:
     - "Recommend books"
     - add_books_reccoment_flag.php
+1.0.9:
+    - 'Удаление user_id у жанра'
+    - tags_remove_user_id.php

@@ -100,8 +100,7 @@ class Booker extends ComponentBase
     public function onSaveBook()
     {
         try {
-
-             $data = post();
+            $data = post();
             $book = (new Book());
             $book->addValidationRule('annotation', 'max:2000');
             $validator = Validator::make(
@@ -115,7 +114,7 @@ class Booker extends ComponentBase
             $book = $this->service->from($data);
             $redirect = (bool) $this->book->id;
 
-            return !$redirect ?
+            return ! $redirect ?
                 ['#about-header' => $this->renderPartial('book/about-header', ['book' => $book])]
                 : Redirect::to("/about-book/$book->id");
         } catch (Exception $ex) {
@@ -155,11 +154,11 @@ class Booker extends ComponentBase
     public function onCreateCycle(): array
     {
         try {
-            if ($this->user->cycles()->name(post('name'))->exists()) {
+            if ($this->user->profile->cycles()->name(post('name'))->exists()) {
                 throw new ValidationException(['name' => 'Цикл уже существует.']);
             }
-            $this->user->cycles()->add(new Cycle(post()));
-            $this->book->cycle = $this->user->cycles()->latest()->first();
+            $this->user->profile->cycles()->add(new Cycle(post()));
+            $this->book->cycle = $this->user->profile->cycles()->latest()->first();
 
             return [
                 '#cycle_input' => $this->renderPartial('@cycle_input', ['cycles' => $this->getCycles(), 'cycle_id' => $this->book->cycle->id]),
@@ -176,7 +175,7 @@ class Booker extends ComponentBase
 
     public function getCycles()
     {
-        return $this->user?->cycles->toArray() ?? [];
+        return $this->user?->profile->cycles->toArray() ?? [];
     }
 
     public function onSearchTag()
@@ -185,11 +184,12 @@ class Booker extends ComponentBase
         if (! $term || strlen($term) < 3) {
             return [];
         }
-        $like = $this->user?->tags()->nameLike($term)->get();
+
+        $like = Tag::query()->nameLike($term)->get();
         $exists = $this->service->getTags();
         $array = $like->diff($exists);
-        $already_has = (bool) $exists->first(fn ($i) => $i->name === $term);
-        $can_create = ! $already_has && ! (bool) $like->first(fn ($i) => $i->name === $term);
+        $already_has = (bool) $exists->first(fn ($i) => mb_strtolower($i->name) === mb_strtolower($term));
+        $can_create = ! $already_has && ! (bool) $like->first(fn ($i) => mb_strtolower($i->name) === mb_strtolower($term));
 
         $res = [];
 
@@ -354,7 +354,7 @@ class Booker extends ComponentBase
      */
     public function onRemoveTag()
     {
-        if ($tag = $this->user->tags()->find(post('delete_tag_id'))) {
+        if ($tag = Tag::query()->find(post('delete_tag_id'))) {
             $this->service->removeTag($tag);
 
             return $this->generateTagInput();

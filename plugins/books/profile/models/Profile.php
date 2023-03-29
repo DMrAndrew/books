@@ -4,6 +4,7 @@ namespace Books\Profile\Models;
 
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
+use Books\Book\Models\Cycle;
 use Books\Profile\Classes\ProfileService;
 use Books\Profile\Factories\ProfileFactory;
 use Books\Profile\Traits\Subscribable;
@@ -136,6 +137,7 @@ class Profile extends Model
     public $hasMany = [
         'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id'],
         'settings' => [Settings::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
+        'cycles' => [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'],
     ];
 
     public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];

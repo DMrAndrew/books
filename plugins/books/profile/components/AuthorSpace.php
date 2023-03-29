@@ -75,7 +75,7 @@ class AuthorSpace extends ComponentBase
                 'subscribers' => fn ($subscribers) => $subscribers->shortPublicEager(),
                 'subscriptions' => fn ($subscribers) => $subscribers->shortPublicEager(),
                 'books' => fn ($books) => $books->public()->defaultEager()->orderByPivot('sort_order', 'desc'),
-                'user.cycles' => fn ($cycles) => $cycles->whereHas('books', fn ($books) => $books->public())->booksEager()])
+                'cycles' => fn ($cycles) => $cycles->whereHas('books', fn ($books) => $books->public())->booksEager()])
             ->find($this->profile->id);
 
         return array_merge([
@@ -86,7 +86,7 @@ class AuthorSpace extends ComponentBase
             'should_call_fit_profile' => $isOwner && $this->profile->isEmpty(),
             'profile' => $this->profile,
             'books' => $this->profile->books,
-            'cycles' => $this->profile->user->cycles,
+            'cycles' => $this->profile->cycles,
             'subscribers' => $this->profile->subscribers->groupBy(fn ($i) => $i->books_count ? 'authors' : 'readers'),
             'subscriptions' => $this->profile->subscriptions,
         ], $this->getAuthorComments());

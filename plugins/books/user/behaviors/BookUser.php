@@ -2,8 +2,6 @@
 
 namespace Books\User\Behaviors;
 
-use Books\Book\Models\Cycle;
-use Books\Book\Models\Tag;
 use Books\Comments\Models\Comment;
 use Books\Profile\Models\Profile;
 use Books\User\Classes\UserService;
@@ -18,8 +16,6 @@ class BookUser extends ExtensionBase
     public function __construct(protected User $parent)
     {
         $this->parent->hasMany['comments'] = [Comment::class, 'key' => 'user_id', 'otherKey' => 'id'];
-        $this->parent->hasMany['tags'] = [Tag::class, 'key' => 'user_id', 'otherKey' => 'id'];
-        $this->parent->hasMany['cycles'] = [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['settings'] = [Settings::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->addValidationRule('birthday', 'nullable');
         $this->parent->addValidationRule('birthday', 'date');
