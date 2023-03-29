@@ -8,7 +8,10 @@
     </div>
     <div class="comments-comment__info">
         <div class="comments-comment__info-wrapper">
-            <div class="comments-comment__author ui-text--bold">{{ comment.profile.getAttribute('username') }}</div>
+
+            <div class="comments-comment__author ui-text--bold">{{
+                comment.profile.getAttribute('username') }}
+            </div>
 
             <div class="comments-comment__addition">
                 <span>{{comment.addition()}} {{comment.dateFormated()}}</span>

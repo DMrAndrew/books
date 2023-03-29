@@ -25,7 +25,7 @@
     {name:'Настройки',href:'/lc-settings'},
     ]) %}
     {% if link.separator %}
-    <div class="{{separatorClass ?:personal-area__sidebar-separator}}"></div>
+    <div class="{{separatorClass ?:'personal-area__sidebar-separator'}}"></div>
     {% else %}
     {% if link.href %}
     <a class="{{aClass}} {{this.page.url == link.href ? 'active' : '' }} "

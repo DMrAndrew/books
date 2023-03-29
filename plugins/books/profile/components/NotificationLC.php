@@ -57,9 +57,7 @@ class NotificationLC extends ComponentBase
     public function onUpdateNotify()
     {
         try {
-            collect(post('options'))->each(function ($option, $key) {
-                $this->user->settings()->type(UserSettingsEnum::tryFrom($key))->first()?->update(['value' => $option]);
-            });
+            $this->user->profile->service()->updateSettings(post('options'));
             Flash::success('Данные успешно сохранены');
 
             return [

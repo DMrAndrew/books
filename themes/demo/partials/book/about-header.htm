@@ -21,20 +21,11 @@
                 <div class="book-card__body-footer">
 
                     <div class="book-card__book-list tags-list">
-                        {% for genre in book.genres %}
-                        <a href="#" class="ui-link _violet">
-                            {% if genre.pivot.rate_number %}
-                            #{{genre.pivot.rate_number}} в
-                            {% endif %}
-                            {{genre.name}}</a>
-                        {% endfor %}
-
+                        {% partial 'controls/genres-link-list' genres=book.genres %}
                     </div>
                 </div>
                 <div class="book-card__genres tags-list">
-                    {% for tag in book.tags %}
-                    <a href="#" class="ui-link _violet">{{tag.name}}</a>
-                    {% endfor %}
+                    {% partial 'controls/tags-link-list' tags=book.tags %}
                 </div>
                 {% partial 'site/book-status' status=book.ebook.status %}
             </div>

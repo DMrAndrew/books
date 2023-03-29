@@ -2,7 +2,6 @@
 
 namespace Books\User\Models;
 
-
 use Books\User\Classes\BoolOptionsEnum;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
@@ -28,7 +27,7 @@ class Settings extends Model
     protected $fillable = ['type', 'value', 'user_id'];
 
     protected $casts = [
-        'type' => UserSettingsEnum::class
+        'type' => UserSettingsEnum::class,
     ];
 
     /**
@@ -38,6 +37,11 @@ class Settings extends Model
         'user_id' => 'required|exists:users,id',
         'type' => 'required|integer',
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(fn ($q) => $q->orderBy('type'));
+    }
 
     public function scopePrivacy(Builder $builder)
     {
@@ -59,16 +63,13 @@ class Settings extends Model
         return $builder->whereIn('value', collect($types)->pluck('value')->toArray());
     }
 
-
     public function scopeUser(Builder $builder, User $user): Builder
     {
         return $builder->where('user_id', '=', $user->id);
     }
 
-
     public function isAccountable(): bool
     {
         return $this->type->isAccountable();
     }
-
 }
