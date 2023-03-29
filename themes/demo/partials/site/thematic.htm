@@ -1,11 +1,11 @@
 <!-- Серия блоков с карточками + сайдбар -->
 <div class="thematic _indent ui-container-fluid">
-    <div class="ui-grid-container ui-grid-gap">
-        <div class="ui-col-md-9">
+    <div class="ui-grid-container ui-grid-gap main-page-grid">
+        <div class="ui-col-md-9 main-page-grid__main">
             {% component 'gainingPopularity' %}
             {% component 'hotNew' %}
         </div>
-        <div class="ui-col-md-3">
+        <div class="ui-col-md-3 main-page-grid__aside">
             <div class="ui-grid-container ui-grid-gap">
                 <div class="ui-col-md-12 ui-col-sm-6">
                     {% component 'recommend' %}
@@ -14,6 +14,7 @@
                 </div>
             </div>
         </div>
+        {% partial 'site/desc' %}
     </div>
 </div>
 

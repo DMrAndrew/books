@@ -75,7 +75,7 @@ class AuthorSpace extends ComponentBase
                 'subscribers' => fn ($subscribers) => $subscribers->shortPublicEager(),
                 'subscriptions' => fn ($subscribers) => $subscribers->shortPublicEager(),
                 'books' => fn ($books) => $books->public()->defaultEager()->orderByPivot('sort_order', 'desc'),
-                'user.cycles' => fn ($cycles) => $cycles->whereHas('books')->booksEager()])
+                'user.cycles' => fn ($cycles) => $cycles->whereHas('books', fn ($books) => $books->public())->booksEager()])
             ->find($this->profile->id);
 
         return array_merge([

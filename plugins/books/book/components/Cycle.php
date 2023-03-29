@@ -3,6 +3,7 @@
 namespace Books\Book\Components;
 
 use Books\Book\Classes\Enums\BookStatus;
+use Books\Book\Models\Book;
 use Books\Book\Models\Cycle as CycleModel;
 use Cms\Classes\ComponentBase;
 
@@ -27,12 +28,12 @@ class Cycle extends ComponentBase
     {
         $this->cycle = CycleModel::query()->booksEager()->find($this->param('cycle_id')) ?? abort(404);
         $this->cycle->books->count() > 0 ?: abort(404);
-        $books = $this->cycle->books->sortBy(fn ($b) => $b->ebook->sales_at)->values();
+        $books = Book::sortCollectionBySalesAt($this->cycle->books);
         $this->page['cycle'] = $this->cycle;
         $this->page['books'] = $books;
         $this->page->meta_title = $this->page->meta_title.' «'.$this->cycle->name.'»';
         $this->page['start_at'] = $books->first()?->ebook->sales_at->format('d.m.y') ?? '-';
-        $this->page['end_at'] = $this->cycle->status === BookStatus::WORKING ? null : $books->last()?->ebook?->sales_at?->format('d.m.y');
+        $this->page['end_at'] = $this->cycle->status === BookStatus::COMPLETE ? $books->last()?->ebook?->sales_at?->format('d.m.y') : null;
         $this->page['last_updated_at'] = $this->cycle->last_updated_at?->format('d.m.y') ?? '-';
     }
 

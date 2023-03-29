@@ -102,12 +102,12 @@ class Cycle extends Model
 
     public function scopeBooksEager(Builder $builder): Builder
     {
-        return $builder->with(['books' => fn ($books) => $books->defaultEager()]);
+        return $builder->with(['books' => fn ($books) => $books->public()->defaultEager()]);
     }
 
     public function getStatusAttribute(): BookStatus
     {
-        return $this->books->pluck('status')->some(fn ($i) => $i === BookStatus::WORKING) ? BookStatus::WORKING : BookStatus::COMPLETE;
+        return $this->books->pluck('status')->some(fn ($i) => $i !== BookStatus::COMPLETE) ? BookStatus::WORKING : BookStatus::COMPLETE;
     }
 
     public function getLastUpdatedAtAttribute()
