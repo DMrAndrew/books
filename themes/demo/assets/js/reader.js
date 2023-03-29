@@ -5,8 +5,8 @@ class Reader {
     fzEncrcBtn = null;
     bgDcrBtn = null;
     bgEncrBtn = null;
-    curBgIndex = 2;
-    bgClasses = ['_bg-black', '_bg-gray', '_bg-yellow', '_bg-white'];
+    curBgIndex = 0;
+    bgClasses = ['_bg-yellow', '_bg-gray', '_bg-black', '_bg-white'];
     maxFont = 24;
     curFont = 14;
     minFont = 12;

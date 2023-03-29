@@ -134,3 +134,7 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
 .comments-comment__sub.collapsed .comments-comment:nth-child(-n+5) {
     display: flex;
 }
+
+.font-darkred {
+    color: darkred;
+}
