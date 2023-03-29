@@ -2,8 +2,6 @@
 
 namespace Books\Profile\Components;
 
-use Books\User\Classes\SettingsTagEnum;
-use Books\User\Classes\UserSettingsEnum;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
@@ -63,10 +61,8 @@ class NotificationLC extends ComponentBase
             return [
                 '#lc-notification-form' => $this->renderPartial('@default', ['settings' => $this->getSettings()]),
             ];
-
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
         }
-
     }
 }
