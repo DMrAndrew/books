@@ -53,7 +53,9 @@
                                 <a data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">
                                     <button class="dropdown-menu__item">Редактировать</button>
                                 </a>
-                                <a onclick="deleteChapter(`{{chapter.id}}`)" class="dropdown-menu__item cursor-pointer">Удалить</a>
+                                <a onclick="deleteChapter(`{{chapter.id}}`)" class=" cursor-pointer">
+                                    <button class="dropdown-menu__item">Удалить</button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -112,7 +114,8 @@
                 oc.ajax('ebooker::onDeleteChapter', {
                     data: {
                         chapter_id: id
-                    }
+                    },
+                    flash: true
                 })
             }
         }

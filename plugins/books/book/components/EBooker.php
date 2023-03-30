@@ -37,17 +37,17 @@ class EBooker extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
-    }
-
-    public function onRun()
-    {
         $this->vals();
         $this->service = new EditionService($this->ebook);
     }
 
+    public function onRun()
+    {
+    }
+
     public function fresh()
     {
-        $this->ebook = Auth::getUser()->profile->books()->find($this->property('book_id'))?->ebook;
+        $this->ebook = Auth::getUser()?->profile->books()->find($this->property('book_id'))?->ebook;
         if (! $this->ebook) {
             throw new ApplicationException('Электронное издание книги не найден.');
         }
@@ -97,16 +97,23 @@ class EBooker extends ComponentBase
 
     public function onDeleteChapter()
     {
-        $chapter_id = post('chapter_id');
-        if ($chapter = $this->ebook->chapters()->find($chapter_id)) {
-            $chapter->service()->delete();
-        }
-
-        $this->vals();
-
-        return [
+        $partial = [
             '#ebooker-chapters' => $this->renderPartial('@chapters'),
         ];
+        try {
+            $chapter_id = post('chapter_id');
+            if ($chapter = $this->ebook->chapters()->find($chapter_id)) {
+                $chapter->service()->delete();
+            }
+
+            $this->vals();
+
+            return $partial;
+        } catch (Exception $ex) {
+            Flash::error($ex->getMessage());
+
+            return $partial;
+        }
     }
 
     public function onUpdate()

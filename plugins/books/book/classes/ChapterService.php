@@ -98,6 +98,14 @@ class ChapterService
         });
     }
 
+    public function delete(): void
+    {
+        if (! $this->chapter->edition->editAllowed()) {
+            throw new ValidationException(['chapter' => 'В данный момент Вы не можете удалять главы книг.']);
+        }
+        $this->chapter->delete();
+    }
+
     public function dataPrepare(array|Collection $data): array
     {
         if (! $this->edition->editAllowed()) {
@@ -238,10 +246,5 @@ class ChapterService
                     return $chapter->service()->publish(forceFireEvent: false);
                 });
         })->map(fn ($callback) => is_callable($callback) ? $callback() : $callback);
-    }
-
-    public function delete(): void
-    {
-        $this->chapter->delete();
     }
 }
