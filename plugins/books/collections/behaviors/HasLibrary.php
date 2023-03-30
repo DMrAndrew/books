@@ -21,11 +21,16 @@ class HasLibrary extends ExtensionBase
         return new LibraryService($this->model, $model);
     }
 
-    public function libs(?CollectionEnum ...$types): HasMany
+    public function queryLibs()
     {
         return $this->model
             ->favorites()
-            ->type(Lib::class)
+            ->type(Lib::class);
+    }
+
+    public function libs(?CollectionEnum ...$types): HasMany
+    {
+        return $this->model->queryLibs()
             ->with(['favorable' => fn ($q) => $q->with(['book' => fn ($book) => $book->defaultEager()])]);
     }
 

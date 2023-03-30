@@ -32,7 +32,7 @@ class Cycle extends ComponentBase
         $this->page['cycle'] = $this->cycle;
         $this->page['books'] = $books;
         $this->page->meta_title = $this->page->meta_title.' «'.$this->cycle->name.'»';
-        $this->page['start_at'] = $books->first()?->ebook->sales_at->format('d.m.y') ?? '-';
+        $this->page['start_at'] = $books->first()?->ebook->sales_at?->format('d.m.y') ?? '-';
         $this->page['end_at'] = $this->cycle->status === BookStatus::COMPLETE ? $books->last()?->ebook?->sales_at?->format('d.m.y') : null;
         $this->page['last_updated_at'] = $this->cycle->last_updated_at?->format('d.m.y') ?? '-';
     }

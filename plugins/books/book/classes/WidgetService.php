@@ -38,7 +38,7 @@ class WidgetService
                                 protected bool $short = false,
                                 protected bool $withHeader = true,
                                 protected bool $disableCache = false,
-                                protected bool $diffWithUser = false,
+                                protected bool $diffWithUser = true,
                                 protected bool $withAll = false,
                                 protected bool $useSort = true,
     ) {
@@ -194,16 +194,6 @@ class WidgetService
         ];
     }
 
-    public function diffWithUser(): static
-    {
-        if (! $this->user || ! $this->diffWithUser || in_array($this->enum, [WidgetEnum::interested, WidgetEnum::cycle])) {
-            return $this;
-        }
-
-        //diff
-        return $this;
-    }
-
     public function apply(): static
     {
         if ($this->disableCache || $this->forceCache || ! Cache::has($this->cacheKey)) {
@@ -218,9 +208,17 @@ class WidgetService
         } else {
             $ids = Cache::get($this->cacheKey) ?? collect()->toArray();
         }
-        $this->values = $this->query->public()->defaultEager()->whereIn('id', $ids)->get();
+        $this->values = $this->query
+            ->public()
+            ->defaultEager()
+            ->whereIn('id', $ids)
+            ->when($this->diffWithUser, function ($builder) {
+                $builder->whereNotIn('id', $this->user?->queryLibs()->with('favorable')->get()->pluck('favorable')->pluck('book_id')->toArray() ?? [])
+                    ->hasGenres($this->user?->unloved_genres ?? json_decode(Cookie::get('unloved_genres')) ?: [], 'exclude');
+            })
+            ->get();
 
-        return $this->diffWithUser()->sort();
+        return $this->sort();
     }
 
     public function cache(): static
