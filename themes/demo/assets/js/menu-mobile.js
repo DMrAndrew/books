@@ -19,10 +19,12 @@ function initFn() {
                 buttonMenuMobile[0].classList.remove('active');
                 buttonMenuMobile[1].classList.add('active');
                 document.body.classList.add("no-scroll");
+                document.querySelector('header.header').classList.add("opened-menu");
             } else {
                 buttonMenuMobile[1].classList.remove('active');
                 buttonMenuMobile[0].classList.add('active');
                 document.body.classList.remove("no-scroll");
+                document.querySelector('header.header').classList.remove("opened-menu");
             }
         })
     }
