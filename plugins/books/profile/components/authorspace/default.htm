@@ -2,7 +2,7 @@
     <div class="author__promo author-promo">
         <div class="author-promo__background">
             {% if profile.banner %}
-            <img class="author__background-image" src="{{profile.banner.getThumb(1152,160)}}" alt="banner"
+            <img class="author__background-image" src="{{profile.banner.path}}" alt="banner"
                  loadong="lazy">
             {% else %}
             <img class="author__background-image" src="{{'assets/images/author/bg-placeholder.png' | theme}}"
@@ -13,7 +13,7 @@
             <div class="author-promo-info__avatar-wrapper">
                 <!-- Показывается сообщение или плейсхолдер -->
                 {% if profile.avatar %}
-                <img class="profile-avatar-image" src="{{profile.avatar.getThumb(168,168)}}" alt="avatar">
+                <img class="profile-avatar-image" src="{{profile.avatar.path}}" alt="avatar">
                 {% else %}
                 <span>{{ profile.firstLatter }}</span>
                 {% endif %}

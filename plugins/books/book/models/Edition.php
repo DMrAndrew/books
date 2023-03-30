@@ -84,7 +84,7 @@ class Edition extends Model
         'download_allowed' => 'boolean',
         'comment_allowed' => 'boolean',
         //        'sales_free' => 'boolean',
-        'fb2' => ['nullable', 'file', 'mimes:xml'],
+        'fb2' => ['nullable', 'file', 'mimes:xml', 'max:30720'],
     ];
 
     public $hasMany = [
