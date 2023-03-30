@@ -94,7 +94,7 @@ class Profile extends Model
         'username_clipboard' => 'nullable|between:2,255',
         'username_clipboard_comment' => 'nullable|string',
         'avatar' => 'nullable|image|mimes:jpg,png,gif|dimensions:min_width=168,min_height=168|max:1024',
-        'banner' => 'nullable|image|mimes:jpg,png,gif|max:2048',
+        'banner' => 'nullable|image|mimes:jpg,png,gif|max:4096',
         'status' => 'nullable|string',
         'about' => 'nullable|string',
         'website' => 'nullable|url',
