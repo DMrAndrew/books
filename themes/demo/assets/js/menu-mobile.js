@@ -41,12 +41,15 @@ function initFn() {
                 let activeTabAttr = menuMobileLink[i].getAttribute("data-menu-link");
 
                 for (let j = 0; j < menuMobileLink.length; j++) {
-                    let contentAttr = menuMobileItem[j].getAttribute("data-menu-item");
+                    let contentAttr = menuMobileItem[j]?.getAttribute("data-menu-item");
 
-                    if (activeTabAttr === contentAttr) {
-                        menuMobileItem[j].classList.add("active");
-                    } else {
-                        menuMobileItem[j].classList.remove("active");
+                    if (contentAttr) {
+
+                        if (activeTabAttr === contentAttr) {
+                            menuMobileItem[j].classList.add("active");
+                        } else {
+                            menuMobileItem[j].classList.remove("active");
+                        }
                     }
                 }
 
