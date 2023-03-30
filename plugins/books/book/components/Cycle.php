@@ -27,7 +27,7 @@ class Cycle extends ComponentBase
     {
         $this->cycle = CycleModel::query()->booksEager()->find($this->param('cycle_id')) ?? abort(404);
         $this->cycle->books->count() > 0 ?: abort(404);
-        $books = Book::sortCollectionBySalesAt($this->cycle->books, false);
+        $books = Book::sortCollectionBySalesAt($this->cycle->books, false)->values();
         $this->page['cycle'] = $this->cycle;
         $this->page['books'] = $books;
         $this->page->meta_title = $this->page->meta_title.' «'.$this->cycle->name.'»';
