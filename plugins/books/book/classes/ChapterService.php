@@ -14,7 +14,6 @@ use Db;
 use DOMDocument;
 use Event;
 use Exception;
-use Html;
 use Illuminate\Support\Collection;
 use Str;
 use ValidationException;
@@ -51,11 +50,15 @@ class ChapterService
     public function from(mixed $payload): ?Chapter
     {
         if ($payload instanceof \Tizis\FB2\Model\Chapter) {
-            return $this->create([
-                'title' => $payload->getTitle(),
-                'content' => $payload->getContent(),
-                'status' => ChapterStatus::PUBLISHED,
-            ]);
+            if ($content = $payload->getContent()) {
+                return $this->create([
+                    'title' => $payload->getTitle(),
+                    'content' => $content,
+                    'status' => ChapterStatus::PUBLISHED,
+                ]);
+            }
+
+            return null;
         }
 
         if (is_array($payload) || $payload instanceof Collection) {
@@ -77,7 +80,6 @@ class ChapterService
         $this->chapter->sales_type ??= ChapterSalesType::PAY;
         $this->chapter['edition_id'] = $this->edition->id;
         $this->chapter->save();
-        $this->chapter->edition->chapters->each->setNeighbours();
 
         Event::fire('books.chapter.created', [$this->chapter]);
 
@@ -130,7 +132,7 @@ class ChapterService
         }
 
         if ($data->has('content')) {
-            $data['new_content'] = Html::clean($data['content']);
+            $data['new_content'] = $data['content'];
             $data->forget('content');
         }
 
@@ -184,7 +186,7 @@ class ChapterService
         });
         $this->chapter->pagination()->whereNotIn('id', $pagination->pluck('id'))->delete();
         $this->chapter->pagination()->get()->each->setNeighbours();
-        $this->chapter->edition->lengthRecount();
+        $this->chapter->lengthRecount();
         Event::fire('books.chapter.paginated');
     }
 
@@ -236,5 +238,10 @@ class ChapterService
                     return $chapter->service()->publish(forceFireEvent: false);
                 });
         })->map(fn ($callback) => is_callable($callback) ? $callback() : $callback);
+    }
+
+    public function delete(): void
+    {
+        $this->chapter->delete();
     }
 }

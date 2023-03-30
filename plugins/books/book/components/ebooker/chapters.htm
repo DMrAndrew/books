@@ -53,7 +53,7 @@
                                 <a data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">
                                     <button class="dropdown-menu__item">Редактировать</button>
                                 </a>
-                                <button disabled class="dropdown-menu__item">Удалить</button>
+                                <a onclick="deleteChapter(`{{chapter.id}}`)" class="dropdown-menu__item cursor-pointer">Удалить</a>
                             </div>
                         </div>
                     </div>
@@ -106,6 +106,16 @@
             initSortable('#sortable', 'ebooker::onUpdateSortOrder')
         }
         openDropdown();
+
+        function deleteChapter(id) {
+            if (id && confirm('Вы уверены?')) {
+                oc.ajax('ebooker::onDeleteChapter', {
+                    data: {
+                        chapter_id: id
+                    }
+                })
+            }
+        }
     </script>
 
 </div>

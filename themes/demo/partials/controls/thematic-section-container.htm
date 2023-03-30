@@ -2,12 +2,14 @@
     <div class="thematic-section__card-container swiper-wrapper">
         {% for book in books %}
         <div class="book-mini-card _mobile-size swiper-slide">
-            <img src="{{book.cover.getThumb(104,150)}}"
-                 class="book-mini-card__image"
-                 alt="Обложка"
-                 loading="lazy"/>
-            <a href="/book-card/{{book.id}}" class="book-mini-card__title">
-                {{book.title}}
+            <a href="/book-card/{{book.id}}">
+                <img src="{{book.cover.getThumb(104,150)}}"
+                     class="book-mini-card__image"
+                     alt="Обложка"
+                     loading="lazy"/>
+                <div class="book-mini-card__title">
+                    {{book.title}}
+                </div>
             </a>
             <!--            {% if withPrice %}-->
             <!--            <div class="book-mini-card__price" data-tooltip="Электронная книга">-->

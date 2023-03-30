@@ -26,9 +26,11 @@ class Reader
 
     public function __construct(protected Book $book, protected ?Chapter $chapter, protected ?int $page = 1, protected ?User $user = null)
     {
-        $this->book = Book::query()->public()->withChapters()->defaultEager()->find($this->book->id);
         //TODO refactor
         $this->user ??= Auth::getUser();
+        $this->book = Book::query()->public()->withChapters()->defaultEager()->find($this->book->id)
+            ?? $this->user?->profile->books()->find($this->book->id)
+            ?? abort(404);
         $this->page ??= 1;
         $this->edition = $this->book->ebook;
         $this->chapters = $this->edition->chapters;

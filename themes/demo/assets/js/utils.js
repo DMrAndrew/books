@@ -48,7 +48,8 @@ function initAccordion(container, accordionclickableArea) {
 addEventListener('page:before-cache', function () {
     let annotation = document.getElementById('cke_annotation')
     let chapter_content = document.getElementById('cke_chapter_content')
-    let editors = [annotation, chapter_content].filter(e => !!e)
+    let cke_about = document.getElementById('cke_about')
+    let editors = [annotation, chapter_content, cke_about].filter(e => !!e)
     if (editors[0]) {
         editors.forEach(editor => editor.remove())
     }

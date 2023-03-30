@@ -22,8 +22,6 @@ class WidgetService
 
     protected string $cacheKey;
 
-    protected string $cacheName = 'compilations';
-
     protected Builder $query;
 
     protected $values;
@@ -42,7 +40,7 @@ class WidgetService
                                 protected bool $withAll = false,
                                 protected bool $useSort = true,
     ) {
-        $this->cacheTTL ??= Carbon::now()->copy()->addMinutes(3);
+        $this->cacheTTL ??= Carbon::now()->copy()->addMinutes(10);
         $this->values = collect();
         $this->cacheKey = $this->enum->value;
         if (in_array($this->enum, [WidgetEnum::readingWithThisOne, WidgetEnum::cycle, WidgetEnum::otherAuthorBook, WidgetEnum::popular])) {
@@ -198,7 +196,7 @@ class WidgetService
     {
         if ($this->disableCache || $this->forceCache || ! Cache::has($this->cacheKey)) {
             $this->collect();
-            if ($this->enum === WidgetEnum::interested) {
+            if (in_array($this->enum, [WidgetEnum::interested, WidgetEnum::cycle])) {
                 return $this;
             }
             if (! $this->disableCache) {
@@ -209,13 +207,14 @@ class WidgetService
             $ids = Cache::get($this->cacheKey) ?? collect()->toArray();
         }
         $this->values = $this->query
-            ->public()
             ->defaultEager()
             ->whereIn('id', $ids)
             ->when($this->diffWithUser, function ($builder) {
                 $builder->whereNotIn('id', $this->user?->queryLibs()->with('favorable')->get()->pluck('favorable')->pluck('book_id')->toArray() ?? [])
                     ->hasGenres($this->user?->unloved_genres ?? json_decode(Cookie::get('unloved_genres')) ?: [], 'exclude');
             })
+            ->public()
+            ->limit($this->short ? 3 : 10)
             ->get();
 
         return $this->sort();

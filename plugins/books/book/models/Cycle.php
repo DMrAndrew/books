@@ -2,7 +2,6 @@
 
 namespace Books\Book\Models;
 
-use Books\Book\Classes\Enums\BookStatus;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
@@ -103,11 +102,6 @@ class Cycle extends Model
     public function scopeBooksEager(Builder $builder): Builder
     {
         return $builder->with(['books' => fn ($books) => $books->public()->defaultEager()]);
-    }
-
-    public function getStatusAttribute(): BookStatus
-    {
-        return $this->books->pluck('status')->some(fn ($i) => $i !== BookStatus::COMPLETE) ? BookStatus::WORKING : BookStatus::COMPLETE;
     }
 
     public function getLastUpdatedAtAttribute()

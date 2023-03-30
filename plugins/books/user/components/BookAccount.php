@@ -11,9 +11,11 @@ use October\Rain\Auth\AuthException;
 use RainLab\User\Components\Account;
 use RainLab\User\Components\Session;
 use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User as UserModel;
 use Redirect;
 use Request;
 use ValidationException;
+use Validator;
 
 class BookAccount extends Account
 {
@@ -84,6 +86,18 @@ class BookAccount extends Account
     {
         try {
             return Db::transaction(function () {
+                $rules = (new UserModel)->rules;
+
+                $v = Validator::make(
+                    post(),
+                    $rules,
+                    $this->getValidatorMessages(),
+                    $this->getCustomAttributes()
+                );
+
+                if ($v->fails()) {
+                    throw new ValidationException($v);
+                }
                 $redirect = $this->onRegister();
                 $user = Auth::getUser();
                 $user->update(['required_post_register' => 0]);

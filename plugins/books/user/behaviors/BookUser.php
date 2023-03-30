@@ -13,6 +13,8 @@ use ValidationException;
 
 class BookUser extends ExtensionBase
 {
+    const MIN_BIRTHDAY = '01.01.1940';
+
     public function __construct(protected User $parent)
     {
         $this->parent->hasMany['comments'] = [Comment::class, 'key' => 'user_id', 'otherKey' => 'id'];
@@ -20,6 +22,7 @@ class BookUser extends ExtensionBase
         $this->parent->addValidationRule('birthday', 'nullable');
         $this->parent->addValidationRule('birthday', 'date');
         $this->parent->addValidationRule('show_birthday', 'boolean');
+        $this->parent->addValidationRule('username', 'required');
         $this->parent->addFillable([
             'birthday',
             'show_birthday',
@@ -59,9 +62,15 @@ class BookUser extends ExtensionBase
 
     public function setBirthdayAttribute($value)
     {
-        if ($value && ! $this->parent->birthday) {
-            $this->parent->attributes['birthday'] = Carbon::parse($value);
-            $this->parent->birthday->lessThan(Carbon::now()) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть больше текущего дня']);
+        if ($value) {
+            if (! $this->parent->birthday) {
+                $date = Carbon::parse($value);
+                $date->lessThan(today()) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть больше текущего дня']);
+                $date->gte(Carbon::parse(self::MIN_BIRTHDAY)) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть меньше '.self::MIN_BIRTHDAY]);
+                $this->parent->attributes['birthday'] = Carbon::parse($value);
+            }
+        } else {
+            $this->parent->attributes['birthday'] = $value;
         }
     }
 

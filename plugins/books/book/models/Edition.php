@@ -223,6 +223,11 @@ class Edition extends Model
         }
     }
 
+    public function scopeNotEmpty(Builder $builder): Builder
+    {
+        return $builder->whereNotNull('length')->where('length', '>', '0');
+    }
+
     public function scopeWithProgress(Builder $builder, User $user): Builder
     {
         return $builder->withMax(['trackers as progress' => fn ($trackers) => $trackers->user($user)->withoutTodayScope()], 'progress');
@@ -280,7 +285,6 @@ class Edition extends Model
 
     public function lengthRecount()
     {
-        $this->chapters()->get()->each->lengthRecount();
         $this->length = (int) $this->chapters()->published()->sum('length');
         $this->save();
     }

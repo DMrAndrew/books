@@ -202,9 +202,9 @@ class Book extends Model
 
     public $attachMany = [];
 
-    public static function sortCollectionBySalesAt($collection)
+    public static function sortCollectionBySalesAt($collection, bool $desc = true)
     {
-        return $collection->sortByDesc(fn ($b) => $b->ebook->sales_at);
+        return $collection->{'sortBy'.($desc ? 'Desc' : '')}(fn ($b) => $b->ebook->sales_at);
     }
 
     public static function sortCollectionByPopularGenre($collection)
@@ -343,13 +343,20 @@ class Book extends Model
 
     public function scopePublic(Builder $q)
     {
-        return $q->adult()->onlyPublicStatus();
+        return $q->notEmptyEdition()->onlyPublicStatus()->adult();
     }
 
     public function scopeOnlyPublicStatus(Builder $q): Builder|\Illuminate\Database\Eloquent\Builder
     {
         return $q->whereHas('editions', function ($query) {
             return $query->whereNotIn('status', [BookStatus::HIDDEN->value]);
+        });
+    }
+
+    public function scopeNotEmptyEdition(Builder $q): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $q->whereHas('editions', function ($query) {
+            return $query->notEmpty();
         });
     }
 

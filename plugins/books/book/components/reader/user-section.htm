@@ -8,7 +8,8 @@
             {{profile.firstLatter}}
             {% endif %}
         </div>
-        <span class="ui-text--bold">{{profile.username}}</span>
+        <a class="ui-link _violet"
+           href="/author-page/{{profile.id}}"> <span class="ui-text--bold">{{profile.username}}</span></a>
     </div>
     {% endfor %}
 

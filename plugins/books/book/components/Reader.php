@@ -2,6 +2,7 @@
 
 namespace Books\Book\Components;
 
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Reader as Service;
 use Books\Book\Models\Book;
@@ -53,11 +54,12 @@ class Reader extends ComponentBase
         $this->user = Auth::getUser();
         $this->book = Book::query()->public()->find($this->param('book_id'))
             ?? $this->user?->profile->books()->find($this->param('book_id')) ?? abort(404);
-        $this->chapter = Chapter::find($this->param('chapter_id'));
+        $this->chapter = $this->param('chapter_id') ? Chapter::find($this->param('chapter_id')) ?? abort(404) : null;
         $this->service = new Service(
             book: $this->book,
             chapter: $this->chapter,
-            page: $this->getCurrentPaginatorKey()
+            page: $this->getCurrentPaginatorKey(),
+            user: $this->user
         );
 
         $recommend = $this->addComponent(Widget::class, 'recommend');
@@ -94,7 +96,11 @@ class Reader extends ComponentBase
         if ($chapter = $this->service->nextChapter()) {
             return Redirect::to('/reader/'.$this->book->id.'/'.$chapter->id);
         }
-        $this->user->library($this->book)->read();
+        if ($this->book->ebook->status === BookStatus::COMPLETE) {
+            $this->user->library($this->book)->read();
+
+            return Redirect::to('/book-card/'.$this->book->id);
+        }
 
         return false;
     }

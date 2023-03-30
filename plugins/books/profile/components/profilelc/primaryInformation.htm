@@ -64,5 +64,11 @@
     <button data-attach-loading class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить
     </button>
     {{ form_close() }}
+    <script>
+        if (!document.getElementById('cke_about')) {
+            CKEDITOR.replace('about');
+        }
+    </script>
 </div>
+
 

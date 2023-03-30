@@ -182,7 +182,7 @@
             {% endif %}
         </div>
     </div>
-    {% if user %}
+
     <!-- Книги -->
     <div class="menu-mobile__container " data-menu-item="2">
         <div class="menu-mobile__header" data-menu-link="1">
@@ -253,7 +253,7 @@
             </div>
         </div>
     </div>
-
+    {% if user %}
 
     <!-- Профиль -->
     <div class="menu-mobile__container " data-menu-item="3">
@@ -268,30 +268,31 @@
             <div class="menu-mobile__link _indent-large _color-gray" data-menu-link="2">
                 <span class="ui-text--medium ui-text-body--3">{{user.profile.username~' ID:'~user.profile.id}}</span>
             </div>
-            <a href="/lc-profile" class="menu-mobile__link _indent-large">
-                <span class="ui-text--medium">Профиль</span>
-            </a>
-            <a href="/lc-books" class="menu-mobile__link _indent-large">
-                <span class="ui-text--medium">Книги</span>
-            </a>
-
-            <a href="/lc-subscriptions" class="menu-mobile__link _indent-large">
-                <span class="ui-text--medium">Подписки</span>
+            <a href="/author-page" class="menu-mobile__link _indent-large">
+                <span class="ui-text--medium">Моя страница</span>
             </a>
             <div class="menu-mobile__separator"></div>
-
             <div class="menu-mobile__link _indent-large" data-menu-link="7">
                 <span class="ui-text--medium">Личный кабинет</span>
                 <svg class="menu-mobile__link-chevron square-16">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
                 </svg>
             </div>
-            <a class="menu-mobile__link _indent-large disabled">
-                <span class="ui-text--medium">Коммерческий кабинет</span>
+            <a href="/lc-books" class="menu-mobile__link _indent-large">
+                <span class="ui-text--medium">Книги</span>
             </a>
             <a class="menu-mobile__link _indent-large disabled">
                 <span class="ui-text--medium">Магазин</span>
             </a>
+            <a href="/lc-subscriptions" class="menu-mobile__link _indent-large">
+                <span class="ui-text--medium">Подписки</span>
+            </a>
+         
+
+            <a class="menu-mobile__link _indent-large disabled">
+                <span class="ui-text--medium">Коммерческий кабинет</span>
+            </a>
+
 
             <div class="menu-mobile__separator"></div>
             <div class="menu-mobile__link _indent-large" data-menu-link="2">

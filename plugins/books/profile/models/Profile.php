@@ -99,7 +99,7 @@ class Profile extends Model
         'website' => 'nullable|url',
         'email' => 'nullable|email',
         'phone' => 'nullable|string',
-        'tg' => 'nullable|string',
+        'tg' => 'nullable|url',
         'ok' => 'nullable|url',
         'vk' => 'nullable|url',
     ];

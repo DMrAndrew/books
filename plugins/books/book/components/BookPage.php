@@ -55,6 +55,7 @@ class BookPage extends ComponentBase
             ->find($this->book->id);
 
         $this->page['book'] = $this->book;
+        $this->page['cycle'] = $this->book->cycle;
         $comments = $this->addComponent(Comments::class, 'comments');
         $comments->bindModel($this->book);
         $comments->bindModelOwner($this->book->profile);
@@ -71,7 +72,7 @@ class BookPage extends ComponentBase
         $popular = $this->addComponent(Widget::class, 'popular');
         $popular->setUpWidget(WidgetEnum::popular, book: $this->book, withHeader: false);
 
-        $cycle = $this->addComponent(Widget::class, 'cycle');
+        $cycle = $this->addComponent(Widget::class, 'cycle_widget');
         $cycle->setUpWidget(WidgetEnum::cycle, book: $this->book, withHeader: false);
 
         $recommend = $this->addComponent(Widget::class, 'recommend');

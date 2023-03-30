@@ -65,7 +65,7 @@ class AuthorSpace extends ComponentBase
 
     protected function prepareVals()
     {
-        $isOwner = $this->authUser && $this->profile->is($this->authUser->profile);
+        $isOwner = $this->authUser && $this->profile->is($this->authUser?->profile);
         $sameAccount = $this->authUser && $this->profile->user->is($this->authUser);
 
         $this->profile = Profile::query()
@@ -104,7 +104,7 @@ class AuthorSpace extends ComponentBase
 
     public function getAuthorComments(): array
     {
-        $can_see_comments = $this->profile->canSeeCommentFeed($this->authUser->profile);
+        $can_see_comments = $this->profile->canSeeCommentFeed($this->authUser?->profile);
 
         return [
             'can_see_comments' => $can_see_comments,
@@ -123,13 +123,9 @@ class AuthorSpace extends ComponentBase
 
     public function onToggleSubscribe()
     {
-        $this->authUser->profile->toggleSubscriptions($this->profile);
+        $this->authUser?->profile->toggleSubscriptions($this->profile);
 
         return Redirect::refresh();
-
-        return [
-            '#sub-button' => $this->renderPartial('@sub-button', ['sub' => $this->authUser->profile->hasSubscription($this->profile)]),
-        ];
     }
 
     public function commentsCurrentPage(): int

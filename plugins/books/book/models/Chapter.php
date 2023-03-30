@@ -212,6 +212,7 @@ class Chapter extends Model
     {
         $this->length = (int) $this->pagination()->sum('length') ?? 0;
         $this->save();
+        $this->edition->lengthRecount();
     }
 
     public function setNeighbours()
@@ -227,14 +228,29 @@ class Chapter extends Model
     protected function afterSave()
     {
         if ($this->isDirty(['status'])) {
+            $fresh = $this->fresh();
+            $this->fresh()->setNeighbours();
             $this->prev?->setNeighbours();
             $this->next?->setNeighbours();
-            $this->fresh()->setNeighbours();
             $this->edition->setFreeParts();
             if ($this->status === ChapterStatus::PUBLISHED) {
-                $this->edition->lengthRecount();
+                $fresh->lengthRecount();
             }
         }
+    }
+
+    protected function afterCreate()
+    {
+        $this->edition->chapters()->get()->each->setNeighbours();
+        $this->edition->setFreeParts();
+    }
+
+    public function afterDelete()
+    {
+        $this->prev?->setNeighbours();
+        $this->next?->setNeighbours();
+        $this->edition->setFreeParts();
+        $this->lengthRecount();
     }
 
     public function progress(?User $user = null)
