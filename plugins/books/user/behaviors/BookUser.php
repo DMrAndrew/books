@@ -67,10 +67,10 @@ class BookUser extends ExtensionBase
                 $date = Carbon::parse($value);
                 $date->lessThan(today()) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть больше текущего дня']);
                 $date->gte(Carbon::parse(self::MIN_BIRTHDAY)) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть меньше '.self::MIN_BIRTHDAY]);
-                $this->parent->attributes['birthday'] = Carbon::parse($value);
+                $this->parent->attributes['birthday'] = $date;
             }
         } else {
-            $this->parent->attributes['birthday'] = $value;
+            $this->parent->attributes['birthday'] = null;
         }
     }
 

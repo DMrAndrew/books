@@ -138,3 +138,7 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
 .font-darkred {
     color: darkred;
 }
+
+.menu-mobile__footer {
+    margin: 0;
+}

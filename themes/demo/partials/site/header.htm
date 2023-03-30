@@ -287,7 +287,7 @@
             <a href="/lc-subscriptions" class="menu-mobile__link _indent-large">
                 <span class="ui-text--medium">Подписки</span>
             </a>
-         
+
 
             <a class="menu-mobile__link _indent-large disabled">
                 <span class="ui-text--medium">Коммерческий кабинет</span>
@@ -295,7 +295,7 @@
 
 
             <div class="menu-mobile__separator"></div>
-            <div class="menu-mobile__link _indent-large" data-menu-link="2">
+            <div class="menu-mobile__link _indent-large" data-menu-link="10">
                 <span class="ui-text--medium">Переключить аккаунт</span>
                 <svg class="menu-mobile__link-chevron square-16">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
@@ -316,11 +316,47 @@
             <svg class="square-16">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
             </svg>
-            <span class="ui-text--bold">Профиль</span>
+            <span class="ui-text--bold">Личный кабинет</span>
             <div class="square-16"></div>
         </div>
         {% partial 'profile/sidebarmenu' containerClass='menu-mobile__body' separatorClass='menu-mobile__separator'
         linkClass='menu-mobile__link _indent-large' %}
+
+    </div>
+    <div class="menu-mobile__container " data-menu-item="10">
+        <div class="menu-mobile__header" data-menu-link="3">
+            <svg class="square-16">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+            </svg>
+            <span class="ui-text--bold">Переключить аккаунт</span>
+            <div class="square-16"></div>
+        </div>
+        <div class="menu-mobile__body">
+            {% if user.profilesAsOptions.count < user.maxProfilesCount %}
+            <div class="menu-mobile__link _indent-large" data-modal="open-new-profile-modal">
+                <svg class="menu-mobile__link-chevron square-24">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#plus-stroked-16' | theme}}"></use>
+                </svg>
+                <span class="ui-text--medium">Создать</span>
+            </div>
+            <div class="menu-mobile__separator"></div>
+            {% endif %}
+            {% for profile in user.profilesAsOptions %}
+            <a class="menu-mobile__link _indent-large"
+               {{profile.id != user.profile.id ? 'data-request="profile::onSwitchProfile"' : ''}}
+            data-request-data="profile_id:{{profile.id}}"
+            >
+            {% if profile.id == user.profile.id %}
+                <svg class="menu-mobile__link-chevron square-16">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>
+                </svg>
+            {% endif %}
+                <span class="ui-text--medium">{{profile.username}} <span style="color: var(--color-dark-gray)">ID:{{profile.id}}</span></span>
+            </a>
+            {% endfor %}
+
+        </div>
+
 
     </div>
     {% endif %}
@@ -446,6 +482,7 @@
     </form>
 </div>
 {% endif %}
+{% partial 'modals/new-profile' %}
 <script>
     initFn();
 </script>
