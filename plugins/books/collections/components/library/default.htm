@@ -50,9 +50,10 @@
                                             <div class="tippymodal-block tags-list"><span class="tippymodal-title">Жанры:</span>
                                                 {% partial 'controls/genres-link-list' genres=lib.book.genres %}
                                             </div>
-                                            <div class="tippymodal-block truncate-text">Аннотация:
-
-                                                {{ str_limit(lib.book.annotation,480,'...')|raw }}
+                                            <div class="tippymodal-block">Аннотация:
+                                                <div class="typographical-block">
+                                                    {{ str_limit(lib.book.annotation,480,'...')|raw }}
+                                                </div>
                                             </div>
                                             <div class="tippymodal-block tags-list">
                                                 {% partial 'controls/tags-link-list' tags=lib.book.tags %}

@@ -54,9 +54,9 @@
     </div>
     <div class="personal-area__wrap _separator"></div>
 
-    <div class="ui-input">
+    <div class="ui-input typographical-block">
         <label class="ui-input-label">О себе</label>
-        <textarea class="ui-input-textarea" name="about">{{userdata.profile.about}}</textarea>
+        <textarea class="ui-input-textarea" id="about" name="about">{{userdata.profile.about}}</textarea>
         <div class="ui-select-hitn"></div>
         <div class="ui-select-error" data-validate-for="about"></div>
     </div>
@@ -65,9 +65,7 @@
     </button>
     {{ form_close() }}
     <script>
-        if (!document.getElementById('cke_about')) {
-            CKEDITOR.replace('about');
-        }
+        initEditor('about')
     </script>
 </div>
 

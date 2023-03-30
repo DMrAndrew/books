@@ -13,8 +13,8 @@
         <div class="ui-select-error" data-validate-for="title"></div>
     </div>
 
-    <div class="personal-area__wrap _indent-large">
-        <textarea required name="chapter_content">{{chapter.getContent().body}}</textarea>
+    <div class="personal-area__wrap _indent-large typographical-block">
+        <textarea required id="chapter_content" name="chapter_content">{{chapter.getContent().body}}</textarea>
     </div>
     <div class="ui-select-hitn"></div>
     <div class="ui-select-error" data-validate-for="chapter_content"></div>
@@ -70,10 +70,8 @@
 </form>
 
 <script>
-    if (!document.getElementById('cke_chapter_content')) {
-        CKEDITOR.replace('chapter_content');
-    }
 
+    initEditor('chapter_content')
     $(function () {
         if(document.querySelector('input[class = "chapter-action-radio"]:checked').id == 'published_at_radio'){
             $('#published_at_input').show()

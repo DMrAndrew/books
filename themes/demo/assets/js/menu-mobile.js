@@ -18,9 +18,11 @@ let initFn = () => {
             if (buttonMenuMobile[0].classList.contains('active')) {
                 buttonMenuMobile[0].classList.remove('active');
                 buttonMenuMobile[1].classList.add('active');
+                document.body.classList.add("no-scroll");
             } else {
                 buttonMenuMobile[1].classList.remove('active');
                 buttonMenuMobile[0].classList.add('active');
+                document.body.classList.remove("no-scroll");
             }
         })
     }
