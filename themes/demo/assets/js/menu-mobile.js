@@ -1,4 +1,4 @@
-let initFn = () => {
+function initFn() {
     // Удалить скрипт (атрибуты). Оживил для презентации заказчику
     const actionItems = document.querySelectorAll('[data-header-action]');
 
@@ -47,7 +47,7 @@ let initFn = () => {
                         menuMobileItem[j].classList.remove("active");
                     }
                 }
-                ;
+
             });
         }
     }
@@ -61,7 +61,7 @@ let initFn = () => {
     const searchInput = document.querySelector('[data-search="input"]');
 
 
-    if(buttonOpenSearchMobile){
+    if (buttonOpenSearchMobile) {
         buttonOpenSearchMobile.addEventListener('click', () => {
             searchItem.classList.add('active')
         })

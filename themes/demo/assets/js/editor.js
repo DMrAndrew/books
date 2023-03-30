@@ -9,5 +9,6 @@ function initEditor(inputName, options = []) {
                 '|', 'numberedList', 'bulletedList',
                 '|', 'link', 'blockQuote',].concat(toolbarItems)
         }
-    }).then(editor => console.log(Array.from(editor.ui.componentFactory.names())));
+    })
+    //.then(editor => console.log(Array.from(editor.ui.componentFactory.names())));
 }
