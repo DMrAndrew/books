@@ -47,7 +47,7 @@ class EBooker extends ComponentBase
 
     public function fresh()
     {
-        $this->ebook = Auth::getUser()?->profile->books()->find($this->property('book_id'))?->ebook;
+        $this->ebook = Auth::getUser()?->profile->books()->withChapters()->find($this->property('book_id'))?->ebook;
         if (! $this->ebook) {
             throw new ApplicationException('Электронное издание книги не найден.');
         }
@@ -81,11 +81,12 @@ class EBooker extends ComponentBase
     public function onUpdateSortOrder()
     {
         $partial = fn () => [
-            '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook->fresh()]),
+            '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
         ];
 
         try {
             $this->service->changeChaptersOrder(post('sequence'));
+            $this->fresh();
 
             return $partial();
         } catch (Exception $ex) {
@@ -97,8 +98,8 @@ class EBooker extends ComponentBase
 
     public function onDeleteChapter()
     {
-        $partial = [
-            '#ebooker-chapters' => $this->renderPartial('@chapters'),
+        $partial = fn () => [
+            '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
         ];
         try {
             $chapter_id = post('chapter_id');
@@ -106,13 +107,13 @@ class EBooker extends ComponentBase
                 $chapter->service()->delete();
             }
 
-            $this->vals();
+            $this->fresh();
 
-            return $partial;
+            return $partial();
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
 
-            return $partial;
+            return $partial();
         }
     }
 
