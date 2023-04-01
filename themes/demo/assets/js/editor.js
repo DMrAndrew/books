@@ -5,7 +5,7 @@ function initEditor(inputName, options = []) {
         language: 'ru',
         toolbar: {
             items: ['undo', 'redo',
-                '|', 'bold', 'italic', 'strikethrough',
+                '|', 'bold', 'italic',
                 '|', 'numberedList', 'bulletedList',
                 '|', 'link', 'blockQuote',].concat(toolbarItems)
         }
