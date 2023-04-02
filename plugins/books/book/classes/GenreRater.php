@@ -8,9 +8,11 @@ use Books\Book\Models\Book;
 use Books\Book\Models\BookGenre;
 use Books\Catalog\Models\Genre;
 use Db;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Queue;
 
-class GenreRater
+class GenreRater implements ShouldQueue, ShouldBeUnique
 {
     public function __construct()
     {

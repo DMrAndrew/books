@@ -18,5 +18,6 @@ class GenreRating
             Log::error($exception->getMessage());
             throw $exception;
         }
+        $job->delete();
     }
 }
