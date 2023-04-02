@@ -18,12 +18,12 @@ class SearchManager
 
     public function apply(string $query): \October\Rain\Support\Collection|Collection
     {
-        //TODO ->booksExists() для профиля
         $res = Search::add(Book::public()->defaultEager(), 'title')
-            ->add(Profile::query()->shortPublicEager(), 'username')
+            ->add(Profile::query()->shortPublicEager()->booksExists(), 'username')
             ->includeModelType()
             ->orderByModel([
                 Book::class, Profile::class])
+            ->beginWithWildcard()
             ->search($query)
             ->groupBy('type');
 
