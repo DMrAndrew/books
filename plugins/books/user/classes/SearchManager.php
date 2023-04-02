@@ -24,6 +24,7 @@ class SearchManager
             ->orderByModel([
                 Book::class, Profile::class])
             ->beginWithWildcard()
+            ->endWithWildcard(false)
             ->search($query)
             ->groupBy('type');
 
@@ -32,7 +33,7 @@ class SearchManager
             $count = $grouped->count();
 
             return [
-                'active' => ! (bool) $this->active++,
+                'active' => !(bool)$this->active++,
                 'count' => $count,
                 'label' => $class::wordForm()->getCorrectSuffix($count),
                 'items' => $grouped,
