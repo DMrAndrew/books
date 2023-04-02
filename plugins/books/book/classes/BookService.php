@@ -113,6 +113,7 @@ class BookService
                 'annotation' => $info->getAnnotation(),
             ];
 
+            $this->book->removeValidationRule('cover', 'max:3072');
             if ($cover = $book->getCover()) {
                 $cover = (new File())->fromData(base64_decode($cover), 'cover.jpg');
                 $cover->save();
