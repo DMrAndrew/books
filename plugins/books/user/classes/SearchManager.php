@@ -23,8 +23,7 @@ class SearchManager
             ->includeModelType()
             ->orderByModel([
                 Book::class, Profile::class])
-            ->beginWithWildcard()
-            ->endWithWildcard(false)
+            ->beginWithWildcard(false)
             ->search($query)
             ->groupBy('type');
 
