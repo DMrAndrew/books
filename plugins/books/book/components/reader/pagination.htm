@@ -21,6 +21,7 @@
             <li><a class="ui-pagination-item cursor-pointer {{reader.paginator.page == paginator.page ? 'active' : ''}}"
                    data-request-data="paginator_page : {{ paginator.page }}"
                    data-request="reader::onMove"
+                   data-request-complete="window.scrollTo(2, 1);"
 
             >{{paginator.page}}</a></li>
             {% endif %}

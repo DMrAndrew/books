@@ -38,10 +38,11 @@ class HasLibrary extends ExtensionBase
     {
         $libs = $this->model->libs()
             ->with([
-                'favorable' => fn ($q) => $q->with(['book' => fn ($book) => $book->withProgress($this->model)->withLastLengthUpdate()]),
+                'favorable' => fn ($q) => $q->with(['book' => fn ($book) => $book->public()->withProgress($this->model)->withLastLengthUpdate()]),
             ])
             ->get()
             ->pluck('favorable')
+            ->filter(fn ($i) => (bool) $i->book)
             ->sortByDesc('id')
             ->groupBy(fn ($i) => $i->type->value);
 
