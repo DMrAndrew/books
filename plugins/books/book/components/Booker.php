@@ -108,6 +108,9 @@ class Booker extends ComponentBase
                 $book->rules,
                 (array) $book->customMessages
             );
+            if ($this->service->getGenres()->count() === 0) {
+                throw  new ValidationException(['genres' => 'Укажите хотя бы один жанр.']);
+            }
             if ($validator->fails()) {
                 throw new ValidationException($validator);
             }
