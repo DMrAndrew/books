@@ -28,7 +28,7 @@ class HasLibrary extends ExtensionBase
             ->type(Lib::class);
     }
 
-    public function libs(?CollectionEnum ...$types): HasMany
+    public function libs(): HasMany
     {
         return $this->model->queryLibs()
             ->with(['favorable' => fn ($q) => $q->with(['book' => fn ($book) => $book->defaultEager()])]);
@@ -37,12 +37,12 @@ class HasLibrary extends ExtensionBase
     public function getLib()
     {
         $libs = $this->model->libs()
+            ->whereHas('favorable', fn ($favorable) => $favorable->public())
             ->with([
-                'favorable' => fn ($q) => $q->with(['book' => fn ($book) => $book->public()->withProgress($this->model)->withLastLengthUpdate()]),
+                'favorable' => fn ($q) => $q->with(['book' => fn ($book) => $book->withProgress($this->model)->withLastLengthUpdate()]),
             ])
             ->get()
             ->pluck('favorable')
-            ->filter(fn ($i) => (bool) $i->book)
             ->sortByDesc('id')
             ->groupBy(fn ($i) => $i->type->value);
 

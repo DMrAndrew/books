@@ -40,6 +40,11 @@ class Lib extends Model
         'loved' => 'boolean',
     ];
 
+    public function scopePublic(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('book', fn ($book) => $book->public());
+    }
+
     public function scopeBook(Builder $builder, Book $user): Builder
     {
         return $builder->where('book_id', '=', $user->id);
