@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\classes\RevisionHistory;
 use App\middleware\FetchCheckUp;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\AliasLoader;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use System\Classes\AppBase;
+use System\Models\Revision;
 
 /**
  * Provider is an application level plugin, all registration methods are supported.
@@ -35,6 +37,9 @@ class Provider extends AppBase
                 return $modelName::$factory;
             }
             throw new Exception('Factory for '.$modelName.' not found.');
+        });
+        Revision::extend(function (Revision $revision) {
+            $revision->implementClassWith(RevisionHistory::class);
         });
 
 //        $this->app[Kernel::class]

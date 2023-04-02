@@ -113,6 +113,11 @@ class Edition extends Model
         return $this->revision_history()->where('field', '=', 'length')->orderByDesc('created_at')->first()?->created_at;
     }
 
+    public function scopeWithLastLengthRevision(Builder $builder): Builder
+    {
+        return $builder->with(['revision_history' => fn ($history) => $history->where('field', '=', 'length')->orderByDesc('created_at')->limit(1)]);
+    }
+
     public function getUpdateHistoryAttribute()
     {
         $items = $this->revision_history()

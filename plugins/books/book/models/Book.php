@@ -272,6 +272,11 @@ class Book extends Model
         return $user && $this->profiles()->user($user)->exists();
     }
 
+    public function scopeWithLastLengthUpdate(Builder $builder): Builder
+    {
+        return $builder->with(['editions' => fn ($editions) => $editions->withLastLengthRevision()]);
+    }
+
     public function scopeType(Builder $builder, ?EditionsEnums $type): Builder|\Illuminate\Database\Eloquent\Builder
     {
         if (! $type) {

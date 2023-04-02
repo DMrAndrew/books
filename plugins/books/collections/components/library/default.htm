@@ -139,11 +139,10 @@
                                         </div>
                                     </div>
                                 </div>
-
-
-                                <!--                            {% if lib.book.editions.first.progress_length %}-->
-                                <!--                            <div class="book-mini-card__addition">+{{lib.book.editions.first.progress_length}} зн.</div>-->
-                                <!--                            {% endif %}-->
+                                {% set last_length_update = lib.book.editions.first.revision_history.first.odds %}
+                                {% if last_length_update %}
+                                <div class="book-mini-card__addition">+{{last_length_update}} зн.</div>
+                                {% endif %}
                                 <a href="/book-card/{{lib.book.id}}" class="book-mini-card__title">
                                     {{lib.book.title}}
                                 </a>
