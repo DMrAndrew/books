@@ -235,7 +235,7 @@
 
             {% if bind.books.first() %}
             {% for book in bind.books %}
-            {% ajaxPartial "bookCard::standard-card" book=book %}
+            {% ajaxPartial "bookCard::standard-card" book=book user=bind.user %}
             {% endfor %}
             {% else %}
             <div class="library-placeholder wrapper">

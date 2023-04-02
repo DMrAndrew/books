@@ -13,6 +13,7 @@ use Books\Catalog\Models\Genre;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Illuminate\Support\Collection;
+use RainLab\User\Facades\Auth;
 
 /**
  * Listing Component
@@ -64,6 +65,7 @@ class Listing extends ComponentBase
             'books' => $this->books(),
             'trackInputTime' => $this->trackInputTime,
             'sorts' => SortEnum::cases(),
+            'user' => Auth::getUser(),
         ]);
     }
 
