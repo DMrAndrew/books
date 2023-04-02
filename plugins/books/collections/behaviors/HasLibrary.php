@@ -39,7 +39,7 @@ class HasLibrary extends ExtensionBase
         $libs = $this->model->libs()
             ->whereHas('favorable', fn ($favorable) => $favorable->public())
             ->with([
-                'favorable' => fn ($q) => $q->with(['book' => fn ($book) => $book->withProgress($this->model)->withLastLengthUpdate()]),
+                'favorable' => fn ($q) => $q->with(['book' => fn ($book) => $book->withLastLengthUpdate()->withProgress($this->model)]),
             ])
             ->get()
             ->pluck('favorable')
