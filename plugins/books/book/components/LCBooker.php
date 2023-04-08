@@ -78,6 +78,7 @@ class LCBooker extends ComponentBase
     public function onUploadFile()
     {
         try {
+            set_time_limit((60 * 3));
             $uploadedFile = (new Edition())->fb2()->withDeferred($this->getSessionKey())->get()?->first();
             if (! $uploadedFile) {
                 throw new ValidationException(['fb2' => 'Файл не найден.']);
