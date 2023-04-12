@@ -2,6 +2,7 @@
 
 namespace Books\User\Behaviors;
 
+use Books\Book\Models\Edition;
 use Books\Comments\Models\Comment;
 use Books\Profile\Models\Profile;
 use Books\User\Classes\UserService;
@@ -112,5 +113,10 @@ class BookUser extends ExtensionBase
     public function scopeUsername($q, $name)
     {
         return $q->whereHas('profiles', fn ($profile) => $profile->username($name));
+    }
+
+    public function bookIsBought(Edition $edition): bool
+    {
+        return false;
     }
 }

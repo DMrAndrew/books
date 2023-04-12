@@ -270,9 +270,9 @@ class Book extends Model
         Event::fire('test.events', [$this]);
     }
 
-    public function isAuthor(User $user)
+    public function isAuthor(Profile $profile)
     {
-        return $this->profiles()->user($user)->exists();
+        return $this->authors()->where('profile_id', $profile->id)->exists();
     }
 
     public function isCommentAllowed(?User $user = null): bool
