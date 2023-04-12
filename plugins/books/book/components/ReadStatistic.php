@@ -50,7 +50,7 @@ class ReadStatistic extends ComponentBase
         if ($r = redirectIfUnauthorized()) {
             return $r;
         }
-        $dates = explode('-', request()->query('dates') ?? post('dates'));
+        $dates = explode('-', post('dates') ?? request()->query('dates'));
         if (isset($dates[0]) && isset($dates[1])) {
             $this->from = Carbon::parse($dates[0]);
             $this->to = Carbon::parse($dates[1]);
