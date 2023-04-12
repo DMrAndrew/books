@@ -12,7 +12,6 @@ use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
-use Event;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
 use October\Rain\Database\Builder;
@@ -24,7 +23,6 @@ use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Relations\HasOne;
 use October\Rain\Database\Relations\HasOneThrough;
 use October\Rain\Database\Traits\Validation;
-use RainLab\Notify\Models\Notification;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
@@ -196,13 +194,7 @@ class Book extends Model
 
     public $morphOne = [];
 
-    public $morphMany = [
-        'notifications' => [
-            Notification::class,
-            'name' => 'notifiable',
-        ],
-
-    ];
+    public $morphMany = [];
 
     public $attachOne = [
         'cover' => File::class,
@@ -263,11 +255,6 @@ class Book extends Model
             [$this, 'editions'],
             [new Edition(), 'chapters']
         );
-    }
-
-    public function testEvent(): void
-    {
-        Event::fire('test.events', [$this]);
     }
 
     public function isAuthor(User $user)

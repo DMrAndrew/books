@@ -5,7 +5,6 @@ namespace Books\Comments\Models;
 use App\traits\ScopeUser;
 use Books\Book\Models\Book;
 use Books\Profile\Models\Profile;
-use Event;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\SimpleTree;
@@ -58,11 +57,6 @@ class Comment extends Model
     public function addition(): string
     {
         return $this->isDeleted() ? 'Удалён' : ($this->isEdited() ? 'Редактирован' : '');
-    }
-
-    public function afterCreate(): void
-    {
-        Event::fire('test.events', [['comment' => $this]]);
     }
 
     public function isDeleted(): bool

@@ -11,6 +11,5 @@ return [
         Settings::class,
         Comment::class,
         Cycle::class,
-        \Books\Notifications\Models\Notification::class,
     ],
 ];
