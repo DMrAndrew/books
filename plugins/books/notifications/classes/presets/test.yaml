@@ -5,3 +5,4 @@ test:
         -   action: Books\Notifications\Classes\Actions\TestAction
     conditions:
         -   condition: Books\Notifications\Classes\Conditions\SettingsIsEnabled
+

@@ -7,6 +7,7 @@ use Books\User\Behaviors\BookUser;
 use Books\User\Behaviors\CountryTranslate;
 use Books\User\Classes\SearchManager;
 use Books\User\Classes\UserEventHandler;
+use Books\User\Classes\UserSettingsEnum;
 use Books\User\Components\BookAccount;
 use Books\User\Components\Searcher;
 use Books\User\Components\UserSettingsLC;
@@ -68,6 +69,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Country', Country::class);
         AliasLoader::getInstance()->alias('BookSettings', Settings::class);
         AliasLoader::getInstance()->alias('CountryList', CountryList::class);
+        AliasLoader::getInstance()->alias('UserSettingsEnum', UserSettingsEnum::class);
         Country::extend(function (Country $country) {
             $country->implementClassWith(CountryTranslate::class);
         });

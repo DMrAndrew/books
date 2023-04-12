@@ -1,4 +1,12 @@
 fields:
-    mycondition:
-        label: My condition
+    subcondition:
+        label: Настройка
         type: dropdown
+    operator:
+        label: Оператор
+        type: dropdown
+        dependsOn: [ subcondition ]
+    value:
+        label: Значение
+        type: dropdown
+        dependsOn: [ subcondition ]
