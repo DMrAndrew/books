@@ -26,7 +26,8 @@
         "books/collections-plugin": "*",
         "rainlab/location-plugin": "^1.2",
         "books/comments-plugin": "*",
-        "staudenmeir/eloquent-has-many-deep": "1.17"
+        "staudenmeir/eloquent-has-many-deep": "1.17",
+        "books/notifications-plugin": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -108,6 +109,10 @@
         "books/comments-plugin": {
             "type": "path",
             "url": "./plugins/books/comments"
+        },
+        "books/notifications-plugin": {
+            "type": "path",
+            "url": "./plugins/books/notifications"
         }
     }
 }

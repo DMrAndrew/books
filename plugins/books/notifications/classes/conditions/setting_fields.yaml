@@ -1,0 +1,4 @@
+fields:
+    mycondition:
+        label: My condition
+        type: dropdown
