@@ -52,7 +52,7 @@ class StatisticService
         $dates = collect($this->period->toArray());
         $books = $this->class::query()
             ->whereIn('id', collect($needle)->pluck('id'))
-            ->with(['trackers' => fn ($trackers) => $trackers->withoutGlobalScope(new ScopeToday())])
+            ->with(['trackers' => fn ($trackers) => $trackers->withoutGlobalScope(new ScopeToday())->completed()])
             ->get();
 
         $books->map(function ($book) {
