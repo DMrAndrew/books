@@ -42,7 +42,9 @@ class Reader {
                     paginator_id: this.#paginator_id,
                     ms: ms || this.#trackerInterval
                 },
-                progressBar: false
+                progressBar: false,
+                error: () => {
+                }
             })
         }
     }
