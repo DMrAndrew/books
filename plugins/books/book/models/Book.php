@@ -194,7 +194,12 @@ class Book extends Model
 
     public $morphOne = [];
 
-    public $morphMany = [];
+    public $morphMany = [
+        'notifications' => [
+            \RainLab\Notify\Models\Notification::class,
+            'name' => 'notifiable',
+        ]
+    ];
 
     public $attachOne = [
         'cover' => File::class,

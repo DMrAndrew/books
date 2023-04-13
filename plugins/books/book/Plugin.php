@@ -65,7 +65,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
     }
 
@@ -74,7 +74,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         Config::set('book', Config::get('books.book::config'));
 
@@ -118,7 +118,7 @@ class Plugin extends PluginBase
      *
      * @return array
      */
-    public function registerComponents()
+    public function registerComponents(): array
     {
         return [
             AboutBook::class => 'AboutBook',
@@ -136,7 +136,7 @@ class Plugin extends PluginBase
         ];
     }
 
-    public function registerSchedule($schedule)
+    public function registerSchedule($schedule): void
     {
         $schedule->call(function () {
             ChapterService::audit();
@@ -145,42 +145,5 @@ class Plugin extends PluginBase
         $schedule->call(function () {
             GenreRater::queue();
         })->everyTenMinutes();
-    }
-
-    /**
-     * Registers any backend permissions used by this plugin.
-     *
-     * @return array
-     */
-    public function registerPermissions()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'books.book.some_permission' => [
-                'tab' => 'Book',
-                'label' => 'Some permission',
-            ],
-        ];
-    }
-
-    /**
-     * Registers backend navigation items for this plugin.
-     *
-     * @return array
-     */
-    public function registerNavigation()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'book' => [
-                'label' => 'Book',
-                'url' => Backend::url('books/book/mycontroller'),
-                'icon' => 'icon-leaf',
-                'permissions' => ['books.book.*'],
-                'order' => 500,
-            ],
-        ];
     }
 }

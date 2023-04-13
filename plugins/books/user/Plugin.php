@@ -3,6 +3,7 @@
 namespace Books\User;
 
 use Backend;
+use Books\Book\Models\Book;
 use Books\User\Behaviors\BookUser;
 use Books\User\Behaviors\CountryTranslate;
 use Books\User\Classes\SearchManager;
@@ -18,6 +19,7 @@ use Monarobase\CountryList\CountryList;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use RainLab\Location\Behaviors\LocationModel;
 use RainLab\Location\Models\Country;
+use RainLab\Notify\NotifyRules\SaveDatabaseAction;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
@@ -26,7 +28,10 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User'];
+    public $require = [
+        'RainLab.User',
+        'RainLab.Notify',
+    ];
 
     /**
      * Returns information about this plugin.
@@ -48,7 +53,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         //test
         Event::listen('rainlab.user.register', function (User $model) {
@@ -61,7 +66,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         AliasLoader::getInstance()->alias('User', User::class);
         AliasLoader::getInstance()->alias('Search', Search::class);
@@ -73,10 +78,16 @@ class Plugin extends PluginBase
         Country::extend(function (Country $country) {
             $country->implementClassWith(CountryTranslate::class);
         });
+
         User::extend(function (User $model) {
             $model->implementClassWith(BookUser::class);
             $model->implementClassWith(LocationModel::class);
         });
+
+        /*
+         * Compatability with RainLab.Notify
+         */
+        $this->extendSaveDatabaseAction();
     }
 
     /**
@@ -84,7 +95,7 @@ class Plugin extends PluginBase
      *
      * @return array
      */
-    public function registerComponents()
+    public function registerComponents(): array
     {
         return [
             BookAccount::class => 'bookAccount',
@@ -94,39 +105,21 @@ class Plugin extends PluginBase
     }
 
     /**
-     * Registers any backend permissions used by this plugin.
-     *
-     * @return array
+     * @return void
      */
-    public function registerPermissions()
+    public function extendSaveDatabaseAction(): void
     {
-        return []; // Remove this line to activate
+        if (!class_exists(SaveDatabaseAction::class)) {
+            return;
+        }
 
-        return [
-            'books.user.some_permission' => [
-                'tab' => 'User',
-                'label' => 'Some permission',
-            ],
-        ];
-    }
-
-    /**
-     * Registers backend navigation items for this plugin.
-     *
-     * @return array
-     */
-    public function registerNavigation()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'user' => [
-                'label' => 'User',
-                'url' => Backend::url('books/user/mycontroller'),
-                'icon' => 'icon-leaf',
-                'permissions' => ['books.user.*'],
-                'order' => 500,
-            ],
-        ];
+        SaveDatabaseAction::extend(function ($action) {
+            $action->addTableDefinition([
+                'label' => 'Аккаунт',
+                'class' => User::class,
+                'relation' => 'notifications',
+                'param' => 'user'
+            ]);
+        });
     }
 }
