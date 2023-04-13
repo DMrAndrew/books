@@ -3,7 +3,6 @@
 namespace Books\User;
 
 use Backend;
-use Books\Book\Models\Book;
 use Books\User\Behaviors\BookUser;
 use Books\User\Behaviors\CountryTranslate;
 use Books\User\Classes\SearchManager;
@@ -19,7 +18,6 @@ use Monarobase\CountryList\CountryList;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use RainLab\Location\Behaviors\LocationModel;
 use RainLab\Location\Models\Country;
-use RainLab\Notify\NotifyRules\SaveDatabaseAction;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
@@ -83,11 +81,6 @@ class Plugin extends PluginBase
             $model->implementClassWith(BookUser::class);
             $model->implementClassWith(LocationModel::class);
         });
-
-        /*
-         * Compatability with RainLab.Notify
-         */
-        $this->extendSaveDatabaseAction();
     }
 
     /**
@@ -102,24 +95,5 @@ class Plugin extends PluginBase
             Searcher::class => 'searcher',
             UserSettingsLC::class => 'userSettingsLC',
         ];
-    }
-
-    /**
-     * @return void
-     */
-    public function extendSaveDatabaseAction(): void
-    {
-        if (!class_exists(SaveDatabaseAction::class)) {
-            return;
-        }
-
-        SaveDatabaseAction::extend(function ($action) {
-            $action->addTableDefinition([
-                'label' => 'Аккаунт',
-                'class' => User::class,
-                'relation' => 'notifications',
-                'param' => 'user'
-            ]);
-        });
     }
 }

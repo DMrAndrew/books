@@ -3,9 +3,13 @@
 namespace Books\Notifications;
 
 use Backend;
+use Books\Notifications\Classes\Behaviors\NotificationsModel;
 use Books\Notifications\Classes\Conditions\SettingsIsEnabled;
 use Books\Notifications\Classes\Events\TestEvent;
+use Books\Profile\Models\Profile;
 use RainLab\Notify\Classes\Notifier;
+use RainLab\Notify\NotifyRules\SaveDatabaseAction;
+use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
 /**
@@ -15,10 +19,18 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
+    public $require = [
+        'Books.User',
+        'Books.Profile',
+        'Books.Book',
+        'Books.Comments',
+        'RainLab.Notify',
+    ];
+
     /**
      * pluginDetails about this plugin.
      */
-    public function pluginDetails()
+    public function pluginDetails(): array
     {
         return [
             'name' => 'Notifications',
@@ -31,12 +43,32 @@ class Plugin extends PluginBase
     /**
      * register method, called when the plugin is first registered.
      */
-    public function register()
+    public function register(): void
     {
         //
     }
 
-    public function registerNotificationRules()
+    /**
+     * boot method, called right before the request route.
+     */
+    public function boot(): void
+    {
+        $this->extendModels();
+
+        /*
+         * Compatability with RainLab.Notify
+         */
+        $this->extendSaveDatabaseAction();
+
+        Notifier::bindEvents([
+            'test.events' => TestEvent::class,
+        ]);
+    }
+
+    /**
+     * @return array
+     */
+    public function registerNotificationRules(): array
     {
         return [
             'events' => [
@@ -58,57 +90,52 @@ class Plugin extends PluginBase
     }
 
     /**
-     * boot method, called right before the request route.
-     */
-    public function boot()
-    {
-        Notifier::bindEvents([
-            'test.events' => TestEvent::class,
-        ]);
-    }
-
-    /**
      * registerComponents used by the frontend.
      */
-    public function registerComponents()
+    public function registerComponents(): array
     {
-        return []; // Remove this line to activate
-
         return [
-            'Books\Notifications\Components\MyComponent' => 'myComponent',
+
         ];
     }
 
     /**
-     * registerPermissions used by the backend.
+     * @return void
      */
-    public function registerPermissions()
+    protected function extendModels(): void
     {
-        return []; // Remove this line to activate
+        User::extend(static function (User $model): void {
+            $model->implementClassWith(NotificationsModel::class);
+        });
 
-        return [
-            'books.notifications.some_permission' => [
-                'tab' => 'Notifications',
-                'label' => 'Some permission',
-            ],
-        ];
+        Profile::extend(static function (Profile $model): void {
+            $model->implementClassWith(NotificationsModel::class);
+        });
     }
 
     /**
-     * registerNavigation used by the backend.
+     * @return void
      */
-    public function registerNavigation()
+    protected function extendSaveDatabaseAction(): void
     {
-        return []; // Remove this line to activate
+        if (!class_exists(SaveDatabaseAction::class)) {
+            return;
+        }
 
-        return [
-            'notifications' => [
-                'label' => 'Notifications',
-                'url' => Backend::url('books/notifications/mycontroller'),
-                'icon' => 'icon-leaf',
-                'permissions' => ['books.notifications.*'],
-                'order' => 500,
-            ],
-        ];
+        SaveDatabaseAction::extend(static function (SaveDatabaseAction $action) {
+            $action->addTableDefinition([
+                'label' => 'Аккаунт',
+                'class' => User::class,
+                'relation' => 'notifications',
+                'param' => 'user',
+            ]);
+
+            $action->addTableDefinition([
+                'label' => 'Аккаунт',
+                'class' => User::class,
+                'relation' => 'notifications',
+                'param' => 'user',
+            ]);
+        });
     }
 }
