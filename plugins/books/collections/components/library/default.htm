@@ -16,7 +16,7 @@
                     <div class="ui-tabs-line"></div>
                     <div class="ui-tabs-header-wrapper" data-tabs="1">
                         {% for index,item in library %}
-                        <div class="ui-tabs-link {{active == item.type ? 'active': '' }}"
+                        <div class="ui-tabs-link {{active.value == item.type.value ? 'active': '' }}"
                              data-tab="{{item.type.value}}">{{item.label}}
                             {% if item.count %}
                             <span>{{item.count}}</span>
@@ -27,7 +27,7 @@
                 </div>
                 <div class="ui-tabs-body _field" data-tabs="1">
                     {% for index,item in library %}
-                    <div class="ui-tabs-content {{active == item.type ? 'active': '' }}"
+                    <div class="ui-tabs-content {{active.value == item.type.value ? 'active': '' }}"
                          data-tab-content="{{item.type.value}}">
 
                         {% if item.count %}
@@ -51,8 +51,8 @@
                                                 {% partial 'controls/genres-link-list' genres=lib.book.genres %}
                                             </div>
                                             <div class="tippymodal-block">Аннотация:
-                                                <div class="typographical-block">
-                                                    {{ str_limit(lib.book.annotation,480,'...')|raw }}
+                                                <div class="typographical-block truncate">
+                                                    {{ lib.book.annotation|raw }}
                                                 </div>
                                             </div>
                                             <div class="tippymodal-block tags-list">
@@ -149,8 +149,7 @@
                                 {% if item.type.value == 3  %}
                                 <div class="book-mini-card__progress book-mini-card-progress">
                                     <div class="book-mini-card-progress__item-wrapper">
-                                        <div class="book-mini-card-progress__line" {{
-                                        'style=width:'~lib.book.editions.first.progress|default('0')~'%'}} >
+                                        <div class="book-mini-card-progress__line" style="width:{{lib.book.editions.first.progress|default('0')}}% "  >
                                     </div>
                                 </div>
                                 <div class="book-mini-card-progress__text">{{lib.book.editions.first.progress|default('0')}} %</div>
@@ -230,7 +229,6 @@
     </div>
     {% endif %}
 
-</div>
 </div>
 <script>
     initTabs('[data-tabs="1"]');

@@ -30,8 +30,13 @@ class TestEvent extends EventBase
         ];
     }
 
+    /**
+     * @param  array  $args
+     * @param $eventName
+     * @return mixed|void
+     */
     public static function makeParamsFromEvent(array $args, $eventName = null)
-    {
+    {  //TODO сформировать body уведомления и первичный список получателей, который будет фильтроваться условиями
         return array_get($args, 0);
     }
 }

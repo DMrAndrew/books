@@ -88,7 +88,7 @@ class ProfileService
 
         collect(UserSettingsEnum::cases())->map(function (UserSettingsEnum $setting) {
             $this->profile->user->settings()
-                ->firstOrCreate(['type' => $setting->value], ['value' => $setting->defaultValue()]);
+                ->firstOrCreate(['type' => $setting->value], ['value' => $setting->defaultOption()->value]);
         });
 
         Event::fire('books.profile.settings.initialized', [$this->profile]);

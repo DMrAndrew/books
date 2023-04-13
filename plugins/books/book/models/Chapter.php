@@ -193,11 +193,6 @@ class Chapter extends Model
         return $builder->where($this->getSortOrderColumn(), '<', $value);
     }
 
-    public function scopeWithReadTrackersCount(Builder $builder): Builder
-    {
-        return $builder->withCount(['trackers as completed_trackers' => fn ($trackers) => $trackers->withoutTodayScope()->completed()]);
-    }
-
     public function scopePlanned(Builder $builder): Builder
     {
         return $builder->where('status', ChapterStatus::PLANNED);

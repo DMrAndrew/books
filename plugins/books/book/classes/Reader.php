@@ -59,7 +59,10 @@ class Reader
 
     public function isPageAllowed(): bool
     {
-        return ! $this->contentGuard || $this->chapter->isFree();
+        return ! $this->contentGuard
+            || $this->chapter->isFree()
+            || $this->book->isAuthor($this->user->profile)
+            || $this->user->bookIsBought($this->edition);
     }
 
     public function track(?int $ms, int $paginator_id)

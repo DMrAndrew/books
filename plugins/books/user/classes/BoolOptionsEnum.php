@@ -15,8 +15,8 @@ enum BoolOptionsEnum: string
         };
     }
 
-    public static function default(): string
+    public static function default(): BoolOptionsEnum
     {
-        return self::OFF->value;
+        return self::OFF;
     }
 }

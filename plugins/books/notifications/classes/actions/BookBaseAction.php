@@ -31,7 +31,10 @@ class BookBaseAction extends ActionBase
     /**
      * Triggers this action.
      *
-     * @param  array  $params
+     * @param $params
+     *
+     * $params['recipients'] - профили получателей
+     * $params['body'] - сформированная ивентом data для уведомления
      * @return void
      */
     public function triggerAction($params)

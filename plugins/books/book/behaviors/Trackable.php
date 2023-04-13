@@ -22,6 +22,11 @@ class Trackable extends ExtensionBase
         return $this->model->trackers()->firstOrCreate(['user_id' => $user->id]);
     }
 
+    public function scopeWithReadTrackersCount(Builder $builder): Builder
+    {
+        return $builder->withCount(['trackers as completed_trackers' => fn ($trackers) => $trackers->withoutTodayScope()->completed()]);
+    }
+
     public function scopeCountUserTrackers(Builder $builder, User $user): Builder
     {
         return $builder->withCount(['trackers' => fn ($i) => $i->user($user)]);
