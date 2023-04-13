@@ -20,7 +20,6 @@ use Event;
 use Flash;
 use Illuminate\Foundation\AliasLoader;
 use October\Rain\Database\Model;
-use RainLab\Notify\NotifyRules\SaveDatabaseAction;
 use RainLab\User\Controllers\Users as UsersController;
 use RainLab\User\Models\User;
 use Redirect;
@@ -33,7 +32,6 @@ class Plugin extends PluginBase
 {
     public $require = [
         'RainLab.User',
-        'RainLab.Notify',
     ];
 
     /**
@@ -131,11 +129,6 @@ class Plugin extends PluginBase
                 }
             });
         });
-
-        /*
-         * Compatability with RainLab.Notify
-         */
-        $this->extendSaveDatabaseAction();
     }
 
     /**
@@ -153,24 +146,5 @@ class Plugin extends PluginBase
             AuthorSpace::class => 'author_space',
             Subs::class => 'subs',
         ];
-    }
-
-    /**
-     * @return void
-     */
-    public function extendSaveDatabaseAction(): void
-    {
-        if (!class_exists(SaveDatabaseAction::class)) {
-            return;
-        }
-
-        SaveDatabaseAction::extend(function ($action) {
-            $action->addTableDefinition([
-                'label' => 'Профиль',
-                'class' => ProfileModel::class,
-                'relation' => 'notifications',
-                'param' => 'profile',
-            ]);
-        });
     }
 }

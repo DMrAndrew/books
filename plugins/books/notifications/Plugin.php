@@ -9,6 +9,7 @@ use Books\Notifications\Classes\Events\TestEvent;
 use Books\Profile\Models\Profile;
 use RainLab\Notify\Classes\Notifier;
 use RainLab\Notify\NotifyRules\SaveDatabaseAction;
+use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
@@ -58,11 +59,8 @@ class Plugin extends PluginBase
         /*
          * Compatability with RainLab.Notify
          */
+        $this->bindNotificationEvents();
         $this->extendSaveDatabaseAction();
-
-        Notifier::bindEvents([
-            'test.events' => TestEvent::class,
-        ]);
     }
 
     /**
@@ -72,11 +70,14 @@ class Plugin extends PluginBase
     {
         return [
             'events' => [
+                // TODO: создать эвенты
                 TestEvent::class,
             ],
             'actions' => [
+                // TODO: создать экшены
             ],
             'conditions' => [
+                // TODO: проверить нужно ли оно
                 SettingsIsEnabled::class,
             ],
             'groups' => [
@@ -85,6 +86,7 @@ class Plugin extends PluginBase
                     'icon' => 'icon-user',
                 ],
             ],
+            // TODO: подготовить пресеты
             'presets' => '$/books/notifications/classes/presets/test.yaml',
         ];
     }
@@ -95,22 +97,30 @@ class Plugin extends PluginBase
     public function registerComponents(): array
     {
         return [
-
+            // TODO: компонент для шапки + для страницы уведомлений
         ];
     }
 
     /**
      * @return void
      */
-    protected function extendModels(): void
+    protected function bindNotificationEvents(): void
     {
-        User::extend(static function (User $model): void {
-            $model->implementClassWith(NotificationsModel::class);
+        if (!class_exists(Notifier::class)) {
+            return;
+        }
+
+        Notifier::instance()->registerCallback(function ($manager) {
+            $manager->registerGlobalParams([
+                'user' => Auth::getUser(),
+                'profile' => Auth::getUser()->profile,
+            ]);
         });
 
-        Profile::extend(static function (Profile $model): void {
-            $model->implementClassWith(NotificationsModel::class);
-        });
+        // TODO: забиндить эвенты
+        Notifier::bindEvents([
+            'test.events' => TestEvent::class,
+        ]);
     }
 
     /**
@@ -132,10 +142,24 @@ class Plugin extends PluginBase
 
             $action->addTableDefinition([
                 'label' => 'Аккаунт',
-                'class' => User::class,
+                'class' => Profile::class,
                 'relation' => 'notifications',
-                'param' => 'user',
+                'param' => 'profile',
             ]);
+        });
+    }
+
+    /**
+     * @return void
+     */
+    protected function extendModels(): void
+    {
+        User::extend(static function (User $model): void {
+            $model->implementClassWith(NotificationsModel::class);
+        });
+
+        Profile::extend(static function (Profile $model): void {
+            $model->implementClassWith(NotificationsModel::class);
         });
     }
 }
