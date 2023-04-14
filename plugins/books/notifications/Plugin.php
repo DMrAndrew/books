@@ -2,6 +2,7 @@
 
 namespace Books\Notifications;
 
+use Books\Book\Models\Author;
 use Books\Notifications\Classes\Actions\StoreDatabaseAction;
 use Books\Notifications\Classes\Behaviors\NotificationsModel;
 use Books\Notifications\Classes\Contracts\NotificationService as NotificationServiceContract;
@@ -61,6 +62,8 @@ class Plugin extends PluginBase
     public function boot(): void
     {
         $this->extendModels();
+
+        Author::observe(\Books\Notifications\Classes\Observers\Author::class);
 
         /*
          * Compatability with RainLab.Notify
