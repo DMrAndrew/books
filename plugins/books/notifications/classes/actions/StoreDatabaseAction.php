@@ -22,7 +22,7 @@ class StoreDatabaseAction extends SaveDatabaseAction
         return [
             'name' => 'Сохранить в базу данных',
             'description' => 'Записывает уведомление в базу данных',
-            'icon' => 'icon-database'
+            'icon' => 'icon-database',
         ];
     }
 
@@ -45,19 +45,20 @@ class StoreDatabaseAction extends SaveDatabaseAction
     /**
      * @param $params
      * @return void
+     *
      * @throws ApplicationException
      */
     public function triggerAction($params): void
     {
         if (
-            (!$recipients = Arr::get($params, 'recipients')) ||
-            (!$recipients instanceof Collection)
+            (! $recipients = Arr::get($params, 'recipients')) ||
+            (! $recipients instanceof Collection)
         ) {
             throw new ApplicationException('Ошибка в параметрах уведомления');
         }
 
         $recipients
-            ->each(fn(Model $recipient) => $recipient
+            ->each(fn (Model $recipient) => $recipient
                 ->notifications()
                 ->create([
                     'id' => Uuid::uuid4()->toString(),
@@ -71,8 +72,8 @@ class StoreDatabaseAction extends SaveDatabaseAction
     }
 
     /**
-     * @param array $params
-     * @param string $param
+     * @param  array  $params
+     * @param  string  $param
      * @return string|null
      */
     protected function getParam(array $params, string $param): ?string
@@ -83,6 +84,7 @@ class StoreDatabaseAction extends SaveDatabaseAction
     /**
      * @param $params
      * @return string
+     *
      * @throws ApplicationException
      */
     protected function prepareBody($params): string
@@ -90,7 +92,7 @@ class StoreDatabaseAction extends SaveDatabaseAction
         $template = $this->getParam($params, 'template');
         $templatePath = plugins_path("books/notifications/views/{$template}.twig");
 
-        if (!file_exists($templatePath) || !is_readable($templatePath)) {
+        if (! file_exists($templatePath) || ! is_readable($templatePath)) {
             throw new ApplicationException('Ошибка формирования тела уведомления');
         }
 
@@ -107,8 +109,8 @@ class StoreDatabaseAction extends SaveDatabaseAction
     }
 
     /**
-     * @param array $params
-     * @param Model $recipient
+     * @param  array  $params
+     * @param  Model  $recipient
      * @return array
      */
     protected function getPrepareData(array $params, Model $recipient): array

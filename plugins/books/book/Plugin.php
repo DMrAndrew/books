@@ -2,7 +2,6 @@
 
 namespace Books\Book;
 
-use Backend;
 use Books\Book\Behaviors\Fillable;
 use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;

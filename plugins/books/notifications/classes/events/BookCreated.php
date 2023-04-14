@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 class BookCreated extends BaseEvent
 {
     public string $eventName = 'Публикация книги';
+
     public string $eventDescription = 'Автор, на которого подписан пользователь опубликовал новую книгу.';
 
     /**
@@ -24,7 +25,7 @@ class BookCreated extends BaseEvent
     }
 
     /**
-     * @param array $args
+     * @param  array  $args
      * @param $eventName
      * @return array
      */
@@ -40,7 +41,7 @@ class BookCreated extends BaseEvent
     }
 
     /**
-     * @param array $args
+     * @param  array  $args
      * @return Collection|null
      */
     public static function getRecipients(array $args): ?Collection

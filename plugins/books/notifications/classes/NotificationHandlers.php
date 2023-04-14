@@ -13,7 +13,7 @@ trait NotificationHandlers
     public function onAcceptedCoAuthorInvite()
     {
         try {
-            if (!Auth::getUser()) {
+            if (! Auth::getUser()) {
                 throw new ApplicationException('Вы не авторизованы');
             }
 
@@ -23,7 +23,7 @@ trait NotificationHandlers
                 ->where('profile_id', Auth::getUser()?->profile?->getKey())
                 ->firstOrFail();
 
-            if (!empty($author->accepted)) {
+            if (! empty($author->accepted)) {
                 throw new ApplicationException('Соавторство уже принято');
             }
 

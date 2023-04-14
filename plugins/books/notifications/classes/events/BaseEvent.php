@@ -8,6 +8,7 @@ use RainLab\Notify\Classes\EventBase;
 abstract class BaseEvent extends EventBase
 {
     public string $eventName = '';
+
     public string $eventDescription = '';
 
     /**
@@ -28,7 +29,7 @@ abstract class BaseEvent extends EventBase
     abstract public static function defaultParams(): array;
 
     /**
-     * @param array $args
+     * @param  array  $args
      * @return Collection|null
      */
     abstract public static function getRecipients(array $args): ?Collection;

@@ -2,7 +2,6 @@
 
 namespace Books\User;
 
-use Backend;
 use Books\User\Behaviors\BookUser;
 use Books\User\Behaviors\CountryTranslate;
 use Books\User\Classes\SearchManager;

@@ -9,7 +9,7 @@ use RainLab\Notify\Models\Notification;
 class NotificationsModel extends ExtensionBase
 {
     /**
-     * @param Model $model
+     * @param  Model  $model
      */
     public function __construct(protected $model)
     {

@@ -8,12 +8,12 @@ use Books\Profile\Behaviors\Masterable;
 use Books\Profile\Behaviors\Slavable;
 use Books\Profile\Classes\ProfileEventHandler;
 use Books\Profile\Components\AuthorSpace;
+use Books\Profile\Components\NotificationLC;
+use Books\Profile\Components\PrivacyLC;
 use Books\Profile\Components\Profile;
 use Books\Profile\Components\ProfileLC;
 use Books\Profile\Components\Subs;
 use Books\Profile\Models\Profile as ProfileModel;
-use Books\Profile\Components\NotificationLC;
-use Books\Profile\Components\PrivacyLC;
 use Books\Profile\Models\Profiler;
 use Config;
 use Event;
@@ -56,7 +56,7 @@ class Plugin extends PluginBase
      */
     public function register(): void
     {
-        Event::listen('books.profile.username.modify.requested', fn($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
+        Event::listen('books.profile.username.modify.requested', fn ($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
     }
 
     /**
@@ -78,19 +78,18 @@ class Plugin extends PluginBase
             $class::extend(function (Model $model) {
                 $model->implementClassWith(Masterable::class);
             });
-
         }
 
         foreach (config('profile.slavable') ?? [] as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Slavable::class);
-                $model->bindEvent('model.afterCreate', fn() => $model->profilerService()->add());
-                $model->bindEvent('model.afterDelete', fn() => $model->profilerService()->remove());
+                $model->bindEvent('model.afterCreate', fn () => $model->profilerService()->add());
+                $model->bindEvent('model.afterDelete', fn () => $model->profilerService()->remove());
             });
         }
 
         UsersController::extendFormFields(function ($form, $model, $context) {
-            if (!$model instanceof User) {
+            if (! $model instanceof User) {
                 return;
             }
             $form->addTabFields([
@@ -108,23 +107,24 @@ class Plugin extends PluginBase
             $controller->relationConfig = '$/books/user/config/config_relation.yaml';
             $controller->implementClassWith(Backend\Behaviors\RelationController::class);
 
-            $controller->addDynamicMethod('onChangeUsername', function ($recordId) use ($controller) {
+            $controller->addDynamicMethod('onChangeUsername', function ($recordId) {
                 $model = ProfileModel::find(post('manage_id'));
-                if($model){
+                if ($model) {
                     $model->acceptClipboardUsername();
                     Flash::success('Псевдоним пользователя успешно обновлён');
+
                     return Redirect::refresh();
                 }
-                return  Flash::error('Профиль не найден');
 
+                return  Flash::error('Профиль не найден');
             });
 
-            $controller->addDynamicMethod('onRejectUsername', function ($recordId) use ($controller) {
-
+            $controller->addDynamicMethod('onRejectUsername', function ($recordId) {
                 $model = ProfileModel::find(post('manage_id'));
-                if($model){
+                if ($model) {
                     $model->rejectClipboardUsername();
                     Flash::success('Изменение псевдонима пользователя отклонено');
+
                     return Redirect::refresh();
                 }
             });
