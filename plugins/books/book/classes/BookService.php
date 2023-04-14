@@ -187,10 +187,21 @@ class BookService
 
     protected function update(?array $data): Book
     {
+        // сохраним авторов до сохранения
+        $authors = $this->book->authors;
+
         $this->book->update($data);
         $this->syncRelations();
         $this->book->setSortOrder();
         Event::fire('books.book.updated', [$this->book]);
+
+        // получим авторов после сохранения, отсеивая старых
+        $this
+            ->book
+            ->authors()
+            ->get()
+            ->diff($authors)
+            ->each(static fn(Author $author) => Event::fire('books.book::author.invited', [$author]));
 
         return $this->book;
     }
