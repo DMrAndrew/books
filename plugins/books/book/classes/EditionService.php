@@ -24,6 +24,15 @@ class EditionService
             $data->forget('status');
         }
 
+        // у электронной книги статус "Скрыта" перешел в "В работе" или "Завершена"
+        if (
+            $this->edition->isDirty(['status']) &&
+            $this->edition->getOriginal('status') === BookStatus::HIDDEN &&
+            in_array($data->get('status'), [BookStatus::COMPLETE, BookStatus::WORKING], true)
+        ) {
+            Event::fire('books.book::book.created', [$this->edition->book]);
+        }
+
         if ($this->edition->isDirty(['status']) && ! in_array($this->edition->status, $this->edition->getAllowedStatusCases())) {
             throw new ValidationException(['status' => 'В данный момент Вы не можете перевести издание в этот статус.']);
         }
