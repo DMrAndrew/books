@@ -23,7 +23,6 @@ use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Relations\HasOne;
 use October\Rain\Database\Relations\HasOneThrough;
 use October\Rain\Database\Traits\Validation;
-use October\Rain\Support\Facades\Event;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
@@ -435,8 +434,6 @@ class Book extends Model
         $this->setDefaultCover();
         $this->setDefaultEdition();
         $this->stats()->add(new Stats());
-
-        Event::fire('books.book::book.created', [$this]);
     }
 
     public function createEventHandler()

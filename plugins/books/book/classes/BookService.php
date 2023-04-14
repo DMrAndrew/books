@@ -266,12 +266,6 @@ class BookService
                     Author::PROFILE_ID => $profile->id,
                     Author::IS_OWNER => false], $pivot)
             );
-
-        // TODO: костыль
-        Event::fire('books.book::author.invited', [
-            $this->getAuthors()->firstWhere('profile_id', $profile->id),
-            Auth::getUser()?->profile,
-        ]);
     }
 
     public function getAuthors(): Collection
