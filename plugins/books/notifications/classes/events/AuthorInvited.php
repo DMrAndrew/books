@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 class AuthorInvited extends BaseEvent
 {
     public string $eventName = 'Соавторство';
+
     public string $eventDescription = 'Пользователь (автор) указал Вас соавтором при публикации книги';
 
     /**
@@ -24,7 +25,7 @@ class AuthorInvited extends BaseEvent
     }
 
     /**
-     * @param array $args
+     * @param  array  $args
      * @param $eventName
      * @return array
      */
@@ -41,7 +42,7 @@ class AuthorInvited extends BaseEvent
     }
 
     /**
-     * @param array $args
+     * @param  array  $args
      * @return Collection|null
      */
     public static function getRecipients(array $args): ?Collection

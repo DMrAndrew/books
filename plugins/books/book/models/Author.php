@@ -66,7 +66,7 @@ class Author extends Model
      */
     public function afterCreate(): void
     {
-        if (!$this->is_owner) {
+        if (! $this->is_owner) {
             Event::fire('books.book::author.invited', [$this, Auth::getUser()?->profile]);
         }
     }

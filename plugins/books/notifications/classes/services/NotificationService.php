@@ -15,7 +15,7 @@ use RainLab\User\Models\User;
 class NotificationService implements NotificationServiceContract
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getCountUnreadNotifications(Profile $profile): int
     {
@@ -26,7 +26,7 @@ class NotificationService implements NotificationServiceContract
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function markAllNotificationsAsRead(Profile $profile): void
     {
@@ -37,7 +37,7 @@ class NotificationService implements NotificationServiceContract
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getUnreadNotifications(Profile $profile, int $limit = 10): Collection
     {
@@ -50,7 +50,7 @@ class NotificationService implements NotificationServiceContract
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function prepareTabsWithUnreadCount(Profile $profile, string $activeTab = 'all'): array
     {
@@ -72,7 +72,7 @@ class NotificationService implements NotificationServiceContract
         foreach (NotificationTypeEnum::cases() as $type) {
             $tabs[$type->value] = [
                 'label' => $type->label(),
-                'count' => (int)$unreadCounts->get($type->value),
+                'count' => (int) $unreadCounts->get($type->value),
                 'active' => $type->value === $activeTab,
             ];
         }
@@ -81,7 +81,7 @@ class NotificationService implements NotificationServiceContract
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getNotifications(Profile $profile, string $type = 'all', int $limit = 10): LengthAwarePaginator
     {
@@ -103,7 +103,7 @@ class NotificationService implements NotificationServiceContract
     }
 
     /**
-     * @param Profile $profile
+     * @param  Profile  $profile
      * @return Builder
      */
     private function getBuilder(Profile $profile): Builder

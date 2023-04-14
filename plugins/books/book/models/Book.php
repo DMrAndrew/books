@@ -199,7 +199,7 @@ class Book extends Model
         'notifications' => [
             \RainLab\Notify\Models\Notification::class,
             'name' => 'notifiable',
-        ]
+        ],
     ];
 
     public $attachOne = [

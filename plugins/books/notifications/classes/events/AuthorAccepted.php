@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 class AuthorAccepted extends BaseEvent
 {
     public string $eventName = 'Принять соавторство';
+
     public string $eventDescription = 'Если пользователю оставившему комментарий ответили, то ему приходит уведомление. Если пользователю написали под его комментарием, но ответили не ему, то уведомление не приходит.';
 
     /**
@@ -24,7 +25,7 @@ class AuthorAccepted extends BaseEvent
     }
 
     /**
-     * @param array $args
+     * @param  array  $args
      * @param $eventName
      * @return array
      */
@@ -43,7 +44,7 @@ class AuthorAccepted extends BaseEvent
     }
 
     /**
-     * @param array $args
+     * @param  array  $args
      * @return Collection|null
      */
     public static function getRecipients(array $args): ?Collection

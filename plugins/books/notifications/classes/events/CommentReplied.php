@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 class CommentReplied extends BaseEvent
 {
     public string $eventName = 'Ответ на комментарий';
+
     public string $eventDescription = 'Если пользователю оставившему комментарий ответили, то ему приходит уведомление. Если пользователю написали под его комментарием, но ответили не ему, то уведомление не приходит.';
 
     /**
@@ -24,7 +25,7 @@ class CommentReplied extends BaseEvent
     }
 
     /**
-     * @param array $args
+     * @param  array  $args
      * @param $eventName
      * @return array
      */
@@ -40,7 +41,7 @@ class CommentReplied extends BaseEvent
     }
 
     /**
-     * @param array $args
+     * @param  array  $args
      * @return Collection|null
      */
     public static function getRecipients(array $args): ?Collection

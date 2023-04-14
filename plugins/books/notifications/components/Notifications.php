@@ -59,7 +59,7 @@ class Notifications extends ComponentBase
      */
     public function onMarkAllNotificationsAsRead()
     {
-        if (!Auth::getUser()) {
+        if (! Auth::getUser()) {
             return;
         }
 
@@ -86,7 +86,7 @@ class Notifications extends ComponentBase
      */
     protected function prepareVars(): void
     {
-        if (!Auth::getUser()) {
+        if (! Auth::getUser()) {
             return;
         }
 
@@ -98,7 +98,7 @@ class Notifications extends ComponentBase
         $this->page['notifications'] = $this->service->getNotifications(
             Auth::getUser()->profile,
             request()->input('type', 'all'),
-            (int)$this->property('recordsPerPage', 16)
+            (int) $this->property('recordsPerPage', 16)
         );
     }
 }

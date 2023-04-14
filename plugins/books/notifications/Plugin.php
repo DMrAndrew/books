@@ -2,7 +2,6 @@
 
 namespace Books\Notifications;
 
-use Backend;
 use Books\Notifications\Classes\Actions\StoreDatabaseAction;
 use Books\Notifications\Classes\Behaviors\NotificationsModel;
 use Books\Notifications\Classes\Contracts\NotificationService as NotificationServiceContract;
@@ -112,14 +111,14 @@ class Plugin extends PluginBase
      */
     protected function bindNotificationEvents(): void
     {
-        if (!class_exists(Notifier::class)) {
+        if (! class_exists(Notifier::class)) {
             return;
         }
 
         Notifier::bindEvents([
             'books.book::book.created' => BookCreated::class,
-//            'books.book::book.updated' => TestEvent::class,
-//            'books.book::book.completed' => TestEvent::class,
+            //            'books.book::book.updated' => TestEvent::class,
+            //            'books.book::book.completed' => TestEvent::class,
             'books.book::author.invited' => AuthorInvited::class,
             'books.book::author.accepted' => AuthorAccepted::class,
             'books.comments::comment.created' => CommentCreated::class,
@@ -132,7 +131,7 @@ class Plugin extends PluginBase
      */
     protected function extendSaveDatabaseAction(): void
     {
-        if (!class_exists(SaveDatabaseAction::class)) {
+        if (! class_exists(SaveDatabaseAction::class)) {
             return;
         }
 

@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 class CommentCreated extends BaseEvent
 {
     public string $eventName = 'Комментарий к книге';
+
     public string $eventDescription = 'Пользователь оставил комментарий к книге автора.';
 
     /**
@@ -24,7 +25,7 @@ class CommentCreated extends BaseEvent
     }
 
     /**
-     * @param array $args
+     * @param  array  $args
      * @param $eventName
      * @return array
      */
@@ -40,7 +41,7 @@ class CommentCreated extends BaseEvent
     }
 
     /**
-     * @param array $args
+     * @param  array  $args
      * @return Collection|null
      */
     public static function getRecipients(array $args): ?Collection
