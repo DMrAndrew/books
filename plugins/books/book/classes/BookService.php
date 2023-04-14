@@ -259,8 +259,6 @@ class BookService
 
     protected function attachProfile(Profile $profile, array $pivot = []): void
     {
-        Event::fire('books.book::author.invited', [$profile, Auth::getUser()?->profile]);
-
         $this->proxy()->profiles()
             ->add($profile, $this->getSessionKey(),
                 array_replace([
@@ -268,6 +266,12 @@ class BookService
                     Author::PROFILE_ID => $profile->id,
                     Author::IS_OWNER => false], $pivot)
             );
+
+        // TODO: костыль
+        Event::fire('books.book::author.invited', [
+            $this->getProfiles()->where('profile_id', '!=', Auth::getUser()?->profile?->id),
+            Auth::getUser()?->profile,
+        ]);
     }
 
     public function getAuthors(): Collection
