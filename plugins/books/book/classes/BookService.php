@@ -13,7 +13,6 @@ use Books\Profile\Models\Profile;
 use Db;
 use Event;
 use Illuminate\Support\Collection;
-use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Session;
 use System\Models\File;
@@ -201,7 +200,7 @@ class BookService
             ->authors()
             ->get()
             ->diff($authors)
-            ->each(static fn(Author $author) => Event::fire('books.book::author.invited', [$author]));
+            ->each(static fn (Author $author) => Event::fire('books.book::author.invited', [$author]));
 
         return $this->book;
     }

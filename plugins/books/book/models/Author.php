@@ -9,8 +9,6 @@ use October\Rain\Database\Relations\BelongsTo;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
-use October\Rain\Support\Facades\Event;
-use RainLab\User\Facades\Auth;
 
 /**
  * Author Model
