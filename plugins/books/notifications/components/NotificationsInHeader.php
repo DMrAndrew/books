@@ -2,11 +2,17 @@
 
 namespace Books\Notifications\Components;
 
+use Books\Notifications\Classes\Contracts\NotificationService;
+use Books\Notifications\Classes\NotificationHandlers;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 
 class NotificationsInHeader extends ComponentBase
 {
+    use NotificationHandlers;
+
+    protected NotificationService $service;
+
     /**
      * @return string[]
      */
@@ -27,9 +33,17 @@ class NotificationsInHeader extends ComponentBase
             'recordsPerView' => [
                 'title' => 'Уведомлений на колокольчике',
                 'comment' => 'Количество уведомлений отображаемых при наведении на колокольчик',
-                'default' => 4,
+                'default' => 11,
             ],
         ];
+    }
+
+    /**
+     * @return void
+     */
+    public function init(): void
+    {
+        $this->service = app(NotificationService::class);
     }
 
     public function onRun(): void
@@ -38,6 +52,10 @@ class NotificationsInHeader extends ComponentBase
             return;
         }
 
-        // TODO: получаем не прочитанные уведомления + счетчик сколько всего не прочитано
+        $this->page['unreadNotifications'] = $this->service->getCountUnreadNotifications(Auth::getUser()->profile);
+        $this->page['headerNotifications'] = $this->service->getUnreadNotifications(
+            Auth::getUser()->profile,
+            (int)$this->property('recordsPerView', 11)
+        );
     }
 }

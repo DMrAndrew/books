@@ -1,0 +1,3 @@
+<div class="notification-menu__text notification-menu__content-wrapper">
+    <a href="{{ 'author_page' | page({profile_id: author.profile.id}) }}" class="ui-link _violet">{{ author.profile.username }}</a> принял соавторство в книге "<a href="{{ 'book-card' | page({book_id: book.id}) }}" class="ui-link _violet">{{ book.title }}</a>"
+</div>

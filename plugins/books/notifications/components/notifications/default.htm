@@ -1,0 +1,18 @@
+<div class="ui-tabs">
+    <div class="ui-tabs-header">
+        <div class="ui-tabs-line"></div>
+
+        <div class="tabs_list">
+            {% partial __SELF__ ~ '::tabs' %}
+        </div>
+    </div>
+    <div class="ui-tabs-body _field">
+        <div class="ui-tabs-content active">
+            {% partial __SELF__ ~ '::buttons' %}
+
+            <div class="notifications_list" style="margin-top: 16px">
+                {% partial __SELF__ ~ '::notifications' notifications = notifications %}
+            </div>
+        </div>
+    </div>
+</div>

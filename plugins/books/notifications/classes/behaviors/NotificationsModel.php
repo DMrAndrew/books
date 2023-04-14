@@ -8,7 +8,10 @@ use RainLab\Notify\Models\Notification;
 
 class NotificationsModel extends ExtensionBase
 {
-    public function __construct(protected Model $model)
+    /**
+     * @param Model $model
+     */
+    public function __construct(protected $model)
     {
         $this->model->morphMany['notifications'] = [
             Notification::class,

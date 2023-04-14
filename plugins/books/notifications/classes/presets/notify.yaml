@@ -1,0 +1,33 @@
+# ===================================
+#  Event Presets
+# ===================================
+
+book_created:
+    name: Публикация книги
+    event: Books\Notifications\Classes\Events\BookCreated
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+
+comment_created:
+    name: Комментарий к книге
+    event: Books\Notifications\Classes\Events\CommentCreated
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+
+comment_replied:
+    name: Ответ на комментарий
+    event: Books\Notifications\Classes\Events\CommentReplied
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+
+author_invited:
+    name: Соавторство
+    event: Books\Notifications\Classes\Events\AuthorInvited
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+
+author_accepted:
+    name: Принять соавторство
+    event: Books\Notifications\Classes\Events\AuthorAccepted
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction

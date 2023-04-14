@@ -3,13 +3,20 @@
 namespace Books\Notifications;
 
 use Backend;
+use Books\Notifications\Classes\Actions\StoreDatabaseAction;
 use Books\Notifications\Classes\Behaviors\NotificationsModel;
-use Books\Notifications\Classes\Conditions\SettingsIsEnabled;
-use Books\Notifications\Classes\Events\TestEvent;
+use Books\Notifications\Classes\Contracts\NotificationService as NotificationServiceContract;
+use Books\Notifications\Classes\Events\AuthorAccepted;
+use Books\Notifications\Classes\Events\AuthorInvited;
+use Books\Notifications\Classes\Events\BookCreated;
+use Books\Notifications\Classes\Events\CommentCreated;
+use Books\Notifications\Classes\Events\CommentReplied;
+use Books\Notifications\Classes\Services\NotificationService;
+use Books\Notifications\Components\Notifications;
+use Books\Notifications\Components\NotificationsInHeader;
 use Books\Profile\Models\Profile;
 use RainLab\Notify\Classes\Notifier;
 use RainLab\Notify\NotifyRules\SaveDatabaseAction;
-use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
@@ -46,7 +53,7 @@ class Plugin extends PluginBase
      */
     public function register(): void
     {
-        //
+        $this->app->bind(NotificationServiceContract::class, NotificationService::class);
     }
 
     /**
@@ -69,16 +76,15 @@ class Plugin extends PluginBase
     public function registerNotificationRules(): array
     {
         return [
-            'events' => [
-                // TODO: создать эвенты
-                TestEvent::class,
-            ],
             'actions' => [
-                // TODO: создать экшены
+                StoreDatabaseAction::class,
             ],
-            'conditions' => [
-                // TODO: проверить нужно ли оно
-                SettingsIsEnabled::class,
+            'events' => [
+                BookCreated::class,
+                AuthorInvited::class,
+                AuthorAccepted::class,
+                CommentCreated::class,
+                CommentReplied::class,
             ],
             'groups' => [
                 'user' => [
@@ -86,18 +92,18 @@ class Plugin extends PluginBase
                     'icon' => 'icon-user',
                 ],
             ],
-            // TODO: подготовить пресеты
-            'presets' => '$/books/notifications/classes/presets/test.yaml',
+            'presets' => '$/books/notifications/classes/presets/notify.yaml',
         ];
     }
 
     /**
-     * registerComponents used by the frontend.
+     * @return string[]
      */
     public function registerComponents(): array
     {
         return [
-            // TODO: компонент для шапки + для страницы уведомлений
+            Notifications::class => 'Notifications',
+            NotificationsInHeader::class => 'NotificationsInHeader',
         ];
     }
 
@@ -110,16 +116,14 @@ class Plugin extends PluginBase
             return;
         }
 
-        Notifier::instance()->registerCallback(function ($manager) {
-            $manager->registerGlobalParams([
-                'user' => Auth::getUser(),
-                'profile' => Auth::getUser()->profile,
-            ]);
-        });
-
-        // TODO: забиндить эвенты
         Notifier::bindEvents([
-            'test.events' => TestEvent::class,
+            'books.book::book.created' => BookCreated::class,
+//            'books.book::book.updated' => TestEvent::class,
+//            'books.book::book.completed' => TestEvent::class,
+            'books.book::author.invited' => AuthorInvited::class,
+            'books.book::author.accepted' => AuthorAccepted::class,
+            'books.comments::comment.created' => CommentCreated::class,
+            'books.comments::comment.replied' => CommentReplied::class,
         ]);
     }
 
@@ -141,7 +145,7 @@ class Plugin extends PluginBase
             ]);
 
             $action->addTableDefinition([
-                'label' => 'Аккаунт',
+                'label' => 'Профиль',
                 'class' => Profile::class,
                 'relation' => 'notifications',
                 'param' => 'profile',
