@@ -13,6 +13,7 @@ use Books\Profile\Models\Profile;
 use Db;
 use Event;
 use Illuminate\Support\Collection;
+use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Session;
 use System\Models\File;
@@ -258,6 +259,8 @@ class BookService
 
     protected function attachProfile(Profile $profile, array $pivot = []): void
     {
+        Event::fire('books.book::author.invited', [$profile, Auth::getUser()?->profile]);
+
         $this->proxy()->profiles()
             ->add($profile, $this->getSessionKey(),
                 array_replace([

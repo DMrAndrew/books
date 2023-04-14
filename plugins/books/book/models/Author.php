@@ -61,16 +61,6 @@ class Author extends Model
         'profile' => [Profile::class, 'key' => 'profile_id', 'otherKey' => 'id'],
     ];
 
-    /**
-     * @return void
-     */
-    public function afterCreate(): void
-    {
-        if (!$this->is_owner) {
-            Event::fire('books.book::author.invited', [$this, Auth::getUser()?->profile]);
-        }
-    }
-
     public function scopeOwner(Builder $builder, $value = true): Builder
     {
         return $builder->when(is_bool($value), fn ($b) => $b->where('is_owner', '=', $value));
