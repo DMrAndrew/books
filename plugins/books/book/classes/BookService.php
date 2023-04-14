@@ -269,7 +269,7 @@ class BookService
 
         // TODO: костыль
         Event::fire('books.book::author.invited', [
-            $this->getProfiles()->where('profile_id', '!=', Auth::getUser()?->profile?->id),
+            $this->getProfiles()->firstWhere('profile_id', $profile->id),
             Auth::getUser()?->profile,
         ]);
     }
