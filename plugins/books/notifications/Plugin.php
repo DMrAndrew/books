@@ -3,9 +3,21 @@
 namespace Books\Notifications;
 
 use Backend;
-use Books\Notifications\Classes\Conditions\SettingsIsEnabled;
-use Books\Notifications\Classes\Events\TestEvent;
+use Books\Notifications\Classes\Actions\StoreDatabaseAction;
+use Books\Notifications\Classes\Behaviors\NotificationsModel;
+use Books\Notifications\Classes\Contracts\NotificationService as NotificationServiceContract;
+use Books\Notifications\Classes\Events\AuthorAccepted;
+use Books\Notifications\Classes\Events\AuthorInvited;
+use Books\Notifications\Classes\Events\BookCreated;
+use Books\Notifications\Classes\Events\CommentCreated;
+use Books\Notifications\Classes\Events\CommentReplied;
+use Books\Notifications\Classes\Services\NotificationService;
+use Books\Notifications\Components\Notifications;
+use Books\Notifications\Components\NotificationsInHeader;
+use Books\Profile\Models\Profile;
 use RainLab\Notify\Classes\Notifier;
+use RainLab\Notify\NotifyRules\SaveDatabaseAction;
+use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
 /**
@@ -15,10 +27,18 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
+    public $require = [
+        'Books.User',
+        'Books.Profile',
+        'Books.Book',
+        'Books.Comments',
+        'RainLab.Notify',
+    ];
+
     /**
      * pluginDetails about this plugin.
      */
-    public function pluginDetails()
+    public function pluginDetails(): array
     {
         return [
             'name' => 'Notifications',
@@ -31,21 +51,40 @@ class Plugin extends PluginBase
     /**
      * register method, called when the plugin is first registered.
      */
-    public function register()
+    public function register(): void
     {
-        //
+        $this->app->bind(NotificationServiceContract::class, NotificationService::class);
     }
 
-    public function registerNotificationRules()
+    /**
+     * boot method, called right before the request route.
+     */
+    public function boot(): void
+    {
+        $this->extendModels();
+
+        /*
+         * Compatability with RainLab.Notify
+         */
+        $this->bindNotificationEvents();
+        $this->extendSaveDatabaseAction();
+    }
+
+    /**
+     * @return array
+     */
+    public function registerNotificationRules(): array
     {
         return [
-            'events' => [
-                TestEvent::class,
-            ],
             'actions' => [
+                StoreDatabaseAction::class,
             ],
-            'conditions' => [
-                SettingsIsEnabled::class,
+            'events' => [
+                BookCreated::class,
+                AuthorInvited::class,
+                AuthorAccepted::class,
+                CommentCreated::class,
+                CommentReplied::class,
             ],
             'groups' => [
                 'user' => [
@@ -53,62 +92,78 @@ class Plugin extends PluginBase
                     'icon' => 'icon-user',
                 ],
             ],
-            'presets' => '$/books/notifications/classes/presets/test.yaml',
+            'presets' => '$/books/notifications/classes/presets/notify.yaml',
         ];
     }
 
     /**
-     * boot method, called right before the request route.
+     * @return string[]
      */
-    public function boot()
+    public function registerComponents(): array
     {
+        return [
+            Notifications::class => 'Notifications',
+            NotificationsInHeader::class => 'NotificationsInHeader',
+        ];
+    }
+
+    /**
+     * @return void
+     */
+    protected function bindNotificationEvents(): void
+    {
+        if (!class_exists(Notifier::class)) {
+            return;
+        }
+
         Notifier::bindEvents([
-            'test.events' => TestEvent::class,
+            'books.book::book.created' => BookCreated::class,
+//            'books.book::book.updated' => TestEvent::class,
+//            'books.book::book.completed' => TestEvent::class,
+            'books.book::author.invited' => AuthorInvited::class,
+            'books.book::author.accepted' => AuthorAccepted::class,
+            'books.comments::comment.created' => CommentCreated::class,
+            'books.comments::comment.replied' => CommentReplied::class,
         ]);
     }
 
     /**
-     * registerComponents used by the frontend.
+     * @return void
      */
-    public function registerComponents()
+    protected function extendSaveDatabaseAction(): void
     {
-        return []; // Remove this line to activate
+        if (!class_exists(SaveDatabaseAction::class)) {
+            return;
+        }
 
-        return [
-            'Books\Notifications\Components\MyComponent' => 'myComponent',
-        ];
+        SaveDatabaseAction::extend(static function (SaveDatabaseAction $action) {
+            $action->addTableDefinition([
+                'label' => 'Аккаунт',
+                'class' => User::class,
+                'relation' => 'notifications',
+                'param' => 'user',
+            ]);
+
+            $action->addTableDefinition([
+                'label' => 'Профиль',
+                'class' => Profile::class,
+                'relation' => 'notifications',
+                'param' => 'profile',
+            ]);
+        });
     }
 
     /**
-     * registerPermissions used by the backend.
+     * @return void
      */
-    public function registerPermissions()
+    protected function extendModels(): void
     {
-        return []; // Remove this line to activate
+        User::extend(static function (User $model): void {
+            $model->implementClassWith(NotificationsModel::class);
+        });
 
-        return [
-            'books.notifications.some_permission' => [
-                'tab' => 'Notifications',
-                'label' => 'Some permission',
-            ],
-        ];
-    }
-
-    /**
-     * registerNavigation used by the backend.
-     */
-    public function registerNavigation()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'notifications' => [
-                'label' => 'Notifications',
-                'url' => Backend::url('books/notifications/mycontroller'),
-                'icon' => 'icon-leaf',
-                'permissions' => ['books.notifications.*'],
-                'order' => 500,
-            ],
-        ];
+        Profile::extend(static function (Profile $model): void {
+            $model->implementClassWith(NotificationsModel::class);
+        });
     }
 }

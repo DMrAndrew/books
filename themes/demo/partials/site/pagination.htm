@@ -1,0 +1,23 @@
+{% if records.hasPages %}
+    <nav class="notifications-page__pagination ui-pagination">
+        <ul class="ui-pagination-list">
+            {% if records.currentPage > 1 %}
+                <li><a class="ui-pagination-item" href="{{ records.previousPageUrl }}" rel="prev">Назад</a></li>
+            {% else %}
+                <li><a class="ui-pagination-item disabled" href="javascript:" rel="prev">Назад</a></li>
+            {% endif %}
+
+            {% for page in range(1, records.lastPage) %}
+                <li>
+                    <a href="{{ records.url(page) }}" class="ui-pagination-item {% if page == records.currentPage %}active{% endif %}">{{ page }}</a>
+                </li>
+            {% endfor %}
+
+            {% if records.hasMorePages %}
+                <li><a class="ui-pagination-item" href="{{ records.nextPageUrl }}" rel="next">Вперед</a></li>
+            {% else %}
+                <li><a class="ui-pagination-item disabled" href="javascript:" rel="next">Вперед</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

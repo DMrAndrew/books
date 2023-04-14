@@ -10,6 +10,7 @@ use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\SimpleTree;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
+use October\Rain\Support\Facades\Event;
 use WordForm;
 
 /**
@@ -47,6 +48,22 @@ class Comment extends Model
     protected static function booted()
     {
         static::addGlobalScope('orderByDesc', fn ($q) => $q->orderByDesc('id'));
+    }
+
+    /**
+     * @return void
+     */
+    public function afterCreate(): void
+    {
+        // не ответ на чужой комментарий и комментарий к книге
+        if (empty($this->parent_id) && get_class($this->commentable) === Book::class) {
+            Event::fire('books.comments::comment.created', [$this]);
+        }
+
+        // ответ на комментарий, неважно в профиле или книге
+        if ($this->parent_id) {
+            Event::fire('books.comments::comment.replied', [$this]);
+        }
     }
 
     public function isEdited(): bool

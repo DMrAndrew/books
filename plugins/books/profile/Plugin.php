@@ -30,7 +30,9 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User'];
+    public $require = [
+        'RainLab.User',
+    ];
 
     /**
      * Returns information about this plugin.
@@ -52,7 +54,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         Event::listen('books.profile.username.modify.requested', fn($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
     }
@@ -62,7 +64,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         AliasLoader::getInstance()->alias('Profile', ProfileModel::class);
         AliasLoader::getInstance()->alias('Profiler', Profiler::class);
@@ -134,7 +136,7 @@ class Plugin extends PluginBase
      *
      * @return array
      */
-    public function registerComponents()
+    public function registerComponents(): array
     {
         return [
             Profile::class => 'profile',
@@ -143,43 +145,6 @@ class Plugin extends PluginBase
             NotificationLC::class => 'notificationLC',
             AuthorSpace::class => 'author_space',
             Subs::class => 'subs',
-        ];
-    }
-
-    /**
-     * Registers any backend permissions used by this plugin.
-     *
-     * @return array
-     */
-    public function registerPermissions()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'books.profile.some_permission' => [
-                'tab' => 'Profile',
-                'label' => 'Some permission',
-            ],
-        ];
-    }
-
-    /**
-     * Registers backend navigation items for this plugin.
-     *
-     * @return array
-     */
-    public function registerNavigation()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'profile' => [
-                'label' => 'Profile',
-                'url' => Backend::url('books/profile/mycontroller'),
-                'icon' => 'icon-leaf',
-                'permissions' => ['books.profile.*'],
-                'order' => 500,
-            ],
         ];
     }
 }

@@ -9,6 +9,8 @@ use October\Rain\Database\Relations\BelongsTo;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
+use October\Rain\Support\Facades\Event;
+use RainLab\User\Facades\Auth;
 
 /**
  * Author Model
@@ -58,6 +60,16 @@ class Author extends Model
         'book' => [Book::class, 'key' => 'book_id', 'otherKey' => 'id'],
         'profile' => [Profile::class, 'key' => 'profile_id', 'otherKey' => 'id'],
     ];
+
+    /**
+     * @return void
+     */
+    public function afterCreate(): void
+    {
+        if (!$this->is_owner) {
+            Event::fire('books.book::author.invited', [$this, Auth::getUser()?->profile]);
+        }
+    }
 
     public function scopeOwner(Builder $builder, $value = true): Builder
     {

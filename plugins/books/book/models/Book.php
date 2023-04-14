@@ -12,7 +12,6 @@ use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
-use Event;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
 use October\Rain\Database\Builder;
@@ -24,7 +23,7 @@ use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Relations\HasOne;
 use October\Rain\Database\Relations\HasOneThrough;
 use October\Rain\Database\Traits\Validation;
-use RainLab\Notify\Models\Notification;
+use October\Rain\Support\Facades\Event;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
@@ -198,10 +197,9 @@ class Book extends Model
 
     public $morphMany = [
         'notifications' => [
-            Notification::class,
+            \RainLab\Notify\Models\Notification::class,
             'name' => 'notifiable',
-        ],
-
+        ]
     ];
 
     public $attachOne = [
@@ -263,11 +261,6 @@ class Book extends Model
             [$this, 'editions'],
             [new Edition(), 'chapters']
         );
-    }
-
-    public function testEvent(): void
-    {
-        Event::fire('test.events', [$this]);
     }
 
     public function isAuthor(Profile $profile)
@@ -434,11 +427,16 @@ class Book extends Model
         };
     }
 
-    protected function afterCreate()
+    /**
+     * @return void
+     */
+    protected function afterCreate(): void
     {
         $this->setDefaultCover();
         $this->setDefaultEdition();
         $this->stats()->add(new Stats());
+
+        Event::fire('books.book::book.created', [$this]);
     }
 
     public function createEventHandler()

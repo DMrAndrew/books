@@ -1,8 +1,0 @@
-test:
-    name: test
-    event: Books\Notifications\Classes\Events\TestEvent
-    items:
-        -   action: Books\Notifications\Classes\Actions\TestAction
-    conditions:
-        -   condition: Books\Notifications\Classes\Conditions\SettingsIsEnabled
-
