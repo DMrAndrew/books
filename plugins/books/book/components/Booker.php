@@ -178,7 +178,7 @@ class Booker extends ComponentBase
 
     public function getCycles()
     {
-        return $this->user?->profile->cycles->toArray() ?? [];
+        return $this->user?->profile->cyclesWithAvailableCoAuthorsCycles()->toArray() ?? [];
     }
 
     public function onSearchTag()
@@ -282,7 +282,7 @@ class Booker extends ComponentBase
     {
         try {
             if ($this->service->getProfiles()->count() > 2) {
-                throw new ValidationException(['authors' => 'Вы можете добавить до 3 соавторов.']);
+                throw new ValidationException(['authors' => 'Вы можете добавить до 2 соавторов.']);
             }
             if ($profile = Profile::find(post('item')['id'] ?? null)) {
                 $this->service->addProfile($profile);

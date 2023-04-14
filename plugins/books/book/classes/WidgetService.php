@@ -328,6 +328,6 @@ class WidgetService
 
     public function cycle()
     {
-        return $this->book->cycle?->books()->defaultEager()->get() ?? collect();
+        return $this->book->cycle?->books()->public()->defaultEager()->get() ?? collect();
     }
 }

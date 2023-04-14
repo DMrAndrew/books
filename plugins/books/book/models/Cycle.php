@@ -6,6 +6,7 @@ use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
+use Staudenmeir\EloquentHasManyDeep\HasTableAlias;
 
 /**
  * Cycle Model
@@ -15,6 +16,7 @@ use RainLab\User\Models\User;
 class Cycle extends Model
 {
     use Validation;
+    use HasTableAlias;
 
     /**
      * @var string table associated with the model

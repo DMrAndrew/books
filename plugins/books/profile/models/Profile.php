@@ -6,6 +6,7 @@ use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
 use Books\Profile\Classes\ProfileService;
+use Books\Profile\Classes\SlaveScope;
 use Books\Profile\Factories\ProfileFactory;
 use Books\Profile\Traits\Subscribable;
 use Books\User\Classes\PrivacySettingsEnum;
@@ -22,6 +23,8 @@ use October\Rain\Database\Traits\Validation;
 use October\Rain\Resize\Resizer;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
+use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
 use System\Models\Revision;
 use ValidationException;
@@ -43,6 +46,7 @@ class Profile extends Model
     use Revisionable;
     use Subscribable;
     use HasFactory;
+    use HasRelationships;
 
     const MAX_USER_PROFILES_COUNT = 5;
 
@@ -175,6 +179,19 @@ class Profile extends Model
 //        (new Resizer())->resize(1152, 160)->save();
 
         return new ProfileService($this);
+    }
+
+    public function existsInBookCycles(): HasManyDeep
+    {
+        return $this->hasManyDeepFromRelations(
+            $this->books(),
+            (new Book())->cycle(),
+        )->withoutGlobalScope(new SlaveScope());
+    }
+
+    public function cyclesWithAvailableCoAuthorsCycles()
+    {
+        return $this->cycles()->get()->concat($this->existsInBookCycles()->get())->unique();
     }
 
     public function isCommentAllowed(?Profile $profile = null)

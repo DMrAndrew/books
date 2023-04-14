@@ -263,7 +263,9 @@ class BookService
                 array_replace([
                     Author::PERCENT => 0,
                     Author::PROFILE_ID => $profile->id,
-                    Author::IS_OWNER => false], $pivot)
+                    Author::IS_OWNER => false,
+                    Author::ACCEPTED => 0,
+                ], $pivot)
             );
     }
 
