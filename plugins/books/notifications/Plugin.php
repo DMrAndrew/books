@@ -7,7 +7,10 @@ use Books\Notifications\Classes\Behaviors\NotificationsModel;
 use Books\Notifications\Classes\Contracts\NotificationService as NotificationServiceContract;
 use Books\Notifications\Classes\Events\AuthorAccepted;
 use Books\Notifications\Classes\Events\AuthorInvited;
+use Books\Notifications\Classes\Events\BookCompleted;
 use Books\Notifications\Classes\Events\BookCreated;
+use Books\Notifications\Classes\Events\BookSelling;
+use Books\Notifications\Classes\Events\BookSellingSubs;
 use Books\Notifications\Classes\Events\CommentCreated;
 use Books\Notifications\Classes\Events\CommentReplied;
 use Books\Notifications\Classes\Services\NotificationService;
@@ -80,6 +83,9 @@ class Plugin extends PluginBase
             ],
             'events' => [
                 BookCreated::class,
+                BookCompleted::class,
+                BookSelling::class,
+                BookSellingSubs::class,
                 AuthorInvited::class,
                 AuthorAccepted::class,
                 CommentCreated::class,
@@ -117,8 +123,10 @@ class Plugin extends PluginBase
 
         Notifier::bindEvents([
             'books.book::book.created' => BookCreated::class,
-            //            'books.book::book.updated' => TestEvent::class,
-            //            'books.book::book.completed' => TestEvent::class,
+//            'books.book::book.updated' => TestEvent::class,
+            'books.book::book.completed' => BookCompleted::class,
+            'books.book::book.selling.full' => BookSelling::class,
+            'books.book::book.selling.subs' => BookSellingSubs::class,
             'books.book::author.invited' => AuthorInvited::class,
             'books.book::author.accepted' => AuthorAccepted::class,
             'books.comments::comment.created' => CommentCreated::class,

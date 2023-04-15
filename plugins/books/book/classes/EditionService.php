@@ -33,6 +33,15 @@ class EditionService
             Event::fire('books.book::book.created', [$this->edition->book]);
         }
 
+        // у электронной книги статус "В работе" перешел в "Завершена"
+        if (
+            $this->edition->isDirty(['status']) &&
+            $this->edition->getOriginal('status') === BookStatus::WORKING &&
+            $data->get('status') === BookStatus::COMPLETE
+        ) {
+            Event::fire('books.book::book.completed', [$this->edition->book]);
+        }
+
         if ($this->edition->isDirty(['status']) && ! in_array($this->edition->status, $this->edition->getAllowedStatusCases())) {
             throw new ValidationException(['status' => 'В данный момент Вы не можете перевести издание в этот статус.']);
         }
@@ -49,7 +58,15 @@ class EditionService
             && ($data->get('sales_free') == 'on' || ($data->has('price') && $data->has('free_parts')))
         ) {
             $this->edition->setPublishAt();
+
+            // если на момент старта продаж, книга "В работе" значит подписка, если "Завершено" значит продажа
+            if ($data->get('status') === BookStatus::WORKING) {
+                Event::fire('books.book::book.selling.subs', [$this->edition->book]);
+            } elseif ($data->get('status') === BookStatus::COMPLETE) {
+                Event::fire('books.book::book.selling.full', [$this->edition->book]);
+            }
         }
+
         $this->edition->save();
         Event::fire('books.edition.updated', [$this->edition]);
     }

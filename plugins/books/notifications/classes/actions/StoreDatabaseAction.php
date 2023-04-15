@@ -58,7 +58,7 @@ class StoreDatabaseAction extends SaveDatabaseAction
         }
 
         $recipients
-            ->each(fn (Model $recipient) => $recipient
+            ->each(fn ($recipient) => $recipient
                 ->notifications()
                 ->create([
                     'id' => Uuid::uuid4()->toString(),
@@ -110,10 +110,10 @@ class StoreDatabaseAction extends SaveDatabaseAction
 
     /**
      * @param  array  $params
-     * @param  Model  $recipient
+     * @param  $recipient
      * @return array
      */
-    protected function getPrepareData(array $params, Model $recipient): array
+    protected function getPrepareData(array $params, $recipient): array
     {
         // удалим информацию о всех получателях
         Arr::forget($params, 'recipients');
