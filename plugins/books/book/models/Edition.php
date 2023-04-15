@@ -37,6 +37,8 @@ class Edition extends Model
     use SoftDelete;
     use Revisionable;
 
+    const UPDATE_CHUNK_LENGTH = 5000;
+
     /**
      * @var string table name
      */
@@ -119,14 +121,16 @@ class Edition extends Model
             ->where('field', '=', 'length')
             ->get()
             ->chunkWhile(function ($value, $key, $chunk) {
-                return ((int) $chunk->sum('new_value') - (int) $chunk->sum('old_value')) <= 5000;
-            })->map(function ($collection) {
+                return (int) $chunk->sum('odds') <= self::UPDATE_CHUNK_LENGTH;
+            })
+            ->filter(fn ($i) => $i->sum('odds') > self::UPDATE_CHUNK_LENGTH)->map(function ($collection) {
                 return [
                     'date' => $collection->last()->created_at,
-                    'value' => (int) $collection->last()->new_value - (int) $collection->first()->old_value,
+                    'value' => (int) $collection->sum('odds'),
                     'new_value' => (int) $collection->last()->new_value,
                 ];
-            })->filter(fn ($i) => (int) $i['value'] > 0)->reverse();
+            })
+            ->reverse();
 
         $count = $items->count();
         $days = $count ? CarbonPeriod::create($items->last()['date'], $items->first()['date'])->count() : 0;

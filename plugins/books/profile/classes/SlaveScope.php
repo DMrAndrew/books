@@ -11,8 +11,8 @@ use RainLab\User\Models\User;
 class SlaveScope implements Scope
 {
     /**
-     * @param Builder $builder
-     * @param Model $model
+     * @param  Builder  $builder
+     * @param  Model  $model
      * @return void
      */
     public function apply(Builder $builder, Model $model): void
@@ -31,7 +31,7 @@ class SlaveScope implements Scope
     }
 
     /**
-     * @param Builder $builder
+     * @param  Builder  $builder
      * @return mixed
      */
     private function getQueryProfile(Builder $builder): mixed
@@ -47,7 +47,7 @@ class SlaveScope implements Scope
     }
 
     /**
-     * @param Builder $builder
+     * @param  Builder  $builder
      * @return mixed
      */
     private function getQueryUser(Builder $builder): mixed
