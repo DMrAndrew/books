@@ -8,6 +8,24 @@ book_created:
     items:
         - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
 
+book_completed:
+    name: Завершение книги
+    event: Books\Notifications\Classes\Events\BookCompleted
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+
+book_selling:
+    name: Продажа
+    event: Books\Notifications\Classes\Events\BookSelling
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+
+book_selling_subs:
+    name: Подписка
+    event: Books\Notifications\Classes\Events\BookSellingSubs
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+
 comment_created:
     name: Комментарий к книге
     event: Books\Notifications\Classes\Events\CommentCreated
