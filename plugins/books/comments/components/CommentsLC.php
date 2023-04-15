@@ -44,12 +44,12 @@ class CommentsLC extends ComponentBase
     public function getCommentsList()
     {
         //TODO EagerLoad
-        return $this->user->comments()->with('commentable')->get();
+        return $this->user->profile->leftComments()->orderBy('updated_at', 'desc')->get();
     }
 
     public function onRemove()
     {
-        if ($comment = $this->user->comments()->find(post('id'))) {
+        if ($comment = $this->user->profile->leftComments()->find(post('id'))) {
             $comment->commentable->deleteComment($comment);
         }
 
