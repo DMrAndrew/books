@@ -5,6 +5,7 @@ namespace Books\Profile\Models;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
+use Books\Comments\Models\Comment;
 use Books\Profile\Classes\ProfileService;
 use Books\Profile\Classes\SlaveScope;
 use Books\Profile\Factories\ProfileFactory;
@@ -20,7 +21,6 @@ use October\Rain\Database\Relations\BelongsToMany;
 use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\Validation;
-use October\Rain\Resize\Resizer;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
@@ -176,9 +176,13 @@ class Profile extends Model
 
     public function service(): ProfileService
     {
-//        (new Resizer())->resize(1152, 160)->save();
-
         return new ProfileService($this);
+    }
+
+    public function leftComments(): BelongsToMany
+    {
+        return $this->belongsToMany(Comment::class, (new Profiler())->getTable(), 'master_id', 'slave_id')
+            ->where('master_type', static::class)->where('slave_type', Comment::class);
     }
 
     public function existsInBookCycles(): HasManyDeep

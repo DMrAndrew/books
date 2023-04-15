@@ -2,7 +2,6 @@
 
 namespace Books\Profile\Classes;
 
-use Books\Book\Models\Chapter;
 use Books\Profile\Models\Profile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -12,14 +11,13 @@ use RainLab\User\Models\User;
 class SlaveScope implements Scope
 {
     /**
-     * @param Builder $builder
-     * @param Model $model
+     * @param  Builder  $builder
+     * @param  Model  $model
      * @return void
      */
     public function apply(Builder $builder, Model $model): void
     {
-
-        if($profile = $this->getQueryProfile($builder) ?? $this->getQueryUser($builder)?->profile){
+        if ($profile = $this->getQueryProfile($builder) ?? $this->getQueryUser($builder)?->profile) {
             $builder->whereIn('id', $profile->profiler($model)->select('slave_id'))
                 ->orWhereIn('id', $profile->user->profiler($model)->select('slave_id'));
         }
@@ -37,24 +35,28 @@ class SlaveScope implements Scope
     }
 
     /**
-     * @param Builder $builder
+     * @param  Builder  $builder
      * @return mixed
      */
     private function getQueryProfile(Builder $builder): mixed
     {
         $profile_id = null;
+        $fn = fn ($s) => str_contains($s, 'profile_id');
         foreach ($builder->getQuery()->wheres as $where) {
-            if ($where['type'] === 'Basic' && str_contains($where['column'], 'profile_id')) {
+            info($builder->getQuery()->toSql());
+            info($where);
+            if (($where['type'] === 'Basic' && $fn($where['column'])) || $fn($where['column'])) {
                 $profile_id = $where['value'];
             }
         }
 
+        info($profile_id);
+
         return Profile::find($profile_id);
     }
 
-
     /**
-     * @param Builder $builder
+     * @param  Builder  $builder
      * @return mixed
      */
     private function getQueryUser(Builder $builder): mixed

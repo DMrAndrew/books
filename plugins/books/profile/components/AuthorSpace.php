@@ -108,7 +108,7 @@ class AuthorSpace extends ComponentBase
         return [
             'can_see_comments' => $can_see_comments,
             'comments_paginator' => $can_see_comments ? CustomPaginator::fromLengthAwarePaginator(
-                $this->profile->comments()->with('commentable')->orderBy('updated_at', 'desc')->paginate(perPage: $this->perPage, page: $this->commentsCurrentPage())
+                $this->profile->leftComments()->orderBy('updated_at', 'desc')->paginate(perPage: $this->perPage, currentPage: $this->commentsCurrentPage())
             ) : collect(),
         ];
     }
