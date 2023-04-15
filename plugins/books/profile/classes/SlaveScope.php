@@ -21,10 +21,6 @@ class SlaveScope implements Scope
             $builder->whereIn('id', $profile->profiler($model)->select('slave_id'))
                 ->orWhereIn('id', $profile->user->profiler($model)->select('slave_id'));
         }
-//        if ($user = $this->getQueryUser($builder)) {
-//            $builder->whereIn('id', $user->profiler($model)->select('slave_id'))
-//                ->orWhereIn('id', $user->profile->profiler($model)->select('slave_id'));
-//        }
     }
 
     public function extend(Builder $builder)
@@ -43,14 +39,10 @@ class SlaveScope implements Scope
         $profile_id = null;
         $fn = fn ($s) => str_contains($s, 'profile_id');
         foreach ($builder->getQuery()->wheres as $where) {
-            info($builder->getQuery()->toSql());
-            info($where);
             if (($where['type'] === 'Basic' && $fn($where['column'])) || $fn($where['column'])) {
                 $profile_id = $where['value'];
             }
         }
-
-        info($profile_id);
 
         return Profile::find($profile_id);
     }

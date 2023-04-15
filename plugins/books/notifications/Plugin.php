@@ -123,7 +123,7 @@ class Plugin extends PluginBase
 
         Notifier::bindEvents([
             'books.book::book.created' => BookCreated::class,
-//            'books.book::book.updated' => TestEvent::class,
+            //            'books.book::book.updated' => TestEvent::class,
             'books.book::book.completed' => BookCompleted::class,
             'books.book::book.selling.full' => BookSelling::class,
             'books.book::book.selling.subs' => BookSellingSubs::class,

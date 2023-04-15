@@ -7,7 +7,6 @@ use Cms\Classes\Controller;
 use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Model;
 use October\Rain\Support\Facades\Twig;
 use RainLab\Notify\NotifyRules\SaveDatabaseAction;
 use Ramsey\Uuid\Uuid;
@@ -110,7 +109,7 @@ class StoreDatabaseAction extends SaveDatabaseAction
 
     /**
      * @param  array  $params
-     * @param  $recipient
+     * @param    $recipient
      * @return array
      */
     protected function getPrepareData(array $params, $recipient): array
