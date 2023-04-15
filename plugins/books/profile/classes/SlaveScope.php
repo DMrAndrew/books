@@ -11,8 +11,8 @@ use RainLab\User\Models\User;
 class SlaveScope implements Scope
 {
     /**
-     * @param  Builder  $builder
-     * @param  Model  $model
+     * @param Builder $builder
+     * @param Model $model
      * @return void
      */
     public function apply(Builder $builder, Model $model): void
@@ -31,15 +31,14 @@ class SlaveScope implements Scope
     }
 
     /**
-     * @param  Builder  $builder
+     * @param Builder $builder
      * @return mixed
      */
     private function getQueryProfile(Builder $builder): mixed
     {
         $profile_id = null;
-        $fn = fn ($s) => str_contains($s, 'profile_id');
         foreach ($builder->getQuery()->wheres as $where) {
-            if (($where['type'] === 'Basic' && $fn($where['column'])) || $fn($where['column'])) {
+            if ($where['type'] === 'Basic' && str_contains($where['column'] ?? '', 'profile_id')) {
                 $profile_id = $where['value'];
             }
         }
@@ -48,14 +47,14 @@ class SlaveScope implements Scope
     }
 
     /**
-     * @param  Builder  $builder
+     * @param Builder $builder
      * @return mixed
      */
     private function getQueryUser(Builder $builder): mixed
     {
         $user_id = null;
         foreach ($builder->getQuery()->wheres as $where) {
-            if ($where['type'] === 'Basic' && str_contains($where['column'], 'user_id')) {
+            if ($where['type'] === 'Basic' && str_contains($where['column'] ?? '', 'user_id')) {
                 $user_id = $where['value'];
             }
         }
