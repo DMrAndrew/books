@@ -139,7 +139,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                {% set last_length_update = lib.book.editions.first.revision_history.first.odds %}
+                                {% set last_length_update = lib.book.editions.first.updateHistory.first.value %}
                                 {% if last_length_update %}
                                 <div class="book-mini-card__addition">+{{last_length_update}} зн.</div>
                                 {% endif %}
