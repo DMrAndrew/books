@@ -127,7 +127,7 @@ class Chapterer extends ComponentBase
 
             $this->chapter = $this->chapterManager->setEdition($this->ebook)->from($data->toArray());
 
-            return Redirect::to('/about-book/'.$this->book->id)->withFragment('#tab-electronic');
+            return Redirect::to('/about-book/'.$this->book->id)->withFragment('#electronic');
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
             throw $ex;

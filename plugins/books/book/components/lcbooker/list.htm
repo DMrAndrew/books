@@ -4,8 +4,7 @@
         {% for authorship in authorships %}
         <li>
             <input type="hidden" name="authorships[{{authorship.id}}]" value="{{authorship.id}}"/>
-            {% ajaxPartial "bookCard::standard-card" book=authorship.book is_not_public_view=1  %}
-<!--            {% partial 'book/book' book=authorship.book is_not_public_view=1 %}-->
+            {% ajaxPartial "bookCard::standard-card" book=authorship.book is_not_public_view=1 %}
         </li>
         {% endfor %}
     </ul>
