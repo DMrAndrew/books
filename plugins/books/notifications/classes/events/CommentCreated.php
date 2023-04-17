@@ -51,6 +51,9 @@ class CommentCreated extends BaseEvent
         return $comment
             ->commentable
             ->authors
+            ->filter(static function ($author) use ($comment): bool {
+                return $author->profile->user_id !== $comment->user_id;
+            })
             ->transform(static function ($author) {
                 return $author->profile;
             });

@@ -72,7 +72,7 @@ class EditionService
             $this->edition->getOriginal('status') === BookStatus::HIDDEN &&
             in_array($data->get('status'), [BookStatus::COMPLETE, BookStatus::WORKING], true)
         ) {
-            // Event::fire('books.book::book.created', [$this->edition->book]);
+            Event::fire('books.book::book.created', [$this->edition->book]);
         }
 
         // у электронной книги статус "В работе" перешел в "Завершена"
@@ -81,7 +81,7 @@ class EditionService
             $this->edition->getOriginal('status') === BookStatus::WORKING &&
             $data->get('status') === BookStatus::COMPLETE
         ) {
-            // Event::fire('books.book::book.completed', [$this->edition->book]);
+            Event::fire('books.book::book.completed', [$this->edition->book]);
         }
 
         // у книги сменился статус и стоимость
