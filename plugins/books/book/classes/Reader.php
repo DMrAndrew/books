@@ -30,7 +30,7 @@ class Reader
         //TODO refactor
         //With Next and Prev
         $this->user ??= Auth::getUser();
-        $this->book = Book::query()->public()->withChapters()->defaultEager()->find($this->book->id)
+        $this->book = Book::query()->withChapters()->defaultEager()->find($this->book->id)
             ?? $this->user?->profile->books()->withChapters()->defaultEager()->find($this->book->id)
             ?? abort(404);
         $this->page ??= 1;
