@@ -35,7 +35,13 @@
         data-request="reader::onNext"
         data-request-data="paginator_page : {{ reader.paginator.page }}"
         data-request-complete="window.scrollTo(2, 1);"
-        class="reader__pagination-button ui-button  ui-button-size--32 cursor-pointer {{pagination.next ? 'ui-button-view--3' : 'ui-button-view--2'}}">
+        class="reader__pagination-button
+         ui-button
+           ui-button-size--32
+            cursor-pointer
+             {{pagination.read ? 'ui-button-view--2' : 'ui-button-view--3'}}
+             {{pagination.next or pagination.read ? '' : 'disabled'}}
+">
         <span>{{pagination.next ? 'Вперёд' : 'Прочитано'}}</span>
         {% if pagination.next %}
         <svg class="ui-button-icon--right square-16">

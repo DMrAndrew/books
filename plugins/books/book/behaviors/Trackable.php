@@ -17,6 +17,23 @@ class Trackable extends ExtensionBase
         $this->model->morphMany['trackers'] = [Tracker::class, 'name' => 'trackable'];
     }
 
+    public function trackTime(User $user, $time = 0, $unit = 'ms')
+    {
+        if (! $time) {
+            return null;
+        }
+        $time = (int) floor(match ($unit) {
+            'ms', 'millisecond' => $time / 1000,
+            's', 'sec', 'seconds' => $time,
+            'm', 'min', 'minutes' => $time * 60
+        });
+        $tracker = $this->model->trackByUser($user);
+        $tracker?->update(['time' => $tracker->time + $time]);
+        Event::fire('books.paginator.tracked', [$tracker]);
+
+        return $tracker;
+    }
+
     public function trackByUser(User $user): Tracker
     {
         return $this->model->trackers()->firstOrCreate(['user_id' => $user->id]);

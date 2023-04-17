@@ -2,7 +2,6 @@
 
 namespace Books\Book\Components;
 
-use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Reader as Service;
 use Books\Book\Models\Book;
@@ -96,7 +95,7 @@ class Reader extends ComponentBase
         if ($chapter = $this->service->nextChapter()) {
             return Redirect::to('/reader/'.$this->book->id.'/'.$chapter->id);
         }
-        if ($this->book->ebook->status === BookStatus::COMPLETE) {
+        if ($this->service->readBtn()) {
             $this->user->library($this->book)->read();
 
             return Redirect::to('/book-card/'.$this->book->id);

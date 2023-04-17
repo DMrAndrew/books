@@ -2,12 +2,13 @@
 
 namespace Books\Book\Classes;
 
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Exceptions\ChapterIsClosed;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
-use Event;
+use Books\Collections\classes\CollectionEnum;
 use Illuminate\Database\Eloquent\Collection;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -29,7 +30,7 @@ class Reader
         //TODO refactor
         $this->user ??= Auth::getUser();
         $this->book = Book::query()->public()->withChapters()->defaultEager()->find($this->book->id)
-            ?? $this->user?->profile->books()->find($this->book->id)
+            ?? $this->user?->profile->books()->withChapters()->defaultEager()->find($this->book->id)
             ?? abort(404);
         $this->page ??= 1;
         $this->edition = $this->book->ebook;
@@ -67,20 +68,22 @@ class Reader
 
     public function track(?int $ms, int $paginator_id)
     {
-        if (! $this->user) {
-            return null;
-        }
-
-        $sec = (int) floor(($ms ?? 0) / 1000);
         if ($paginator = $this->chapter?->pagination()->find($paginator_id)) {
-            if ($tracker = $paginator->trackByUser($this->user)) {
-                $tracker->update(['time' => $tracker->time + $sec, 'length' => $paginator->length, 'progress' => 100]);
-                Event::fire('books.paginator.tracked');
+            if ($tracker = $paginator->trackTime($this->user, $ms)) {
+                $tracker->update(['length' => $paginator->length, 'progress' => 100]);
                 $paginator->chapter->progress($this->user);
 
                 return $tracker;
             }
         }
+    }
+
+    public function readBtn(): bool
+    {
+        return ! $this->nextPage()
+            && ! $this->nextChapter()
+            && $this->book->ebook->status === BookStatus::COMPLETE
+            && ! $this->user->library($this->book)->is(CollectionEnum::READ);
     }
 
     /**
@@ -97,6 +100,7 @@ class Reader
             'pagination' => [
                 'prev' => (bool) ($this->prevPage() ?? $this->prevChapter()),
                 'next' => (bool) ($this->nextPage() ?? $this->nextChapter()),
+                'read' => $this->readBtn(),
                 'links' => $this->chapter->service()->getPaginationLinks($this->page),
             ],
             'chapters' => $this->chapters,
