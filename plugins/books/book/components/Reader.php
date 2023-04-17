@@ -6,6 +6,7 @@ use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Reader as Service;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
+use Books\Book\Models\Pagination;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -25,7 +26,7 @@ class Reader extends ComponentBase
 
     protected ?User $user;
 
-    protected Service $service;
+    protected ?Service $service = null;
 
     /**
      * componentDetails
@@ -54,20 +55,19 @@ class Reader extends ComponentBase
         $this->book = Book::query()->public()->find($this->param('book_id'))
             ?? $this->user?->profile->books()->find($this->param('book_id')) ?? abort(404);
         $this->chapter = $this->param('chapter_id') ? Chapter::find($this->param('chapter_id')) ?? abort(404) : null;
-        $this->service = new Service(
-            book: $this->book,
-            chapter: $this->chapter,
-            page: $this->getCurrentPaginatorKey(),
-            user: $this->user
-        );
-
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
     }
 
     public function onRun()
     {
-        if (! $this->service->isPageAllowed()) {
+        if (! $this->chapter) {
+            if ($paginator = $this->getLastTrackedPaginator()) {
+                return Redirect::to('/reader/'.$this->book->id.'/'.$paginator->chapter_id.'/'.$paginator->page);
+            }
+        }
+
+        if (! $this->service()->isPageAllowed()) {
             return Redirect::to('/out-of-free/'.$this->book->id.'/'.$this->chapter?->id);
         }
     }
@@ -77,9 +77,33 @@ class Reader extends ComponentBase
         $this->prepareVals();
     }
 
+    public function getLastTrackedPaginator(): ?Pagination
+    {
+        return $this->book
+            ->paginationTrackers()
+            ->user($this->user)
+            ->type(Pagination::class)
+            ->orderByUpdatedAt(asc: false)
+            ->first()?->trackable;
+    }
+
+    public function service(): Service
+    {
+        if (! $this->service) {
+            $this->service = new Service(
+                book: $this->book,
+                chapter: $this->chapter,
+                page: $this->getCurrentPaginatorKey() ?? $this->getParamPage(),
+                user: $this->user
+            );
+        }
+
+        return $this->service;
+    }
+
     public function prepareVals()
     {
-        foreach ($this->service->getReaderPage() as $key => $item) {
+        foreach ($this->service()->getReaderPage() as $key => $item) {
             $this->page[$key] = $item;
         }
         $this->page['user'] = $this->user;
@@ -87,15 +111,15 @@ class Reader extends ComponentBase
 
     public function onNext()
     {
-        if ($paginator = $this->service->nextPage()) {
-            $this->service->setPage($paginator->page);
+        if ($paginator = $this->service()->nextPage()) {
+            $this->service()->setPage($paginator->page);
 
             return $this->onMove();
         }
-        if ($chapter = $this->service->nextChapter()) {
+        if ($chapter = $this->service()->nextChapter()) {
             return Redirect::to('/reader/'.$this->book->id.'/'.$chapter->id);
         }
-        if ($this->service->readBtn()) {
+        if ($this->service()->readBtn()) {
             $this->user->library($this->book)->read();
 
             return Redirect::to('/book-card/'.$this->book->id);
@@ -106,12 +130,12 @@ class Reader extends ComponentBase
 
     public function onPrev()
     {
-        if ($paginator = $this->service->prevPage()) {
-            $this->service->setPage($paginator->page);
+        if ($paginator = $this->service()->prevPage()) {
+            $this->service()->setPage($paginator->page);
 
             return $this->onMove();
         }
-        if ($chapter = $this->service->prevChapter()) {
+        if ($chapter = $this->service()->prevChapter()) {
             return Redirect::to('/reader/'.$this->book->id.'/'.$chapter->id);
         }
 
@@ -137,11 +161,16 @@ class Reader extends ComponentBase
 
     public function onTrack()
     {
-        return $this->service->track((int) post('ms'), (int) post('paginator_id'));
+        return $this->service()->track((int) post('ms'), (int) post('paginator_id'));
     }
 
     public function getCurrentPaginatorKey()
     {
         return post('paginator_page');
+    }
+
+    public function getParamPage()
+    {
+        return $this->param('page');
     }
 }

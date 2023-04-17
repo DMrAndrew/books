@@ -71,6 +71,7 @@ class Chapterer extends ComponentBase
 
     public function prepareVals()
     {
+        $this->page['book'] = $this->book;
         $this->page['ebook'] = $this->ebook;
         $this->page['chapter'] = $this->chapter;
         $this->page['times'] = collect(CarbonPeriod::create(today(), '1 hour', today()->copy()->addHours(23))->toArray())->map->format('H:i');

@@ -57,6 +57,11 @@ class Tracker extends Model
         static::addGlobalScope(new ScopeToday());
     }
 
+    public function scopeOrderByUpdatedAt(Builder $builder, bool $asc = true): Builder
+    {
+        return $builder->orderBy('updated_at', $asc ? 'asc' : 'desc');
+    }
+
     public function scopeCompleted(Builder $builder): Builder
     {
         return $builder->minProgress(100);
