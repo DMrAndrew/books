@@ -200,7 +200,8 @@ class Edition extends Model
 
     public function shouldDeferredUpdate(): bool
     {
-        return $this->status === BookStatus::COMPLETE;
+        return $this->status === BookStatus::COMPLETE
+            && ! $this->isFree();
     }
 
     public function hasSales()
