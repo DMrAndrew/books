@@ -222,7 +222,10 @@ class ChapterService
     public function publish($forceFireEvent = true): Closure
     {
         $event = Db::transaction(function () {
-            $this->chapter->fill(['status' => ChapterStatus::PUBLISHED]);
+            $this->chapter->fill([
+                'status' => ChapterStatus::PUBLISHED,
+                'published_at' => Carbon::now(),
+            ]);
             $this->chapter->save();
 
             return fn () => Event::fire('books.chapter.published', [$this->chapter]);
