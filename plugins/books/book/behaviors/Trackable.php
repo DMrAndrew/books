@@ -5,6 +5,7 @@ namespace Books\Book\Behaviors;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Tracker;
 use Books\Collections\classes\CollectionEnum;
+use Event;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Extension\ExtensionBase;
@@ -28,7 +29,7 @@ class Trackable extends ExtensionBase
             'm', 'min', 'minutes' => $time * 60
         });
         $tracker = $this->model->trackByUser($user);
-        $tracker?->update(['time' => $tracker->time + $time]);
+        $tracker?->increment('time', $time);
         Event::fire('books.paginator.tracked', [$tracker]);
 
         return $tracker;
