@@ -49,4 +49,11 @@ function initTabs(container) {
     //hide all
     document.querySelector(container).closest('.ui-tabs').style.display = 'none';
   }
+  addEventListener("popstate",  ev => {
+    for (let [key, curLink] of tabLinks.entries()) {
+      if (location.hash.replace(/[^a-z0-9]/gi, '') == curLink.dataset.tab.replace(/[^a-z0-9]/gi, '')){
+        curLink.click();
+      }
+    }
+  });
 }
