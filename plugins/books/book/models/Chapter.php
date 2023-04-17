@@ -224,11 +224,8 @@ class Chapter extends Model
     {
         if ($this->isDirty(['status'])) {
             $fresh = $this->fresh();
-            $this->fresh()->setNeighbours();
-            $this->prev?->setNeighbours();
-            $this->next?->setNeighbours();
             $this->edition->setFreeParts();
-            if ($this->status === ChapterStatus::PUBLISHED) {
+            if ($fresh->status === ChapterStatus::PUBLISHED) {
                 $fresh->lengthRecount();
             }
         }

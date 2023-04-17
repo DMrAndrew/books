@@ -37,7 +37,7 @@ class Edition extends Model
     use SoftDelete;
     use Revisionable;
 
-    const UPDATE_CHUNK_LENGTH = 5000;
+    const UPDATE_CHUNK_LENGTH = 4999;
 
     /**
      * @var string table name
@@ -123,7 +123,7 @@ class Edition extends Model
             ->chunkWhile(function ($value, $key, $chunk) {
                 return (int) $chunk->sum('odds') <= self::UPDATE_CHUNK_LENGTH;
             })
-            ->filter(fn ($i) => $i->sum('odds') > self::UPDATE_CHUNK_LENGTH)->map(function ($collection) {
+            ->filter(fn ($i) => $i->sum('odds') >= self::UPDATE_CHUNK_LENGTH)->map(function ($collection) {
                 return [
                     'date' => $collection->last()->created_at,
                     'value' => (int) $collection->sum('odds'),
@@ -210,7 +210,9 @@ class Edition extends Model
 
     public function shouldRevisionLength(): bool
     {
-        return $this->isDirty('length') && ! $this->shouldDeferredUpdate() && in_array($this->status, [BookStatus::WORKING, BookStatus::FROZEN]);
+        return $this->isDirty('length')
+            && ! $this->shouldDeferredUpdate()
+            && in_array($this->status, [BookStatus::WORKING, BookStatus::FROZEN]);
     }
 
     protected function beforeUpdate()
@@ -311,13 +313,15 @@ class Edition extends Model
     public function setFreeParts()
     {
         Db::transaction(function () {
+            $builder = fn () => $this->chapters()->published();
             if (! $this->price || $this->status === BookStatus::FROZEN) {
-                $this->chapters()->published()->update(['sales_type' => ChapterSalesType::FREE]);
+                $builder()->update(['sales_type' => ChapterSalesType::FREE]);
             } else {
-                $this->chapters()->published()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
-//            $this->chapters()->offset($this->free_parts); ошибка?
-                $this->chapters()->published()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
+                $builder()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
+//            $this->chapters()->offset($this->free_parts); ошибка
+                $builder()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
             }
+            $builder()->get()->each->setNeighbours();
         });
     }
 
