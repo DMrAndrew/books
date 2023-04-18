@@ -1,4 +1,3 @@
-<!-- Статистика с таблицей "Все произведения" -->
 <div class="read-statistic wrapper" style="margin-bottom: 32px;">
     {{ form_ajax('onGenerate',{
     'data-request-flash':'true',
@@ -10,7 +9,6 @@
 
                     <select class="book-select" name="book_id" style="display: none"
                             data-request = "onGetBookPromocodes"
-                            data-request-update = "promocode: '#promocodesList'"
                         >
                         <option
                             {{ not current_book ? 'selected' : ''  }}

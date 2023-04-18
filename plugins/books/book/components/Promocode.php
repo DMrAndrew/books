@@ -69,12 +69,13 @@ class Promocode extends ComponentBase
         }
 
         try {
+            $book = Book::findOrFail($data['book_id']);
+
             /**
              * current user is book author
              */
-            $book = Book::findOrFail($data['book_id']);
             $allBookAuthorsProfilesIds = $book->authors->pluck('profile_id')->toArray();
-            $currentAuthorProfileId = $this->user->profile->id;
+            $currentAuthorProfileId = $this->user->current_profile_id;
             if ( !in_array($currentAuthorProfileId, $allBookAuthorsProfilesIds)) {
                 Flash::error("Вы не являетесь автором этой книги");
 
@@ -114,7 +115,7 @@ class Promocode extends ComponentBase
         // todo реализовать после оплаты/покупки
     }
 
-    public function getBooksPromocodes(Book $book): Collection
+    private function getBooksPromocodes(Book $book): Collection
     {
         return PromocodeModel
             ::with(['user'])
