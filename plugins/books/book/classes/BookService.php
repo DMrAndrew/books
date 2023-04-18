@@ -96,7 +96,8 @@ class BookService
         if ($payload instanceof File) {
             $tizisBook = (new FB2Manager($payload))->apply();
             $this->fromTizis($tizisBook);
-            $this->book->ebook->fb2()->save($payload);
+            $payload->save();
+            $this->book->ebook()->first()->fb2()->add($payload, $this->session_key);
             Event::fire('books.book.parsed', [$this->book]);
 
             return $this->book;
@@ -123,6 +124,7 @@ class BookService
             collect(explode(',', $info->getKeywords()))->each(fn ($tag) => $this->addTag($tag));
 
             foreach ($info->getGenres() as $item) {
+                //TODO tolowercase
                 if ($genre = Genre::query()->where('name', $item)->first()) {
                     $this->addGenre($genre);
                 }
