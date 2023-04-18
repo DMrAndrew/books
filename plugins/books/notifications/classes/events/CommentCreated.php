@@ -48,9 +48,14 @@ class CommentCreated extends BaseEvent
     {
         $comment = Arr::get($args, 0);
 
-        // README: возвращаем именно такую коллекцию, а не collect() ибо во втором случае ошибка сериализации
-        return new \October\Rain\Database\Collection([
-            $comment->commentable?->author?->profile,
-        ]);
+        return $comment
+            ->commentable
+            ->authors
+            ->filter(static function ($author) use ($comment): bool {
+                return $author->profile->user_id !== $comment->user_id;
+            })
+            ->transform(static function ($author) {
+                return $author->profile;
+            });
     }
 }

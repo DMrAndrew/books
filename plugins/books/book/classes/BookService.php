@@ -202,7 +202,7 @@ class BookService
             ->authors()
             ->get()
             ->diff($authors)
-            ->each(static fn (Author $author) => Event::fire('books.book::author.invited', [$author]));
+            ->each(fn (Author $author) => Event::fire('books.book::author.invited', [$author, $this->user->profile]));
 
         return $this->book;
     }
