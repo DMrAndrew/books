@@ -1,13 +1,24 @@
-<?php namespace Books\Book\Models;
+<?php declare(strict_types=1);
+
+namespace Books\Book\Models;
 
 use Books\Book\Classes\CodeGenerator;
+use Books\Profile\Models\Profile;
 use Model;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Models\User;
 
 /**
  * Promocode Model
  *
- * @link https://docs.octobercms.com/3.x/extend/system/models.html
+ * - Промокод привязан к книге и одновременно к профилю
+ * - Каждый соавтор может генерировать промокоды к одной и той же книге
+ * - Лимиты на генерацию промокодов для одной книги:
+ *      - первые 3 месяца количество промокодов неограничено
+ *      - после 3х месяцев - 5 промокодов/месяц на книгу
+ *      - дата обнуления количества промокодов/месяц - начало месяца
+ *      - промокоды могут накапливаться (переходить из месяца в месяц)
+ * - На 4й месяц, промокоды, которые были сгенерированы в безлимитный период сгорают (остаются 5шт)
  */
 class Promocode extends Model
 {
@@ -36,12 +47,18 @@ class Promocode extends Model
      * @var array rules for validation
      */
     public $rules = [
-        'code' => 'required|unique:users,email_address',
+        'code' => 'missing|unique:books_book_promocodes,code',
         'book_id' => 'required|nullable|exists:books_book_books,id',
         'profile_id' => 'required|nullable|exists:books_profile_profiles,id',
         'is_activated' => 'sometimes|nullable|boolean',
-        'user_id' => 'sometimes|nullable|exists:users,id',
+        'user_id' => 'sometimes|nullable|integer|exists:users,id',
         'activated_at' => 'sometimes|nullable|date',
+    ];
+
+    public $belongsTo = [
+        'user' => User::class,
+        'book' => Book::class,
+        'profile' => Profile::class,
     ];
 
     public static function boot(): void

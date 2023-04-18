@@ -1,6 +1,10 @@
 <?php namespace Books\Book\Components;
 
+use Books\Book\Models\Promocode as PromocodeModel;
 use Cms\Classes\ComponentBase;
+use Illuminate\Database\Eloquent\Collection;
+use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 
 /**
  * Promocode Component
@@ -9,11 +13,13 @@ use Cms\Classes\ComponentBase;
  */
 class Promocode extends ComponentBase
 {
+    protected User $user;
+
     public function componentDetails()
     {
         return [
             'name' => 'Promocode Component',
-            'description' => 'No description provided yet...'
+            'description' => 'Компонент промокодов'
         ];
     }
 
@@ -23,5 +29,35 @@ class Promocode extends ComponentBase
     public function defineProperties()
     {
         return [];
+    }
+
+    public function init()
+    {
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
+        }
+        $this->user = Auth::getUser();
+
+        $this->page['promocodes'] = $this->getBooksPromocodes();
+        $this->page['books'] = $this->user->profile->books()->get();
+    }
+
+    public function generate()
+    {
+
+    }
+
+    public function activate()
+    {
+        // todo реализовать после возможности оплаты/покупки
+    }
+
+    public function getBooksPromocodes(): Collection
+    {
+        $promocodes = PromocodeModel
+            ::with(['user'])
+            ->get();
+        //dd($promocodes);
+        return PromocodeModel::get();
     }
 }
