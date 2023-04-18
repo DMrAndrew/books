@@ -32,10 +32,10 @@ return new class extends Migration
             $table->unsignedInteger('profile_id');
             $table->foreign('profile_id')->references('id')->on('books_profile_profiles')->cascadeOnDelete();
 
-            // is_activated, default false
+            // is_activated
             $table->boolean('is_activated')->default(false);
 
-            // user_id, null
+            // user_id
             $table->unsignedInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
 
