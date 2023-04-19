@@ -149,3 +149,7 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
     -webkit-box-orient: vertical; /* Вертикальная ориентация */
     overflow: hidden; /* Обрезаем всё за пределами блока */
 }
+
+.book-card-repost span {
+    margin-right: 0;
+}

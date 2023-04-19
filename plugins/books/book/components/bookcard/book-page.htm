@@ -46,62 +46,47 @@
         openModal('[data-modal="category_rating"]', '[data-modal="open_category_rating"]');
     </script>
     <div class="book-card-repost" style="padding-top:12px;border: none">
-        <span>Поделиться: {{this.page.url}} </span>
-        <!--        <svg class="square-32" style="color: #0077FF;">-->
-        <!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-vk-28' | theme}}"></use>-->
-        <!--        </svg>-->
+        <span style="margin-right: 16px">Поделиться: </span>
+
+
         <script type="text/javascript">
-            document.write(VK.Share.button(document.URL));
+            document.write(VK.Share.button({url: document.URL}, {
+                type: 'custom',
+                text: `<svg class="square-32" style="color: #0077FF;"><use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-vk-28' | theme}}"></use></svg>`
+            }));
         </script>
+
+
         <!--        <svg class="square-32" style="color: #54A9E7;">-->
         <!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-telegram-28' | theme}}"></use>-->
         <!--        </svg>-->
 
-        <div id="tg-widget"></div>
-        <!--        <script async src="https://telegram.org/js/telegram-widget.js?22"-->
-        <!--                data-telegram-share-url="{{this.page.url}}"-->
-        <!--                data-text="notext"-->
+        <a id="tg-widget">
+            <svg class="square-32" style="color: #0077FF;">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-telegram-28' | theme}}"></use>
+            </svg>
+        </a>
         <!--        ></script>-->
 
         <script>
             !function (d) {
-                var js = d.createElement("script");
-                js.src = "https://telegram.org/js/telegram-widget.js?22";
-                js.async = true
-                js.dataset.telegramShareUrl = document.URL
-                js.dataset.text = 'notext'
-
-                d.getElementById('tg-widget').appendChild(js);
+                d.getElementById('tg-widget').href = 'https://t.me/share/url?url=' + document.URL;
             }(document);
         </script>
 
         <!--        <svg id="ok_shareWidget" class="square-32 cursor-pointer">-->
         <!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-filled-32' | theme}}"></use>-->
         <!--        </svg>-->
-        <div id="ok_shareWidget"></div>
+        <a id="ok-widget" target="_blank">
+            <svg class="square-32">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-filled-32' | theme}}"></use>
+            </svg>
+        </a>
 
         <script>
-            !function (d, id, did, st, title, description, image) {
-                function init() {
-                    OK.CONNECT.insertShareWidget(id, did, st, title, description, image);
-                }
-
-                if (!window.OK || !OK.CONNECT || !OK.CONNECT.insertShareWidget) {
-                    var js = d.createElement("script");
-                    js.src = "https://connect.ok.ru/connect.js";
-                    js.onload = js.onreadystatechange = function () {
-                        if (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") {
-                            if (!this.executed) {
-                                this.executed = true;
-                                setTimeout(init, 0);
-                            }
-                        }
-                    };
-                    d.documentElement.appendChild(js);
-                } else {
-                    init();
-                }
-            }(document, "ok_shareWidget", document.URL, '{"sz":30,"st":"oval","nc":1,"nt":1,"bgclr":"ED8207","txclr":"FFFFFF"}', "", "", "");
+            !function (d) {
+                d.getElementById('ok-widget').href = 'https://connect.ok.ru/offer?url=' + document.URL;
+            }(document);
         </script>
     </div>
 </div>
