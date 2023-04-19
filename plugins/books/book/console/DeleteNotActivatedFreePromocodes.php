@@ -42,8 +42,20 @@ class DeleteNotActivatedFreePromocodes extends Command
          */
         $expiredFreePromocodes = Promocode
             ::with('profile')
+
+            /**
+             * Которые еще не использовались. Использованные не удаляем
+             */
             ->notActivated()
+
+            /**
+             * Созданы в безлимитный период
+             */
             ->where('created_at', '<', $unlimitedPeriodExpiredAt)
+
+            /**
+             * Профиль создан тоже в безлимитный период. Иначе профиль может быть давно существующим
+             */
             ->whereHas('profile', function ($profile) use ($unlimitedPeriodExpiredAt) {
                 $profile->where('created_at', '<', $unlimitedPeriodExpiredAt);
             })
