@@ -46,7 +46,7 @@
         openModal('[data-modal="category_rating"]', '[data-modal="open_category_rating"]');
     </script>
     <div class="book-card-repost" style="padding-top:12px;border: none">
-        <span>Поделиться:</span>
+        <span>Поделиться: {{this.page.url}} </span>
         <!--        <svg class="square-32" style="color: #0077FF;">-->
         <!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-vk-28' | theme}}"></use>-->
         <!--        </svg>-->
@@ -56,10 +56,24 @@
         <!--        <svg class="square-32" style="color: #54A9E7;">-->
         <!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-telegram-28' | theme}}"></use>-->
         <!--        </svg>-->
-        <script async src="https://telegram.org/js/telegram-widget.js?22"
-                data-telegram-share-url="https://books.pomon.ru/book-card/153"
-                data-text="notext"
-        ></script>
+
+        <div id="tg-widget"></div>
+        <!--        <script async src="https://telegram.org/js/telegram-widget.js?22"-->
+        <!--                data-telegram-share-url="{{this.page.url}}"-->
+        <!--                data-text="notext"-->
+        <!--        ></script>-->
+
+        <script>
+            !function (d) {
+                var js = d.createElement("script");
+                js.src = "https://telegram.org/js/telegram-widget.js?22";
+                js.async = true
+                js.dataset.telegramShareUrl = document.URL
+                js.dataset.text = 'notext'
+
+                d.getElementById('tg-widget').appendChild(js);
+            }(document);
+        </script>
 
         <!--        <svg id="ok_shareWidget" class="square-32 cursor-pointer">-->
         <!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-filled-32' | theme}}"></use>-->
