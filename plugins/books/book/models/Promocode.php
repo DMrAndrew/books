@@ -5,6 +5,7 @@ namespace Books\Book\Models;
 use Books\Book\Classes\CodeGenerator;
 use Books\Profile\Models\Profile;
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 
@@ -18,7 +19,9 @@ use RainLab\User\Models\User;
  *      - после 3х месяцев - 5 промокодов/месяц на книгу
  *      - дата обнуления количества промокодов/месяц - начало месяца
  *      - промокоды могут накапливаться (переходить из месяца в месяц)
- * - На 4й месяц, промокоды, которые были сгенерированы в безлимитный период сгорают (остаются 5шт)
+ * - На 4й месяц, промокоды, которые были сгенерированы в безлимитный период сгорают
+ *
+ * Лимиты на генерацию в классе @link PromocodeGenerationLimiter
  */
 class Promocode extends Model
 {
@@ -73,5 +76,10 @@ class Promocode extends Model
     public static function generateUniqueCode(): string
     {
         return CodeGenerator::generateUniqueCode((new self())->getTable(), self::CODE_LENGTH);
+    }
+
+    public function scopeNotActivated(Builder $builder)
+    {
+        return $builder->where('is_activated', false);
     }
 }

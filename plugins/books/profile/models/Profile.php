@@ -5,6 +5,7 @@ namespace Books\Profile\Models;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
+use Books\Book\Models\Promocode;
 use Books\Comments\Models\Comment;
 use Books\Profile\Classes\ProfileService;
 use Books\Profile\Classes\SlaveScope;
@@ -145,6 +146,7 @@ class Profile extends Model
         'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id'],
         'settings' => [Settings::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
         'cycles' => [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'],
+        'promocodes' => [Promocode::class, 'key' => 'profile_id', 'otherKey' => 'id'],
     ];
 
     public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];

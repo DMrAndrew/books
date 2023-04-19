@@ -42,11 +42,11 @@ class PromocodeGenerationLimiter
      */
     private function allowGenerateByProfileRegistrationDate(): bool
     {
-        $now = Carbon::now();
+        $now = Carbon::now()->endOfDay();
         $profileCreatedAt = $this->profile->created_at;
 
         if (
-            $profileCreatedAt->addMonths(self::UNLIMITED_GENERATION_FREE_MONTHS)->greaterThan($now)
+            $now->greaterThan($profileCreatedAt->addMonths(self::UNLIMITED_GENERATION_FREE_MONTHS))
         ) {
             $this->reason = 'Период бесконечной генерации промокодов в течении первых 3 месяцев после регистрации истек';
 
@@ -57,7 +57,8 @@ class PromocodeGenerationLimiter
     }
 
     /**
-     * 5 промокодов/месяц на книгу
+     * Лимит - 5 промокодов/месяц на книгу
+     * Не зависимо от автора (соавтора)
      * Дата обнуления количества промокодов/месяц - начало месяца
      */
     private function allowGenerateByBookLimits(): bool
