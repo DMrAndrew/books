@@ -15,8 +15,8 @@
                                         document.write(VK.Share.button({
                                             url: document.location.href,
                                             title: '{{book.title}}',
-                                            image_url: 'https://books.pomon.ru/storage/app/uploads/public/643/d41/a0d/thumb_606_168_244_0_0_auto.png',
-                                            image: 'https://books.pomon.ru/storage/app/uploads/public/643/d41/a0d/thumb_606_168_244_0_0_auto.png',
+                                            image_url: '{{book.cover.getThumb(168,244)}}',
+                                            image: '{{book.cover.getThumb(168,244)}}',
                                             noparse: true
                                         }));
                                     </script>
