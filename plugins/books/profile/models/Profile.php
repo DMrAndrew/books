@@ -13,6 +13,7 @@ use Books\Profile\Traits\Subscribable;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
 use October\Rain\Database\Builder;
@@ -33,6 +34,7 @@ use WordForm;
 /**
  * Profile Model
  *
+ * @property Carbon created_at
  * @method BelongsToMany books
  * @method BelongsToMany subscribers
  * @method BelongsToMany subscriptions

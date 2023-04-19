@@ -1,5 +1,6 @@
 <?php namespace Books\Book\Components;
 
+use Books\Book\Classes\PromocodeGenerationLimiter;
 use Books\Book\Models\Book;
 use Books\Book\Models\Promocode as PromocodeModel;
 use Cms\Classes\ComponentBase;
@@ -65,7 +66,7 @@ class Promocode extends ComponentBase
         if ( !isset($data['book_id']) || empty($data['book_id'])) {
             Flash::error("Необходимо выбрать книгу для генерации промокода");
 
-            return;
+            return [];
         }
 
         try {
@@ -79,13 +80,18 @@ class Promocode extends ComponentBase
             if ( !in_array($currentAuthorProfileId, $allBookAuthorsProfilesIds)) {
                 Flash::error("Вы не являетесь автором этой книги");
 
-                return;
+                return [];
             }
 
             /**
              * check promocode limits
              */
-            // todo
+            $promoLimiter = new PromocodeGenerationLimiter(profile: $this->user->profile, book: $book);
+            if ( !$promoLimiter->checkCanGenerate()) {
+                Flash::error($promoLimiter->getReason());
+
+                return [];
+            }
 
             /**
              * generate promocode
