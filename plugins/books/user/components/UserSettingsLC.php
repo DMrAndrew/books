@@ -8,8 +8,10 @@ use Cms\Classes\ComponentBase;
 use Country;
 use Exception;
 use Flash;
+use Mobecan\SocialConnect\Classes\ProviderManager;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Url;
 use ValidationException;
 
 /**
@@ -57,6 +59,26 @@ class UserSettingsLC extends ComponentBase
     {
         $this->page['user'] = $this->user;
         $this->page['countries'] = Country::query()->isEnabled()->get();
+        $this->page['socials'] = $this->getSocials();
+    }
+
+    public function getSocials()
+    {
+        return collect(ProviderManager::instance()->listProvidersEnabled())
+            ->map(function ($provider) {
+                return [
+                    'provider' => $provider,
+                    'alias' => $provider['alias'],
+                    'url' => URL::route('mobecan_socialconnect_provider', [$provider['alias'], 's=lc-settings']),
+                    'label' => $provider['label'],
+                    'tag' => $provider['tag'],
+                    'short_tag' => match ($provider['tag']) {
+                        'yandex' => 'ya',
+                        default => $provider['tag']
+                    },
+                    'exists' => $this->user->mobecan_socialconnect_providers()->where('provider_id', $provider['alias'])->exists(),
+                ];
+            });
     }
 
     public function onUpdateCommon()
