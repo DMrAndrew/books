@@ -40,11 +40,49 @@
             </div>
         </div>
         {% endif %}
-
-
     </div>
     {% partial '@book-card-footer' class='book-card-full-info__footer' %}
     <script>
         openModal('[data-modal="category_rating"]', '[data-modal="open_category_rating"]');
     </script>
+    <div class="book-card-repost" style="padding-top:12px;border: none">
+        <span>Поделиться: </span>
+
+
+        <a id="vk-widget" target="_blank">
+            <svg class="square-32" style="color: #0077FF;">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-vk-28' | theme}}"></use>
+            </svg>
+        </a>
+        <script>
+            !function (d) {
+                d.getElementById('vk-widget').href = 'https://vk.com/share.php?url=' + document.URL;
+            }(document);
+        </script>
+
+
+        <a id="tg-widget" target="_blank">
+            <svg class="square-32" style="color: #0077FF;">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-telegram-28' | theme}}"></use>
+            </svg>
+        </a>
+
+        <script>
+            !function (d) {
+                d.getElementById('tg-widget').href = 'https://t.me/share/url?url=' + document.URL;
+            }(document);
+        </script>
+
+        <a id="ok-widget" target="_blank">
+            <svg class="square-32">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-filled-32' | theme}}"></use>
+            </svg>
+        </a>
+
+        <script>
+            !function (d) {
+                d.getElementById('ok-widget').href = 'https://connect.ok.ru/offer?url=' + document.URL;
+            }(document);
+        </script>
+    </div>
 </div>

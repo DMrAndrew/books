@@ -61,7 +61,7 @@ class EditionService
     }
 
     /**
-     * @param Collection $data
+     * @param  Collection  $data
      * @return void
      */
     private function fireEvents(Collection $data): void

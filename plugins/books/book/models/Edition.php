@@ -200,7 +200,7 @@ class Edition extends Model
 
     public function shouldDeferredUpdate(): bool
     {
-        return $this->status === BookStatus::COMPLETE
+        return $this->getOriginal('status') === BookStatus::COMPLETE
             && ! $this->isFree();
     }
 
@@ -213,13 +213,13 @@ class Edition extends Model
     {
         return $this->isDirty('length')
             && ! $this->shouldDeferredUpdate()
-            && in_array($this->status, [BookStatus::WORKING, BookStatus::FROZEN]);
+            && in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN, BookStatus::COMPLETE]);
     }
 
     protected function beforeUpdate()
     {
         if (! $this->shouldRevisionLength()) {
-            unset($this->revisionable['length']);
+            $this->revisionable = array_diff_key($this->revisionable, ['length']);
         }
     }
 
