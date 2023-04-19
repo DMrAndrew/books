@@ -75,9 +75,7 @@ class Promocode extends ComponentBase
             /**
              * current user is book author
              */
-            $allBookAuthorsProfilesIds = $book->authors->pluck('profile_id')->toArray();
-            $currentAuthorProfileId = $this->user->current_profile_id;
-            if ( !in_array($currentAuthorProfileId, $allBookAuthorsProfilesIds)) {
+            if ( !$book->isAuthor($this->user->profile)) {
                 Flash::error("Вы не являетесь автором этой книги");
 
                 return [];
