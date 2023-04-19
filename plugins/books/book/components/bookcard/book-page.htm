@@ -46,27 +46,26 @@
         openModal('[data-modal="category_rating"]', '[data-modal="open_category_rating"]');
     </script>
     <div class="book-card-repost" style="padding-top:12px;border: none">
-        <span style="margin-right: 16px">Поделиться: </span>
+        <span>Поделиться: </span>
 
 
-        <script type="text/javascript">
-            document.write(VK.Share.button({url: document.URL}, {
-                type: 'custom',
-                text: `<svg class="square-32" style="color: #0077FF;"><use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-vk-28' | theme}}"></use></svg>`
-            }));
+        <a id="vk-widget" target="_blank">
+            <svg class="square-32" style="color: #0077FF;">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-vk-28' | theme}}"></use>
+            </svg>
+        </a>
+        <script>
+            !function (d) {
+                d.getElementById('vk-widget').href = 'https://vk.com/share.php?url=' + document.URL;
+            }(document);
         </script>
 
 
-        <!--        <svg class="square-32" style="color: #54A9E7;">-->
-        <!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-telegram-28' | theme}}"></use>-->
-        <!--        </svg>-->
-
-        <a id="tg-widget">
+        <a id="tg-widget" target="_blank">
             <svg class="square-32" style="color: #0077FF;">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-telegram-28' | theme}}"></use>
             </svg>
         </a>
-        <!--        ></script>-->
 
         <script>
             !function (d) {
@@ -74,9 +73,6 @@
             }(document);
         </script>
 
-        <!--        <svg id="ok_shareWidget" class="square-32 cursor-pointer">-->
-        <!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-filled-32' | theme}}"></use>-->
-        <!--        </svg>-->
         <a id="ok-widget" target="_blank">
             <svg class="square-32">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-filled-32' | theme}}"></use>
