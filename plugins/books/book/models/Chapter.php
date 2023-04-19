@@ -8,7 +8,6 @@ use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Jobs\JobPaginate;
 use Books\Book\Jobs\JobProgress;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Model;
 use October\Rain\Database\Builder;
@@ -22,6 +21,7 @@ use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
 use Queue;
 use RainLab\User\Models\User;
+use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
 
 /**
@@ -42,7 +42,11 @@ use System\Models\File;
  * @property ?Chapter next
  *
  * @method MorphOne content
+ *
  * @property  Content content
+ * @property  EditionsEnums type
+ * @property  ChapterStatus status
+ * @property  ChapterSalesType sales_type
  */
 class Chapter extends Model
 {
@@ -50,6 +54,7 @@ class Chapter extends Model
     use Validation;
     use SoftDelete;
     use Purgeable;
+    use HasRelationships;
 
     /**
      * @var string table associated with the model
@@ -60,6 +65,7 @@ class Chapter extends Model
      * @var array guarded attributes aren't mass assignable
      */
     protected $guarded = ['*'];
+
     protected $purgeable = ['new_content'];
 
     public string $trackerChildRelation = 'pagination';
@@ -101,7 +107,6 @@ class Chapter extends Model
      */
     protected $jsonable = [];
 
-
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
      */
@@ -124,6 +129,7 @@ class Chapter extends Model
     public $hasMany = [
         'pagination' => [Pagination::class, 'key' => 'chapter_id', 'otherKey' => 'id'],
     ];
+
     public $belongsTo = [
         'edition' => [Edition::class, 'key' => 'edition_id', 'otherKey' => 'id'],
         'next' => [Chapter::class, 'key' => 'next_id', 'otherKey' => 'id'],
@@ -150,6 +156,23 @@ class Chapter extends Model
         return new ChapterService($this);
     }
 
+    public function getTitleAttribute()
+    {
+        return $this->attributes['title'] ?? false ?: ($this->exists ? '№'.$this->{$this->getSortOrderColumn()} : '');
+    }
+
+    public function isFree(): bool
+    {
+        return $this->sales_type === ChapterSalesType::FREE;
+    }
+
+    public function paginationTrackers()
+    {
+        return $this->hasManyDeepFromRelations(
+            $this->pagination(),
+            [(new Pagination())->trackers()]);
+    }
+
     public function paginateContent()
     {
         Queue::push(JobPaginate::class, ['chapter_id' => $this->id]);
@@ -160,53 +183,66 @@ class Chapter extends Model
         return $builder->where($this->getSortOrderColumn(), '=', $value);
     }
 
-    public function scopeWithReadTrackersCount(Builder $builder): Builder
+    public function scopeMinSortOrder(Builder $builder, int $value): Builder
     {
-        return $builder->withCount(['trackers as completed_trackers' => fn($trackers) => $trackers->withoutTodayScope()->completed()]);
+        return $builder->where($this->getSortOrderColumn(), '>', $value);
     }
 
-
-    public function scopePublished(Builder $query, bool $until_now = true)
+    public function scopeMaxSortOrder(Builder $builder, int $value): Builder
     {
-        return $query
-            ->where('status', ChapterStatus::PUBLISHED)
-            ->whereNotNull('published_at')
-            ->when($until_now, function (Builder $builder) {
-                return $builder->where('published_at', '<', Carbon::now());
-            });
+        return $builder->where($this->getSortOrderColumn(), '<', $value);
     }
 
-    public function getIsWillPublishedAttribute(): bool
+    public function scopePlanned(Builder $builder): Builder
     {
-        return $this->status === ChapterStatus::PUBLISHED && $this->published_at->gt(Carbon::now());
+        return $builder->where('status', ChapterStatus::PLANNED);
+    }
+
+    public function scopePublished(Builder $query)
+    {
+        return $query->where('status', ChapterStatus::PUBLISHED);
     }
 
     public function lengthRecount()
     {
-        $this->length = (int)$this->pagination()->sum('length') ?? 0;
+        $this->length = (int) $this->pagination()->sum('length') ?? 0;
         $this->save();
+        $this->edition->lengthRecount();
     }
-
 
     public function setNeighbours()
     {
-        $this->setPrev();
-        $this->setNext();
+        $builder = fn () => $this->edition()->first()->chapters()->published();
+        $sort_order = $this->{$this->getSortOrderColumn()};
+        $this->update([
+            'prev_id' => $builder()->maxSortOrder($sort_order)->latest($this->getSortOrderColumn())->first()?->id,
+            'next_id' => $builder()->minSortOrder($sort_order)->first()?->id,
+        ]);
     }
 
-    public function setPrev()
+    protected function afterSave()
     {
-        $this->update([
-            'prev_id' => $this->edition->chapters()->sortOrder($this->{$this->getSortOrderColumn()} - 1)?->first()?->id,
-        ]);
-
+        if ($this->isDirty(['status'])) {
+            $fresh = $this->fresh();
+            $this->edition->setFreeParts();
+            if ($fresh->status === ChapterStatus::PUBLISHED) {
+                $fresh->lengthRecount();
+            }
+        }
     }
 
-    public function setNext()
+    protected function afterCreate()
     {
-        $this->update([
-            'next_id' => $this->edition->chapters()->sortOrder($this->{$this->getSortOrderColumn()} + 1)?->first()?->id,
-        ]);
+        $this->edition->chapters()->get()->each->setNeighbours();
+        $this->edition->setFreeParts();
+    }
+
+    public function afterDelete()
+    {
+        $this->prev?->setNeighbours();
+        $this->next?->setNeighbours();
+        $this->edition->setFreeParts();
+        $this->lengthRecount();
     }
 
     public function progress(?User $user = null)
@@ -218,5 +254,4 @@ class Chapter extends Model
     {
         return $this->deferredContent ?? $this->content;
     }
-
 }

@@ -28,14 +28,13 @@ class Tag extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['name', 'user_id'];
+    protected $fillable = ['name'];
 
     /**
      * @var array rules for validation
      */
     public $rules = [
-        'name' => 'required|string|max:50',
-        'user_id' => 'required|exists:users,id',
+        'name' => 'required|string|min:2|max:50',
     ];
 
     /**
@@ -104,7 +103,6 @@ class Tag extends Model
         return $q;
     }
 
-
     public function scopeNameLike($q, string $name)
     {
         return $q->where('name', 'like', "%$name%");
@@ -114,5 +112,4 @@ class Tag extends Model
     {
         return $builder->select(['id', 'name']);
     }
-
 }

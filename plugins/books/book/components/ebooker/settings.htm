@@ -1,5 +1,5 @@
 <div id="ebook-settings">
-    {{ form_ajax('ebooker::onUpdate',{'data-request-validate':'true','data-request-complete':'iniSelect()'})}}
+    {{ form_ajax('ebooker::onUpdate',{flash:true,'data-request-validate':'true','data-request-complete':'iniSelect()'})}}
     <div class="ui-grid-container ui-grid-gap">
         <div class="e-book-sale__wrapper ui-col-md-6">
             <div class="e-book-sale__title ui-text-head--2 ui-text--bold e-book-sale__inside-wrapper">Статус</div>
@@ -19,10 +19,10 @@
                     </select>
                     <div class="ui-select-hitn"></div>
                     <div class="ui-select-error" data-validate-for="status"></div>
-                    <svg class="ui-select-item-icon chevron_up">
+                    <svg class="ui-select-item-icon chevron_up _fake">
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme }}"></use>
                     </svg>
-                    <svg class="ui-select-item-icon chevron_down">
+                    <svg class="ui-select-item-icon chevron_down _fake">
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme }}"></use>
                     </svg>
                 </div>
@@ -37,21 +37,21 @@
             <div class="e-book-sale__addition e-book-sale__inside-wrapper">
                 <span>Начало продаж: </span> {{ ebook.sales_at ? carbon(ebook.sales_at).format('d.m.y') : '-'}}
             </div>
-            <div class="e-book-sale__inside-wrapper">
-                <label class="ui-checkbox _indent-medium">
-                    <input type="hidden" name="sales_free" value="0">
-                    <input type="checkbox" value="1" hidden name="sales_free" {{ebook.sales_free ? 'checked' : ''}}>
-                    <div class="ui-checkbox-checker">
-                        <svg>
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
-                        </svg>
-                    </div>
-                    <span class="ui-checkbox-text">Бесплатная книга</span>
-                </label>
-                <div class="ui-select-hitn"></div>
-                <div class="ui-select-error" data-validate-for="sales_free"></div>
+<!--            <div class="e-book-sale__inside-wrapper">-->
+<!--                <label class="ui-checkbox _indent-medium">-->
+<!--                    <input type="hidden" name="sales_free" value="0">-->
+<!--                    <input type="checkbox" value="1" hidden name="sales_free" {{ebook.sales_free ? 'checked' : ''}}>-->
+<!--                    <div class="ui-checkbox-checker">-->
+<!--                        <svg>-->
+<!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>-->
+<!--                        </svg>-->
+<!--                    </div>-->
+<!--                    <span class="ui-checkbox-text">Бесплатная книга</span>-->
+<!--                </label>-->
+<!--                <div class="ui-select-hitn"></div>-->
+<!--                <div class="ui-select-error" data-validate-for="sales_free"></div>-->
 
-            </div>
+<!--            </div>-->
             <div class="ui-grid-container ui-grid-gap e-book-sale__inside-wrapper">
                 <div class="ui-col-md-6 ui-input">
                     <label class="ui-input-label">Цена, ₽</label>

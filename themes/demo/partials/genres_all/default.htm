@@ -12,13 +12,20 @@
                 <div class="book-genres__wrapper book-genres-item" data-list="accordion">
                     <div class="book-genres-item__header">
                         <div class="book-genres-item__title ui-text--bold">
-                            <span class="ui-text-head--3">{{parent.name}}</span>
-                            <span></span>
+
+                            <a href="/listing?genre={{parent.id}}" class="ui-text-head--3">
+                                {{parent.name}}
+
+                            </a>
+
+                            <span>{{parent.books_count|default('')}}</span>
 
                         </div>
+                        {% if parent.children[0] %}
                         <svg>
                             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
                         </svg>
+                        {% endif %}
                     </div>
                     <div class="book-genres-item__body">
 

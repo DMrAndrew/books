@@ -3,15 +3,20 @@
 namespace Books\Book\Models;
 
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
+use Staudenmeir\EloquentHasManyDeep\HasTableAlias;
 
 /**
  * Cycle Model
+ *
+ * @property $books
  */
 class Cycle extends Model
 {
     use Validation;
+    use HasTableAlias;
 
     /**
      * @var string table associated with the model
@@ -94,5 +99,15 @@ class Cycle extends Model
     public function scopeName($q, string $name)
     {
         return $q->where('name', '=', $name);
+    }
+
+    public function scopeBooksEager(Builder $builder): Builder
+    {
+        return $builder->with(['books' => fn ($books) => $books->public()->defaultEager()]);
+    }
+
+    public function getLastUpdatedAtAttribute()
+    {
+        return $this->books->map->ebook->pluck('last_updated_at')->sortDesc()?->first();
     }
 }

@@ -18,6 +18,7 @@ class JobProgress
             $user = User::find($data['user_id'] ?? null);
             $chapter->computeProgress($user);
             $chapter->edition->computeProgress($user);
+            $chapter->edition->book->rater()->applyStatsAll()->apply();
         } catch (\Exception $exception) {
             \Log::error($exception->getMessage());
         }

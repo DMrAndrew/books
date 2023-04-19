@@ -2,13 +2,16 @@
 
 namespace Books\Book;
 
-use Backend;
 use Books\Book\Behaviors\Fillable;
 use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;
+use Books\Book\Classes\ChapterService;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\FB2Manager;
+use Books\Book\Classes\GenreRater;
 use Books\Book\Classes\Rater;
+use Books\Book\Classes\StatisticService;
+use Books\Book\Classes\WidgetService;
 use Books\Book\Components\AboutBook;
 use Books\Book\Components\BookCard;
 use Books\Book\Components\Booker;
@@ -16,7 +19,10 @@ use Books\Book\Components\BookPage;
 use Books\Book\Components\Chapterer;
 use Books\Book\Components\EBooker;
 use Books\Book\Components\LCBooker;
+use Books\Book\Components\OutOfFree;
 use Books\Book\Components\Reader;
+use Books\Book\Components\ReadStatistic;
+use Books\Book\Components\Widget;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
@@ -58,7 +64,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
     }
 
@@ -67,7 +73,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         Config::set('book', Config::get('books.book::config'));
 
@@ -83,9 +89,11 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Pagination', Pagination::class);
         AliasLoader::getInstance()->alias('EditionsEnums', EditionsEnums::class);
         AliasLoader::getInstance()->alias('Rater', Rater::class);
+        AliasLoader::getInstance()->alias('StatisticService', StatisticService::class);
+        AliasLoader::getInstance()->alias('WidgetService', WidgetService::class);
 
-        Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
-        Event::listen('books.book.updated', fn(Book $book) => $book->updateEventHandler());
+        Event::listen('books.book.created', fn (Book $book) => $book->createEventHandler());
+        Event::listen('books.book.updated', fn (Book $book) => $book->updateEventHandler());
 
         Book::extend(function (Book $book) {
             $book->implementClassWith(Favorable::class);
@@ -95,7 +103,6 @@ class Plugin extends PluginBase
             $class::extend(function ($model) {
                 $model->implementClassWith(Fillable::class);
             });
-
         }
 
         foreach ([Edition::class, Chapter::class, Pagination::class] as $class) {
@@ -110,7 +117,7 @@ class Plugin extends PluginBase
      *
      * @return array
      */
-    public function registerComponents()
+    public function registerComponents(): array
     {
         return [
             AboutBook::class => 'AboutBook',
@@ -121,43 +128,21 @@ class Plugin extends PluginBase
             BookPage::class => 'BookPage',
             Reader::class => 'reader',
             BookCard::class => 'bookCard',
+            ReadStatistic::class => 'readStatistic',
+            Widget::class => 'widget',
+            OutOfFree::class => 'OutOfFree',
+            Components\Cycle::class => 'cycle',
         ];
     }
 
-    /**
-     * Registers any backend permissions used by this plugin.
-     *
-     * @return array
-     */
-    public function registerPermissions()
+    public function registerSchedule($schedule): void
     {
-        return []; // Remove this line to activate
+        $schedule->call(function () {
+            ChapterService::audit();
+        })->everyMinute();
 
-        return [
-            'books.book.some_permission' => [
-                'tab' => 'Book',
-                'label' => 'Some permission',
-            ],
-        ];
-    }
-
-    /**
-     * Registers backend navigation items for this plugin.
-     *
-     * @return array
-     */
-    public function registerNavigation()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'book' => [
-                'label' => 'Book',
-                'url' => Backend::url('books/book/mycontroller'),
-                'icon' => 'icon-leaf',
-                'permissions' => ['books.book.*'],
-                'order' => 500,
-            ],
-        ];
+        $schedule->call(function () {
+            GenreRater::queue();
+        })->everyTenMinutes();
     }
 }

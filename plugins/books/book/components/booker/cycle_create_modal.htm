@@ -1,4 +1,4 @@
-<div id="create_cycle_form" class="buy-book-modal ui-modal" style="display: none">
+<div id="create_cycle_form" class="buy-book-modal ui-modal" data-modal="new-cycle">
     <div class="ui-modal-container">
         <form data-request="booker::onCreateCycle"
               data-request-validate
@@ -8,7 +8,7 @@
                 <div class="buy-book-modal__header">
                     <div class="square-16 "></div>
                     <div class="ui-text-head--2 ui-text--bold">Создание нового цикла</div>
-                    <svg style="cursor: pointer" onclick="closeModal()" class="square-24">
+                    <svg style="cursor: pointer" data-modal="close" class="square-24">
                         <use
                             xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
                     </svg>
@@ -26,4 +26,9 @@
             </div>
         </form>
     </div>
+    <script>
+        openModal('[data-modal="new-cycle"]', '[data-modal="open-new-cycle"]');
+        document.body.style.overflow = 'initial';
+    </script>
+
 </div>

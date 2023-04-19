@@ -3,6 +3,7 @@
 namespace Books\Catalog\Models;
 
 use Books\Book\Models\Book;
+use Books\Book\Models\BookGenre;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\HasMany;
@@ -89,8 +90,10 @@ class Genre extends Model
         'books' => [
             Book::class,
             'table' => 'books_book_genre',
+            'pivotModel' => BookGenre::class,
             'key' => 'genre_id',
             'otherKey' => 'book_id',
+            'pivot' => ['rate_number'],
         ],
     ];
 
@@ -194,7 +197,6 @@ class Genre extends Model
         return $builder->select(['id', 'name']);
     }
 
-
     public function scopeAdult(Builder $builder, bool $value = true): Builder
     {
         return $builder->where('adult', '=', $value);
@@ -213,8 +215,8 @@ class Genre extends Model
     public function scopeNestedFavorites(Builder $builder): Builder
     {
         return $builder
-            ->where(fn($q) => $q->roots()->whereHas('children', fn($q) => $q->favorite()))
-            ->orWhere(fn($q) => $q->roots()->favorite())
-            ->with('children', fn($q) => $q->favorite());
+            ->where(fn ($q) => $q->roots()->whereHas('children', fn ($q) => $q->favorite()))
+            ->orWhere(fn ($q) => $q->roots()->favorite())
+            ->with('children', fn ($q) => $q->favorite());
     }
 }

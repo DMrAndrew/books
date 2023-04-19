@@ -4,11 +4,16 @@ namespace Books\Profile\Models;
 
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
+use Books\Book\Models\Cycle;
+use Books\Comments\Models\Comment;
 use Books\Profile\Classes\ProfileService;
+use Books\Profile\Classes\SlaveScope;
+use Books\Profile\Factories\ProfileFactory;
 use Books\Profile\Traits\Subscribable;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
@@ -18,6 +23,8 @@ use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
+use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
 use System\Models\Revision;
 use ValidationException;
@@ -38,6 +45,12 @@ class Profile extends Model
     use Validation;
     use Revisionable;
     use Subscribable;
+    use HasFactory;
+    use HasRelationships;
+
+    const MAX_USER_PROFILES_COUNT = 5;
+
+    public static string $factory = ProfileFactory::class;
 
     /**
      * @var string table associated with the model
@@ -84,14 +97,14 @@ class Profile extends Model
         'username' => 'required|between:2,255',
         'username_clipboard' => 'nullable|between:2,255',
         'username_clipboard_comment' => 'nullable|string',
-        'avatar' => 'nullable|image|mimes:jpg,png|dimensions:min_width=168,min_height=168',
-        'banner' => 'nullable|image|mimes:jpg,png|dimensions:min_width=1152,min_height=160',
+        'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|dimensions:min_width=168,min_height=168|max:2048',
+        'banner' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:4096',
         'status' => 'nullable|string',
         'about' => 'nullable|string',
         'website' => 'nullable|url',
         'email' => 'nullable|email',
         'phone' => 'nullable|string',
-        'tg' => 'nullable|string',
+        'tg' => 'nullable|url',
         'ok' => 'nullable|url',
         'vk' => 'nullable|url',
     ];
@@ -127,8 +140,9 @@ class Profile extends Model
     ];
 
     public $hasMany = [
-        'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id', 'scope' => 'sortByAuthorOrder'],
-        'settings' => [Settings::class,'key' => 'user_id','otherKey' => 'user_id']
+        'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id'],
+        'settings' => [Settings::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
+        'cycles' => [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'],
     ];
 
     public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
@@ -150,7 +164,7 @@ class Profile extends Model
     public $morphOne = [];
 
     public $morphMany = [
-        'revision_history' => [Revision::class, 'name' => 'revisionable']
+        'revision_history' => [Revision::class, 'name' => 'revisionable'],
     ];
 
     public $attachOne = [
@@ -165,19 +179,39 @@ class Profile extends Model
         return new ProfileService($this);
     }
 
+    public function leftComments(): BelongsToMany
+    {
+        return $this->belongsToMany(Comment::class, (new Profiler())->getTable(), 'master_id', 'slave_id')
+            ->where('master_type', static::class)->where('slave_type', Comment::class);
+    }
+
+    public function existsInBookCycles(): HasManyDeep
+    {
+        return $this->hasManyDeepFromRelations(
+            $this->books(),
+            (new Book())->cycle(),
+        )->withoutGlobalScope(new SlaveScope());
+    }
+
+    public function cyclesWithAvailableCoAuthorsCycles()
+    {
+        return $this->cycles()->get()->concat($this->existsInBookCycles()->get())->unique();
+    }
+
     public function isCommentAllowed(?Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
-        if (!$profile) {
+        if (! $profile) {
             return false;
         }
         if ($profile->is($this)) {
             return true;
         }
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_FIT_ACCOUNT_INDEX_PAGE)->first();
-        if (!$setting) {
+        if (! $setting) {
             return false;
         }
+
         return match (PrivacySettingsEnum::tryFrom($setting->value)) {
             PrivacySettingsEnum::ALL => true,
             PrivacySettingsEnum::SUBSCRIBERS => $profile->hasSubscription($this),
@@ -185,14 +219,40 @@ class Profile extends Model
         };
     }
 
+    public function canSeeCommentFeed(?Profile $profile = null)
+    {
+        $profile ??= Auth::getUser()?->profile;
+        if (! $profile) {
+            return false;
+        }
+        if ($profile->is($this)) {
+            return true;
+        }
+        $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_COMMENT_FEED)->first();
+        if (! $setting) {
+            return false;
+        }
+
+        return match (PrivacySettingsEnum::tryFrom($setting->value)) {
+            PrivacySettingsEnum::ALL => true,
+            PrivacySettingsEnum::SUBSCRIBERS => $profile->hasSubscription($this),
+            default => false
+        };
+    }
+
+    public function scopeShortPublicEager(Builder $builder)
+    {
+        return $builder->booksCount()->withSubscriberCount()->with(['avatar']);
+    }
+
     public function scopeBooksExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('books', fn($book) => $book->public());
+        return $builder->whereHas('books', fn ($book) => $book->public());
     }
 
     public function scopeBooksCount(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->withCount(['books' => fn($book) => $book->public()]);
+        return $builder->withCount(['books' => fn ($book) => $book->public()]);
     }
 
     public function getIsCurrentAttribute(): bool
@@ -208,11 +268,6 @@ class Profile extends Model
     public function rejectClipboardUsername()
     {
         $this->service()->replaceUsernameFromClipboard(reject: true);
-    }
-
-    public function authorshipsAs(?bool $is_owner): HasMany
-    {
-        return $this->authorships()->when(!is_null($is_owner), fn(Builder $builder) => $is_owner ? $builder->owner() : $builder->notOwner());
     }
 
     public function getFirstLatterAttribute(): string
@@ -247,17 +302,12 @@ class Profile extends Model
 
     public function isEmpty(): bool
     {
-        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => (bool)$i);
+        return ! collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn ($i) => (bool) $i);
     }
 
     public function isContactsEmpty(): bool
     {
-        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn($i) => (bool)$i);
-    }
-
-    public function booksSortedByAuthorOrder(): BelongsToMany
-    {
-        return $this->books()->orderByPivot('sort_order', 'desc');
+        return ! collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn ($i) => (bool) $i);
     }
 
     public static function wordForm(): WordForm
@@ -270,15 +320,18 @@ class Profile extends Model
         return $this->user->profiles()->username($string)->exists() || $this->user->profiles()->usernameClipboard($string)->exists();
     }
 
+    public function maxProfilesCount(): int
+    {
+        return self::MAX_USER_PROFILES_COUNT;
+    }
+
     protected function beforeCreate()
     {
-        if ($this->user->profiles()->count() > 3) {
+        if ($this->user->profiles()->count() >= self::MAX_USER_PROFILES_COUNT) {
             throw new ValidationException(['username' => 'Превышен лимит профилей.']);
         }
         if ($this->isUsernameExists($this->username)) {
             throw new ValidationException(['username' => 'Псевдоним уже занят.']);
         }
     }
-
-
 }

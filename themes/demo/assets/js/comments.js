@@ -8,8 +8,22 @@ function initComments() {
             button.disabled = !textarea.value;
         })
     }
+
+    for (let btn of document.querySelectorAll('[data-collapse-more]')) {
+        btn.addEventListener('click', () => {
+            $(btn).prev().removeClass('collapsed')
+            $(btn).replaceWith('')
+        })
+    }
 }
 
-// document.addEventListener('DOMContentLoaded', () => {
-//     initComments()
-// });
+function sendComment() {
+
+}
+
+function getUnCollapsed() {
+    let array = {opened: $(`.comments-comment__sub:not(.collapsed)`).map((l, i) => $(i).data("collapseMoreId")).get()}
+    console.log(array)
+    return array;
+}
+

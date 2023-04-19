@@ -1,4 +1,4 @@
-let initFn = () => {
+function initFn() {
     // Удалить скрипт (атрибуты). Оживил для презентации заказчику
     const actionItems = document.querySelectorAll('[data-header-action]');
 
@@ -18,9 +18,13 @@ let initFn = () => {
             if (buttonMenuMobile[0].classList.contains('active')) {
                 buttonMenuMobile[0].classList.remove('active');
                 buttonMenuMobile[1].classList.add('active');
+                document.body.classList.add("no-scroll");
+                document.querySelector('header.header').classList.add("opened-menu");
             } else {
                 buttonMenuMobile[1].classList.remove('active');
                 buttonMenuMobile[0].classList.add('active');
+                document.body.classList.remove("no-scroll");
+                document.querySelector('header.header').classList.remove("opened-menu");
             }
         })
     }
@@ -37,15 +41,18 @@ let initFn = () => {
                 let activeTabAttr = menuMobileLink[i].getAttribute("data-menu-link");
 
                 for (let j = 0; j < menuMobileLink.length; j++) {
-                    let contentAttr = menuMobileItem[j].getAttribute("data-menu-item");
+                    let contentAttr = menuMobileItem[j]?.getAttribute("data-menu-item");
 
-                    if (activeTabAttr === contentAttr) {
-                        menuMobileItem[j].classList.add("active");
-                    } else {
-                        menuMobileItem[j].classList.remove("active");
+                    if (contentAttr) {
+
+                        if (activeTabAttr === contentAttr) {
+                            menuMobileItem[j].classList.add("active");
+                        } else {
+                            menuMobileItem[j].classList.remove("active");
+                        }
                     }
                 }
-                ;
+
             });
         }
     }
@@ -59,7 +66,7 @@ let initFn = () => {
     const searchInput = document.querySelector('[data-search="input"]');
 
 
-    if(buttonOpenSearchMobile){
+    if (buttonOpenSearchMobile) {
         buttonOpenSearchMobile.addEventListener('click', () => {
             searchItem.classList.add('active')
         })

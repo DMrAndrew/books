@@ -1,8 +1,11 @@
-<?php namespace Books\Book\Models;
+<?php
+
+namespace Books\Book\Models;
 
 use October\Rain\Database\Pivot;
 use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\Validation;
+use System\Models\Revision;
 
 /**
  * BookGenre Model
@@ -12,19 +15,25 @@ use October\Rain\Database\Traits\Validation;
 class BookGenre extends Pivot
 {
     use Validation;
-    use Revisionable;
 
-    protected array $revisionable = ['rate_number'];
+    public $timestamps = false;
+//    protected array $revisionable = ['rate_number'];
+
     /**
      * @var string table name
      */
     public $table = 'books_book_genre';
 
     protected $fillable = ['rate_number'];
+
     /**
      * @var array rules for validation
      */
     public $rules = [
-        'rate_number' => 'nullable|integer|min:1'
+        'rate_number' => 'nullable|integer|min:0',
     ];
+
+//    public $morphMany = [
+//        'revision_history' => [Revision::class, 'name' => 'revisionable'],
+//    ];
 }

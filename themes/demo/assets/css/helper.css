@@ -122,6 +122,31 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
 .reader__body {
     text-align: justify;
 }
-.comments{
+
+.comments {
     margin-top: 16px;
 }
+
+.comments-comment__sub.collapsed .comments-comment {
+    display: none;
+}
+
+.comments-comment__sub.collapsed .comments-comment:nth-child(-n+5) {
+    display: flex;
+}
+
+.font-darkred {
+    color: darkred;
+}
+
+.menu-mobile__footer {
+    margin: 0;
+}
+
+.truncate {
+    -webkit-line-clamp: 6; /* Число отображаемых строк */
+    display: -webkit-box; /* Включаем флексбоксы */
+    -webkit-box-orient: vertical; /* Вертикальная ориентация */
+    overflow: hidden; /* Обрезаем всё за пределами блока */
+}
+

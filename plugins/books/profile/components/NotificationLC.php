@@ -2,9 +2,9 @@
 
 namespace Books\Profile\Components;
 
-use Books\User\Classes\SettingsTagEnum;
-use Books\User\Classes\UserSettingsEnum;
 use Cms\Classes\ComponentBase;
+use Exception;
+use Flash;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -54,12 +54,15 @@ class NotificationLC extends ComponentBase
 
     public function onUpdateNotify()
     {
-        collect(post('options'))->each(function ($option, $key) {
-            $this->user->settings()->type(UserSettingsEnum::tryFrom($key))->first()?->update(['value' => $option]);
-        });
+        try {
+            $this->user->profile->service()->updateSettings(post('options'));
+            Flash::success('Данные успешно сохранены');
 
-        return [
-            '#lc-notification-form' => $this->renderPartial('@default', ['settings' => $this->getSettings()]),
-        ];
+            return [
+                '#lc-notification-form' => $this->renderPartial('@default', ['settings' => $this->getSettings()]),
+            ];
+        } catch (Exception $ex) {
+            Flash::error($ex->getMessage());
+        }
     }
 }

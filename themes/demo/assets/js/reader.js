@@ -6,12 +6,12 @@ class Reader {
     bgDcrBtn = null;
     bgEncrBtn = null;
     curBgIndex = 0;
-    bgClasses = ['_bg-black', '_bg-gray', '_bg-yellow', '_bg-white'];
+    bgClasses = ['_bg-yellow', '_bg-gray', '_bg-black', '_bg-white'];
     maxFont = 24;
-    curFont = 16;
+    curFont = 14;
     minFont = 12;
     #tracker_id = null;
-    #trackerInterval = 45000;
+    #trackerInterval = 30000;
 
     #paginator_id = null
 
@@ -41,6 +41,9 @@ class Reader {
                 data: {
                     paginator_id: this.#paginator_id,
                     ms: ms || this.#trackerInterval
+                },
+                progressBar: false,
+                error: () => {
                 }
             })
         }

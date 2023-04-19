@@ -6,3 +6,13 @@ fields:
     id:
         label: ID
         disabled: true
+    title:
+        label: Название
+        searchable: true
+    annotation:
+        label: Аннотация
+        searchable: true
+    recommend:
+        label: В рекомендованных
+        type: checkbox
+

@@ -2,11 +2,11 @@
 
 namespace Books\User;
 
-use Backend;
 use Books\User\Behaviors\BookUser;
 use Books\User\Behaviors\CountryTranslate;
 use Books\User\Classes\SearchManager;
 use Books\User\Classes\UserEventHandler;
+use Books\User\Classes\UserSettingsEnum;
 use Books\User\Components\BookAccount;
 use Books\User\Components\Searcher;
 use Books\User\Components\UserSettingsLC;
@@ -25,7 +25,9 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User'];
+    public $require = [
+        'RainLab.User',
+    ];
 
     /**
      * Returns information about this plugin.
@@ -47,7 +49,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         //test
         Event::listen('rainlab.user.register', function (User $model) {
@@ -60,7 +62,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         AliasLoader::getInstance()->alias('User', User::class);
         AliasLoader::getInstance()->alias('Search', Search::class);
@@ -68,9 +70,11 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Country', Country::class);
         AliasLoader::getInstance()->alias('BookSettings', Settings::class);
         AliasLoader::getInstance()->alias('CountryList', CountryList::class);
+        AliasLoader::getInstance()->alias('UserSettingsEnum', UserSettingsEnum::class);
         Country::extend(function (Country $country) {
             $country->implementClassWith(CountryTranslate::class);
         });
+
         User::extend(function (User $model) {
             $model->implementClassWith(BookUser::class);
             $model->implementClassWith(LocationModel::class);
@@ -82,49 +86,12 @@ class Plugin extends PluginBase
      *
      * @return array
      */
-    public function registerComponents()
+    public function registerComponents(): array
     {
         return [
             BookAccount::class => 'bookAccount',
             Searcher::class => 'searcher',
             UserSettingsLC::class => 'userSettingsLC',
-        ];
-    }
-
-    /**
-     * Registers any backend permissions used by this plugin.
-     *
-     * @return array
-     */
-    public function registerPermissions()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'books.user.some_permission' => [
-                'tab' => 'User',
-                'label' => 'Some permission',
-            ],
-        ];
-    }
-
-    /**
-     * Registers backend navigation items for this plugin.
-     *
-     * @return array
-     */
-    public function registerNavigation()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'user' => [
-                'label' => 'User',
-                'url' => Backend::url('books/user/mycontroller'),
-                'icon' => 'icon-leaf',
-                'permissions' => ['books.user.*'],
-                'order' => 500,
-            ],
         ];
     }
 }

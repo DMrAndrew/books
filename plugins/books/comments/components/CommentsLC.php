@@ -1,7 +1,7 @@
-<?php namespace Books\Comments\Components;
+<?php
 
-use Books\Book\Models\Book;
-use Books\Profile\Models\Profile;
+namespace Books\Comments\Components;
+
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -13,14 +13,13 @@ use RainLab\User\Models\User;
  */
 class CommentsLC extends ComponentBase
 {
-
     protected User $user;
 
     public function componentDetails()
     {
         return [
             'name' => 'CommentsLC Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -44,27 +43,18 @@ class CommentsLC extends ComponentBase
 
     public function getCommentsList()
     {
-        return $this->user->comments()->with('commentable')->get()->map(function ($comment) {
-            $comment['label'] = match ($comment['commentable_type']) {
-                Book::class => 'к книге ' . $comment->commentable->title,
-                Profile::class => 'в профиле пользователя ' . $comment->commentable->username,
-            };
-            $comment['link'] = match ($comment['commentable_type']) {
-                Book::class => '/book-card/' . $comment->commentable->id,
-                Profile::class => '/author-page/' . $comment->commentable->id,
-            };
-
-            return $comment;
-        });
+        //TODO EagerLoad
+        return $this->user->profile->leftComments()->orderBy('updated_at', 'desc')->get();
     }
 
     public function onRemove()
     {
-        if ($comment = $this->user->comments()->find(post('id'))) {
+        if ($comment = $this->user->profile->leftComments()->find(post('id'))) {
             $comment->commentable->deleteComment($comment);
         }
-        return ['#comments-spawn' => $this->renderPartial('@default',[
-            'comments' => $this->getCommentsList()
+
+        return ['#comments-spawn' => $this->renderPartial('@default', [
+            'comments' => $this->getCommentsList(),
         ])];
     }
 }

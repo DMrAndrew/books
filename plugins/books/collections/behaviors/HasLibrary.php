@@ -21,23 +21,33 @@ class HasLibrary extends ExtensionBase
         return new LibraryService($this->model, $model);
     }
 
+    public function queryLibs()
+    {
+        return $this->model
+            ->favorites()
+            ->type(Lib::class);
+    }
+
     public function libs(): HasMany
     {
-        return $this->model->favorites()->type(Lib::class);
+        return $this->model->queryLibs()
+            ->with(['favorable' => fn ($q) => $q->with(['book' => fn ($book) => $book->defaultEager()])]);
     }
 
     public function getLib()
     {
         $libs = $this->model->libs()
+            ->whereHas('favorable', fn ($favorable) => $favorable->public())
             ->with([
-                'favorable' => fn($q) => $q->with(['book' => fn($book) => $book->withProgress($this->model)->defaultEager()]),
-                ])
+                'favorable' => fn ($q) => $q->with(['book' => fn ($book) => $book->withProgress($this->model)]),
+            ])
             ->get()
             ->pluck('favorable')
             ->sortByDesc('id')
-            ->groupBy(fn($i) => $i->type->value);
+            ->groupBy(fn ($i) => $i->type->value);
 
-        $libs[CollectionEnum::LOVED->value] = $libs->flatten(1)->filter(fn($i) => $i->loved);
+        $libs[CollectionEnum::LOVED->value] = $libs->flatten(1)->filter(fn ($i) => $i->loved);
+
         return $libs;
     }
 }

@@ -1,0 +1,47 @@
+<!-- Тело страницы "Список книг" -->
+<div class="ui-container">
+    <h1 class="listing-book__title ui-text--bold">
+        <span class="ui-text-head--2">Цикл «{{cycle.name}}» </span>
+        <span>{{cycle.books.count}}</span>
+    </h1>
+</div>
+
+<div class="ui-container-fluid">
+    <div class="listing-book__content ui-grid-container ui-grid-gap">
+
+        <!-- Публикация -->
+        <div class="ui-col-sm-3 ui-order-sm-2">
+            <div class="listing-book__info">
+                <div class="ui-text-head--3 ui-text--bold">Публикация</div>
+                <div class="listing-book-info__block">
+                    <dl class="description-list ui-text-body--2">
+                        <dt class="description-list__title">Начало</dt>
+                        <dd class="description-list__value">{{start_at}}</dd>
+                    </dl>
+                    <dl class="description-list ui-text-body--2">
+                        <dt class="description-list__title">Конец</dt>
+                        {% if end_at %}
+                        <dt class="description-list__title">{{end_at}}</dt>
+
+                        <!--                        <dd class="description-list__value">-->
+                        <!--                            {% partial 'cycle/cycle-status' status=cycle.status.value %}-->
+                        <!--                        </dd>-->
+                        {% endif %}
+                    </dl>
+                </div>
+                <div class="listing-book-info__footer">
+                    <div class="ui-text-body--2">Обновлен {{last_updated_at}}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Карточки товара + чипы -->
+        <div class="ui-col-sm-9">
+
+            <!-- Карточка книги -->
+            {% for index,book in books %}
+            {% ajaxPartial "bookCard::standard-card" book=book index_number=index+1 %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

@@ -4,23 +4,22 @@ namespace Books\Profile\Classes;
 
 use Books\Profile\Models\Profile;
 use Books\User\Classes\UserSettingsEnum;
-use Books\User\Models\Settings;
 use Event;
 use RainLab\User\Models\User;
 use ValidationException;
+use Validator;
 
 class ProfileService
 {
-
     public function __construct(protected Profile $profile)
     {
     }
 
     /**
-     * @param User $user
-     * @param array $payload
-     * @param bool $activate
-     * @return void
+     * @param  User  $user
+     * @param  array  $payload
+     * @param  bool  $activate
+     * @return Profile
      *
      * @throws ValidationException
      */
@@ -30,13 +29,12 @@ class ProfileService
         $payload['username'] ??= $user->username;
 
         return $this->newProfile($payload);
-
     }
 
     public function newProfile(array $payload, bool $activate = true): Profile
     {
         $user = $this->profile->user;
-        $validator = \Validator::make(
+        $validator = Validator::make(
             $payload,
             (new Profile())->rules
         );
@@ -44,24 +42,24 @@ class ProfileService
             throw new  ValidationException($validator);
         }
 
-        $this->profile = $user->profiles()->create($payload);
-        Event::fire('books.profile.created', [$this->profile]);
+        $profile = $user->profiles()->create($payload)->fresh();
+        Event::fire('books.profile.created', [$profile]);
         if ($activate) {
-            $this->switch();
-            $this->initUserSettings();
+            $profile->service()->switch();
+            $profile->service()->initUserSettings();
         }
 
         return $this->profile;
     }
 
     /**
-     * @param bool $reject
+     * @param  bool  $reject
      * @return void
      */
     public function replaceUsernameFromClipboard(bool $reject = false): void
     {
         if ($username_clipboard = $this->profile->username_clipboard) {
-            if (!$reject) {
+            if (! $reject) {
                 $this->profile->update(['username' => $username_clipboard, 'username_clipboard' => null, 'username_clipboard_comment' => null]);
                 Event::fire('books.profile.username.modified', [$this->profile]);
             } else {
@@ -88,11 +86,24 @@ class ProfileService
             $this->profile->user->settings->each->delete();
         }
 
-        collect(UserSettingsEnum::cases())->map(function ($setting) {
-            $this->profile->user->settings()->firstOrCreate(['type' => $setting->value]);
+        collect(UserSettingsEnum::cases())->map(function (UserSettingsEnum $setting) {
+            $this->profile->user->settings()
+                ->firstOrCreate(['type' => $setting->value], ['value' => $setting->defaultOption()->value]);
         });
 
-
         Event::fire('books.profile.settings.initialized', [$this->profile]);
+    }
+
+    /**
+     * @param  array  $array [setting_enum_value => value]
+     * @return void
+     */
+    public function updateSettings(array $array): void
+    {
+        collect($array)->each(function ($option, $key) {
+            if ($type = UserSettingsEnum::tryFrom($key)) {
+                $this->profile->user->settings()->type($type)->first()?->update(['value' => $option]);
+            }
+        });
     }
 }

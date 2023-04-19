@@ -9,7 +9,6 @@ use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
 use RainLab\User\Facades\Auth;
-use Request;
 
 /**
  * EBooker Component
@@ -19,6 +18,7 @@ use Request;
 class EBooker extends ComponentBase
 {
     protected Edition $ebook;
+
     protected EditionService $service;
 
     /**
@@ -37,21 +37,26 @@ class EBooker extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
-        $this->ebook = Auth::getUser()->profile->books()->find($this->property('book_id'))?->ebook;
-        if (!$this->ebook) {
-            throw new ApplicationException('Электронное издание книги не найден.');
-        }
+        $this->vals();
         $this->service = new EditionService($this->ebook);
-
     }
 
     public function onRun()
     {
-        $this->vals();
+    }
+
+    public function fresh()
+    {
+        $this->ebook = Auth::getUser()?->profile->books()->with('chapters')->find($this->property('book_id'))?->ebook;
+        if (! $this->ebook) {
+            throw new ApplicationException('Электронное издание книги не найден.');
+        }
     }
 
     public function vals()
     {
+        $this->fresh();
+
         $this->page['ebook'] = $this->ebook;
         $this->page['bookStatusCases'] = $this->ebook->getAllowedStatusCases();
     }
@@ -75,22 +80,40 @@ class EBooker extends ComponentBase
 
     public function onUpdateSortOrder()
     {
+        $partial = fn () => [
+            '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
+        ];
+
         try {
-
             $this->service->changeChaptersOrder(post('sequence'));
+            $this->fresh();
 
-            return [
-                '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook->fresh()]),
-            ];
+            return $partial();
         } catch (Exception $ex) {
-            if (Request::ajax()) {
-                throw new \AjaxException([
-                    '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook->fresh()]),
-                    'error' => $ex->getMessage()
-                ]);
-            } else {
-                Flash::error($ex->getMessage());
+            Flash::error($ex->getMessage());
+
+            return $partial();
+        }
+    }
+
+    public function onDeleteChapter()
+    {
+        $partial = fn () => [
+            '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
+        ];
+        try {
+            $chapter_id = post('chapter_id');
+            if ($chapter = $this->ebook->chapters()->find($chapter_id)) {
+                $chapter->service()->delete();
             }
+
+            $this->fresh();
+
+            return $partial();
+        } catch (Exception $ex) {
+            Flash::error($ex->getMessage());
+
+            return $partial();
         }
     }
 
@@ -98,19 +121,21 @@ class EBooker extends ComponentBase
     {
         try {
             $this->service->update(post());
-            $this->ebook = $this->ebook->fresh();
+
             $this->vals();
+
             return [
                 '#about-header' => $this->renderPartial('book/about-header'),
                 '#ebooker-chapters' => $this->renderPartial('@chapters'),
                 '#ebook-settings' => $this->renderPartial('@settings'),
             ];
         } catch (Exception $ex) {
-            if (Request::ajax()) {
-                throw $ex;
-            } else {
-                Flash::error($ex->getMessage());
-            }
+            Flash::error($ex->getMessage());
+            $this->vals();
+
+            return [
+                '#ebook-settings' => $this->renderPartial('@settings'),
+            ];
         }
     }
 }

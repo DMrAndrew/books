@@ -2,3 +2,6 @@
     - 'Расширение пользователей'
     - users_add_extras.php
     - create_books_user_settings_table.php
+1.0.1:
+    - 'Date для дата рождения'
+    - users_birthday_to_date.php

@@ -1,0 +1,14 @@
+title = "Личный кабинет - Статистика прочтений"
+layout = "default"
+url = "/lc-read-statistic-parts/:book_id"
+meta_title = "Личный кабинет - Статистика прочтений"
+[session]
+security = "user"
+redirect = "/"
+[readStatistic parts]
+==
+<div id="statistic_spawn">
+    {% component 'parts' %}
+</div>
+
+

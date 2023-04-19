@@ -1,8 +1,10 @@
-<?php namespace Books\FileUploader\Components;
+<?php
 
+namespace Books\FileUploader\Components;
+
+use ApplicationException;
 use Books\FileUploader\Traits\ComponentUtils;
 use Cms\Classes\ComponentBase;
-use ApplicationException;
 
 class ImageUploader extends ComponentBase
 {
@@ -24,12 +26,13 @@ class ImageUploader extends ComponentBase
      * @var array Options used for generating thumbnails.
      */
     public $thumbOptions = [
-        'mode'      => 'crop',
-        'extension' => 'auto'
+        'mode' => 'crop',
+        'extension' => 'auto',
     ];
 
     /**
      * Supported file types.
+     *
      * @var array
      */
     public $fileTypes;
@@ -57,8 +60,8 @@ class ImageUploader extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => 'books.fileuploader::lang.component.image_uploader',
-            'description' => 'books.fileuploader::lang.component.image_uploader_desc'
+            'name' => 'books.fileuploader::lang.component.image_uploader',
+            'description' => 'books.fileuploader::lang.component.image_uploader_desc',
         ];
     }
 
@@ -66,40 +69,40 @@ class ImageUploader extends ComponentBase
     {
         return [
             'placeholderText' => [
-                'title'       => 'books.fileuploader::lang.prop.placeholder',
+                'title' => 'books.fileuploader::lang.prop.placeholder',
                 'description' => 'books.fileuploader::lang.prop.placeholder_img_desc',
-                'default'     => 'Click or drag images to upload',
-                'type'        => 'string',
+                'default' => 'Click or drag images to upload',
+                'type' => 'string',
             ],
             'maxSize' => [
-                'title'       => 'books.fileuploader::lang.prop.maxSize',
+                'title' => 'books.fileuploader::lang.prop.maxSize',
                 'description' => 'books.fileuploader::lang.prop.maxSize_desc',
-                'default'     => '5',
-                'type'        => 'string',
+                'default' => '5',
+                'type' => 'string',
             ],
             'fileTypes' => [
-                'title'       => 'books.fileuploader::lang.prop.fileTypes',
+                'title' => 'books.fileuploader::lang.prop.fileTypes',
                 'description' => 'books.fileuploader::lang.prop.fileTypes_desc',
-                'default'     => '.gif,.jpg,.jpeg,.png',
-                'type'        => 'string',
+                'default' => '.gif,.jpg,.jpeg,.png,.webp',
+                'type' => 'string',
             ],
             'imageWidth' => [
-                'title'       => 'books.fileuploader::lang.prop.imageWidth',
+                'title' => 'books.fileuploader::lang.prop.imageWidth',
                 'description' => 'books.fileuploader::lang.prop.imageWidth_desc',
-                'default'     => '100',
-                'type'        => 'string',
+                'default' => '100',
+                'type' => 'string',
             ],
             'imageHeight' => [
-                'title'       => 'books.fileuploader::lang.prop.imageHeight',
+                'title' => 'books.fileuploader::lang.prop.imageHeight',
                 'description' => 'books.fileuploader::lang.prop.imageHeight_desc',
-                'default'     => '100',
-                'type'        => 'string',
+                'default' => '100',
+                'type' => 'string',
             ],
             'imageMode' => [
-                'title'       => 'books.fileuploader::lang.prop.imageMode',
+                'title' => 'books.fileuploader::lang.prop.imageMode',
                 'description' => 'books.fileuploader::lang.prop.imageMode_desc',
-                'default'     => 'crop',
-                'type'        => 'string',
+                'default' => 'crop',
+                'type' => 'string',
             ],
             // 'previewFluid' => [
             //     'title'       => 'books.fileuploader::lang.prop.previewFluid',
@@ -108,9 +111,9 @@ class ImageUploader extends ComponentBase
             //     'type'        => 'checkbox',
             // ],
             'deferredBinding' => [
-                'title'       => 'books.fileuploader::lang.prop.deferredBinding',
+                'title' => 'books.fileuploader::lang.prop.deferredBinding',
                 'description' => 'books.fileuploader::lang.prop.deferredBinding_desc',
-                'type'        => 'checkbox',
+                'type' => 'checkbox',
             ],
         ];
     }
@@ -147,12 +150,13 @@ class ImageUploader extends ComponentBase
     /**
      * Returns the CSS dimensions for the uploaded image,
      * uses auto where no dimension is provided.
-     * @param string $mode
+     *
+     * @param  string  $mode
      * @return string
      */
     public function getCssDimensions($mode = null)
     {
-        if (!$this->imageWidth && !$this->imageHeight) {
+        if (! $this->imageWidth && ! $this->imageHeight) {
             return '';
         }
 
@@ -160,20 +164,19 @@ class ImageUploader extends ComponentBase
 
         if ($mode == 'block') {
             $cssDimensions .= ($this->imageWidth)
-                ? 'width: ' . $this->imageWidth . 'px;'
-                : 'width: ' . $this->imageHeight . 'px;';
+                ? 'width: '.$this->imageWidth.'px;'
+                : 'width: '.$this->imageHeight.'px;';
 
             $cssDimensions .= ($this->imageHeight)
-                ? 'height: ' . $this->imageHeight . 'px;'
+                ? 'height: '.$this->imageHeight.'px;'
                 : 'height: auto;';
-        }
-        else {
+        } else {
             $cssDimensions .= ($this->imageWidth)
-                ? 'width: ' . $this->imageWidth . 'px;'
+                ? 'width: '.$this->imageWidth.'px;'
                 : 'width: auto;';
 
             $cssDimensions .= ($this->imageHeight)
-                ? 'height: ' . $this->imageHeight . 'px;'
+                ? 'height: '.$this->imageHeight.'px;'
                 : 'height: auto;';
         }
 
@@ -184,16 +187,16 @@ class ImageUploader extends ComponentBase
      * Adds the bespoke attributes used internally by this widget.
      * - thumbUrl
      * - pathUrl
+     *
      * @return System\Models\File
      */
     protected function decorateFileAttributes($file)
     {
         $path = $thumb = $file->getPath();
 
-        if (!empty($this->imageWidth) || !empty($this->imageHeight)) {
+        if (! empty($this->imageWidth) || ! empty($this->imageHeight)) {
             $thumb = $file->getThumb($this->imageWidth, $this->imageHeight, $this->thumbOptions);
-        }
-        else {
+        } else {
             $thumb = $file->getThumb(63, 63, $this->thumbOptions);
         }
 
@@ -205,14 +208,13 @@ class ImageUploader extends ComponentBase
 
     public function onRender()
     {
-        if (!$this->isBound) {
+        if (! $this->isBound) {
             throw new ApplicationException('There is no model bound to the uploader!');
         }
 
         if ($populated = $this->property('populated')) {
             $this->setPopulated($populated);
-        }
-        else {
+        } else {
             $this->autoPopulate();
         }
     }

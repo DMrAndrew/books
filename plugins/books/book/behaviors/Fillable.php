@@ -14,13 +14,13 @@ class Fillable extends ExtensionBase
     {
         $this->model->morphOne['content'] = [Content::class, 'name' => 'fillable', 'scope' => 'noType'];
         $this->model->morphOne['deferredContent'] = [Content::class, 'name' => 'fillable', 'scope' => 'deferred'];
-        $this->model->bindEvent('model.afterCreate', fn() => $this->afterCreate());
-        $this->model->bindEvent('model.afterSave', fn() => $this->afterSave());
+        $this->model->bindEvent('model.afterCreate', fn () => $this->afterCreate());
+        $this->model->bindEvent('model.afterSave', fn () => $this->afterSave());
     }
 
     public function afterCreate()
     {
-        if (!$this->model->content()->exists()) {
+        if (! $this->model->content()->exists()) {
             $this->model->content()->create();
         }
     }
@@ -28,11 +28,9 @@ class Fillable extends ExtensionBase
     public function afterSave()
     {
         if ($content = $this->model->getOriginalPurgeValue('new_content')) {
-
             $this->model->content->fill(['body' => $content]);
 
             if ($this->model->content->isDirty(['body'])) {
-
                 if ($this->model instanceof Chapter && $this->model->edition->shouldDeferredUpdate()) {
                     $this->model->deferredContent()->updateOrCreate(['type' => ContentTypeEnum::DEFERRED->value], ['body' => $content]);
 

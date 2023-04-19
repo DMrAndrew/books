@@ -2,7 +2,6 @@
 
 namespace Books\Profile\Classes;
 
-use Books\Book\Models\Chapter;
 use Books\Profile\Models\Profile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -12,21 +11,16 @@ use RainLab\User\Models\User;
 class SlaveScope implements Scope
 {
     /**
-     * @param Builder $builder
-     * @param Model $model
+     * @param  Builder  $builder
+     * @param  Model  $model
      * @return void
      */
     public function apply(Builder $builder, Model $model): void
     {
-
-        if($profile = $this->getQueryProfile($builder) ?? $this->getQueryUser($builder)?->profile){
+        if ($profile = $this->getQueryProfile($builder) ?? $this->getQueryUser($builder)?->profile) {
             $builder->whereIn('id', $profile->profiler($model)->select('slave_id'))
                 ->orWhereIn('id', $profile->user->profiler($model)->select('slave_id'));
         }
-//        if ($user = $this->getQueryUser($builder)) {
-//            $builder->whereIn('id', $user->profiler($model)->select('slave_id'))
-//                ->orWhereIn('id', $user->profile->profiler($model)->select('slave_id'));
-//        }
     }
 
     public function extend(Builder $builder)
@@ -37,14 +31,14 @@ class SlaveScope implements Scope
     }
 
     /**
-     * @param Builder $builder
+     * @param  Builder  $builder
      * @return mixed
      */
     private function getQueryProfile(Builder $builder): mixed
     {
         $profile_id = null;
         foreach ($builder->getQuery()->wheres as $where) {
-            if ($where['type'] === 'Basic' && str_contains($where['column'], 'profile_id')) {
+            if ($where['type'] === 'Basic' && str_contains($where['column'] ?? '', 'profile_id')) {
                 $profile_id = $where['value'];
             }
         }
@@ -52,16 +46,15 @@ class SlaveScope implements Scope
         return Profile::find($profile_id);
     }
 
-
     /**
-     * @param Builder $builder
+     * @param  Builder  $builder
      * @return mixed
      */
     private function getQueryUser(Builder $builder): mixed
     {
         $user_id = null;
         foreach ($builder->getQuery()->wheres as $where) {
-            if ($where['type'] === 'Basic' && str_contains($where['column'], 'user_id')) {
+            if ($where['type'] === 'Basic' && str_contains($where['column'] ?? '', 'user_id')) {
                 $user_id = $where['value'];
             }
         }

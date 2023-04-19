@@ -3,6 +3,8 @@
 namespace Books\Book\Jobs;
 
 use Books\Book\Models\Chapter;
+use Exception;
+use Log;
 
 class JobPaginate
 {
@@ -10,9 +12,10 @@ class JobPaginate
     {
         try {
             Chapter::find($data['chapter_id'] ?? null)?->service()->paginate();
-        } catch (\Exception $exception) {
-            \Log::error($exception->getMessage());
+            $job->delete();
+        } catch (Exception $exception) {
+            Log::error($exception->getMessage());
+            throw $exception;
         }
-        $job->delete();
     }
 }

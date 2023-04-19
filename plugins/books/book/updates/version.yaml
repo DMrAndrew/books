@@ -23,3 +23,15 @@
 1.0.5:
     - 'Контент частей и страниц отдельной таблицей'
     - create_contents_table.php
+1.0.6:
+    - 'CascadeOnDelete FK для next/prev'
+    - neighbours_fk_constraint.php
+1.0.7:
+    - 'Доп.показатели статистики + история'
+    - stats_table_add_fields.php
+1.0.8:
+    - "Recommend books"
+    - add_books_reccoment_flag.php
+1.0.9:
+    - 'Удаление user_id у жанра'
+    - tags_remove_user_id.php

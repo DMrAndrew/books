@@ -6,10 +6,8 @@ enum ChapterStatus: string
 {
     case DRAFT = 'draft';
     case PUBLISHED = 'published';
-
+    case PLANNED = 'planned';
     case PENDING = 'pending';
-
-
 
     /**
      * @return string
@@ -19,6 +17,7 @@ enum ChapterStatus: string
         return match ($this) {
             self::DRAFT => 'Черновик',
             self::PUBLISHED => 'Опубликована',
+            self::PLANNED => 'Опубликуется',
             self::PENDING => 'Загружается',
         };
     }

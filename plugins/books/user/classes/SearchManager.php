@@ -4,6 +4,7 @@ namespace Books\User\Classes;
 
 use Books\Book\Models\Book;
 use Books\Profile\Models\Profile;
+use Illuminate\Support\Collection;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 
 class SearchManager
@@ -15,14 +16,14 @@ class SearchManager
         'Profile' => Profile::class,
     ];
 
-    public function apply(string $query): \October\Rain\Support\Collection|\Illuminate\Support\Collection
+    public function apply(string $query): \October\Rain\Support\Collection|Collection
     {
-        //TODO ->booksExists() для профиля
         $res = Search::add(Book::public()->defaultEager(), 'title')
-            ->add(Profile::query()->booksCount()->withSubscriberCount()->with(['avatar']), 'username')
+            ->add(Profile::query()->shortPublicEager()->booksExists(), 'username')
             ->includeModelType()
             ->orderByModel([
                 Book::class, Profile::class])
+            ->beginWithWildcard(false)
             ->search($query)
             ->groupBy('type');
 

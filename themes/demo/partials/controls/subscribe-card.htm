@@ -1,0 +1,30 @@
+<a href="/author-page/{{item.id}}" class="subscribe-card wrapper ui-col-sm-6">
+    <div class="subscribe-card__header">
+        <div class="subscribe-card__avatar">
+            {% if item.avatar %}
+            <img src="{{item.avatar.getThumb(40,40)}}" alt="">
+            {% else %}
+            <span class="ui-text-body--1 ui-text--medium">{{item.firstLatter}}</span>
+            {% endif %}
+        </div>
+        <div class="subscribe-card__name ui-text--bold">{{item.username}}</div>
+    </div>
+    {% if footer %}
+    <div class="subscribe-card__footer">
+        <div class="wrapper-item _indent">
+            <svg class="square-16">
+                <use
+                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}    "></use>
+            </svg>
+            <span>{{item.books_count}}</span>
+        </div>
+        <div class="wrapper-item _indent">
+            <svg class="square-16">
+                <use
+                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#user-filled-16' | theme}}"></use>
+            </svg>
+            <span>{{item.subscribers_count}}</span>
+        </div>
+    </div>
+    {% endif %}
+</a>

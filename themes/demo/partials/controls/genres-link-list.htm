@@ -1,0 +1,7 @@
+{% for genre in genres %}
+<a href="/listing?genre={{genre.id}}" class="{{linkClass}} ui-link _violet">
+    {% if genre.pivot.rate_number %}
+    #{{genre.pivot.rate_number}} в
+    {% endif %}
+    {{genre.name}}</a>
+{% endfor %}

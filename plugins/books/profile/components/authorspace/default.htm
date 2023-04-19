@@ -2,7 +2,7 @@
     <div class="author__promo author-promo">
         <div class="author-promo__background">
             {% if profile.banner %}
-            <img class="author__background-image" src="{{profile.banner.getThumb(1152,160)}}" alt="banner"
+            <img class="author__background-image" src="{{profile.banner.path}}" alt="banner"
                  loadong="lazy">
             {% else %}
             <img class="author__background-image" src="{{'assets/images/author/bg-placeholder.png' | theme}}"
@@ -13,7 +13,7 @@
             <div class="author-promo-info__avatar-wrapper">
                 <!-- Показывается сообщение или плейсхолдер -->
                 {% if profile.avatar %}
-                <img class="profile-avatar-image" src="{{profile.avatar.getThumb(168,168)}}" alt="avatar">
+                <img class="profile-avatar-image" src="{{profile.avatar.path}}" alt="avatar">
                 {% else %}
                 <span>{{ profile.firstLatter }}</span>
                 {% endif %}
@@ -32,9 +32,7 @@
                     </a>
                     {% else %}
                     {% if not sameAccount %}
-                    <div id="sub-button">
-                        {% partial '@sub-button' sub=profile.subscribers_exists %}
-                    </div>
+                    {% partial '@sub-button' sub=profile.subscribers_exists %}
                     {% endif %}
                     <!--                    <button-->
                     <!--                        class="author-promo-info__button _half ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3">Сообщение</button>-->
@@ -42,8 +40,6 @@
                     <!--                        автора</button>-->
                     {% endif %}
                     {% endif %}
-
-
                 </div>
             </div>
         </div>
@@ -54,17 +50,38 @@
                     <div class="ui-tabs-line"></div>
                     <div class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
                         <div class="ui-tabs-link active" data-tab="1">Профиль</div>
-                        <div class="ui-tabs-link " data-tab="2">Книги <span> {{ books_count }} </span>
+                        <div class="ui-tabs-link " data-tab="2">Книги
+                            {% if books.count %}
+                            <span>{{books.count?:''}}</span>
+                            {% endif %}
                         </div>
 
                         <!--                        <div class="ui-tabs-link " data-tab="3">Магазин<span>12</span></div>-->
-                        <!--                        <div class="ui-tabs-link " data-tab="4">Циклы</div>-->
+                        <div class="ui-tabs-link " data-tab="4">Циклы
+                            {% if cycles.count %}
+                            <span>{{cycles.count?:''}}</span>
+                            {% endif %}
+                        </div>
                         <!--                        <div class="ui-tabs-link " data-tab="5">Блог</div>-->
                         <!--                        <div class="ui-tabs-link " data-tab="6">Видеоблог</div>-->
-                        <!--                        <div class="ui-tabs-link " data-tab="7">Подписки</div>-->
-                        <!--                        <div class="ui-tabs-link " data-tab="8">Подписчики</div>-->
+                        <div class="ui-tabs-link " data-tab="7">Подписки
+                            {% if subscriptions.count %}
+                            <span>{{subscriptions.count?:''}}</span>
+                            {% endif %}
+                        </div>
+                        <div class="ui-tabs-link " data-tab="8">Подписчики
+                            {% set subscribers_count = collect(subscribers.authors).count +
+                            collect(subscribers.readers).count %}
+                            {% if subscribers_count %}
+                            <span>{{subscribers_count}}</span>
+                            {% endif %}
+                        </div>
                         <!--                        <div class="ui-tabs-link " data-tab="9">Награды</div>-->
-                        <!--                        <div class="ui-tabs-link " data-tab="10">Комментарии</div>-->
+                        <div class="ui-tabs-link " data-tab="10">Комментарии
+                            {% if comments_paginator.total %}
+                            <span>{{comments_paginator.total?:''}}</span>
+                            {% endif %}
+                        </div>
                         <!--                        <div class="ui-tabs-link " data-tab="11">Репосты</div>-->
                     </div>
                 </div>
@@ -79,7 +96,23 @@
         </div>
         <div class="ui-tabs-content" data-tab-content="2">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Книги <span
-                class="ui-text-body--2"> {{ books_count }}</span></div>
+                class="ui-text-body--2"> {{ books.count }}</span></div>
+        </div>
+        <div class="author-cycles ui-tabs-content" data-tab-content="4">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Циклы <span
+                class="ui-text-body--2">{{cycles.count}}</span></div>
+        </div>
+        <div class="ui-tabs-content" data-tab-content="7">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписки <span
+                class="ui-text-body--2">{{subscriptions.count?:''}}</span></div>
+        </div>
+        <div class="ui-tabs-content" data-tab-content="8">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписчики <span
+                class="ui-text-body--2">{{subscribers_count}}</span></div>
+        </div>
+        <div class="ui-tabs-content" data-tab-content="10">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Комментарии <span
+                class="ui-text-body--2">{{comments_paginator.total?:''}}</span></div>
         </div>
     </div>
     <div class="ui-grid-container ui-grid-gap">
@@ -111,8 +144,8 @@
                         {% if profile.about %}
                         <div class="author-profile-description__wrapper">
                             <div class="author-profile-description__label">Обо мне</div>
-                            <div class="author-profile-description__info">
-                                {{profile.about}}
+                            <div class="author-profile-description__info typographical-block">
+                                {{profile.about|raw}}
                             </div>
                         </div>
                         {% endif %}
@@ -154,29 +187,98 @@
                 </div>
                 <!-- Книги -->
                 <div class="author-books ui-tabs-content" data-tab-content="2">
-
-                    {% if books_count == 0 %}
-                    <div class="author__placeholder _indent">
-                        <svg class="square-32">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
-                        </svg>
-                        {% if isOwner %}
-                        <div class="ui-text-head--3 ui-text--bold">У вас нет книг</div>
-                        <span>Тут будет какой-нибудь привлекающий текст, как в литмаркете</span>
-                        <a href="/create-book" data-turbo="false">
-                            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile"
-                                    type="submit">Добавить книгу
-                            </button>
-                        </a>
-                        {% else %}
-                        <div class="ui-text-head--3 ui-text--bold">У автора нет книг</div>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-
+                    {% if books.count %}
                     {% for book in books %}
                     {% ajaxPartial "bookCard::standard-card" book=book %}
                     {% endfor %}
+                    {% endif %}
+                </div>
+                <!-- Циклы -->
+                <div class="author-cycles ui-tabs-content" data-tab-content="4">
+                    {% if cycles[0] %}
+                    <div class="author-cycles__container">
+                        {% for cycle in cycles %}
+                        <div class="author-cycles__wrapper">
+                            {% partial 'cycle/cycle-author-header' cycle=cycle body %}
+                            {% put thematic %}
+                            {% partial 'controls/thematic-section-container' books=cycle.books %}
+                            {% endput %}
+                            {% endpartial %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                <!-- Подписки -->
+                <div class="author-blog ui-tabs-content" data-tab-content="7">
+                    {% if not subscriptions[0] %}
+                    <div class="author__placeholder _indent">
+                        <svg class="square-32">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#users-stroked-32' | theme}}"></use>
+                        </svg>
+                        <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
+                            одной подписки
+                        </div>
+                        <span>Когда они появятся, вы увидите их здесь</span>
+                    </div>
+                    {% else %}
+                    <div class="ui-grid-container ui-grid-gap">
+                        {% for subscription in subscriptions %}
+                        {% partial 'controls/subscribe-card' item=subscription footer=true %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Подписчики -->
+                <div class="author-subscribers ui-tabs-content" data-tab-content="8">
+                    {% if not subscribers.authors and not subscribers.readers %}
+                    <div class="author__placeholder _indent">
+                        <svg class="square-32">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#users-stroked-32' | theme}}"></use>
+                        </svg>
+                        <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
+                            одного подписчика
+                        </div>
+                        <span>Когда они появятся, вы увидите их здесь</span>
+                    </div>
+                    {% else %}
+                    <div class="ui-tabs">
+                        <div class="ui-tabs-header">
+                            <div class="ui-tabs-line"></div>
+                            <div class="ui-tabs-header-wrapper" data-tabs="2">
+                                <div class="ui-tabs-link active" data-tab="1">Авторы <span>{{collect(subscribers.authors).count}}</span>
+                                </div>
+                                <div class="ui-tabs-link " data-tab="2">Читатели <span>{{collect(subscribers.readers).count}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-body" data-tabs="2">
+                            <div class="ui-tabs-content active" data-tab-content="1">
+                                {% if subscribers.authors %}
+                                <div class="ui-grid-container ui-grid-gap">
+                                    {% for authors in subscribers.authors %}
+                                    {% partial 'controls/subscribe-card' item=authors footer=true %}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="ui-tabs-content" data-tab-content="2">
+                                {% if subscribers.readers %}
+                                <div class="ui-grid-container ui-grid-gap">
+                                    {% for reader in subscribers.readers %}
+                                    {% partial 'controls/subscribe-card' item=reader %}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <!-- Комментарии -->
+                <div class="ui-tabs-content" id="author-comments" data-tab-content="10">
+                    {% partial 'author_space::author-comments-tab' comments_paginator=comments_paginator %}
                 </div>
             </div>
         </div>
@@ -231,8 +333,10 @@
                 </a>
                 {% endif %}
                 {% if profile.ok %}
-                <a href="{{ profile.ok }}" rel="noopener" target="_blank" class="author-contacts__link">
-                    title="{{profile.ok}}"
+                <a href="{{ profile.ok }}" rel="noopener" target="_blank" class="author-contacts__link"
+                   title="{{profile.ok}}"
+                >
+
                     <svg class="square-16">
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-stroked-16' | theme}}"></use>
                     </svg>
@@ -241,41 +345,36 @@
                 {% endif %}
             </div>
             {% endif %}
-            <div class="thematic-section">
-                <div class="thematic-section__header">
-                    <div class="ui-text-head--3 ui-text--bold">Рекомендуем</div>
-                    <a href="#" class="thematic-section__link ui-link _violet">Все</a>
-                </div>
-                <div class="thematic-section__container ">
-                    <a href="#" class="book-sidebar-card _indent">
-                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
-                             class="book-sidebar-card__image" alt=""
-                             loading="lazy">
-                        <div class="book-sidebar-card__description">
-                            <div class="book-sidebar-card__label">ЛитРПГ</div>
-                            <div class="book-sidebar-card__title">Сага о неудачнике 3</div>
-                        </div>
-                    </a>
-                    <a href="#" class="book-sidebar-card _indent">
-                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
-                             class="book-sidebar-card__image" alt=""
-                             loading="lazy">
-                        <div class="book-sidebar-card__description">
-                            <div class="book-sidebar-card__label">ЛитРПГ</div>
-                            <div class="book-sidebar-card__title">История бессмертного-3. Свобода или смерть</div>
-                        </div>
-                    </a>
-                    <a href="#" class="book-sidebar-card _indent">
-                        <img src="{{'assets/images/main/book-card-placeholder.png' | theme}}"
-                             class="book-sidebar-card__image" alt=""
-                             loading="lazy">
-                        <div class="book-sidebar-card__description">
-                            <div class="book-sidebar-card__label">ЛитРПГ</div>
-                            <div class="book-sidebar-card__title">История бессмертного-8. Ключевой мир</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
+            {% component 'recommend' %}
         </div>
     </div>
 </div>
+<script>
+    (() => {
+        new Swiper('.swiper', {
+            // Optional parameters
+            direction: 'horizontal',
+            loop: false,
+
+            // draggable: true,
+            spaceBetween: 16,
+            breakpoints: {
+                0: {
+                    slidesPerView: 2.5,
+                },
+                768: {
+                    slidesPerView: 5,
+                },
+                1280: {
+                    slidesPerView: 6,
+                }
+            },
+
+            // Navigation arrows
+            navigation: {
+                nextEl: '.thematic-section__nav._right',
+                prevEl: '.thematic-section__nav._left',
+            },
+        });
+    })()
+</script>

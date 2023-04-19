@@ -2,12 +2,12 @@
 
 namespace Books\Book\Models;
 
-
 use Books\Book\Classes\EditionService;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Db;
 use Model;
 use October\Rain\Database\Builder;
@@ -27,7 +27,9 @@ use System\Models\Revision;
  * * @method HasMany chapters
  * * @method AttachOne fb2
  * * @method BelongsTo book
+ *
  * * @property  Book book
+ * * @property  BookStatus status
  */
 class Edition extends Model
 {
@@ -35,35 +37,44 @@ class Edition extends Model
     use SoftDelete;
     use Revisionable;
 
+    const UPDATE_CHUNK_LENGTH = 4999;
+
     /**
      * @var string table name
      */
     public $table = 'books_book_editions';
 
-    protected $revisionable = ['length', 'status'];
+    protected $revisionable = ['length', 'status', 'price'];
+
+    public $revisionableLimit = 10000;
+
+    public bool $forceRevision = false;
+
     public string $trackerChildRelation = 'chapters';
 
     protected $fillable = [
         'type',
         'download_allowed',
         'comment_allowed',
-        'sales_free',
+        //        'sales_free',
         'free_parts',
         'status',
         'price',
         'book_id',
-        'length'
+        'length',
     ];
 
     protected $casts = [
         'type' => EditionsEnums::class,
         'free_parts' => 'integer',
         'price' => 'integer',
-        'sales_free' => 'boolean',
+        //        'sales_free' => 'boolean',
         'download_allowed' => 'boolean',
         'comment_allowed' => 'boolean',
         'status' => BookStatus::class,
     ];
+
+    protected $dates = ['sales_at'];
 
     /**
      * @var array rules for validation
@@ -74,8 +85,8 @@ class Edition extends Model
         'free_parts' => 'filled|integer',
         'download_allowed' => 'boolean',
         'comment_allowed' => 'boolean',
-        'sales_free' => 'boolean',
-        'fb2' => ['nullable', 'file', 'mimes:xml'],
+        //        'sales_free' => 'boolean',
+        'fb2' => ['nullable', 'file', 'mimes:xml', 'max:30720'],
     ];
 
     public $hasMany = [
@@ -91,7 +102,7 @@ class Edition extends Model
     ];
 
     public $morphMany = [
-        'revision_history' => [Revision::class, 'name' => 'revisionable']
+        'revision_history' => [Revision::class, 'name' => 'revisionable'],
     ];
 
     public function service(): EditionService
@@ -99,14 +110,70 @@ class Edition extends Model
         return new EditionService($this);
     }
 
+    public function getLastUpdatedAtAttribute()
+    {
+        return $this->revision_history()->where('field', '=', 'length')->orderByDesc('created_at')->first()?->created_at;
+    }
+
+    public function getUpdateHistoryAttribute()
+    {
+        $items = $this->revision_history()
+            ->where('field', '=', 'length')
+            ->get()
+            ->chunkWhile(function ($value, $key, $chunk) {
+                return (int) $chunk->sum('odds') <= self::UPDATE_CHUNK_LENGTH;
+            })
+            ->filter(fn ($i) => $i->sum('odds') >= self::UPDATE_CHUNK_LENGTH)->map(function ($collection) {
+                return [
+                    'date' => $collection->last()->created_at,
+                    'value' => (int) $collection->sum('odds'),
+                    'new_value' => (int) $collection->last()->new_value,
+                ];
+            })
+            ->reverse();
+
+        $count = $items->count();
+        $days = $count ? CarbonPeriod::create($items->last()['date'], $items->first()['date'])->count() : 0;
+
+        $freq_string = $count ? getFreqString($count, $days) : '';
+        $freq = $count ? $count / $days : 0;
+
+        return [
+            'freq' => $freq,
+            'freq_string' => $freq_string,
+            'items' => $items,
+            'count' => $count,
+            'days' => $days,
+        ];
+    }
+
+    public function frozen()
+    {
+        $this->fill(['status' => BookStatus::FROZEN]);
+        $this->save();
+    }
+
     public function editAllowed(): bool
     {
-        return !$this->isPublished() || $this->status === BookStatus::WORKING || $this->sales_free;
+        return ! $this->isPublished()
+            || $this->isFree()
+            || in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN])
+            || ($this->getOriginal('status') === BookStatus::HIDDEN && ! $this->hadCompleted());
+    }
+
+    public function isFree(): bool
+    {
+        return $this->getOriginal('price') == 0;
+    }
+
+    public function hadCompleted()
+    {
+        return $this->revision_history()->where(['field' => 'status', 'old_value' => BookStatus::COMPLETE->value])->exists();
     }
 
     public function isPublished(): bool
     {
-        return !!$this->sales_at;
+        return (bool) $this->getOriginal('sales_at');
     }
 
     public function setPublishAt()
@@ -118,26 +185,23 @@ class Edition extends Model
     {
         $cases = collect(BookStatus::publicCases());
 
-        if ($this->status === BookStatus::WORKING && $this->hasSales()) {
-            $cases = $cases->forget(BookStatus::HIDDEN); //нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
-        }
-        if ($this->status === BookStatus::FROZEN) {
-            $cases = collect();
-        }
+        $cases = match ($this->getOriginal('status')) {
+            BookStatus::WORKING => $this->hasSales() ? $cases->forget(BookStatus::HIDDEN) : $cases,// нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
+            BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value), // Из “Завершено” можем перевести только в статус “Скрыто”.
+            BookStatus::FROZEN => collect(),
+            BookStatus::HIDDEN => ! $this->isPublished() && $this->hadCompleted() ? collect() : $cases,//Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”, то книгу можно вернуть в статус “Скрыто” но редактирование и удаление глав будет невозможным.
+            default => $cases
+        };
 
-        if ($this->status === BookStatus::COMPLETE) {
-            $cases = $cases->only(BookStatus::HIDDEN->value); // Из “Завершено” можем перевести только в статус “Скрыто”.
-        }
-        $cases[$this->status->value] = $this->status;
+        $cases[$this->getOriginal('status')->value] = $this->getOriginal('status');
 
         return $cases->toArray();
     }
 
-
     public function shouldDeferredUpdate(): bool
     {
-        return false;
-        return $this->status === BookStatus::COMPLETE;
+        return $this->getOriginal('status') === BookStatus::COMPLETE
+            && ! $this->isFree();
     }
 
     public function hasSales()
@@ -145,33 +209,40 @@ class Edition extends Model
         return false;
     }
 
-    public function shouldRevision(): bool
+    public function shouldRevisionLength(): bool
     {
-        return !$this->shouldDeferredUpdate();
+        return $this->isDirty('length')
+            && ! $this->shouldDeferredUpdate()
+            && in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN, BookStatus::COMPLETE]);
     }
 
     protected function beforeUpdate()
     {
-        $this->revisionsEnabled = $this->shouldRevision();
+        if (! $this->shouldRevisionLength()) {
+            $this->revisionable = array_diff_key($this->revisionable, ['length']);
+        }
     }
 
     protected function afterUpdate()
     {
-        if ($this->wasChanged('free_parts')) {
+        if ($this->wasChanged(['free_parts', 'status', 'price'])) {
             $this->setFreeParts();
         }
     }
 
+    public function scopeNotEmpty(Builder $builder): Builder
+    {
+        return $builder->whereNotNull('length')->where('length', '>', '0');
+    }
+
+    public function scopeWithLastLengthRevision(Builder $builder): Builder
+    {
+        return $builder->with(['revision_history' => fn ($history) => $history->where('field', '=', 'length')->orderByDesc('created_at')->limit(1)]);
+    }
 
     public function scopeWithProgress(Builder $builder, User $user): Builder
     {
-        return $builder->withMax(['trackers as progress' => fn($trackers) => $trackers->user($user)->withoutTodayScope()], 'progress');
-    }
-
-
-    public function getRealPriceAttribute()
-    {
-        return (bool)$this->sales_free ? 0 : $this->price;
+        return $builder->withMax(['trackers as progress' => fn ($trackers) => $trackers->user($user)->withoutTodayScope()], 'progress');
     }
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder
@@ -186,7 +257,7 @@ class Edition extends Model
 
     public function scopeFree(Builder $builder, $free = true): Builder
     {
-        return $builder->where('sales_free', '=', $free);
+        return $builder->where('price', '=', 0);
     }
 
     public function scopeEbook(Builder $builder): Builder
@@ -209,7 +280,6 @@ class Edition extends Model
         return $builder->type(EditionsEnums::Comics);
     }
 
-
     public function scopeType(Builder $builder, EditionsEnums $type): Builder
     {
         return $builder->where('type', '=', $type->value);
@@ -220,7 +290,6 @@ class Edition extends Model
         return $builder->where('status', '=', $status->value);
     }
 
-
     public function nextChapterSortOrder()
     {
         return ($this->chapters()->max('sort_order') ?? 0) + 1;
@@ -228,15 +297,14 @@ class Edition extends Model
 
     public function lengthRecount()
     {
-        $this->chapters()->get()->each->lengthRecount();
-        $this->length = (int)$this->chapters()->sum('length');
+        $this->length = (int) $this->chapters()->published()->sum('length');
         $this->save();
     }
 
     public function changeChaptersOrder(array $ids, ?array $order = null)
     {
         Db::transaction(function () use ($ids, $order) {
-            $order ??= $this->chapters()->pluck('sort_order')->toArray();
+            $order ??= $this->chapters()->pluck((new Chapter())->getSortOrderColumn())->toArray();
             $this->chapters()->first()->setSortableOrder($ids, $order);
             $this->chapters()->get()->each->setNeighbours();
             $this->setFreeParts();
@@ -246,14 +314,20 @@ class Edition extends Model
     public function setFreeParts()
     {
         Db::transaction(function () {
-            $this->chapters()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
-//            $this->chapters()->offset($this->free_parts); ошибка?
-            $this->chapters()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
+            $builder = fn () => $this->chapters()->published();
+            if (! $this->price || $this->status === BookStatus::FROZEN) {
+                $builder()->update(['sales_type' => ChapterSalesType::FREE]);
+            } else {
+                $builder()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
+//            $this->chapters()->offset($this->free_parts); ошибка
+                $builder()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
+            }
+            $builder()->get()->each->setNeighbours();
         });
     }
 
     public function paginateContent()
     {
-        $this->chapters()->get()->each->paginateContent(true);
+        $this->chapters()->get()->each->paginateContent();
     }
 }

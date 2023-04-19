@@ -2,8 +2,9 @@
 
 namespace Books\Profile\Components;
 
-use Books\User\Classes\UserSettingsEnum;
 use Cms\Classes\ComponentBase;
+use Exception;
+use Flash;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -53,13 +54,15 @@ class PrivacyLC extends ComponentBase
 
     public function onUpdate()
     {
+        try {
+            $this->user->profile->service()->updateSettings(post('options'));
+            Flash::success('Данные успешно сохранены');
 
-        collect(post('options'))->each(function ($option, $key) {
-            $this->user->settings()->type(UserSettingsEnum::tryFrom($key))->first()?->update(['value' => $option]);
-        });
-
-        return [
-            '#profile_privacy_form' => $this->renderPartial('@default', ['settings' => $this->getSettings()]),
-        ];
+            return [
+                '#profile_privacy_form' => $this->renderPartial('@default', ['settings' => $this->getSettings()]),
+            ];
+        } catch (Exception $ex) {
+            Flash::error($ex->getMessage());
+        }
     }
 }

@@ -43,7 +43,7 @@ class BookService
 
     protected function isNew(): bool
     {
-        return ! $this->book->id;
+        return ! $this->book->exists;
     }
 
     protected function isBounded(): bool
@@ -96,8 +96,10 @@ class BookService
         if ($payload instanceof File) {
             $tizisBook = (new FB2Manager($payload))->apply();
             $this->fromTizis($tizisBook);
-            $this->book->ebook->fb2()->save($payload);
+            $payload->save();
+            $this->book->ebook()->first()->fb2()->add($payload, $this->session_key);
             Event::fire('books.book.parsed', [$this->book]);
+
             return $this->book;
         }
         throw new UnknownFormatException();
@@ -108,15 +110,25 @@ class BookService
         return Db::transaction(function () use ($book) {
             $info = $book->getInfo();
             $data = [
-                'title' => strip_tags($info->getTitle()),
+                'title' => strip_tags($info->getTitle()) ?: 'Без названия',
                 'annotation' => $info->getAnnotation(),
             ];
 
-            $cover = (new File())->fromData(base64_decode($book->getCover()), 'cover.jpg');
-            $cover->save();
-            $this->book->cover()->add($cover, $this->session_key);
+            $this->book->removeValidationRule('cover', 'max:3072');
+            if ($cover = $book->getCover()) {
+                $cover = (new File())->fromData(base64_decode($cover), 'cover.jpg');
+                $cover->save();
+                $this->book->cover()->add($cover, $this->session_key);
+            }
 
             collect(explode(',', $info->getKeywords()))->each(fn ($tag) => $this->addTag($tag));
+
+            foreach ($info->getGenres() as $item) {
+                //TODO tolowercase
+                if ($genre = Genre::query()->where('name', $item)->first()) {
+                    $this->addGenre($genre);
+                }
+            }
             $this->save($data);
 
             collect($book->getChapters())->map(function ($chapter) {
@@ -150,11 +162,14 @@ class BookService
             $bookData = $data->only($this->proxy->getFillable());
 
             if ($bookData->has('cycle_id')) {
-                $bookData['cycle_id'] = $this->user->cycles()->find($bookData['cycle_id'])?->id ?? null;
+                $bookData['cycle_id'] = $this->user->profile->cycles()->find($bookData['cycle_id'])?->id ?? null;
             }
 
             $this->{($this->isNew() ? 'create' : 'update')}($bookData->toArray());
-            $this->book->ebook?->update($data->only(['comment_allowed', 'download_allowed'])->toArray());
+            $this->book->fresh();
+            $ebook = $this->book->ebook()->first();
+            $ebook?->fill($data->only(['comment_allowed', 'download_allowed'])->toArray());
+            $ebook?->save();
 
             $this->clean();
 
@@ -173,10 +188,21 @@ class BookService
 
     protected function update(?array $data): Book
     {
+        // сохраним авторов до сохранения
+        $authors = $this->book->authors;
+
         $this->book->update($data);
         $this->syncRelations();
         $this->book->setSortOrder();
         Event::fire('books.book.updated', [$this->book]);
+
+        // получим авторов после сохранения, отсеивая старых
+        $this
+            ->book
+            ->authors()
+            ->get()
+            ->diff($authors)
+            ->each(fn (Author $author) => Event::fire('books.book::author.invited', [$author, $this->user->profile]));
 
         return $this->book;
     }
@@ -220,7 +246,7 @@ class BookService
         if (! $tag) {
             return;
         }
-        $tag = $this->user->tags()->firstOrCreate([Tag::NAME => (is_string($tag) ? mb_ucfirst($tag) : $tag->{Tag::NAME})]);
+        $tag = Tag::query()->firstOrCreate([Tag::NAME => (is_string($tag) ? ($tag) : $tag->{Tag::NAME})]);
         $this->proxy()->tags()->add($tag, $this->getSessionKey());
     }
 
@@ -250,7 +276,9 @@ class BookService
                 array_replace([
                     Author::PERCENT => 0,
                     Author::PROFILE_ID => $profile->id,
-                    Author::IS_OWNER => false], $pivot)
+                    Author::IS_OWNER => false,
+                    Author::ACCEPTED => 0,
+                ], $pivot)
             );
     }
 

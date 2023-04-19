@@ -1,0 +1,88 @@
+<!-- Тело страницы -->
+<div class="ui-container">
+    <div class="personal-area__title ui-text-head--2 ui-text--bold">Статистика по частям</div>
+</div>
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="read-statistic wrapper" style="margin-bottom: 32px;">
+            {{ form_ajax('onCount',{
+            }) }}
+            <div class="read-statistic__title ui-text-head--3 ui-text--bold">{{current_book.title}}</div>
+
+            <div class="read-statistic__description">
+                <p class="ui-text-body--2">Внимание! Если вы удалили часть произведения и добавили ее снова, то
+                    статистика прочтений этой части начнет считаться заново.</p>
+            </div>
+
+            <div class="read-statistic__select _max-width ui-select">
+                <div class="ui-select-header">
+                    <label class="ui-select-label">Период</label>
+                </div>
+                <div class="ui-input-container">
+                    <svg class="ui-input-item-icon _fake">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                    </svg>
+                    <input type="text" name="dates" class="ui-input-item _size-32" size="32">
+                </div>
+            </div>
+            <button data-attach-loading type="submit"
+                    class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium" style="margin-bottom: 10px">
+                Применить
+            </button>
+            <div class="table __container-shift">
+                <table class="table-static">
+                    <thead>
+                    <tr>
+                        <td class="_half">Часть</td>
+                        {% for stat in statistic.common %}
+                        <td>{{stat.date}}</td>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for book in statistic.byBooks %}
+                    <tr>
+                        <td class="_half" data-title="Часть">{{book.title|raw}}</td>
+                        {% for item in book.dates %}
+                        <td data-title="{{item.date}}">{{item.count}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td class="_half _bold _right" data-title="Часть">Итого</td>
+                        {% for stat in statistic.common %}
+                        <td class="_bold">{{stat.total}}</td>
+                        {% endfor %}
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            {{form_close()}}
+
+        </div>
+    </div>
+</div>
+<script>
+
+    $('input[name="dates"]').daterangepicker({
+        startDate: `{{from}}`,
+        endDate: '`{{to}}`',
+        "locale": {
+            "format": "DD.MM.YYYY",
+            "separator": " - ",
+            "applyLabel": "Применить",
+            "cancelLabel": "Отменить",
+            "fromLabel": "С",
+            "toLabel": "По",
+            "customRangeLabel": "Custom",
+            "weekLabel": "W",
+            "daysOfWeek": ["Вс", "Пн", "Вт", "Ср", "Th", "Пт", "Сб"],
+            "monthNames": ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
+            "firstDay": 1
+        },
+        'buttonClasses': 'ui-button ui-button-size--32',
+        'cancelButtonClasses': 'ui-button-view--3',
+        'applyButtonClasses': 'ui-button-view--2'
+    });
+</script>

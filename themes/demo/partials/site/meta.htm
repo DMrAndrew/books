@@ -1,11 +1,14 @@
 <meta charset="utf-8">
-<title>Время книг - {{ this.page.meta_title ?: placeholder('pageTitle') }}</title>
+<title>Время книг - {{
+    this.page.meta_title ?: placeholder('pageTitle') }}</title>
 <meta name="description" content="{{ this.page.meta_description }}">
-<meta name="title" content="{{ this.page.meta_title }}">
+<meta name="title" property="og:title" content="{{ this.page.meta_title ?: placeholder('pageTitle') }}">
+<meta name="preview" property="og:image" content="{{ this.page.preview }}">
 <meta name="author" content="Mobecan">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Books">
+
 <meta name="turbo-cache-control" content="no-preview">
 <link rel="icon" type="image/png" href="{{ 'assets/images/main/logo.png'|theme }}">
 <link href="{{ 'assets/css/main.min.css' | theme }}" rel="stylesheet">
@@ -14,6 +17,10 @@
 <link href="{{ 'assets/css/jquery-ui.min.css' | theme }}" rel="stylesheet">
 <link href="{{ 'assets/css/tippy.css' | theme }}" rel="stylesheet">
 <link href="{{ 'assets/css/tippy.light.css' | theme }}" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+<!--<link href="{{ 'assets/css/quasar.css' | theme }}" rel="stylesheet">-->
+<!--<link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet"-->
+<!--      type="text/css">-->
 <!-- Временное подключение шрифтов -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,7 +32,8 @@
 <script src="{{ ['@jquery','@framework','@framework.extras',]|theme}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
 <script src="{{ 'assets/js/jquery-ui.js'|theme }}"></script>
-<script src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/translations/ru.js"></script>
 <script src="{{'assets/js/menu-mobile.js' | theme}}"></script>
 <script src="{{'assets/js/favorite-accordion.js' | theme}}"></script>
 <script src="{{ 'assets/js/tabs.js'|theme }}"></script>
@@ -39,10 +47,32 @@
 <script src="{{ 'assets/js/tippy.js'|theme }}"></script>
 <script src="{{ 'assets/js/filter.js'|theme }}"></script>
 <script src="{{ 'assets/js/datepicker.js'|theme }}"></script>
-<script src="https://unpkg.com/@popperjs/core@2"></script>
-<script src="https://unpkg.com/tippy.js@6"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ 'assets/js/chart.js'|theme}}"></script>
+<script src="{{ 'assets/js/read-stats-graph.js'|theme }}"></script>
+<script src="{{ 'assets/js/moment.min.js'|theme }}"></script>
+<script src="{{ 'assets/js/daterangepicker.min.js'|theme }}"></script>
+<script src="{{ 'assets/js/popper.min.js'|theme }}"></script>
+<script src="{{ 'assets/js/editor.js'|theme }}"></script>
+<script src="{{ 'assets/js/tippy-bundle.umd.min.js'|theme }}"></script>
+<!--<script type="text/javascript" src="https://vk.com/js/api/share.js?93" charset="windows-1251"></script>-->
+<!--<script src="https://vk.com/js/api/openapi.js?169" type="text/javascript"></script>-->
+<!--<script src="https://unpkg.com/@popperjs/core@2"></script>-->
+<!--<script src="https://unpkg.com/tippy.js@6"></script>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+<!--<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>-->
+<!--<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>-->
 
+<!--<script type="importmap">-->
+<!--      {-->
+<!--        "imports": {-->
+<!--          "vue": "https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.47/vue.esm-browser.prod.min.js",-->
+<!--          "quasar": "https://cdn.jsdelivr.net/npm/quasar@2.11.7/dist/quasar.esm.prod.js"-->
+<!--        }-->
+<!--      }-->
+
+
+<!--</script>-->
+<!--<script type="module" src="{{ 'assets/js/vue/quasar.js'|theme }}"></script>-->
 {% styles %}
 {% framework extras turbo %}
 {% scripts %}
@@ -64,3 +94,4 @@
 </script>
 <script src="{{ 'assets/js/autocomplete.js'|theme }}"></script>
 <script src="{{ 'assets/js/utils.js'|theme }}"></script>
+

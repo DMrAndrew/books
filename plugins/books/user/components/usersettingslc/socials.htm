@@ -2,15 +2,22 @@
     <div class="personal-area__wrap _indent-large ui-text--bold ui-text-head--2">Управление аккаунтами</div>
 
     <div class="personal-area-security">
+        {% for social in socials %}
+
         <div class="personal-area-security__wrapper">
             <div class="personal-area-security__social">
-                <svg class="square-16 _vk">
-                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-vk-stroked-16' | theme}}"></use>
+                <svg class="square-16 _{{social.tag}}">
+                    <use
+                        xlink:href="{{('assets/icon-sprite/svg-sprite.svg#social-'~social.tag~'-stroked-16') | theme}}"></use>
                 </svg>
-                <span>Подключите аккаунт Вконтакте</span>
+                <span>{{social.exists ? '':'Подключите аккаунт '}}  {{social.label}}</span>
             </div>
-            <button disabled class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Подключить</button>
+            {% if not social.exists %}
+            <a href="{{social.url}}"
+               class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Подключить</a>
+            {% endif %}
         </div>
+        {% endfor %}
         <div class="personal-area-security__wrapper">
             <div class="personal-area-security__social">
                 <svg class="square-16 _vk">

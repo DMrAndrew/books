@@ -4,6 +4,7 @@ namespace Books\Comments\behaviors;
 
 use Books\Book\Models\Book;
 use Books\Comments\Models\Comment;
+use Books\Profile\Models\Profile;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Model;
 use October\Rain\Extension\ExtensionBase;
@@ -20,9 +21,10 @@ class Commentable extends ExtensionBase
     {
         return true;
     }
+
     public function addComment(User $user, array $payload)
     {
-        if(!$this->model->isCommentAllowed()){
+        if (! $this->model->isCommentAllowed()) {
             return false;
         }
         $payload['user_id'] = $user->id;
@@ -45,8 +47,14 @@ class Commentable extends ExtensionBase
         }
     }
 
-    public function scopeCommentsCount(Builder $builder): Builder
+    public function scopeCommentsCount(Builder $builder, ?Profile $profile): Builder
     {
-        return $builder->withCount('comments');
+        return $builder->withCount(['comments' => function (Builder $comments) use ($profile) {
+            return $comments->when($profile?->exists, function (Builder $c) use ($profile) {
+                return $c->whereDoesntHave('profile', function (Builder $p) use ($profile) {
+                    return $p->whereIn((new Profile())->getTable().'.id', [$profile->id]);
+                });
+            });
+        }]);
     }
 }
