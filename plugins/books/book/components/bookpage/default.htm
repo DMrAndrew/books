@@ -10,17 +10,17 @@
                     {% endfor %}
 
                 </div>
-                                <a href="" class="ui-link _violet _icon book-card-full__author-support">
-                                    <script type="text/javascript">
-                                        document.write(VK.Share.button({
-                                            url: document.location.href,
-                                            title: '{{book.title}}',
-                                            image_url: '{{book.cover.getThumb(168,244)}}',
-                                            image: '{{book.cover.getThumb(168,244)}}',
-                                            noparse: true
-                                        }));
-                                    </script>
-                                </a>
+<!--                                <a href="" class="ui-link _violet _icon book-card-full__author-support">-->
+<!--                                    <script type="text/javascript">-->
+<!--                                        document.write(VK.Share.button({-->
+<!--                                            url: document.location.href,-->
+<!--                                            title: '{{book.title}}',-->
+<!--                                            image_url: '{{book.cover.getThumb(168,244)}}',-->
+<!--                                            image: '{{book.cover.getThumb(168,244)}}',-->
+<!--                                            noparse: true-->
+<!--                                        }));-->
+<!--                                    </script>-->
+<!--                                </a>-->
             </div>
             <div class="book-card-full__type">
                 <div class="ui-tabs">
@@ -110,7 +110,9 @@
             </div>
         </div>
         {% ajaxPartial 'bookCard::book-page' book=book %}
+
     </div>
+
 </div>
 
 <!-- Дополнительный контент -->

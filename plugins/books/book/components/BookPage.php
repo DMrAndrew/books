@@ -51,7 +51,7 @@ class BookPage extends ComponentBase
         $this->book = Book::query()
             ->defaultEager()
             ->withChapters()
-            ->with(['cycle' => fn ($cycle) => $cycle->booksEager()])
+            ->with(['cycle' => fn($cycle) => $cycle->booksEager()])
             ->find($this->book->id);
 
         $this->page['book'] = $this->book;
@@ -77,5 +77,7 @@ class BookPage extends ComponentBase
 
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
+        $this->page->meta_title = $this->page->meta_title . ' «' . $this->book->title . '»';
+        $this->page->preview = $this->book->cover->getThumb(168, 244);
     }
 }
