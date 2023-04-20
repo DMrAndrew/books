@@ -38,3 +38,6 @@
 1.0.10:
     - 'Таблица промокодов'
     - create_promocodes_table.php
+1.0.11:
+    - 'Таблица промокодов - morphs() promoable'
+    - update_promocodes_table.php

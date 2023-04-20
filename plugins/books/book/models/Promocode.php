@@ -42,11 +42,11 @@ class Promocode extends Model
      */
     protected $fillable = [
         'code',
-        'book_id',
         'profile_id',
         'is_activated',
         'user_id',
         'activated_at',
+        'expire_in',
     ];
 
     /**
@@ -54,11 +54,11 @@ class Promocode extends Model
      */
     public $rules = [
         'code' => 'missing|unique:books_book_promocodes,code',
-        'book_id' => 'required|nullable|exists:books_book_books,id',
         'profile_id' => 'required|nullable|exists:books_profile_profiles,id',
         'is_activated' => 'sometimes|nullable|boolean',
         'user_id' => 'sometimes|nullable|integer|exists:users,id',
         'activated_at' => 'sometimes|nullable|date',
+        'expire_in' => 'sometimes|nullable|date',
     ];
 
     public $belongsTo = [
@@ -72,7 +72,6 @@ class Promocode extends Model
         parent::boot();
 
         static::creating(function ($promocode) {
-            //$promocode->code = self::generateUniqueCode();
             $promocode->code = static::gen();
         });
     }
@@ -90,11 +89,6 @@ class Promocode extends Model
         return strtoupper(hash('xxh32', Carbon::now()->toISOString()));
     }
 
-    public static function generateUniqueCode(): string
-    {
-        return CodeGenerator::generateUniqueCode((new self())->getTable(), self::CODE_LENGTH);
-    }
-
     public function scopeNotActivated(Builder $builder)
     {
         return $builder->where('is_activated', false);
@@ -110,11 +104,6 @@ class Promocode extends Model
         return $builder->where('code', $code);
     }
 
-    public function scopeAlive(Builder $builder): Builder
-    {
-        return $builder->where('is_activated', false);
-    }
-
     public function scopeExpired(Builder $builder): Builder
     {
         return $builder->whereDate('expire_in', '<=', today());
@@ -122,6 +111,6 @@ class Promocode extends Model
 
     public function prunable(): Builder
     {
-        return static::query()->alive()->expired();
+        return static::query()->notActivated()->expired();
     }
 }
