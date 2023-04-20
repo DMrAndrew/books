@@ -145,7 +145,6 @@ class Book extends Model
         'coauthors' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'coAuthors'],
         'editions' => [Edition::class, 'key' => 'book_id', 'id'],
         'libs' => [Lib::class, 'key' => 'book_id', 'otherKey' => 'id'],
-        'promocodes' => [Promocode::class, 'key' => 'book_id', 'otherKey' => 'id'],
     ];
 
     public $belongsTo = [
@@ -199,6 +198,10 @@ class Book extends Model
         'notifications' => [
             \RainLab\Notify\Models\Notification::class,
             'name' => 'notifiable',
+        ],
+        'promocodes' => [
+            Promocode::class,
+            'name' => 'promoable',
         ],
     ];
 
