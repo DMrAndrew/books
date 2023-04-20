@@ -63,22 +63,16 @@ class Promocode extends ComponentBase
 
     public function onGenerate()
     {
-        $data = post();
-
-        if (empty($data['book_id'] ?? '')) {
-            Flash::error("Необходимо выбрать книгу для генерации промокода");
-
-            return [];
-        }
-
         try {
-            $book = Book::findOrFail($data['book_id']);
+            $book = $this->user->profile
+                ->books()
+                ->find(post('book_id'));
 
             /**
              * current user is book author
              */
-            if (!$book->isAuthor($this->user->profile)) {
-                Flash::error("Вы не являетесь автором этой книги");
+            if (!$book) {
+                Flash::error("Книга не найдена");
 
                 return [];
             }
@@ -93,11 +87,11 @@ class Promocode extends ComponentBase
                 return [];
             }
 
+
             /**
              * generate promocode
              */
-            PromocodeModel::create([
-                'book_id' => Book::findOrFail($data['book_id'])?->id,
+            $book->promocodes()->create([
                 'profile_id' => $this->user->profile?->id,
             ]);
 
@@ -123,9 +117,7 @@ class Promocode extends ComponentBase
 
     private function getBooksPromocodes(Book $book): Collection
     {
-        return PromocodeModel
-            ::query()
-            ->book($book)
+        return $book->promocodes()
             ->with(['user'])
             ->get();
     }

@@ -85,7 +85,7 @@ class Promocode extends Model
         $this->attributes['code'] = $code;
     }
 
-    protected static function gen(): string
+    public static function gen(): string
     {
         return strtoupper(hash('xxh32', Carbon::now()->toISOString()));
     }
