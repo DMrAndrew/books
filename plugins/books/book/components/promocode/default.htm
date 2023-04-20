@@ -10,9 +10,7 @@
                     <select class="book-select" name="book_id" style="display: none"
                             data-request = "onGetBookPromocodes"
                         >
-                        <option
-                            {{ not current_book ? 'selected' : ''  }}
-                        value="">Все произведения</option>
+                        <option value="">Выберите произведение</option>
                         {% for book in books %}
                         <option  value="{{book.id}}"
                                  {{ current_book.id == book.id ? 'selected' : ''  }}
@@ -29,11 +27,6 @@
                 </div>
             </div>
         </div>
-        {% if current_book %}
-        <div class="read-statistic__control">
-            <a href="/lc-read-statistic-parts/{{current_book.id}}?dates={{from~'-'~to}}"  class="ui-link _violet">Статистика по частям</a>
-        </div>
-        {% endif %}
 
         <div class="personal-area__wrap _indent-large">
             Внимание! Использование промокодов в качестве вознаграждения за какие-либо действия пользователей, как например: лайк книги, комментарий к книге или записи блога, вступление в группу соцсети, подписка на авторскую страницу — не допускается. Подробнее о промокодах читайте в этом  <a href="#" class="ui-link _violet">разделе</a>
