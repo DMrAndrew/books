@@ -1,7 +1,7 @@
 <meta charset="utf-8">
 <title>Время книг - {{
     this.page.meta_title ?: placeholder('pageTitle') }}</title>
-<meta name="description"
+<meta name="description" property="og:description"
       content="{{ str_limit(this.page.meta_description,200) ?: placeholder('pageDescription') }}">
 <meta name="title" property="og:title" content="{{ this.page.meta_title ?: placeholder('pageTitle') }}">
 <meta name="preview" property="og:image" content="{{ this.page.meta_preview }}">
