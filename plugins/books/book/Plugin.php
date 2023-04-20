@@ -35,6 +35,7 @@ use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
 use Config;
 use Event;
+use Illuminate\Database\Console\PruneCommand;
 use Illuminate\Foundation\AliasLoader;
 use Mobecan\Favorites\Behaviors\Favorable;
 use System\Classes\PluginBase;
@@ -70,9 +71,10 @@ class Plugin extends PluginBase
     {
         parent::register();
 
-        if ($this->app->runningInConsole()) {
-            $this->registerConsoleCommand('book:promocodes:delete_free_promocodes_not_activated', DeleteNotActivatedFreePromocodes::class);
-        }
+        $this->registerConsoleCommand('model:prune', PruneCommand::class);
+//        if ($this->app->runningInConsole()) {
+//            $this->registerConsoleCommand('book:promocodes:delete_free_promocodes_not_activated', DeleteNotActivatedFreePromocodes::class);
+//        }
     }
 
     /**
@@ -98,9 +100,10 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Rater', Rater::class);
         AliasLoader::getInstance()->alias('StatisticService', StatisticService::class);
         AliasLoader::getInstance()->alias('WidgetService', WidgetService::class);
+        AliasLoader::getInstance()->alias('Promocode', Models\Promocode::class);
 
-        Event::listen('books.book.created', fn (Book $book) => $book->createEventHandler());
-        Event::listen('books.book.updated', fn (Book $book) => $book->updateEventHandler());
+        Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
+        Event::listen('books.book.updated', fn(Book $book) => $book->updateEventHandler());
 
         Book::extend(function (Book $book) {
             $book->implementClassWith(Favorable::class);
@@ -152,7 +155,9 @@ class Plugin extends PluginBase
         $schedule->call(function () {
             GenreRater::queue();
         })->everyTenMinutes();
-
-        $schedule->command('book:promocodes:delete_free_promocodes_not_activated')->dailyAt('03:00');
+        $schedule->command('model:prune', [
+            '--model' => [Models\Promocode::class],
+        ])->dailyAt('03:00');
+        //$schedule->command('book:promocodes:delete_free_promocodes_not_activated')->dailyAt('03:00');
     }
 }

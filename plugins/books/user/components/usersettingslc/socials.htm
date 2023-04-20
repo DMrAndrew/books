@@ -6,7 +6,7 @@
 
         <div class="personal-area-security__wrapper">
             <div class="personal-area-security__social">
-                <svg class="square-16 _{{social.tag}}">
+                <svg class="square-16 _{{social.short_tag}}">
                     <use
                         xlink:href="{{('assets/icon-sprite/svg-sprite.svg#social-'~social.tag~'-stroked-16') | theme}}"></use>
                 </svg>
@@ -18,23 +18,5 @@
             {% endif %}
         </div>
         {% endfor %}
-        <div class="personal-area-security__wrapper">
-            <div class="personal-area-security__social">
-                <svg class="square-16 _vk">
-                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-google-stroked-16' | theme}}"></use>
-                </svg>
-                <span>Подключите аккаунт Google</span>
-            </div>
-            <button disabled class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Подключить</button>
-        </div>
-        <div class="personal-area-security__wrapper">
-            <div class="personal-area-security__social">
-                <svg class="square-16 _ya">
-                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-yandex-stroked-16' | theme}}"></use>
-                </svg>
-                <span>Подключите аккаунт Yandex</span>
-            </div>
-            <button disabled class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Подключить</button>
-        </div>
     </div>
 </form>

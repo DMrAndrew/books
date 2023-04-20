@@ -49,8 +49,10 @@ class Promocode extends ComponentBase
 
     public function onGetBookPromocodes()
     {
-        $data = post();
-        $book = Book::find($data['value']);
+
+        $book = $this->user->profile
+            ->books()
+            ->find(post('value'));
 
         $promocodes = $book ? $this->getBooksPromocodes($book) : [];
 
@@ -61,22 +63,16 @@ class Promocode extends ComponentBase
 
     public function onGenerate()
     {
-        $data = post();
-
-        if ( !isset($data['book_id']) || empty($data['book_id'])) {
-            Flash::error("Необходимо выбрать книгу для генерации промокода");
-
-            return [];
-        }
-
         try {
-            $book = Book::findOrFail($data['book_id']);
+            $book = $this->user->profile
+                ->books()
+                ->find(post('book_id'));
 
             /**
              * current user is book author
              */
-            if ( !$book->isAuthor($this->user->profile)) {
-                Flash::error("Вы не являетесь автором этой книги");
+            if (!$book) {
+                Flash::error("Книга не найдена");
 
                 return [];
             }
@@ -85,17 +81,17 @@ class Promocode extends ComponentBase
              * check promocode limits
              */
             $promoLimiter = new PromocodeGenerationLimiter(profile: $this->user->profile, book: $book);
-            if ( !$promoLimiter->checkCanGenerate()) {
+            if (!$promoLimiter->checkCanGenerate()) {
                 Flash::error($promoLimiter->getReason());
 
                 return [];
             }
 
+
             /**
              * generate promocode
              */
-            PromocodeModel::create([
-                'book_id' => Book::findOrFail($data['book_id'])?->id,
+            $book->promocodes()->create([
                 'profile_id' => $this->user->profile?->id,
             ]);
 
@@ -121,9 +117,8 @@ class Promocode extends ComponentBase
 
     private function getBooksPromocodes(Book $book): Collection
     {
-        return PromocodeModel
-            ::with(['user'])
-            ->where('book_id', $book->id)
+        return $book->promocodes()
+            ->with(['user'])
             ->get();
     }
 }

@@ -72,8 +72,9 @@ class UserSettingsLC extends ComponentBase
                     'url' => URL::route('mobecan_socialconnect_provider', [$provider['alias'], 's=lc-settings']),
                     'label' => $provider['label'],
                     'tag' => $provider['tag'],
-                    'short_tag' => match ($provider['tag']) {
+                    'short_tag' => match (strtolower($provider['tag'])) {
                         'yandex' => 'ya',
+                        'odnoklassniki' => 'ok',
                         default => $provider['tag']
                     },
                     'exists' => $this->user->mobecan_socialconnect_providers()->where('provider_id', $provider['alias'])->exists(),

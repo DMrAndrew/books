@@ -10,14 +10,13 @@ use October\Rain\Database\Updates\Migration;
  *
  * @link https://docs.octobercms.com/3.x/extend/database/structure.html
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * up builds the migration
      */
     public function up()
     {
-        Schema::create('books_book_promocodes', function(Blueprint $table) {
+        Schema::create('books_book_promocodes', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
 
@@ -42,6 +41,7 @@ return new class extends Migration
             // activated_at
             $table->dateTime('activated_at')->nullable();
 
+            $table->timestamp('expire_in');
             $table->timestamps();
         });
     }

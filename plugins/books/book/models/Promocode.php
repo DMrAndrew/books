@@ -4,6 +4,8 @@ namespace Books\Book\Models;
 
 use Books\Book\Classes\CodeGenerator;
 use Books\Profile\Models\Profile;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Prunable;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
@@ -26,6 +28,7 @@ use RainLab\User\Models\User;
 class Promocode extends Model
 {
     use Validation;
+    use Prunable;
 
     const CODE_LENGTH = 8;
 
@@ -69,8 +72,22 @@ class Promocode extends Model
         parent::boot();
 
         static::creating(function ($promocode) {
-            $promocode->code = self::generateUniqueCode();
+            //$promocode->code = self::generateUniqueCode();
+            $promocode->code = static::gen();
         });
+    }
+
+    public function setCodeAttribute($code): void
+    {
+        while (static::query()->code($code)->exists()) {
+            $code = static::gen();
+        }
+        $this->attributes['code'] = $code;
+    }
+
+    public static function gen(): string
+    {
+        return strtoupper(hash('xxh32', Carbon::now()->toISOString()));
     }
 
     public static function generateUniqueCode(): string
@@ -81,5 +98,30 @@ class Promocode extends Model
     public function scopeNotActivated(Builder $builder)
     {
         return $builder->where('is_activated', false);
+    }
+
+    public function scopeBook(Builder $builder, Book $book): Builder
+    {
+        return $builder->where('book_id', $book->id);
+    }
+
+    public function scopeCode(Builder $builder, string $code): Builder
+    {
+        return $builder->where('code', $code);
+    }
+
+    public function scopeAlive(Builder $builder): Builder
+    {
+        return $builder->where('is_activated', false);
+    }
+
+    public function scopeExpired(Builder $builder): Builder
+    {
+        return $builder->whereDate('expire_in', '<=', today());
+    }
+
+    public function prunable(): Builder
+    {
+        return static::query()->alive()->expired();
     }
 }
