@@ -103,6 +103,10 @@ class Edition extends Model
 
     public $morphMany = [
         'revision_history' => [Revision::class, 'name' => 'revisionable'],
+        'promocodes' => [
+            Promocode::class,
+            'name' => 'promoable',
+        ],
     ];
 
     public function service(): EditionService
