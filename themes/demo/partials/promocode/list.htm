@@ -1,0 +1,35 @@
+<div id="promocodesList" class="table __container-shift">
+    <table class="table-static" style="margin-bottom: 32px;">
+        <thead>
+        <tr>
+            <td>Промокод</td>
+            <td>Статус</td>
+            <td>Кто использовал?</td>
+            <td>Активирован</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for promocode in promocodes %}
+        <tr>
+            <td>{{ promocode.code }}</td>
+            <td>{{ promocode.is_activated ? 'Использован' : 'Не использован' }}</td>
+            <td>
+                {% if promocode.user %}
+                <div class="ui-link _violet">
+                    <a href="/author-page/{{promocode.user.id}}" target="_blank">{{ promocode.user.name }}</a>
+                </div>
+                {% endif %}
+            </td>
+            <td>{{ promocode.activated_at ? promocode.activated_at|date('d.m.Y H:i:s') : '' }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if not promocodes|length %}
+    <div class="personal-area__wrap _indent-large">
+        Выберите книгу для просмотра промокодов
+    </div>
+    {% endif %}
+
+</div>

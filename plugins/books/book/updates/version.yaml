@@ -35,3 +35,6 @@
 1.0.9:
     - 'Удаление user_id у жанра'
     - tags_remove_user_id.php
+1.0.10:
+    - 'Таблица промокодов'
+    - create_promocodes_table.php

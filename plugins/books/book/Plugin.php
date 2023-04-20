@@ -20,9 +20,11 @@ use Books\Book\Components\Chapterer;
 use Books\Book\Components\EBooker;
 use Books\Book\Components\LCBooker;
 use Books\Book\Components\OutOfFree;
+use Books\Book\Components\Promocode;
 use Books\Book\Components\Reader;
 use Books\Book\Components\ReadStatistic;
 use Books\Book\Components\Widget;
+use Books\Book\Console\DeleteNotActivatedFreePromocodes;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
@@ -66,6 +68,11 @@ class Plugin extends PluginBase
      */
     public function register(): void
     {
+        parent::register();
+
+        if ($this->app->runningInConsole()) {
+            $this->registerConsoleCommand('book:promocodes:delete_free_promocodes_not_activated', DeleteNotActivatedFreePromocodes::class);
+        }
     }
 
     /**
@@ -132,6 +139,7 @@ class Plugin extends PluginBase
             Widget::class => 'widget',
             OutOfFree::class => 'OutOfFree',
             Components\Cycle::class => 'cycle',
+            Promocode::class => 'promocode',
         ];
     }
 
@@ -144,5 +152,7 @@ class Plugin extends PluginBase
         $schedule->call(function () {
             GenreRater::queue();
         })->everyTenMinutes();
+
+        $schedule->command('book:promocodes:delete_free_promocodes_not_activated')->dailyAt('03:00');
     }
 }

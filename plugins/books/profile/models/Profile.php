@@ -5,6 +5,7 @@ namespace Books\Profile\Models;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
+use Books\Book\Models\Promocode;
 use Books\Comments\Models\Comment;
 use Books\Profile\Classes\ProfileService;
 use Books\Profile\Classes\SlaveScope;
@@ -13,6 +14,7 @@ use Books\Profile\Traits\Subscribable;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
 use October\Rain\Database\Builder;
@@ -33,6 +35,7 @@ use WordForm;
 /**
  * Profile Model
  *
+ * @property Carbon created_at
  * @method BelongsToMany books
  * @method BelongsToMany subscribers
  * @method BelongsToMany subscriptions
@@ -143,6 +146,7 @@ class Profile extends Model
         'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id'],
         'settings' => [Settings::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
         'cycles' => [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'],
+        'promocodes' => [Promocode::class, 'key' => 'profile_id', 'otherKey' => 'id'],
     ];
 
     public $belongsTo = ['user' => User::class, 'key' => 'id', 'otherKey' => 'user_id'];
