@@ -82,7 +82,8 @@ class BookPage extends ComponentBase
         $reposts = $this->addComponent(Reposter::class, 'reposts');
         $reposts->bindSharable($this->book);
 
-        $this->page->meta_title = $this->page->meta_title . ' «' . $this->book->title . '»';
-        $this->page->preview = $this->book->cover->path;
+        $this->page->meta_title = ' «' . $this->book->title . '»';
+        $this->page->meta_preview = $this->book->cover->path;
+        $this->page->meta_description = strip_tags($this->book->annotation);
     }
 }
