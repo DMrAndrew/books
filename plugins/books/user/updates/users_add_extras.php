@@ -11,7 +11,6 @@ class UsersAddBirthday extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('birthday')->nullable();
             $table->boolean('show_birthday')->default(true);
             $table->boolean('see_adult')->default(false);
             $table->json('loved_genres')->nullable();

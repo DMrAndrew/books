@@ -21,7 +21,7 @@ services:
             args:
                 WWWGROUP: '${WWWGROUP}'
                 XDEBUG: '${APP_DEBUG:-false}'
-        image: sail-8.1/app
+        image: books-sail-8.1/app
         environment:
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
@@ -35,7 +35,7 @@ services:
             - redis
     schedule:
         restart: unless-stopped
-        image: sail-8.1/app
+        image: books-sail-8.1/app
         environment:
             CONTAINER_ROLE: scheduler
             COMPOSE_INTERACTIVE_NO_CLI: 1
@@ -49,7 +49,7 @@ services:
             - site.loc
     queue:
         restart: unless-stopped
-        image: sail-8.1/app
+        image: books-sail-8.1/app
         environment:
             CONTAINER_ROLE: queue
             COMPOSE_INTERACTIVE_NO_CLI: 1
@@ -86,7 +86,7 @@ services:
         networks:
             - sail
         healthcheck:
-          test: ["CMD", "redis-cli", "ping"]
+            test: ["CMD", "redis-cli", "ping"]
     meilisearch:
         image: 'getmeili/meilisearch:latest'
         ports:
