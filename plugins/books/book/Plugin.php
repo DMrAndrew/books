@@ -33,6 +33,8 @@ use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
+use Books\Reposts\behaviors\Shareable;
+use Books\Reposts\Components\Reposter;
 use Config;
 use Event;
 use Illuminate\Database\Console\PruneCommand;
@@ -107,6 +109,7 @@ class Plugin extends PluginBase
 
         Book::extend(function (Book $book) {
             $book->implementClassWith(Favorable::class);
+            $book->implementClassWith(Shareable::class);
         });
 
         foreach ([Chapter::class, Pagination::class] as $class) {

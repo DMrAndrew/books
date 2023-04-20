@@ -1,0 +1,8 @@
+<div id="reposts">
+    {% for repost in reposts %}
+    <div class="book-card-full-description__content ">
+        <a href="/author-page/{{repost.profile.id}}" class="ui-link _violet">{{repost.profile.username}}</a>
+        <span>{{repost.created_at.diffForHumans}}</span>
+    </div>
+    {% endfor %}
+</div>

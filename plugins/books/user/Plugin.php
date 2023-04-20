@@ -2,6 +2,7 @@
 
 namespace Books\User;
 
+use Books\Reposts\behaviors\CanShare;
 use Books\User\Behaviors\BookUser;
 use Books\User\Behaviors\CountryTranslate;
 use Books\User\Classes\SearchManager;
@@ -78,6 +79,7 @@ class Plugin extends PluginBase
         User::extend(function (User $model) {
             $model->implementClassWith(BookUser::class);
             $model->implementClassWith(LocationModel::class);
+            $model->implementClassWith(CanShare::class);
         });
     }
 

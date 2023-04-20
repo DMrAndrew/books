@@ -126,7 +126,7 @@
                         <div class="ui-tabs-header-wrapper" data-tabs="2">
                             <div class="ui-tabs-link active" data-tab="1">О книге</div>
                             <div class="ui-tabs-link" data-tab="2">Содержание</div>
-                            <!--                            <div class="ui-tabs-link" data-tab="3">Репосты</div>-->
+                                                        <div class="ui-tabs-link" data-tab="3">Репосты</div>
                             <!--                            <div class="ui-tabs-link" data-tab="4">Награды<span>1</span></div>-->
                             <!--                            <div class="ui-tabs-link" data-tab="5">Конкурсы<span>31</span></div>-->
                             <div class="ui-tabs-link" data-tab="6">Цикл</div>
@@ -158,6 +158,9 @@
                                 {% endif %}
                             </div>
                             {% endfor %}
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="3">
+                        {% component 'reposts' %}
                         </div>
                         <div class="ui-tabs-content" data-tab-content="6">
                             {% if book.cycle %}

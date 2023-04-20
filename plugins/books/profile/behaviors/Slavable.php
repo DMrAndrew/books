@@ -19,11 +19,14 @@ class Slavable extends ExtensionBase
         $this->model->morphOne['profiler'] = [Profiler::class, 'name' => 'slave'];
 
         get_class($this->model)::addGlobalScope(new SlaveScope());
+
+        $this->model->bindEvent('model.afterCreate', fn() => $this->model->profilerService()->add());
+        $this->model->bindEvent('model.afterDelete', fn() => $this->model->profilerService()->remove());
     }
 
     public function profile(): HasOneThrough
     {
-        return $this->model->hasOneThrough(Profile::class, Profiler::class, 'slave_id','id','id','master_id')
+        return $this->model->hasOneThrough(Profile::class, Profiler::class, 'slave_id', 'id', 'id', 'master_id')
             ->where('master_type', '=', Profile::class)
             ->where('slave_type', '=', get_class($this->model));
     }
