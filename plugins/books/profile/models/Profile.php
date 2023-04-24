@@ -159,7 +159,7 @@ class Profile extends Model
             'table' => 'books_book_authors',
             'key' => 'profile_id',
             'otherKey' => 'book_id',
-            'pivot' => ['percent', 'sort_order', 'is_owner'],
+            'pivot' => ['percent', 'sort_order', 'is_owner', 'accepted'],
         ],
         'subscribers' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'profile_id', 'otherKey' => 'subscriber_id'],
         'subscriptions' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'subscriber_id', 'otherKey' => 'profile_id'],
@@ -197,7 +197,8 @@ class Profile extends Model
 
     public function receivedAwards(): HasManyDeep
     {
-        return $this->hasManyDeepFromRelations($this->books(), (new Book())->awards());
+        return $this->hasManyDeepFromRelations($this->books(), (new Book())->awards())
+            ->withoutGlobalScope(SlaveScope::class);
     }
 
     public function leftComments(): BelongsToMany

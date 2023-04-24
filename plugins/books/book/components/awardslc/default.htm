@@ -15,8 +15,10 @@
                     <img src="{{awardBook.profile.avatar.getThumb(50,50)}}" alt="">
                 </div>
                 <div class="cb-mini-card__wrapper">
-                    <div class="">от <a class="ui-link _violet" href="">{{awardBook.profile.name}}</a> за книгу <a
-                        href=""
+                    <div class="">от <a class="ui-link _violet"
+                                        href="/author-page/{{awardBook.profile.id}}">
+                        {{awardBook.profile.name}}</a> за книгу <a
+                        href="/book-card/{{awardBook.book.id}}"
                         class="ui-link _violet">
                         {{awardBook.book.title}}
                     </a></div>
@@ -30,7 +32,8 @@
             {% for awardBook in left %}
             <div class="cb-mini-card _book">
                 <div class="cb-mini-card__wrapper">
-                    <div class="">за книгу <a class="ui-link _violet" href="">{{awardBook.book.title}}</a></div>
+                    <div class="">за книгу <a class="ui-link _violet"
+                                              href="/book-card/{{awardBook.book.id}}">{{awardBook.book.title}}</a></div>
                     <div class="cb-mini-card__date">{{awardBook.created_at.diffForHumans}}</div>
                 </div>
             </div>
