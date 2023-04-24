@@ -1,0 +1,52 @@
+{% if received.count or left.count or received_awards_count or left_awards_count %}
+<div class="ui-tabs">
+    <div class="ui-tabs-header js-container">
+        <div class="ui-tabs-line"></div>
+        <div class="ui-tabs-header-wrapper js-wrapper" data-tabs="awards">
+            <div class="ui-tabs-link" data-tab="left_awards">Получил наград <span>{{received.count}}</span></div>
+            <div class="ui-tabs-link " data-tab="received_awards">Подарил наград <span>{{left.count}}</span></div>
+        </div>
+    </div>
+    <div class="ui-tabs-body" data-tabs="awards">
+        <div class="ui-tabs-content" data-tab-content="left_awards">
+            {% for awardBook in received %}
+            <div class="cb-mini-card _book">
+                <div class="cb-mini-card__image-wrapper">
+                    <img src="{{awardBook.profile.avatar.getThumb(50,50)}}" alt="">
+                </div>
+                <div class="cb-mini-card__wrapper">
+                    <div class="">от <a class="ui-link _violet" href="">{{awardBook.profile.name}}</a> за книгу <a
+                        href=""
+                        class="ui-link _violet">
+                        {{awardBook.book.title}}
+                    </a></div>
+                    <div class="cb-mini-card__date">{{awardBook.created_at.diffForHumans}}</div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+        <div class="ui-tabs-content" data-tab-content="received_awards">
+            {% for awardBook in left %}
+            <div class="cb-mini-card _book">
+                <div class="cb-mini-card__wrapper">
+                    <div class="">за книгу <a class="ui-link _violet" href="">{{awardBook.book.title}}</a></div>
+                    <div class="cb-mini-card__date">{{awardBook.created_at.diffForHumans}}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script>
+    initTabs('[data-tabs="awards"]');
+</script>
+{% else %}
+<div class="author__placeholder _indent">
+    <svg class="square-32">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#feather-stroked-24' | theme}}"></use>
+    </svg>
+    <div class="ui-text-head--3 ui-text--bold">У вас пока нет ни одной награды</div>
+    <span>Когда они появятся, вы увидите их здесь</span>
+</div>
+{% endif %}

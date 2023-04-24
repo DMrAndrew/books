@@ -19,7 +19,7 @@ class Masterable extends ExtensionBase
         return $this->model->profilers()->slaveType($model);
     }
 
-    public function BelongsToManyTroughProfiler(string $class): BelongsToMany
+    public function belongsToManyTroughProfiler(string $class): BelongsToMany
     {
         return $this->model->belongsToMany($class, (new Profiler())->getTable(), 'master_id', 'slave_id')
             ->where('master_type', get_class($this->model))->where('slave_type', $class);

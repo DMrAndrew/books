@@ -50,11 +50,20 @@ class Reposter extends ComponentBase
     public function getVals()
     {
         $this->page['reposts'] = $this->getReposts();
+        $this->page['repostIsAllowed'] = $this->repostIsAllowed();
+    }
+
+    public function repostIsAllowed()
+    {
+        return match (get_class($this->model)) {
+            Book::class => Book::query()->public()->find($this->model->id),
+            default => false
+        };
     }
 
     public function getReposts()
     {
-        return $this->model->reposts()->with(['profile'])->get();
+        return $this->model?->reposts()->with(['profile'])->get() ?? collect();
     }
 
     public function bindSharable(Model $model): void
@@ -67,14 +76,16 @@ class Reposter extends ComponentBase
 
     public function onRepost()
     {
-        $this->model->reposted($this->user);
-        return $this->render();
+        if ($this->user) {
+            $this->model->reposted($this->user);
+            return $this->render();
+        }
     }
 
     public function render()
     {
         return [
-            '#reposts' => $this->renderPartial('@list', ['reposts' => $this->getReposts()])
+            '#reposts' => $this->renderPartial('@list', ['reposts' => $this->getReposts(), 'repostIsAllowed' => $this->repostIsAllowed()])
         ];
     }
 

@@ -1,3 +1,4 @@
+{% if user and repostIsAllowed %}
 <div class="book-card-repost">
     <span>Поделиться: </span>
     <a id="vk-widget" target="_blank">
@@ -16,8 +17,6 @@
         </svg>
     </a>
 </div>
-{% partial '@list'  reposts=reposts %}
-
 <script>
     !function (d) {
         [
@@ -34,3 +33,6 @@
         })
     }(document);
 </script>
+
+{% endif %}
+{% partial '@list'  reposts=reposts %}

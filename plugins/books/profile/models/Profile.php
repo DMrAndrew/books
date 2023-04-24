@@ -3,6 +3,7 @@
 namespace Books\Profile\Models;
 
 use Books\Book\Models\Author;
+use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
 use Books\Book\Models\Promocode;
@@ -184,14 +185,29 @@ class Profile extends Model
         return new ProfileService($this);
     }
 
+    public function name()
+    {
+        return $this->username;
+    }
+
+    public function leftAwards(): BelongsToMany
+    {
+        return $this->belongsToManyTroughProfiler(AwardBook::class);
+    }
+
+    public function receivedAwards(): HasManyDeep
+    {
+        return $this->hasManyDeepFromRelations($this->books(), (new Book())->awards());
+    }
+
     public function leftComments(): BelongsToMany
     {
-        return $this->BelongsToManyTroughProfiler(Comment::class);
+        return $this->belongsToManyTroughProfiler(Comment::class);
     }
 
     public function reposts(): BelongsToMany
     {
-        return $this->BelongsToManyTroughProfiler(Repost::class);
+        return $this->belongsToManyTroughProfiler(Repost::class);
     }
 
     public function existsInBookCycles(): HasManyDeep

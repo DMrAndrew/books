@@ -13,6 +13,8 @@ use Books\Book\Classes\Rater;
 use Books\Book\Classes\StatisticService;
 use Books\Book\Classes\WidgetService;
 use Books\Book\Components\AboutBook;
+use Books\Book\Components\AwardsLC;
+use Books\Book\Components\BookAwards;
 use Books\Book\Components\BookCard;
 use Books\Book\Components\Booker;
 use Books\Book\Components\BookPage;
@@ -26,6 +28,8 @@ use Books\Book\Components\ReadStatistic;
 use Books\Book\Components\Widget;
 use Books\Book\Console\DeleteNotActivatedFreePromocodes;
 use Books\Book\Models\Author;
+use Books\Book\Models\Award;
+use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Cycle;
@@ -33,6 +37,7 @@ use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
+use Books\Profile\Behaviors\Slavable;
 use Books\Reposts\behaviors\Shareable;
 use Books\Reposts\Components\Reposter;
 use Config;
@@ -112,6 +117,10 @@ class Plugin extends PluginBase
             $book->implementClassWith(Shareable::class);
         });
 
+        AwardBook::extend(function (AwardBook $award) {
+            $award->implementClassWith(Slavable::class);
+        });
+
         foreach ([Chapter::class, Pagination::class] as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Fillable::class);
@@ -146,6 +155,8 @@ class Plugin extends PluginBase
             OutOfFree::class => 'OutOfFree',
             Components\Cycle::class => 'cycle',
             Promocode::class => 'promocode',
+            BookAwards::class => 'bookAwards',
+            AwardsLC::class => 'awardsLC',
         ];
     }
 

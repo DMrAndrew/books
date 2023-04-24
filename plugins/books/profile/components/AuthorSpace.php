@@ -4,6 +4,7 @@ namespace Books\Profile\Components;
 
 use App\classes\CustomPaginator;
 use Books\Book\Classes\Enums\WidgetEnum;
+use Books\Book\Components\AwardsLC;
 use Books\Book\Components\Widget;
 use Books\Comments\Components\Comments;
 use Books\Profile\Models\Profile;
@@ -54,6 +55,7 @@ class AuthorSpace extends ComponentBase
         $comments->bindModelOwner($this->profile);
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
+        $awards = $this->addComponent(AwardsLC::class, 'awardsLC');
     }
 
     public function onRender()
@@ -76,6 +78,7 @@ class AuthorSpace extends ComponentBase
                 'subscriptions' => fn($subscribers) => $subscribers->shortPublicEager(),
                 'reposts' => fn($reposts) => $reposts->with('shareable'),
                 'books' => fn($books) => $books->public()->defaultEager()->orderByPivot('sort_order', 'desc')])
+            ->withCount(['leftAwards', 'receivedAwards'])
             ->find($this->profile->id);
 
         return array_merge([
@@ -89,7 +92,9 @@ class AuthorSpace extends ComponentBase
             'cycles' => $this->profile->cyclesWithAvailableCoAuthorsCycles()->load(['books' => fn($books) => $books->public()])->filter(fn($i) => $i->books->count())->values(),
             'subscribers' => $this->profile->subscribers->groupBy(fn($i) => $i->books_count ? 'authors' : 'readers'),
             'subscriptions' => $this->profile->subscriptions,
-            'reposts' => $this->profile->user->reposts
+            'reposts' => $this->profile->user->reposts,
+            'received_awards_count' => $this->profile->received_awards_count,
+            'left_awards_count' => $this->profile->left_awards_count,
         ], $this->getAuthorComments());
     }
 

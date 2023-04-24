@@ -38,3 +38,10 @@
 1.0.10:
     - 'Таблица промокодов'
     - create_promocodes_table.php
+1.0.11:
+    - 'Награды'
+    - create_awards_table.php
+    - create_award_books_table.php
+1.0.12:
+    - 'Seed награды'
+    - seed_awards.php

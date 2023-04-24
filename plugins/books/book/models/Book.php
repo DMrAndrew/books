@@ -8,6 +8,7 @@ use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Rater;
 use Books\Book\Classes\ScopeToday;
+use Books\Book\Components\BookAwards;
 use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
@@ -46,6 +47,7 @@ use WordForm;
  * @method BelongsToMany tags
  * @method BelongsToMany genres
  * @method HasMany authors
+ * @method HasMany awards
  * @method HasMany libs
  * @method BelongsToMany coauthors
  * @method BelongsToMany profiles
@@ -147,6 +149,7 @@ class Book extends Model
         'editions' => [Edition::class, 'key' => 'book_id', 'id'],
         'libs' => [Lib::class, 'key' => 'book_id', 'otherKey' => 'id'],
         'promocodes' => [Promocode::class, 'key' => 'book_id', 'otherKey' => 'id'],
+        'awards' => [AwardBook::class, 'key' => 'book_id', 'otherKey' => 'id']
     ];
 
     public $belongsTo = [
@@ -166,6 +169,15 @@ class Book extends Model
     ];
 
     public $belongsToMany = [
+//        'awards' => [
+//            Award::class,
+//            'table' => 'books_book_award_books',
+//            'pivotModel' => AwardBook::class,
+//            'key' => 'book_id',
+//            'otherKey' => 'id',
+//            'pivot' => ['user_id', 'award_id'],
+//            'scope' => 'withProfile'
+//        ],
         'genres' => [
             Genre::class,
             'table' => 'books_book_genre',
@@ -524,5 +536,17 @@ class Book extends Model
     {
         $this->recommend = false;
         $this->save();
+    }
+
+    public function buyAward(Award $award, ?User $user = null): ?\Illuminate\Database\Eloquent\Model
+    {
+        $user ??= Auth::getUser();
+        if (!$user) {
+            return null;
+        }
+        return $this->awards()->create([
+            'user_id' => $user->id,
+            'award_id' => $award->id
+        ]);
     }
 }

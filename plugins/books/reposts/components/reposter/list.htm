@@ -1,3 +1,4 @@
+{% if reposts.count %}
 <div id="reposts">
     {% for repost in reposts %}
     <div class="book-card-full-description__content ">
@@ -6,3 +7,4 @@
     </div>
     {% endfor %}
 </div>
+{% endif %}
