@@ -4,6 +4,7 @@ namespace Books\Profile\Components;
 
 use App\classes\CustomPaginator;
 use Books\Book\Classes\Enums\WidgetEnum;
+use Books\Book\Components\AwardsLC;
 use Books\Book\Components\Widget;
 use Books\Comments\Components\Comments;
 use Books\Profile\Models\Profile;
@@ -44,7 +45,7 @@ class AuthorSpace extends ComponentBase
     {
         $this->profile_id = $this->param('profile_id');
         $this->authUser = Auth::getUser();
-        if (! $this->profile = Profile::query()
+        if (!$this->profile = Profile::query()
             ->find($this->profile_id ?? $this->authUser?->profile->id)) {
             abort(404);
         }
@@ -54,6 +55,7 @@ class AuthorSpace extends ComponentBase
         $comments->bindModelOwner($this->profile);
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
+        $awards = $this->addComponent(AwardsLC::class, 'awardsLC');
     }
 
     public function onRender()
@@ -72,22 +74,27 @@ class AuthorSpace extends ComponentBase
             ->hasSubscriber($this->authUser?->profile)
             ->with([
                 'banner', 'avatar',
-                'subscribers' => fn ($subscribers) => $subscribers->shortPublicEager(),
-                'subscriptions' => fn ($subscribers) => $subscribers->shortPublicEager(),
-                'books' => fn ($books) => $books->public()->defaultEager()->orderByPivot('sort_order', 'desc')])
+                'subscribers' => fn($subscribers) => $subscribers->shortPublicEager(),
+                'subscriptions' => fn($subscribers) => $subscribers->shortPublicEager(),
+                'reposts' => fn($reposts) => $reposts->with('shareable'),
+                'books' => fn($books) => $books->public()->defaultEager()->orderByPivot('sort_order', 'desc')])
+            ->withCount(['leftAwards', 'receivedAwards'])
             ->find($this->profile->id);
 
         return array_merge([
-            'isLoggedIn' => (bool) $this->authUser,
+            'isLoggedIn' => (bool)$this->authUser,
             'isOwner' => $isOwner,
             'sameAccount' => $sameAccount,
-            'hasContacts' => ! $this->profile->isContactsEmpty(),
+            'hasContacts' => !$this->profile->isContactsEmpty(),
             'should_call_fit_profile' => $isOwner && $this->profile->isEmpty(),
             'profile' => $this->profile,
             'books' => $this->profile->books,
-            'cycles' => $this->profile->cyclesWithAvailableCoAuthorsCycles()->load(['books' => fn ($books) => $books->public()])->filter(fn ($i) => $i->books->count())->values(),
-            'subscribers' => $this->profile->subscribers->groupBy(fn ($i) => $i->books_count ? 'authors' : 'readers'),
+            'cycles' => $this->profile->cyclesWithAvailableCoAuthorsCycles()->load(['books' => fn($books) => $books->public()])->filter(fn($i) => $i->books->count())->values(),
+            'subscribers' => $this->profile->subscribers->groupBy(fn($i) => $i->books_count ? 'authors' : 'readers'),
             'subscriptions' => $this->profile->subscriptions,
+            'reposts' => $this->profile->user->reposts,
+            'received_awards_count' => $this->profile->received_awards_count,
+            'left_awards_count' => $this->profile->left_awards_count,
         ], $this->getAuthorComments());
     }
 
@@ -129,6 +136,6 @@ class AuthorSpace extends ComponentBase
 
     public function commentsCurrentPage(): int
     {
-        return (int) (post('page') ?? $this->commentsCurrentPage);
+        return (int)(post('page') ?? $this->commentsCurrentPage);
     }
 }

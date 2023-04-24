@@ -1,0 +1,109 @@
+{% if (user and buyAwardsIsAllowed) or awards.count %}
+<div id="awards_spawn">
+    {% if user and buyAwardsIsAllowed %}
+    <button type="button" data-modal="open_buy_award"
+            class="book-card-full-description__awards-button ui-button ui-button-size--32 ui-button-view--2">Купить
+        награду
+    </button>
+    {% endif %}
+    {% for awardType in awards %}
+    <div class="book-card-full-description__awards" data-accodrion="wrapper">
+        <div class="book-card-full-description__awards-header" data-accodrion="header">
+            <div class="book-card-full-description__awards-feather _{{awardType.first.award.type.tag}} square-40">
+                <svg class="square-24">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#feather-stroked-24' | theme}}"></use>
+                </svg>
+            </div>
+            <div class="book-card-full-description__awards-text">
+                <div class="ui-text--bold">{{awardType.first.award.name}}</div>
+                <span>+{{awardType.first.award.rate}} к рейтингу книги</span>
+            </div>
+            <div class="book-card-full-description__awards-number">
+                <span>{{awardType.count}}</span>
+                <svg class="square-16 cursor-pointer">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                </svg>
+            </div>
+        </div>
+        <div class="book-card-full-description__awards-body" data-accodrion="body">
+            {% for awardBook in awardType %}
+            <div class="book-card-full-description__content ">
+                <a href="/author-page/{{awardBook.profile.id}}"
+                   class="ui-link _violet">{{awardBook.profile.name}}</a>
+                <span>{{awardBook.created_at.diffForHumans}}</span>
+            </div>
+            {% endfor%}
+        </div>
+    </div>
+    {% endfor %}
+
+    <div data-modal="buy_award" class="buy-book-modal ui-modal">
+        <div class="ui-modal-container">
+            <!-- Поддержка автора -->
+            {{ form_ajax('onBuyAward') }}
+            <!-- Итого к оплате -->
+            <div class="buy-book-modal__container ui-modal-content">
+                <div class="buy-book-modal__header">
+                    <div class="ui-text-head--2 ui-text--bold">Покупка награды</div>
+                    <svg class="square-24" data-modal="close">
+                        <use
+                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                    </svg>
+                </div>
+
+                <div class="buy-book-modal__wrap">
+
+                    <div class="buy-book-modal__wrapper">
+
+                        {% for award in stockAward %}
+                        <div class="buy-book-modal__wrapper-item">
+                            <label class="ui-checkbox">
+                                <input type="hidden" name="awards[{{award.id}}]" value="0">
+                                <input name="awards[{{award.id}}]" type="checkbox" hidden data-track-input="200"
+                                       data-request="onChangeAwardBag">
+                                <div class="ui-checkbox-checker">
+                                    <svg>
+                                        <use
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                    </svg>
+                                </div>
+                                <span class="ui-checkbox-text">{{award.name}}</span>
+                            </label>
+                            <div class="buy-book-modal__text">{{award.price}} ₽</div>
+
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="buy-book-modal__wrapper">
+                        <div class="buy-book-modal__wrapper-item ui-text-body--1 ui-text--bold">
+                            <div class="buy-book-modal__text _green">Итого к оплате</div>
+                            <div class="buy-book-modal__text _green" id="awardPriceSpawn">0 ₽</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                    <span class="ui-text--medium">Купить</span>
+                </button>
+            </div>
+            {{ form_close()}}
+        </div>
+    </div>
+    <script>
+        openModal('[data-modal="buy_award"]', '[data-modal="open_buy_award"]');
+        document.body.style.overflow = 'initial';
+    </script>
+    <script>
+        document.querySelectorAll('[data-accodrion="wrapper"]').forEach(item => {
+            item.addEventListener('click', e => {
+                e.preventDefault();
+                if (e.target.closest('[data-accodrion="header"]')) {
+                    item.classList.toggle('active');
+                }
+
+            })
+        })
+    </script>
+</div>
+{% endif %}

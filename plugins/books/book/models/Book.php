@@ -23,6 +23,7 @@ use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Relations\HasOne;
 use October\Rain\Database\Relations\HasOneThrough;
 use October\Rain\Database\Traits\Validation;
+use RainLab\Notify\Models\Notification;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
@@ -45,6 +46,7 @@ use WordForm;
  * @method BelongsToMany tags
  * @method BelongsToMany genres
  * @method HasMany authors
+ * @method HasMany awards
  * @method HasMany libs
  * @method BelongsToMany coauthors
  * @method BelongsToMany profiles
@@ -145,6 +147,7 @@ class Book extends Model
         'coauthors' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'coAuthors'],
         'editions' => [Edition::class, 'key' => 'book_id', 'id'],
         'libs' => [Lib::class, 'key' => 'book_id', 'otherKey' => 'id'],
+        'awards' => [AwardBook::class, 'key' => 'book_id', 'otherKey' => 'id']
     ];
 
     public $belongsTo = [
@@ -196,7 +199,7 @@ class Book extends Model
 
     public $morphMany = [
         'notifications' => [
-            \RainLab\Notify\Models\Notification::class,
+            Notification::class,
             'name' => 'notifiable',
         ],
         'promocodes' => [
@@ -213,12 +216,12 @@ class Book extends Model
 
     public static function sortCollectionBySalesAt($collection, bool $desc = true)
     {
-        return $collection->{'sortBy'.($desc ? 'Desc' : '')}(fn ($b) => $b->ebook->sales_at);
+        return $collection->{'sortBy' . ($desc ? 'Desc' : '')}(fn($b) => $b->ebook->sales_at);
     }
 
     public static function sortCollectionByPopularGenre($collection)
     {
-        return $collection->sortBy(fn ($book) => $book->genres->pluck('pivot')->min('rate_number') ?: 10000);
+        return $collection->sortBy(fn($book) => $book->genres->pluck('pivot')->min('rate_number') ?: 10000);
     }
 
     public function rater(): Rater
@@ -283,16 +286,16 @@ class Book extends Model
 
     public function scopeWithLastLengthUpdate(Builder $builder): Builder
     {
-        return $builder->with(['editions' => fn ($editions) => $editions->withLastLengthRevision()]);
+        return $builder->with(['editions' => fn($editions) => $editions->withLastLengthRevision()]);
     }
 
     public function scopeType(Builder $builder, ?EditionsEnums $type): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if (! $type) {
+        if (!$type) {
             return $builder;
         }
 
-        return $builder->whereHas('editions', fn ($e) => $e->type($type));
+        return $builder->whereHas('editions', fn($e) => $e->type($type));
     }
 
     public function scopeRecommend(Builder $builder, ?bool $value = true): Builder|\Illuminate\Database\Eloquent\Builder
@@ -302,42 +305,42 @@ class Book extends Model
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn ($e) => $e->free(false)->minPrice($price));
+        return $builder->whereHas('editions', fn($e) => $e->free(false)->minPrice($price));
     }
 
     public function scopeMaxPrice(Builder $builder, ?int $price): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn ($e) => $e->free(false)->maxPrice($price));
+        return $builder->whereHas('editions', fn($e) => $e->free(false)->maxPrice($price));
     }
 
     public function scopeFree(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn ($e) => $e->free());
+        return $builder->whereHas('editions', fn($e) => $e->free());
     }
 
     public function scopeComplete(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn ($e) => $e->status(BookStatus::COMPLETE));
+        return $builder->whereHas('editions', fn($e) => $e->status(BookStatus::COMPLETE));
     }
 
     public function scopeHasGenres(Builder $builder, array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if (! count($ids)) {
+        if (!count($ids)) {
             return $builder;
         }
 
         return $builder->{$mode == 'include' ? 'whereHas' : 'whereDoesntHave'}('genres',
-            fn ($genres) => $genres->where(fn ($q) => $q->whereIn('id', $ids))->orWhereIn('parent_id', $ids));
+            fn($genres) => $genres->where(fn($q) => $q->whereIn('id', $ids))->orWhereIn('parent_id', $ids));
     }
 
     public function scopeHasTags(Builder $builder, array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if (! count($ids)) {
+        if (!count($ids)) {
             return $builder;
         }
 
         return $builder->{$mode == 'include' ? 'whereHas' : 'whereDoesntHave'}('tags',
-            fn ($tags) => $tags->whereIn('id', $ids));
+            fn($tags) => $tags->whereIn('id', $ids));
     }
 
     public function scopeSearchByString(Builder $query, string $string)
@@ -347,12 +350,12 @@ class Book extends Model
 
     public function scopeAdult(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if (! shouldRestrictAdult()) {
+        if (!shouldRestrictAdult()) {
             return $builder;
         }
 
         return $builder->where('age_restriction', '<', '18')
-            ->whereDoesntHave('genres', fn ($genres) => $genres->adult());
+            ->whereDoesntHave('genres', fn($genres) => $genres->adult());
     }
 
     public function scopePublic(Builder $q)
@@ -383,12 +386,12 @@ class Book extends Model
 
     public function scopeWithChapters(Builder $builder): Builder
     {
-        return $builder->with(['ebook.chapters' => fn ($i) => $i->published()]);
+        return $builder->with(['ebook.chapters' => fn($i) => $i->published()]);
     }
 
     public function scopeAfterPublishedAtDate(Builder $builder, Carbon $carbon): Builder
     {
-        return $builder->whereHas('editions', fn ($editions) => $editions->whereDate('sales_at', '>=', $carbon));
+        return $builder->whereHas('editions', fn($editions) => $editions->whereDate('sales_at', '>=', $carbon));
     }
 
     public function scopeLikesCount(Builder $builder): Builder
@@ -398,28 +401,28 @@ class Book extends Model
 
     public function scopeInLibCount(Builder $builder): Builder
     {
-        return $builder->withCount(['libs as in_lib_count' => fn ($libs) => $libs->notWatched()]);
+        return $builder->withCount(['libs as in_lib_count' => fn($libs) => $libs->notWatched()]);
     }
 
     public function scopeLikeExists(Builder $builder, ?User $user = null): Builder
     {
         $user ??= Auth::getUser();
 
-        return $builder->withExists(['favorites as user_liked' => fn ($favorites) => $favorites->user($user)]);
+        return $builder->withExists(['favorites as user_liked' => fn($favorites) => $favorites->user($user)]);
     }
 
     public function scopeInLibExists(Builder $builder, ?User $user = null): Builder
     {
         $user ??= Auth::getUser();
 
-        return $builder->withExists(['libs as in_user_lib' => fn ($libs) => $libs->notWatched()->whereHas(
-            'favorites', fn ($favorites) => $favorites->user($user)
+        return $builder->withExists(['libs as in_user_lib' => fn($libs) => $libs->notWatched()->whereHas(
+            'favorites', fn($favorites) => $favorites->user($user)
         )]);
     }
 
     public function scopeWithProgress(Builder $builder, User $user): Builder
     {
-        return $builder->with(['editions' => fn ($edition) => $edition->withProgress($user)]);
+        return $builder->with(['editions' => fn($edition) => $edition->withProgress($user)]);
     }
 
     public function getCollectedRate(WidgetEnum $widget)
@@ -458,9 +461,9 @@ class Book extends Model
      */
     protected function setDefaultCover(): void
     {
-        if (! $this->cover()->exists()) {
+        if (!$this->cover()->exists()) {
             if ($dir = config('book.book_cover_blank_dir')) {
-                $file_src = collect(glob(base_path()."/$dir/*.png"))->random();
+                $file_src = collect(glob(base_path() . "/$dir/*.png"))->random();
                 if (file_exists($file_src)) {
                     $file = (new File())->fromFile($file_src, 'cover.png');
                     $file->is_public = true;
@@ -473,15 +476,15 @@ class Book extends Model
 
     protected function setDefaultEdition(): void
     {
-        if (! $this->ebook()->exists()) {
-            $this->editions()->save(new Edition(['type' => EditionsEnums::default()->value]));
+        if (!$this->ebook()->exists()) {
+            $this->editions()->save(new Edition(['type' => EditionsEnums::default()]));
         }
     }
 
     public function setSortOrder()
     {
         $this->authors()->each(function ($author) {
-            if (! $author->sort_order) {
+            if (!$author->sort_order) {
                 $author->update(['sort_order' => ($author->profile->authorships()->max('sort_order') ?? 0) + 1]);
             }
         });
@@ -512,7 +515,7 @@ class Book extends Model
     public function getDeferredAuthor($key, int|Profile $profile)
     {
         return $this->getDeferredAuthors($key)
-            ?->first(fn ($bind) => $bind->slave_id == (is_int($profile) ? $profile : $profile->id))
+            ?->first(fn($bind) => $bind->slave_id == (is_int($profile) ? $profile : $profile->id))
             ?? null;
     }
 
@@ -526,5 +529,17 @@ class Book extends Model
     {
         $this->recommend = false;
         $this->save();
+    }
+
+    public function buyAward(Award $award, ?User $user = null): ?\Illuminate\Database\Eloquent\Model
+    {
+        $user ??= Auth::getUser();
+        if (!$user) {
+            return null;
+        }
+        return $this->awards()->create([
+            'user_id' => $user->id,
+            'award_id' => $award->id
+        ]);
     }
 }

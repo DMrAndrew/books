@@ -3,6 +3,7 @@
 namespace Books\Profile\Models;
 
 use Books\Book\Models\Author;
+use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
 use Books\Book\Models\Cycle;
 use Books\Book\Models\Promocode;
@@ -11,6 +12,7 @@ use Books\Profile\Classes\ProfileService;
 use Books\Profile\Classes\SlaveScope;
 use Books\Profile\Factories\ProfileFactory;
 use Books\Profile\Traits\Subscribable;
+use Books\Reposts\Models\Repost;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
@@ -183,10 +185,29 @@ class Profile extends Model
         return new ProfileService($this);
     }
 
+    public function name()
+    {
+        return $this->username;
+    }
+
+    public function leftAwards(): BelongsToMany
+    {
+        return $this->belongsToManyTroughProfiler(AwardBook::class);
+    }
+
+    public function receivedAwards(): HasManyDeep
+    {
+        return $this->hasManyDeepFromRelations($this->books(), (new Book())->awards());
+    }
+
     public function leftComments(): BelongsToMany
     {
-        return $this->belongsToMany(Comment::class, (new Profiler())->getTable(), 'master_id', 'slave_id')
-            ->where('master_type', static::class)->where('slave_type', Comment::class);
+        return $this->belongsToManyTroughProfiler(Comment::class);
+    }
+
+    public function reposts(): BelongsToMany
+    {
+        return $this->belongsToManyTroughProfiler(Repost::class);
     }
 
     public function existsInBookCycles(): HasManyDeep
@@ -205,14 +226,14 @@ class Profile extends Model
     public function isCommentAllowed(?Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
-        if (! $profile) {
+        if (!$profile) {
             return false;
         }
         if ($profile->is($this)) {
             return true;
         }
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_FIT_ACCOUNT_INDEX_PAGE)->first();
-        if (! $setting) {
+        if (!$setting) {
             return false;
         }
 
@@ -226,14 +247,14 @@ class Profile extends Model
     public function canSeeCommentFeed(?Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
-        if (! $profile) {
+        if (!$profile) {
             return false;
         }
         if ($profile->is($this)) {
             return true;
         }
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_COMMENT_FEED)->first();
-        if (! $setting) {
+        if (!$setting) {
             return false;
         }
 
@@ -251,12 +272,12 @@ class Profile extends Model
 
     public function scopeBooksExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('books', fn ($book) => $book->public());
+        return $builder->whereHas('books', fn($book) => $book->public());
     }
 
     public function scopeBooksCount(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->withCount(['books' => fn ($book) => $book->public()]);
+        return $builder->withCount(['books' => fn($book) => $book->public()]);
     }
 
     public function getIsCurrentAttribute(): bool
@@ -306,12 +327,12 @@ class Profile extends Model
 
     public function isEmpty(): bool
     {
-        return ! collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn ($i) => (bool) $i);
+        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => (bool)$i);
     }
 
     public function isContactsEmpty(): bool
     {
-        return ! collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn ($i) => (bool) $i);
+        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn($i) => (bool)$i);
     }
 
     public static function wordForm(): WordForm

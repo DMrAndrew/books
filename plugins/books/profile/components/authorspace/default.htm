@@ -76,13 +76,19 @@
                             <span>{{subscribers_count}}</span>
                             {% endif %}
                         </div>
-                        <!--                        <div class="ui-tabs-link " data-tab="9">Награды</div>-->
+
+                        <div class="ui-tabs-link " data-tab="9">Награды
+                        </div>
                         <div class="ui-tabs-link " data-tab="10">Комментарии
                             {% if comments_paginator.total %}
                             <span>{{comments_paginator.total?:''}}</span>
                             {% endif %}
                         </div>
-                        <!--                        <div class="ui-tabs-link " data-tab="11">Репосты</div>-->
+                        <div class="ui-tabs-link " data-tab="11">Репосты
+                            {% if reposts.count %}
+                            <span>{{reposts.count?:''}}</span>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -110,9 +116,17 @@
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписчики <span
                 class="ui-text-body--2">{{subscribers_count}}</span></div>
         </div>
+        <div class="ui-tabs-content" data-tab-content="9">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Награды
+            </div>
+        </div>
         <div class="ui-tabs-content" data-tab-content="10">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Комментарии <span
                 class="ui-text-body--2">{{comments_paginator.total?:''}}</span></div>
+        </div>
+        <div class="ui-tabs-content" data-tab-content="11">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Репосты <span
+                class="ui-text-body--2">{{reposts.count?:''}}</span></div>
         </div>
     </div>
     <div class="ui-grid-container ui-grid-gap">
@@ -276,9 +290,41 @@
                     </div>
                     {% endif %}
                 </div>
+                <div class="author-awards ui-tabs-content" data-tab-content="9">
+                    <div class="author-awards__container">
+                        {% component 'awardsLC' %}
+                    </div>
+                </div>
                 <!-- Комментарии -->
                 <div class="ui-tabs-content" id="author-comments" data-tab-content="10">
                     {% partial 'author_space::author-comments-tab' comments_paginator=comments_paginator %}
+                </div>
+                <div class="ui-tabs-content" data-tab-content="11">
+
+                    {% if reposts.count %}
+                    <div class="author-awards__container">
+                        {% for repost in reposts %}
+                        <div class="cb-mini-card _avatar">
+                            <div class="cb-mini-card__image-wrapper">
+                                <img src="{{profile.avatar.getThumb(50,50)}}" alt="">
+                            </div>
+                            <div class="cb-mini-card__wrapper">
+                                <div class="">Поделился <a class="ui-link _violet" href="{{repost.getLink}}">{{repost.getLabel}}</a>
+                                </div>
+                                <div class="cb-mini-card__date">{{repost.created_at.diffForHumans}}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="author__placeholder _indent">
+                        <svg class="square-32">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#share-stroked-32' | theme}}"></use>
+                        </svg>
+                        <div class="ui-text-head--3 ui-text--bold">У вас пока нет ни одного репоста</div>
+                        <span>Когда они появятся, вы увидите их здесь</span>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

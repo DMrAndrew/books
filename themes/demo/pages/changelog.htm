@@ -27,108 +27,76 @@ meta_title = "Изменения"
                 <div class="create-book__container wrapper">
 
                     <div class="create-book__column-right">
-                        <div class="create-book__input ui-multi-select" id="input-genres">
-                            <div class="ui-multi-select-header">
-                                <label class="ui-select-label">Жанр</label>
-                            </div>
-                            <!-- <button href="#" class="ui-button ui-button-size--32 ui-button-view--3">Создать цикл</button> -->
-                            <div class="ui-multi-select-container">
+                        <div class="buy-book-modal ui-modal">
+                            <div class="ui-modal-container">
+                                <!-- Поддержка автора -->
 
-                                <div class="ui-multi-select-item _size-32">
 
-                                    <div class="ui-multi-select-tag-wrapper">
-                                        <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
-                                            <span>Любовные романы</span>
-                                            <svg>
-                                                <use
-                                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                                            </svg>
-                                        </div>
-                                        <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
-                                            <span>Любовная фантастика</span>
-                                            <svg>
-                                                <use
-                                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                                            </svg>
-                                        </div>
-                                        <input class="ui-multi-select-item-input books-autocomplete " type="text">
+                                <!-- Итого к оплате -->
+                                <div class="buy-book-modal__container ui-modal-content">
+                                    <div class="buy-book-modal__header">
+                                        <div class="ui-text-head--2 ui-text--bold">Покупка награды</div>
+                                        <svg class="square-24">
+                                            <use
+                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                                        </svg>
                                     </div>
 
-                                    <!-- <div class="ui-select-item-option">18+</div> -->
-                                    <svg class="ui-multi-select-item-icon chevron">
-                                        <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-                                    </svg>
-                                </div>
-                                <div class="ui-select-hitn"></div>
-                                <div class="ui-select-error">Так не пойдёт</div>
-                            </div>
+                                    <div class="buy-book-modal__wrap">
 
+                                        <div class="buy-book-modal__wrapper">
 
-                            <button href="#" class="ui-button ui-button-size--32 ui-button-view--2">Сохранить</button>
-                        </div>
-                        <div class="create-book__input ui-multi-select" id="input-genres2">
-                            <div class="ui-multi-select-header">
-                                <label class="ui-select-label">Жанр</label>
-                            </div>
-                            <!-- <button href="#" class="ui-button ui-button-size--32 ui-button-view--3">Создать цикл</button> -->
-                            <div class="ui-multi-select-container">
-
-                                <div class="ui-multi-select-item _size-32">
-
-                                    <div class="ui-multi-select-tag-wrapper">
-                                        <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
-                                            <span>Любовные романы</span>
-                                            <svg>
-                                                <use
-                                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                                            </svg>
+                                            <div class="buy-book-modal__wrapper-item">
+                                                <label class="ui-checkbox">
+                                                    <input type="checkbox" hidden>
+                                                    <div class="ui-checkbox-checker">
+                                                        <svg>
+                                                            <use
+                                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                                        </svg>
+                                                    </div>
+                                                    <span class="ui-checkbox-text">Золотое перо</span>
+                                                </label>
+                                            </div>
+                                            <div class="buy-book-modal__wrapper-item">
+                                                <label class="ui-checkbox">
+                                                    <input type="checkbox" hidden>
+                                                    <div class="ui-checkbox-checker">
+                                                        <svg>
+                                                            <use
+                                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                                        </svg>
+                                                    </div>
+                                                    <span class="ui-checkbox-text">Серебрянное перо</span>
+                                                </label>
+                                            </div>
+                                            <div class="buy-book-modal__wrapper-item">
+                                                <label class="ui-checkbox">
+                                                    <input type="checkbox" hidden>
+                                                    <div class="ui-checkbox-checker">
+                                                        <svg>
+                                                            <use
+                                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                                        </svg>
+                                                    </div>
+                                                    <span class="ui-checkbox-text">Обычное перо</span>
+                                                </label>
+                                            </div>
                                         </div>
-                                        <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
-                                            <span>Любовная фантастика</span>
-                                            <svg>
-                                                <use
-                                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                                            </svg>
+
+                                        <div class="buy-book-modal__wrapper">
+                                            <div class="buy-book-modal__wrapper-item ui-text-body--1 ui-text--bold">
+                                                <div class="buy-book-modal__text _green">Итого к оплате</div>
+                                                <div class="buy-book-modal__text _green">220 ₽</div>
+                                            </div>
                                         </div>
-                                        <input class="ui-multi-select-item-input books-autocomplete" type="text">
                                     </div>
 
-                                    <!-- <div class="ui-select-item-option">18+</div> -->
-                                    <svg class="ui-multi-select-item-icon chevron">
-                                        <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-                                    </svg>
+                                    <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                                        <span class="ui-text--medium">Продолжить</span>
+                                    </button>
                                 </div>
-
-                                <!--                                <div class="ui-dropdown" >-->
-
-                                <!--                                    <div class="ui-dropdown-container">-->
-                                <!--                                        <div class="ui-dropdown-item _placeholder">-->
-                                <!--                                            <span>Тэг «Ян Курпатов» уже добавлен на страницу</span>-->
-                                <!--                                        </div>-->
-                                <!--                                        <div class="ui-dropdown-item">-->
-                                <!--                                            <span>Александр Алексон</span>-->
-                                <!--                                        </div>-->
-                                <!--                                        <div class="ui-dropdown-item ">-->
-                                <!--                                            <span>Александр Александроский</span>-->
-                                <!--                                        </div>-->
-                                <!--                                        <div class="ui-dropdown-separate"></div>-->
-                                <!--                                        <div class="ui-dropdown-item active">-->
-                                <!--                                            <svg>-->
-                                <!--                                                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#plus-stroked-16"></use>-->
-                                <!--                                            </svg>-->
-                                <!--                                            <span>Создать новый тэг «Фантаст»</span>-->
-                                <!--                                        </div>-->
-                                <!--                                    </div>-->
-                                <!--                                </div>-->
-                                <!--                            </div>-->
-                                <div class="ui-select-hitn"></div>
-                                <div class="ui-select-error"></div>
                             </div>
-
-
-                            <button href="#" class="ui-button ui-button-size--32 ui-button-view--2">Сохранить</button>
                         </div>
                     </div>
 
@@ -148,8 +116,8 @@ meta_title = "Изменения"
 </style>
 
 <script>
-    initAutocomplete( {
-        container:'#input-genres',
-        onRequestHandler:'Ajaxer::onRequest',
+    initAutocomplete({
+        container: '#input-genres',
+        onRequestHandler: 'Ajaxer::onRequest',
     })
 </script>

@@ -5,6 +5,7 @@ namespace Books\Book\Components;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Models\Book;
 use Books\Comments\Components\Comments;
+use Books\Reposts\Components\Reposter;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -77,7 +78,14 @@ class BookPage extends ComponentBase
 
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
-        $this->page->meta_title = $this->page->meta_title . ' «' . $this->book->title . '»';
-        $this->page->preview = $this->book->cover->path;
+
+
+        $reposts = $this->addComponent(Reposter::class, 'reposts');
+        $reposts->bindSharable($this->book);
+
+        $awards = $this->addComponent(BookAwards::class, 'bookAwards');
+        $this->page->meta_title = '«' . $this->book->title . '»';
+        $this->page->meta_preview = $this->book->cover->path;
+        $this->page->meta_description = strip_tags($this->book->annotation);
     }
 }

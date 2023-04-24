@@ -1,0 +1,38 @@
+{% if user and repostIsAllowed %}
+<div class="book-card-repost">
+    <span>Поделиться: </span>
+    <a id="vk-widget" target="_blank">
+        <svg class="square-32" style="color: #0077FF;">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-vk-28' | theme}}"></use>
+        </svg>
+    </a>
+    <a id="tg-widget" target="_blank">
+        <svg class="square-32" style="color: #0077FF;">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-telegram-28' | theme}}"></use>
+        </svg>
+    </a>
+    <a id="ok-widget" target="_blank">
+        <svg class="square-32">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-filled-32' | theme}}"></use>
+        </svg>
+    </a>
+</div>
+<script>
+    !function (d) {
+        [
+            {container: 'vk-widget', link: 'https://vk.com/share.php?url='},
+            {container: 'tg-widget', link: 'https://t.me/share/url?url='},
+            {container: 'ok-widget', link: 'https://connect.ok.ru/offer?url='},
+        ].forEach(function (item) {
+            console.log()
+            let el = d.getElementById(item.container)
+            el.href = item.link + document.URL;
+            el.addEventListener('click', function () {
+                oc.ajax('onRepost')
+            })
+        })
+    }(document);
+</script>
+
+{% endif %}
+{% partial '@list'  reposts=reposts %}

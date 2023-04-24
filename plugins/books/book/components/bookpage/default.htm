@@ -124,16 +124,16 @@
                     <div class="ui-tabs-header">
                         <div class="ui-tabs-line"></div>
                         <div class="ui-tabs-header-wrapper" data-tabs="2">
-                            <div class="ui-tabs-link active" data-tab="1">О книге</div>
+                            <div class="ui-tabs-link" data-tab="1">О книге</div>
                             <div class="ui-tabs-link" data-tab="2">Содержание</div>
-                            <!--                            <div class="ui-tabs-link" data-tab="3">Репосты</div>-->
-                            <!--                            <div class="ui-tabs-link" data-tab="4">Награды<span>1</span></div>-->
+                                                        <div class="ui-tabs-link" data-tab="3">Репосты</div>
+                                                        <div class="ui-tabs-link" data-tab="4">Награды</div>
                             <!--                            <div class="ui-tabs-link" data-tab="5">Конкурсы<span>31</span></div>-->
                             <div class="ui-tabs-link" data-tab="6">Цикл</div>
                         </div>
                     </div>
                     <div class="ui-tabs-body _field" data-tabs="2">
-                        <div class="ui-tabs-content active" data-tab-content="1">
+                        <div class="ui-tabs-content " data-tab-content="1">
                             <div class="book-card-full-description__about typographical-block">
                                 {{book.annotation|raw}}
                                 <div class="book-card__genres tags-list">
@@ -159,6 +159,12 @@
                             </div>
                             {% endfor %}
                         </div>
+                        <div class="ui-tabs-content" data-tab-content="3">
+                            {% component 'reposts' %}
+                        </div>
+                        <div class="ui-tabs-content " data-tab-content="4">
+                            {% component 'bookAwards' %}
+                        </div>
                         <div class="ui-tabs-content" data-tab-content="6">
                             {% if book.cycle %}
                             {% partial 'cycle/cycle-book-header' body cycle=book.cycle %}
@@ -177,14 +183,14 @@
                     <div class="ui-tabs-header">
                         <div class="ui-tabs-line"></div>
                         <div class="ui-tabs-header-wrapper" data-tabs="3">
-                            <div class="ui-tabs-link active" data-tab="1">Другие книги автора</div>
+                            <div class="ui-tabs-link " data-tab="1">Другие книги автора</div>
                             <div class="ui-tabs-link" data-tab="2">С этой книгой читают</div>
                             <div class="ui-tabs-link" data-tab="3">Горячие новинки</div>
                             <div class="ui-tabs-link" data-tab="4">Популярное</div>
                         </div>
                     </div>
                     <div class="ui-tabs-body _field" data-tabs="3">
-                        <div class="ui-tabs-content active" data-tab-content="1">
+                        <div class="ui-tabs-content " data-tab-content="1">
                             {% component 'otherAuthorBook' %}
                         </div>
                         <div class="ui-tabs-content" data-tab-content="2">
@@ -290,3 +296,4 @@
         })()
     </script>
 </div>
+

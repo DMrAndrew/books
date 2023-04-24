@@ -10,6 +10,7 @@ use Books\Book\Models\Chapter;
 use Books\Book\Models\Tag;
 use Books\Catalog\Models\Genre;
 use Books\Profile\Models\Profile;
+use Carbon\Carbon;
 use Db;
 use Event;
 use Illuminate\Support\Collection;
@@ -31,6 +32,7 @@ class BookService
     {
         $this->proxy = new Book();
         $this->book ??= new Book();
+        $this->session_key ??= hash('xxh128', Carbon::now()->toISOString());
     }
 
     /**
@@ -43,7 +45,7 @@ class BookService
 
     protected function isNew(): bool
     {
-        return ! $this->book->exists;
+        return !$this->book->exists;
     }
 
     protected function isBounded(): bool
@@ -54,15 +56,15 @@ class BookService
     protected function bound(): bool
     {
         $this->bound = $this->isBounded() || Db::transaction(function () {
-            foreach ($this->relations as $relation) {
-                foreach ($this->book->$relation()->get() as $item) {
-                    $this->proxy->$relation()->add($item, $this->getSessionKey(), $item->pivot ? $item->pivot->toArray() : []);
+                foreach ($this->relations as $relation) {
+                    foreach ($this->book->$relation()->get() as $item) {
+                        $this->proxy->$relation()->add($item, $this->getSessionKey(), $item->pivot ? $item->pivot->toArray() : []);
+                    }
                 }
-            }
-            Session::put($this->getSessionKey(), true);
+                Session::put($this->getSessionKey(), true);
 
-            return true;
-        });
+                return true;
+            });
 
         return $this->bound;
     }
@@ -121,7 +123,7 @@ class BookService
                 $this->book->cover()->add($cover, $this->session_key);
             }
 
-            collect(explode(',', $info->getKeywords()))->each(fn ($tag) => $this->addTag($tag));
+            collect(explode(',', $info->getKeywords()))->each(fn($tag) => $this->addTag($tag));
 
             foreach ($info->getGenres() as $item) {
                 //TODO tolowercase
@@ -143,7 +145,7 @@ class BookService
     }
 
     /**
-     * @param  array|null  $data
+     * @param array|null $data
      * @return Book
      *
      * @throws ValidationException
@@ -202,7 +204,7 @@ class BookService
             ->authors()
             ->get()
             ->diff($authors)
-            ->each(fn (Author $author) => Event::fire('books.book::author.invited', [$author, $this->user->profile]));
+            ->each(fn(Author $author) => Event::fire('books.book::author.invited', [$author, $this->user->profile]));
 
         return $this->book;
     }
@@ -210,7 +212,7 @@ class BookService
     protected function syncRelations(): void
     {
         foreach ($this->relations as $relation) {
-            $method = 'get'.ucfirst($relation);
+            $method = 'get' . ucfirst($relation);
             $this->book->$relation()->sync($this->{$method}());
         }
 
@@ -224,7 +226,7 @@ class BookService
 
     protected function bindOwner(): void
     {
-        if (! $this->getOwnerProfile()) {
+        if (!$this->getOwnerProfile()) {
             $this->attachProfile($this->user->profile, [Author::PERCENT => 100, Author::IS_OWNER => 1, Author::ACCEPTED => 1]);
         }
     }
@@ -238,12 +240,12 @@ class BookService
     }
 
     /**
-     * @param  string|Tag|null  $tag
+     * @param string|Tag|null $tag
      * @return void
      */
     public function addTag(null|string|Tag $tag): void
     {
-        if (! $tag) {
+        if (!$tag) {
             return;
         }
         $tag = Tag::query()->firstOrCreate([Tag::NAME => (is_string($tag) ? ($tag) : $tag->{Tag::NAME})]);
@@ -251,7 +253,7 @@ class BookService
     }
 
     /**
-     * @param  Genre  $genre
+     * @param Genre $genre
      * @return void
      */
     public function addGenre(Genre $genre): void
@@ -260,7 +262,7 @@ class BookService
     }
 
     /**
-     * @param  Profile  $profile
+     * @param Profile $profile
      * @return void
      */
     public function addProfile(Profile $profile): void
@@ -289,7 +291,7 @@ class BookService
 
     protected function getOwnerProfile()
     {
-        return $this->getProfiles()->first(fn ($i) => $i->id === $this->user->profile->id);
+        return $this->getProfiles()->first(fn($i) => $i->id === $this->user->profile->id);
     }
 
     /**
@@ -301,7 +303,7 @@ class BookService
         if ($pivot) {
             $this->proxy()->getDeferredAuthors($this->getSessionKey())
                 ->each(function ($bind) use ($authors) {
-                    if ($author = $authors->first(fn ($i) => $i->id === $bind->slave_id)) {
+                    if ($author = $authors->first(fn($i) => $i->id === $bind->slave_id)) {
                         $author->pivot = new Author($bind->pivot_data ?? []);
                     }
                 });
@@ -321,7 +323,7 @@ class BookService
     }
 
     /**
-     * @param  Genre  $genre
+     * @param Genre $genre
      * @return void
      */
     public function removeGenre(Genre $genre): void

@@ -56,7 +56,7 @@ class Plugin extends PluginBase
      */
     public function register(): void
     {
-        Event::listen('books.profile.username.modify.requested', fn ($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
+        Event::listen('books.profile.username.modify.requested', fn($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
     }
 
     /**
@@ -83,13 +83,11 @@ class Plugin extends PluginBase
         foreach (config('profile.slavable') ?? [] as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Slavable::class);
-                $model->bindEvent('model.afterCreate', fn () => $model->profilerService()->add());
-                $model->bindEvent('model.afterDelete', fn () => $model->profilerService()->remove());
             });
         }
 
         UsersController::extendFormFields(function ($form, $model, $context) {
-            if (! $model instanceof User) {
+            if (!$model instanceof User) {
                 return;
             }
             $form->addTabFields([
@@ -116,7 +114,7 @@ class Plugin extends PluginBase
                     return Redirect::refresh();
                 }
 
-                return  Flash::error('Профиль не найден');
+                return Flash::error('Профиль не найден');
             });
 
             $controller->addDynamicMethod('onRejectUsername', function ($recordId) {
