@@ -87,12 +87,12 @@ class Promocode extends ComponentBase
                 return [];
             }
 
-
             /**
              * generate promocode
              */
-            $book->promocodes()->create([
+            $book->ebook->promocodes()->create([
                 'profile_id' => $this->user->profile?->id,
+                'expire_in' => $promoLimiter->getExpireIn(),
             ]);
 
             Flash::success('Новый промокод сгенерирован');
@@ -115,9 +115,9 @@ class Promocode extends ComponentBase
         // todo реализовать после оплаты/покупки
     }
 
-    private function getBooksPromocodes(Book $book): Collection
+    private function getBooksPromocodes(Book $book): ?Collection
     {
-        return $book->promocodes()
+        return $book->ebook?->promocodes()
             ->with(['user'])
             ->get();
     }

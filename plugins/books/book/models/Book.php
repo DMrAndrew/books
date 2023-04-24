@@ -8,7 +8,6 @@ use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Rater;
 use Books\Book\Classes\ScopeToday;
-use Books\Book\Components\BookAwards;
 use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
@@ -148,7 +147,6 @@ class Book extends Model
         'coauthors' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'coAuthors'],
         'editions' => [Edition::class, 'key' => 'book_id', 'id'],
         'libs' => [Lib::class, 'key' => 'book_id', 'otherKey' => 'id'],
-        'promocodes' => [Promocode::class, 'key' => 'book_id', 'otherKey' => 'id'],
         'awards' => [AwardBook::class, 'key' => 'book_id', 'otherKey' => 'id']
     ];
 
@@ -169,15 +167,6 @@ class Book extends Model
     ];
 
     public $belongsToMany = [
-//        'awards' => [
-//            Award::class,
-//            'table' => 'books_book_award_books',
-//            'pivotModel' => AwardBook::class,
-//            'key' => 'book_id',
-//            'otherKey' => 'id',
-//            'pivot' => ['user_id', 'award_id'],
-//            'scope' => 'withProfile'
-//        ],
         'genres' => [
             Genre::class,
             'table' => 'books_book_genre',
@@ -212,6 +201,10 @@ class Book extends Model
         'notifications' => [
             Notification::class,
             'name' => 'notifiable',
+        ],
+        'promocodes' => [
+            Promocode::class,
+            'name' => 'promoable',
         ],
     ];
 

@@ -39,9 +39,12 @@
     - 'Таблица промокодов'
     - create_promocodes_table.php
 1.0.11:
+    - 'Таблица промокодов - morphs() promoable'
+    - update_promocodes_table.php
+1.0.12:
     - 'Награды'
     - create_awards_table.php
     - create_award_books_table.php
-1.0.12:
+1.0.13:
     - 'Seed награды'
     - seed_awards.php

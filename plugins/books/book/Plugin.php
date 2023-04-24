@@ -79,9 +79,6 @@ class Plugin extends PluginBase
         parent::register();
 
         $this->registerConsoleCommand('model:prune', PruneCommand::class);
-//        if ($this->app->runningInConsole()) {
-//            $this->registerConsoleCommand('book:promocodes:delete_free_promocodes_not_activated', DeleteNotActivatedFreePromocodes::class);
-//        }
     }
 
     /**
@@ -169,9 +166,9 @@ class Plugin extends PluginBase
         $schedule->call(function () {
             GenreRater::queue();
         })->everyTenMinutes();
+
         $schedule->command('model:prune', [
             '--model' => [Models\Promocode::class],
         ])->dailyAt('03:00');
-        //$schedule->command('book:promocodes:delete_free_promocodes_not_activated')->dailyAt('03:00');
     }
 }
