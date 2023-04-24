@@ -38,7 +38,8 @@ const iniSelect = function (){
                         data: {...ui.item}
                     })
                 }
-            }
+            },
+            open: function (event, ui) {}
         }).bookSelect( "menuWidget" );
     });
 };

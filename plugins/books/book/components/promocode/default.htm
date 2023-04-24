@@ -7,14 +7,12 @@
             <div class="ui-select-container">
                 <div class="ui-select-item _size-32">
 
-                    <select class="book-select" name="book_id" style="display: none"
-                            data-request = "onGetBookPromocodes"
+                    <select class="book-select" id="book_id" name="book_id" style="display: none"
+                            data-request="onGetBookPromocodes"
                         >
                         <option value="">Выберите произведение</option>
                         {% for book in books %}
-                        <option  value="{{book.id}}"
-                                 {{ current_book.id == book.id ? 'selected' : ''  }}
-                        >{{book.title}}</option>
+                        <option value="{{book.id}}">{{book.title}}</option>
                         {% endfor %}
 
                     </select>
@@ -34,7 +32,7 @@
 
         {% set freeMonthes = constant('Books\\Book\\Classes\\PromocodeGenerationLimiter::UNLIMITED_GENERATION_FREE_MONTHS') %}
         {% set promocodesForBookPerMonth = constant('Books\\Book\\Classes\\PromocodeGenerationLimiter::PROMOCODES_COUNT_LIMIT_FOR_BOOK_PER_MONTH') %}
-        <div class="personal-area__wrap _indent-large ui-text-body--3">В первые {{ freeMonthes }} месяца после регистрации  вы можете бесконечно генерировать промокоды. По истечении срока все промокоды сгорят. В дальнейшем вы можете сгенерировать до
+        <div class="personal-area__wrap _indent-large ui-text-body--3">В первые {{ freeMonthes }} месяца после регистрации вы можете бесконечно генерировать промокоды. По истечении срока все промокоды сгорят. В дальнейшем вы можете сгенерировать до
             {{ promocodesForBookPerMonth }} промокодов в месяц</div>
 
         <button data-attach-loading type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium" style="margin-bottom: 10px">Сгенерировать</button>
