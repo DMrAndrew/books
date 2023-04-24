@@ -49,7 +49,6 @@ class Promocode extends ComponentBase
 
     public function onGetBookPromocodes()
     {
-
         $book = $this->user->profile
             ->books()
             ->find(post('value'));
