@@ -219,6 +219,11 @@ class Book extends Model
         return $collection->{'sortBy' . ($desc ? 'Desc' : '')}(fn($b) => $b->ebook->sales_at);
     }
 
+    public function awardsItems()
+    {
+        return $this->hasManyDeepFromRelations($this->awards(), (new AwardBook())->award());
+    }
+
     public static function sortCollectionByPopularGenre($collection)
     {
         return $collection->sortBy(fn($book) => $book->genres->pluck('pivot')->min('rate_number') ?: 10000);

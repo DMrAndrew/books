@@ -31,10 +31,4 @@ class AwardBook extends Model
      */
     public $rules = [];
 
-    public function scopeWithProfile(Builder $builder)
-    {
-        return $builder->with('profile');
-    }
-
-
 }

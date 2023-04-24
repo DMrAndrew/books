@@ -33,7 +33,7 @@ class Rater
     }
 
     /**
-     * @param  bool  $withDump
+     * @param bool $withDump
      * @return Rater
      */
     public function setWithDump(bool $withDump): static
@@ -97,7 +97,7 @@ class Rater
 
     public function queue(): ?static
     {
-        if (! $this->canPerform()) {
+        if (!$this->canPerform()) {
             return null;
         }
         $actions = array_keys($this->closures);
@@ -148,8 +148,8 @@ class Rater
             $book->rater()
                 ->setWithDump($this->withDump)
                 ->when(count($stats),
-                    fn ($rater) => $rater->applyStats($stats),
-                    fn ($rater) => $rater->applyStatsAll())
+                    fn($rater) => $rater->applyStats($stats),
+                    fn($rater) => $rater->applyStatsAll())
                 ->apply();
             $count++;
         }
@@ -160,8 +160,16 @@ class Rater
     public function rate(): static
     {
         $this->likes();
+        $this->builder->withSum('awardsItems', 'rate');
+        $this->builder->withCount('reposts');
         $this->closures[StatsEnum::RATE->value] = function () {
-            $this->book['rate'] = $this->book['likes_count']; // Пока есть только лайки
+            $rate = collect([
+                $this->book['likes_count'] ?? 0,
+                $this->book['awards_items_sum_rate'] ?? 0,
+                ($this->book['reposts_count'] ?? 0) * 2,
+
+            ])->sum();
+            $this->book['rate'] = $rate;
             $this->set('rate');
         };
 
@@ -181,7 +189,7 @@ class Rater
     public function time(): static
     {
         $this->closures[StatsEnum::READ_TIME->value] = function () {
-            $this->book['read_time'] = (int) ceil($this->book
+            $this->book['read_time'] = (int)ceil($this->book
                     ->paginationTrackers()
                     ->where('time', '>', 0)
                     ->get()
@@ -206,7 +214,7 @@ class Rater
     public function likes(): static
     {
         $this->builder->likesCount();
-        $this->closures[StatsEnum::LIKES->value] = fn () => $this->set('likes_count');
+        $this->closures[StatsEnum::LIKES->value] = fn() => $this->set('likes_count');
 
         return $this;
     }
@@ -214,7 +222,7 @@ class Rater
     public function libs(): static
     {
         $this->builder->inLibCount();
-        $this->closures[StatsEnum::LIBS->value] = fn () => $this->set('in_lib_count');
+        $this->closures[StatsEnum::LIBS->value] = fn() => $this->set('in_lib_count');
 
         return $this;
     }
@@ -222,7 +230,7 @@ class Rater
     public function comments(): static
     {
         $this->builder->commentsCount($this->book->profile);
-        $this->closures[StatsEnum::COMMENTS->value] = fn () => $this->set('comments_count');
+        $this->closures[StatsEnum::COMMENTS->value] = fn() => $this->set('comments_count');
 
         return $this;
     }
