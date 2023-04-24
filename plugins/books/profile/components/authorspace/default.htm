@@ -78,9 +78,6 @@
                         </div>
 
                         <div class="ui-tabs-link " data-tab="9">Награды
-                            {% if received_awards_count + left_awards_count %}
-                            <span>{{received_awards_count + left_awards_count?:''}}</span>
-                            {% endif %}
                         </div>
                         <div class="ui-tabs-link " data-tab="10">Комментарии
                             {% if comments_paginator.total %}
@@ -120,8 +117,8 @@
                 class="ui-text-body--2">{{subscribers_count}}</span></div>
         </div>
         <div class="ui-tabs-content" data-tab-content="9">
-            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Награды <span
-                class="ui-text-body--2">{{received_awards_count + left_awards_count}}</span></div>
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Награды
+            </div>
         </div>
         <div class="ui-tabs-content" data-tab-content="10">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Комментарии <span
