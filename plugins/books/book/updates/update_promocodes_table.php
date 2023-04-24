@@ -2,10 +2,7 @@
 
 namespace Books\Book\Updates;
 
-<<<<<<< HEAD
-=======
 use Books\Book\Models\Promocode;
->>>>>>> a0f2ac5e7aeff07467245e2946d9bacfb1cfff96
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
 use Schema;
@@ -22,13 +19,10 @@ class update_promocodes_table extends Migration
      */
     public function up()
     {
-<<<<<<< HEAD
-=======
         Promocode::all()->each(function($promocode) {
             $promocode->delete();
         });
 
->>>>>>> a0f2ac5e7aeff07467245e2946d9bacfb1cfff96
         Schema::table('books_book_promocodes', function (Blueprint $table) {
             $table->dropForeign(['book_id']);
             $table->dropColumn('book_id');
@@ -46,13 +40,10 @@ class update_promocodes_table extends Migration
      */
     public function down()
     {
-<<<<<<< HEAD
-=======
         Promocode::all()->each(function($promocode) {
             $promocode->delete();
         });
 
->>>>>>> a0f2ac5e7aeff07467245e2946d9bacfb1cfff96
         Schema::table('books_book_promocodes', function (Blueprint $table) {
             $table->dropColumn('expire_in');
         });
