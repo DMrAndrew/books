@@ -79,10 +79,11 @@ class BookPage extends ComponentBase
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
 
-        $reposts = $this->addComponent(Reposter::class, 'reposts');
-        $reposts->bindSharable($this->book);
-
-        $this->page->meta_title = ' «' . $this->book->title . '»';
+        if ($this->user) {
+            $reposts = $this->addComponent(Reposter::class, 'reposts');
+            $reposts->bindSharable($this->book);
+        }
+        $this->page->meta_title = '«' . $this->book->title . '»<br/>«Автор»<br/>«Аннотация»';
         $this->page->meta_preview = $this->book->cover->path;
         $this->page->meta_description = strip_tags($this->book->annotation);
     }

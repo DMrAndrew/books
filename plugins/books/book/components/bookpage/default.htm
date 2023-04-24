@@ -160,7 +160,9 @@
                             {% endfor %}
                         </div>
                         <div class="ui-tabs-content" data-tab-content="3">
+                            {% if user %}
                         {% component 'reposts' %}
+                            {% endif %}
                         </div>
                         <div class="ui-tabs-content" data-tab-content="6">
                             {% if book.cycle %}
