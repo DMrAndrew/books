@@ -1,0 +1,14 @@
+{% if advert and advert.banner%}
+<a onmousedown="visit()" href="/reader/{{advert.book.id}}">
+    <div class="advert _trash">
+        <img src="{{advert.banner.path}}"
+             alt="banner"
+             style="width: inherit;height: inherit;border-radius: inherit">
+    </div>
+</a>
+<script>
+    function visit() {
+        oc.ajax(`{{__SELF__}}` + '::onVisit')
+    }
+</script>
+{% endif %}

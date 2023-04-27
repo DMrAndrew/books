@@ -48,3 +48,7 @@
 1.0.13:
     - 'Seed награды'
     - seed_awards.php
+1.0.14:
+    - 'Реклама'
+    - create_adverts_table.php
+    - create_advert_visits_table.php

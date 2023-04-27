@@ -9,6 +9,7 @@ use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Jobs\JobPaginate;
 use Books\Book\Jobs\JobProgress;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
@@ -110,7 +111,9 @@ class Chapter extends Model
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
      */
-    protected $appends = [];
+    protected $appends = [
+
+    ];
 
     /**
      * @var array hidden attributes removed from the API representation of the model (ex. toArray())
@@ -158,7 +161,7 @@ class Chapter extends Model
 
     public function getTitleAttribute()
     {
-        return $this->attributes['title'] ?? false ?: ($this->exists ? '№'.$this->{$this->getSortOrderColumn()} : '');
+        return $this->attributes['title'] ?? false ?: ($this->exists ? '№' . $this->{$this->getSortOrderColumn()} : '');
     }
 
     public function isFree(): bool
@@ -177,6 +180,7 @@ class Chapter extends Model
     {
         Queue::push(JobPaginate::class, ['chapter_id' => $this->id]);
     }
+
 
     public function scopeSortOrder(Builder $builder, int $value): Builder
     {
@@ -205,14 +209,14 @@ class Chapter extends Model
 
     public function lengthRecount()
     {
-        $this->length = (int) $this->pagination()->sum('length') ?? 0;
+        $this->length = (int)$this->pagination()->sum('length') ?? 0;
         $this->save();
         $this->edition->lengthRecount();
     }
 
     public function setNeighbours()
     {
-        $builder = fn () => $this->edition()->first()->chapters()->published();
+        $builder = fn() => $this->edition()->first()->chapters()->published();
         $sort_order = $this->{$this->getSortOrderColumn()};
         $this->update([
             'prev_id' => $builder()->maxSortOrder($sort_order)->latest($this->getSortOrderColumn())->first()?->id,

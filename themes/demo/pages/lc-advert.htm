@@ -1,13 +1,11 @@
-title = "Личный кабинет - Промокоды"
+title = "Личный кабинет - Реклама"
 layout = "default"
-url = "/lc-promocodes/:book_id?"
-title = "Личный кабинет - Промокоды"
-description = "Личный кабинет - Промокоды"
-
+url = "/lc-advert/:book_id?"
+meta_title = "Личный кабинет - Реклама"
 [session]
 security = "user"
 redirect = "/"
-[promocode]
+[advertLC]
 ==
 {% partial 'profile/personal_area_header' %}
 
@@ -17,14 +15,16 @@ redirect = "/"
             {% partial "profile/sidebarmenu" %}
             <div class="ui-col-sm-9">
                 <div class="personal-area__subtitle">
-                    <span class="ui-text-head--3 ui-text--bold">Промокоды</span>
+                    <span class="ui-text-head--3 ui-text--bold">Реклама</span>
                     <svg class="square-16">
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
                     </svg>
                 </div>
-                {% component 'promocode' %}
+
+                <div id="advert_spawn">
+                    {% component 'advertLC' %}
+                </div>
             </div>
         </div>
     </div>
 </div>
-
