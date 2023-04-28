@@ -1,9 +1,8 @@
 {% if advert and advert.banner%}
-<a onmousedown="visit()" href="/reader/{{advert.book.id}}">
-    <div class="advert _trash">
+<a onmousedown="visit()" href="/reader/{{advert.book.id}}" target="_blank">
+    <div class="advert">
         <img src="{{advert.banner.path}}"
-             alt="banner"
-             style="width: inherit;height: inherit;border-radius: inherit">
+             alt="banner">
     </div>
 </a>
 <script>
