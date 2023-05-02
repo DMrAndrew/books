@@ -1,0 +1,8 @@
+.ui-tabs-link {
+    line-height: 20px;
+    font-size: 14px;
+    font-family: Inter,sans-serif;
+}
+.ui-tabs-header-wrapper.__shifted {
+    padding-bottom: 12px;
+}
