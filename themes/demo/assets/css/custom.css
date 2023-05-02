@@ -6,3 +6,15 @@
 .ui-tabs-header-wrapper.__shifted {
     padding-bottom: 12px;
 }
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.footer {
+    margin-top: 0;
+}
+.footer-space {
+    margin-top: auto;
+    height: 32px;
+}
