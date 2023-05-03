@@ -4,6 +4,7 @@ use Books\Book\Models\Advert;
 use Books\Book\Models\Book;
 use Books\FileUploader\Components\ImageUploader;
 use Cms\Classes\ComponentBase;
+use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
@@ -41,22 +42,43 @@ class AdvertLC extends ComponentBase
         }
         $this->user = Auth::getUser();
         $this->setBook();
+        $this->setUpImageUploder();
+
+
+    }
+
+    public function onRun()
+    {
+        $this->setUpImageUploder();
+    }
+
+
+    public function setUpImageUploder()
+    {
         if ($this->book) {
             $banner = $this->addComponent(ImageUploader::class, 'bannerUploader', [
                 'modelClass' => Advert::class,
                 'modelKeyColumn' => 'banner',
                 'deferredBinding' => false,
-                'imageWidth' => 168,
-                'imageHeight' => 168,
             ]);
             $banner->bindModel('banner', $this->book->advert);
         }
-
     }
 
     public function onRefreshFiles()
     {
         $this->pageCycle();
+    }
+
+    public function setBook(): void
+    {
+        $this->book = $this->user->profile->books()
+            ->with(['advert', 'advert.visits', 'ebook'])
+            ->find(
+                post('value') // Из селекта книги
+                ?? post('book_id') // из кнопки "Рекламировать"
+                ?? $this->param('book_id')); // из параметра url
+
     }
 
     public function onRender()
@@ -77,18 +99,7 @@ class AdvertLC extends ComponentBase
             'visited_by_advert' => $this->book?->advert->visits->count(),
             'visits_table' => $visit_table,
             'visits_total' => $visit_table?->sum()
-
-
         ];
-    }
-
-    public function setBook(): void
-    {
-        $this->book = $this->user->profile->books()->with(['advert', 'advert.visits', 'ebook'])->find(post('value') ?? post('book_id') ?? $this->param('book_id'));
-        if ($this->book && !$this->book->advert) {
-            $this->book->advert()->create();
-            $this->setBook();
-        }
     }
 
     public function render()
@@ -101,14 +112,12 @@ class AdvertLC extends ComponentBase
 
     public function onToggleState()
     {
-
         $this->book?->advert->toggleState()->save();
         return $this->render();
     }
 
     public function onChangeBook()
     {
-        $this->setBook();
         if ($this->book) {
             return Redirect::to('/lc-advert/' . $this->book->id);
         }

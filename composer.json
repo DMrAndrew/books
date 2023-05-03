@@ -28,7 +28,7 @@
         "books/comments-plugin": "*",
         "staudenmeir/eloquent-has-many-deep": "1.17",
         "books/notifications-plugin": "*",
-        "kirschbaum-development/eloquent-power-joins": "2.*"
+        "kirschbaum-development/eloquent-power-joins": "^3.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",

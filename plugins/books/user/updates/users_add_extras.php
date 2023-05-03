@@ -18,6 +18,7 @@ class UsersAddBirthday extends Migration
             $table->boolean('required_post_register')->default(true);
             $table->boolean('asked_adult_agreement')->default(0);
             $table->unsignedBigInteger('country_id')->nullable()->index();
+            $table->date('birthday')->nullable();
             $table->unsignedBigInteger('state_id')->nullable()->index();
         });
     }
