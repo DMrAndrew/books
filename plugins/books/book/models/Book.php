@@ -412,7 +412,7 @@ class Book extends Model
             'tags',
             'genres',
             'stats',
-            'ebook' => fn($ebook) => $ebook->withDiscountExist(),
+            'ebook' => fn($ebook) => $ebook->withActiveDiscountExist(),
             'ebook.discount',
             'author.profile',
             'authors.profile',

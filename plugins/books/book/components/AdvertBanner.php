@@ -60,6 +60,6 @@ class AdvertBanner extends ComponentBase
 
     public function onVisit()
     {
-        $this->book?->advert->registerVisit();
+        return $this->book?->advert->registerVisit();
     }
 }

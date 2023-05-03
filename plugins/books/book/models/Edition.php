@@ -175,19 +175,14 @@ class Edition extends Model
         return new PriceTag($this, $this->discount);
     }
 
-    public function scopeWithDiscountExist(Builder $builder): Builder
+    public function scopeWithActiveDiscountExist(Builder $builder): Builder
     {
         return $builder->withExists('discount');
     }
 
-    public function scopeDiscountExist(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
-    {
-        return $builder->has('discount');
-    }
-
     public function scopeActiveDiscountExist(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('discount', fn($discount) => $discount->active());
+        return $builder->has('discount');
     }
 
     public function getAllowedForDiscountAttribute(): bool
@@ -296,9 +291,7 @@ class Edition extends Model
 
     protected function afterUpdate()
     {
-        if ($this->wasChanged(['free_parts', 'status', 'price'])) {
-            $this->setFreeParts();
-        }
+
     }
 
     public function scopeNotEmpty(Builder $builder): Builder

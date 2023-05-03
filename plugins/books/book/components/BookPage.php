@@ -57,8 +57,6 @@ class BookPage extends ComponentBase
             ->with(['cycle' => fn($cycle) => $cycle->booksEager()])
             ->find($this->book->id);
 
-        $this->page['book'] = $this->book;
-        $this->page['cycle'] = $this->book->cycle;
         $comments = $this->addComponent(Comments::class, 'comments');
         $comments->bindModel($this->book);
         $comments->bindModelOwner($this->book->profile);
@@ -104,6 +102,8 @@ class BookPage extends ComponentBase
         return [
             'buyBtn' => $this->buyBtn(),
             'readBtn' => $this->readBtn(),
+            'book' => $this->book,
+            'cycle' => $this->book->cycle
         ];
     }
 
