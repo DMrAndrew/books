@@ -34,7 +34,7 @@ class AdvertBanner extends ComponentBase
 
         $this->book = Book::query()
             ->public()
-            ->whereHas('advert', fn($advert) => $advert->enabled()->allowed())
+            ->whereHas('advert', fn($advert) => $advert->enabled()->allowed()->has('banner'))
             ->diffWithUnloved()
             ->inRandomOrder()
             ->first();
