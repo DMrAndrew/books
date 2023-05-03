@@ -8,7 +8,7 @@
         <a href="/listing/?widget={{widget.enum.value}}" class="thematic-section__link ui-link _violet">Все</a>
         {% endif %}
     </div>
-    {% partial 'controls/thematic-section-container' withPrice=true books=widget.items %}
+    {% partial 'controls/thematic-section-container' books=widget.items %}
 </div>
 {% else %}
 {% partial 'controls/thematic-section-container' books=widget.items %}

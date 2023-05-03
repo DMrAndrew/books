@@ -6,6 +6,7 @@ use Books\Book\Classes\EditionService;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\PriceTag;
 use Cache;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -27,6 +28,7 @@ use System\Models\Revision;
  * Edition Model
  *
  * * @method HasMany chapters
+ * * @method HasMany discounts
  * * @method AttachOne fb2
  * * @method BelongsTo book
  *
@@ -89,12 +91,15 @@ class Edition extends Model
         'free_parts' => 'filled|integer',
         'download_allowed' => 'boolean',
         'comment_allowed' => 'boolean',
-        //        'sales_free' => 'boolean',
         'fb2' => ['nullable', 'file', 'mimes:xml', 'max:30720'],
     ];
 
+//    public $hasOne = [
+//        'discount' => [Discount::class, 'key' => 'edition_id', 'otherKey' => 'id', 'scope' => 'active'],
+//    ];
     public $hasMany = [
         'chapters' => [Chapter::class, 'key' => 'edition_id', 'otherKey' => 'id'],
+        'discounts' => [Discount::class, 'key' => 'edition_id', 'otherKey' => 'id'],
     ];
 
     public $attachOne = [
@@ -112,6 +117,11 @@ class Edition extends Model
             'name' => 'promoable',
         ],
     ];
+
+    public function discount()
+    {
+        return $this->hasOne(Discount::class, 'edition_id', 'id')->whereDate('active_at', '=', today());
+    }
 
     public function service(): EditionService
     {
@@ -160,6 +170,36 @@ class Edition extends Model
         return collect(Cache::get('sells' . $this->id) ?? []);
     }
 
+    public function priceTag(): PriceTag
+    {
+        return new PriceTag($this, $this->discount);
+    }
+
+    public function scopeWithDiscountExist(Builder $builder): Builder
+    {
+        return $builder->withExists('discount');
+    }
+
+    public function scopeDiscountExist(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->has('discount');
+    }
+
+    public function scopeActiveDiscountExist(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('discount', fn($discount) => $discount->active());
+    }
+
+    public function getAllowedForDiscountAttribute(): bool
+    {
+        return in_array($this->getOriginal('status'), [BookStatus::COMPLETE, BookStatus::WORKING]) && !$this->isFree();
+    }
+
+    public function scopeAllowedForDiscount(Builder $builder)
+    {
+        return $builder->status(BookStatus::COMPLETE, BookStatus::WORKING)->free(false);
+    }
+
     public function isSold(User $user): bool
     {
         return $this->sells()->search($user->id) !== false;
@@ -194,7 +234,7 @@ class Edition extends Model
 
     public function isFree(): bool
     {
-        return $this->getOriginal('price') == 0;
+        return (int)$this->getOriginal('price') == 0;
     }
 
     public function hadCompleted()
@@ -286,9 +326,13 @@ class Edition extends Model
         return $builder->where('price', '<=', $price);
     }
 
-    public function scopeFree(Builder $builder, $free = true): Builder
+    public function scopeFree(Builder $builder, bool $free = true): Builder
     {
-        return $builder->where('price', '=', 0);
+        if ($free) {
+            return $builder->where('price', '=', 0);
+        } else {
+            return $builder->minPrice(1);
+        }
     }
 
     public function scopeEbook(Builder $builder): Builder
@@ -311,14 +355,14 @@ class Edition extends Model
         return $builder->type(EditionsEnums::Comics);
     }
 
-    public function scopeType(Builder $builder, EditionsEnums $type): Builder
+    public function scopeType(Builder $builder, EditionsEnums ...$types): Builder
     {
-        return $builder->where('type', '=', $type->value);
+        return $builder->whereIn('type', $types);
     }
 
-    public function scopeStatus(Builder $builder, BookStatus $status): Builder
+    public function scopeStatus(Builder $builder, BookStatus ...$status): Builder
     {
-        return $builder->where('status', '=', $status->value);
+        return $builder->whereIn('status', $status);
     }
 
     public function nextChapterSortOrder()
@@ -346,7 +390,7 @@ class Edition extends Model
     {
         Db::transaction(function () {
             $builder = fn() => $this->chapters()->published();
-            if (!$this->price || $this->status === BookStatus::FROZEN) {
+            if ($this->isFree() || $this->status === BookStatus::FROZEN) {
                 $builder()->update(['sales_type' => ChapterSalesType::FREE]);
             } else {
                 $builder()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);

@@ -91,7 +91,8 @@ class Promocode extends Model
 
     public function scopeNotActivated(Builder $builder)
     {
-        return $builder->where('is_activated', false);
+        return $builder->where('is_activated', false)
+            ->whereDate('expire_in', '>', today());
     }
 
     public function scopeBook(Builder $builder, Book $book): Builder

@@ -21,6 +21,7 @@ use Books\Book\Components\BookCard;
 use Books\Book\Components\Booker;
 use Books\Book\Components\BookPage;
 use Books\Book\Components\Chapterer;
+use Books\Book\Components\DiscountLC;
 use Books\Book\Components\EBooker;
 use Books\Book\Components\LCBooker;
 use Books\Book\Components\OutOfFree;
@@ -35,6 +36,7 @@ use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Cycle;
+use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
 use Books\Book\Models\Tag;
@@ -107,6 +109,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('StatisticService', StatisticService::class);
         AliasLoader::getInstance()->alias('WidgetService', WidgetService::class);
         AliasLoader::getInstance()->alias('Promocode', Models\Promocode::class);
+        AliasLoader::getInstance()->alias('Discount', Discount::class);
 
         Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
         Event::listen('books.book.updated', fn(Book $book) => $book->updateEventHandler());
@@ -158,6 +161,7 @@ class Plugin extends PluginBase
             AwardsLC::class => 'awardsLC',
             AdvertLC::class => 'advertLC',
             AdvertBanner::class => 'advertBanner',
+            DiscountLC::class => 'discountLC',
         ];
     }
 

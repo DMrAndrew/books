@@ -12,6 +12,7 @@ enum SortEnum: string
     case hotNew = 'hotNew';
     case gainingPopularity = 'gainingPopularity';
     case topRate = 'topRate';
+    case discount = 'discount';
 
     public function label(): string
     {
@@ -23,6 +24,7 @@ enum SortEnum: string
             self::hotNew => 'Горячие новинки',
             self::gainingPopularity => 'Набирают популярность',
             self::topRate => 'С высоким рейтингом',
+            self::discount => 'По размеру скидки',
             self::default => 'По умолчанию',
         };
     }

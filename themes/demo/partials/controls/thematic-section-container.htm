@@ -11,14 +11,14 @@
                     {{book.title}}
                 </div>
             </a>
-            <!--            {% if withPrice %}-->
-            <!--            <div class="book-mini-card__price" data-tooltip="Электронная книга">-->
-            <!--                <svg>-->
-            <!--                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>-->
-            <!--                </svg>-->
-            <!--                {% partial 'book/book-price' edition=book.ebook %}-->
-            <!--            </div>-->
-            <!--            {% endif %}-->
+            {% if book.ebook.discount_exists %}
+            <div class="book-mini-card__price ui-tooltip" data-tooltip="Электронная книга">
+                <svg>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>
+                </svg>
+                {% partial 'book/book-price' edition=book.ebook %}
+            </div>
+            {% endif %}
         </div>
         {% endfor %}
     </div>

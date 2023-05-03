@@ -14,6 +14,7 @@ use Books\Profile\Models\Profile;
 use Cache;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Kirschbaum\PowerJoins\PowerJoins;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Collection;
@@ -71,6 +72,7 @@ class Book extends Model
     use Validation;
     use HasFactory;
     use HasRelationships;
+    use PowerJoins;
 
     /**
      * @var string table associated with the model
@@ -335,6 +337,11 @@ class Book extends Model
         return $builder->whereHas('editions', fn($e) => $e->status(BookStatus::COMPLETE));
     }
 
+    public function scopeEditionTypeIn(Builder $builder, BookStatus ...$status): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('editions', fn($query) => $query->type($status));
+    }
+
     public function scopeDiffWithUnloved(Builder $builder, ?User $user = null)
     {
         $user ??= Auth::getUser();
@@ -400,9 +407,28 @@ class Book extends Model
 
     public function scopeDefaultEager(Builder $q): Builder
     {
-        return $q->with(['cover', 'tags', 'genres', 'stats', 'ebook', 'author.profile', 'authors.profile'])
+        return $q->with([
+            'cover',
+            'tags',
+            'genres',
+            'stats',
+            'ebook' => fn($ebook) => $ebook->withDiscountExist(),
+            'ebook.discount',
+            'author.profile',
+            'authors.profile',
+        ])
             ->inLibExists()
             ->likeExists();
+    }
+
+    public function scopeAllowedForDiscount(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('editions', fn($editions) => $editions->allowedForDiscount());
+    }
+
+    public function scopeActiveDiscountExist(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('editions', fn($editions) => $editions->activeDiscountExist());
     }
 
     public function scopeWithChapters(Builder $builder): Builder
@@ -463,6 +489,11 @@ class Book extends Model
         $this->setDefaultEdition();
         $this->stats()->add(new Stats());
         $this->advert()->create();
+    }
+
+    public function scopeOrderByDiscountAmount(Builder $builder, bool $asc = false)
+    {
+        return $builder->orderByPowerJoins('editions.discount.amount', $asc ? 'asc' : 'desc');
     }
 
     public function refreshAllowedVisits(): int

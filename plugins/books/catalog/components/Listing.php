@@ -71,22 +71,22 @@ class Listing extends ComponentBase
 
     public function onSearchIncludeGenre()
     {
-        return $this->renderOptions($this->byTerm(Genre::class), ['handler' => $this->alias.'::onAddIncludeGenre']);
+        return $this->renderOptions($this->byTerm(Genre::class), ['handler' => $this->alias . '::onAddIncludeGenre']);
     }
 
     public function onSearchExcludeGenre()
     {
-        return $this->renderOptions($this->byTerm(Genre::class), ['handler' => $this->alias.'::onAddExcludeGenre']);
+        return $this->renderOptions($this->byTerm(Genre::class), ['handler' => $this->alias . '::onAddExcludeGenre']);
     }
 
     public function onSearchIncludeTag()
     {
-        return $this->renderOptions($this->byTerm(Tag::class), ['handler' => $this->alias.'::onAddIncludeTag']);
+        return $this->renderOptions($this->byTerm(Tag::class), ['handler' => $this->alias . '::onAddIncludeTag']);
     }
 
     public function onSearchExcludeTag()
     {
-        return $this->renderOptions($this->byTerm(Tag::class), ['handler' => $this->alias.'::onAddExcludeTag']);
+        return $this->renderOptions($this->byTerm(Tag::class), ['handler' => $this->alias . '::onAddExcludeTag']);
     }
 
     public function onAddIncludeTag()
@@ -203,26 +203,28 @@ class Listing extends ComponentBase
             ->hasGenres($this->filter->includes(Genre::class)->pluck('id')->toArray())
             ->hasTags($this->filter->excludes(Tag::class)->pluck('id')->toArray(), 'exclude')
             ->hasTags($this->filter->includes(Tag::class)->pluck('id')->toArray())
-            ->when($this->filter->complete, fn ($q) => $q->complete())
-            ->when(! $this->filter->free && $this->filter->min_price, fn ($q) => $q->minPrice($this->filter->min_price))
-            ->when(! $this->filter->free && $this->filter->max_price, fn ($q) => $q->maxPrice($this->filter->max_price))
-            ->when($this->filter->free, fn ($q) => $q->free())
-            ->when($this->filter->type, fn ($q) => $q->type($this->filter->type))
+            ->when($this->filter->complete, fn($q) => $q->complete())
+            ->when(!$this->filter->free && $this->filter->min_price, fn($q) => $q->minPrice($this->filter->min_price))
+            ->when(!$this->filter->free && $this->filter->max_price, fn($q) => $q->maxPrice($this->filter->max_price))
+            ->when($this->filter->free, fn($q) => $q->free())
+            ->when($this->filter->type, fn($q) => $q->type($this->filter->type))
             ->public()
             ->defaultEager();
 
         $books = null;
         if ($this->filter->widget && in_array($this->filter->widget, [
-            WidgetEnum::recommend,
-            WidgetEnum::hotNew,
-            WidgetEnum::new,
-            WidgetEnum::gainingPopularity])) {
+                WidgetEnum::recommend,
+                WidgetEnum::todayDiscount,
+                WidgetEnum::hotNew,
+                WidgetEnum::new,
+                WidgetEnum::gainingPopularity])) {
             $service = new WidgetService($this->filter->widget);
 
             $books = $service
                 ->setQuery($query)
-                ->setUseSort(! in_array($this->filter->widget, [
+                ->setUseSort(!in_array($this->filter->widget, [
                     WidgetEnum::hotNew,
+                    WidgetEnum::todayDiscount,
                     WidgetEnum::new,
                     WidgetEnum::gainingPopularity]))
                 ->collect()
@@ -233,10 +235,11 @@ class Listing extends ComponentBase
         $books ??= $query->get();
 
         return match ($this->filter->sort) {
-            SortEnum::popular_day, SortEnum::popular_week, SortEnum::popular_month => $books->sortByDesc(fn ($book) => $book->stats->popular()),
+            SortEnum::popular_day, SortEnum::popular_week, SortEnum::popular_month => $books->sortByDesc(fn($book) => $book->stats->popular()),
             SortEnum::new => Book::sortCollectionBySalesAt($books),
-            SortEnum::hotNew, SortEnum::gainingPopularity => $books->sortByDesc(fn ($book) => $book->getCollectedRate($this->filter->sort === SortEnum::hotNew ? WidgetEnum::hotNew : WidgetEnum::gainingPopularity)),
-            SortEnum::topRate => $books->sortByDesc(fn ($book) => $book->stats->rate),
+            SortEnum::discount => $books->sortBy(fn($book) => $book->ebook->discount?->priceTag()->odds() ?? -1),
+            SortEnum::hotNew, SortEnum::gainingPopularity => $books->sortByDesc(fn($book) => $book->getCollectedRate($this->filter->sort === SortEnum::hotNew ? WidgetEnum::hotNew : WidgetEnum::gainingPopularity)),
+            SortEnum::topRate => $books->sortByDesc(fn($book) => $book->stats->rate),
             default => $books
         };
     }
@@ -245,10 +248,10 @@ class Listing extends ComponentBase
     {
         return $options->map(function ($item) use ($itemOptions) {
             return $itemOptions + [
-                'id' => $item['id'],
-                'label' => $item['name'],
-                'htm' => $this->renderPartial('select/option', ['label' => $item['name']]),
-            ];
+                    'id' => $item['id'],
+                    'label' => $item['name'],
+                    'htm' => $this->renderPartial('select/option', ['label' => $item['name']]),
+                ];
         })->toArray();
     }
 

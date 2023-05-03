@@ -48,7 +48,7 @@ recordsPerView = 11
     <nav class="header__nav nav">
         <ul class="nav__list">
             <li class="nav__list-item _dropdown">
-                <a class="ui-text--medium nav__link _dropdown" href="#">
+                <a class="ui-text--medium nav__link _dropdown" href="/listing">
                     <span>Книги</span>
                     <svg class="square-16">
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
@@ -276,7 +276,7 @@ recordsPerView = 11
                 <div class="menu-mobile__link _indent-large _color-gray" data-menu-link="2">
                     <span class="ui-text--medium ui-text-body--3">{{user.profile.username~' ID:'~user.profile.id}}</span>
                 </div>
-                <a href="/author-page" class="menu-mobile__link _indent-large">
+                <a href="/author-page/{{user.profile.id}}" class="menu-mobile__link _indent-large">
                     <span class="ui-text--medium">Моя страница</span>
                 </a>
                 <div class="menu-mobile__separator"></div>
