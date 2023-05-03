@@ -351,9 +351,9 @@ class Book extends Model
         return $builder->hasGenres($user->unloved_genres, 'exclude');
     }
 
-    public function scopeHasGenres(Builder $builder, array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
+    public function scopeHasGenres(Builder $builder, ?array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if (!count($ids)) {
+        if ($ids === null || !count($ids)) {
             return $builder;
         }
 
@@ -361,9 +361,9 @@ class Book extends Model
             fn($genres) => $genres->where(fn($q) => $q->whereIn('id', $ids))->orWhereIn('parent_id', $ids));
     }
 
-    public function scopeHasTags(Builder $builder, array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
+    public function scopeHasTags(Builder $builder, ?array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if (!count($ids)) {
+        if ($ids === null || !count($ids)) {
             return $builder;
         }
 
