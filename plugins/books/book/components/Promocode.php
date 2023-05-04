@@ -20,6 +20,8 @@ class Promocode extends ComponentBase
 {
     protected User $user;
 
+    protected ?Book $book;
+
     public function componentDetails()
     {
         return [
@@ -43,34 +45,48 @@ class Promocode extends ComponentBase
         }
         $this->user = Auth::getUser();
 
-        $this->page['books'] = $this->user->profile->books()->get();
-        $this->page['promocodes'] = [];
+        $this->book = $this->getBook();
+    }
+
+    public function onRender()
+    {
+        foreach ($this->vals() as $key => $val) {
+            $this->page[$key] = $val;
+        }
+    }
+
+    public function vals()
+    {
+        return [
+            'books' => $this->user->profile->books()->get(),
+            'bookItem' => $this->getBook(),
+            'promocodes' => $this->getBooksPromocodes()
+        ];
+    }
+
+    public function getBook()
+    {
+        return $this->user->profile
+            ->books()
+            ->find(post('value') ?? post('book_id') ?? $this->param('book_id'));
     }
 
     public function onGetBookPromocodes()
     {
-        $book = $this->user->profile
-            ->books()
-            ->find(post('value'));
-
-        $promocodes = $book ? $this->getBooksPromocodes($book) : [];
 
         return [
-            '#promocodesList' => $this->renderPartial('promocode/list', ['promocodes' => $promocodes])
+            '#promocodesList' => $this->renderPartial('promocode/list', ['promocodes' => $this->getBooksPromocodes()])
         ];
     }
 
     public function onGenerate()
     {
         try {
-            $book = $this->user->profile
-                ->books()
-                ->find(post('book_id'));
 
             /**
              * current user is book author
              */
-            if (!$book) {
+            if (!$this->book) {
                 Flash::error("Книга не найдена");
 
                 return [];
@@ -79,7 +95,7 @@ class Promocode extends ComponentBase
             /**
              * check promocode limits
              */
-            $promoLimiter = new PromocodeGenerationLimiter(profile: $this->user->profile, book: $book);
+            $promoLimiter = new PromocodeGenerationLimiter(profile: $this->user->profile, book: $this->book);
             if (!$promoLimiter->checkCanGenerate()) {
                 Flash::error($promoLimiter->getReason());
 
@@ -89,7 +105,7 @@ class Promocode extends ComponentBase
             /**
              * generate promocode
              */
-            $book->ebook->promocodes()->create([
+            $this->book->ebook->promocodes()->create([
                 'profile_id' => $this->user->profile?->id,
                 'expire_in' => $promoLimiter->getExpireIn(),
             ]);
@@ -97,7 +113,7 @@ class Promocode extends ComponentBase
             Flash::success('Новый промокод сгенерирован');
 
             return [
-                '#promocodesList' => $this->renderPartial('promocode/list', ['promocodes' => $this->getBooksPromocodes($book)])
+                '#promocodesList' => $this->renderPartial('promocode/list', ['promocodes' => $this->getBooksPromocodes()])
             ];
 
         } catch (Exception $ex) {
@@ -114,10 +130,11 @@ class Promocode extends ComponentBase
         // todo реализовать после оплаты/покупки
     }
 
-    private function getBooksPromocodes(Book $book): ?Collection
+    private function getBooksPromocodes(): ?Collection
     {
-        return $book->ebook?->promocodes()
+
+        return $this->book?->ebook?->promocodes()
             ->with(['user'])
-            ->get();
+            ->get() ?? new Collection();
     }
 }

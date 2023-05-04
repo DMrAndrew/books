@@ -8,16 +8,17 @@
     data-upload-handler="{{ __SELF__ }}::onUpload"
     data-thumbnail-width="{{ __SELF__.imageWidth ?: '0' }}"
     data-thumbnail-height="{{ __SELF__.imageHeight ?: '0' }}"
-    {% if __SELF__.fileTypes %}data-file-types="{{ __SELF__.fileTypes }}"{% endif %}
+    {% if __SELF__.fileTypes %}data-file-types="{{ __SELF__.fileTypes }}" {% endif %}
 >
 
     <!-- Field placeholder -->
-    <input type="hidden" name="_uploader[{{ __SELF__.attribute }}]" value="" />
+    <input type="hidden" name="_uploader[{{ __SELF__.attribute }}]" value=""/>
+
 
     <!-- Add New Image -->
     <a
-        href="javascript:;"
-        style="{{ __SELF__.getCssBlockDimensions ~ ';width:100%' }}"
+        href="javascript:"
+        style="width: 100%"
         class="upload-button">
         <span class="upload-button-icon"></span>
     </a>
@@ -25,27 +26,28 @@
     <!-- Existing file -->
     <div class="upload-files-container">
         {% if file %}
-            <div class="upload-object is-success" data-id="{{ file.id }}" data-path="{{ file.pathUrl }}" style="width: 100%">
-                <div class="author-promo__background">
-                    <img class="author__background-image" src="{{ file.path }}" alt="banner"
-                       >
-                </div>
-
-                <div class="info">
-                    <h4 class="filename">
-                        <span data-dz-name>{{ file.title ?: file.file_name }}</span>
-                        <a
-                            href="javascript:;"
-                            class="upload-remove-button"
-                            data-request="{{ __SELF__ ~ '::onRemoveAttachment' }}"
-                            data-request-confirm="{{ 'books.fileuploader::lang.are_you_sure' | trans }}"
-                            data-request-data="file_id: {{ file.id }}"
-                            >&times;</a>
-                    </h4>
-                    <p class="size">{{ file.sizeToString }}</p>
-                </div>
-                <div class="meta"></div>
+        <div class="upload-object is-success" data-id="{{ file.id }}" data-path="{{ file.pathUrl }}"
+             style="width: 100%">
+            <div class="author-promo__background">
+                <img class="author__background-image" src="{{ file.path }}" alt="banner"
+                >
             </div>
+
+            <div class="info">
+                <h4 class="filename">
+                    <span data-dz-name>{{ file.title ?: file.file_name }}</span>
+                    <a
+                        href="javascript:"
+                        class="upload-remove-button"
+                        data-request="{{ __SELF__ ~ '::onRemoveAttachment' }}"
+                        data-request-confirm="{{ 'books.fileuploader::lang.are_you_sure' | trans }}"
+                        data-request-data="file_id: {{ file.id }}"
+                    >&times;</a>
+                </h4>
+                <p class="size">{{ file.sizeToString }}</p>
+            </div>
+            <div class="meta"></div>
+        </div>
         {% endif %}
     </div>
 
@@ -55,7 +57,7 @@
 <script type="text/template" id="uploaderTemplate{{ __SELF__ }}">
     <div class="upload-object dz-preview dz-file-preview" style="width: 100%">
         <div class="author-promo__background">
-            <img data-dz-thumbnail class="author__background-image"  alt="banner"
+            <img data-dz-thumbnail class="author__background-image" alt="banner"
             >
         </div>
 
@@ -63,11 +65,11 @@
             <h4 class="filename">
                 <span data-dz-name></span>
                 <a
-                    href="javascript:;"
+                    href="javascript:"
                     class="upload-remove-button"
                     data-request="{{ __SELF__ ~ '::onRemoveAttachment' }}"
                     data-request-confirm="{{ 'books.fileuploader::lang.are_you_sure' | trans }}"
-                    >&times;</a>
+                >&times;</a>
             </h4>
             <p class="size" data-dz-size></p>
             <p class="error"><span data-dz-errormessage></span></p>

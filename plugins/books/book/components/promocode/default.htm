@@ -12,7 +12,7 @@
                         >
                         <option value="">Выберите произведение</option>
                         {% for book in books %}
-                        <option value="{{book.id}}">{{book.title}}</option>
+                        <option  value="{{book.id}}" {{bookItem.id == book.id ? 'selected' : ''}}>{{book.title}}</option>
                         {% endfor %}
 
                     </select>

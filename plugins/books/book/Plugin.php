@@ -13,12 +13,15 @@ use Books\Book\Classes\Rater;
 use Books\Book\Classes\StatisticService;
 use Books\Book\Classes\WidgetService;
 use Books\Book\Components\AboutBook;
+use Books\Book\Components\AdvertBanner;
+use Books\Book\Components\AdvertLC;
 use Books\Book\Components\AwardsLC;
 use Books\Book\Components\BookAwards;
 use Books\Book\Components\BookCard;
 use Books\Book\Components\Booker;
 use Books\Book\Components\BookPage;
 use Books\Book\Components\Chapterer;
+use Books\Book\Components\DiscountLC;
 use Books\Book\Components\EBooker;
 use Books\Book\Components\LCBooker;
 use Books\Book\Components\OutOfFree;
@@ -33,6 +36,7 @@ use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Cycle;
+use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
 use Books\Book\Models\Tag;
@@ -52,7 +56,7 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User'];
+    public $require = ['RainLab.User', 'Books.Profile'];
 
     /**
      * Returns information about this plugin.
@@ -105,6 +109,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('StatisticService', StatisticService::class);
         AliasLoader::getInstance()->alias('WidgetService', WidgetService::class);
         AliasLoader::getInstance()->alias('Promocode', Models\Promocode::class);
+        AliasLoader::getInstance()->alias('Discount', Discount::class);
 
         Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
         Event::listen('books.book.updated', fn(Book $book) => $book->updateEventHandler());
@@ -154,6 +159,9 @@ class Plugin extends PluginBase
             Promocode::class => 'promocode',
             BookAwards::class => 'bookAwards',
             AwardsLC::class => 'awardsLC',
+            AdvertLC::class => 'advertLC',
+            AdvertBanner::class => 'advertBanner',
+            DiscountLC::class => 'discountLC',
         ];
     }
 

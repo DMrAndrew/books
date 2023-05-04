@@ -8,7 +8,9 @@ use Books\Comments\Components\Comments;
 use Books\Reposts\Components\Reposter;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
+use RainLab\User\Models\Settings;
 use RainLab\User\Models\User;
+use Redirect;
 
 /**
  * BookPage Component
@@ -55,8 +57,6 @@ class BookPage extends ComponentBase
             ->with(['cycle' => fn($cycle) => $cycle->booksEager()])
             ->find($this->book->id);
 
-        $this->page['book'] = $this->book;
-        $this->page['cycle'] = $this->book->cycle;
         $comments = $this->addComponent(Comments::class, 'comments');
         $comments->bindModel($this->book);
         $comments->bindModelOwner($this->book->profile);
@@ -83,9 +83,47 @@ class BookPage extends ComponentBase
         $reposts = $this->addComponent(Reposter::class, 'reposts');
         $reposts->bindSharable($this->book);
 
-        $awards = $this->addComponent(BookAwards::class, 'bookAwards');
+        $this->addComponent(BookAwards::class, 'bookAwards');
+        $this->addComponent(AdvertBanner::class, 'advertBanner');
         $this->page->meta_title = '«' . $this->book->title . '»';
         $this->page->meta_preview = $this->book->cover->path;
         $this->page->meta_description = strip_tags($this->book->annotation);
+    }
+
+    public function onRender()
+    {
+        foreach ($this->vals() as $key => $val) {
+            $this->page[$key] = $val;
+        }
+    }
+
+    public function vals()
+    {
+        return [
+            'buyBtn' => $this->buyBtn(),
+            'readBtn' => $this->readBtn(),
+            'book' => $this->book,
+            'cycle' => $this->book->cycle
+        ];
+    }
+
+    public function buyBtn()
+    {
+        return $this->user && !$this->book->ebook->isSold($this->user) && !$this->book->ebook->isFree();
+    }
+
+    public function readBtn()
+    {
+        return $this->book->ebook->isSold($this->user)
+            || $this->book->ebook->isFree()
+            || $this->book->ebook->chapters->some(fn($i) => $i->isFree());
+    }
+
+    public function onBuyBook()
+    {
+        if ($this->user) {
+            $this->book->ebook->sell($this->user);
+            return Redirect::refresh();
+        }
     }
 }

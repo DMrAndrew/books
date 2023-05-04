@@ -11,8 +11,10 @@ use Books\Book\Classes\ScopeToday;
 use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
+use Cache;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Kirschbaum\PowerJoins\PowerJoins;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Collection;
@@ -35,6 +37,8 @@ use WordForm;
  * Book Model
  *
  * @method HasOne author
+ * @method HasOne advert
+ * @property Advert advert
  *
  * @property  Author author
  *
@@ -68,6 +72,7 @@ class Book extends Model
     use Validation;
     use HasFactory;
     use HasRelationships;
+    use PowerJoins;
 
     /**
      * @var string table associated with the model
@@ -117,7 +122,9 @@ class Book extends Model
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
      */
-    protected $appends = [];
+    protected $appends = [
+
+    ];
 
     /**
      * @var array hidden attributes removed from the API representation of the model (ex. toArray())
@@ -140,6 +147,7 @@ class Book extends Model
         'author' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'owner'],
         'ebook' => [Edition::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'ebook'],
         'stats' => [Stats::class, 'key' => 'book_id', 'otherKey' => 'id'],
+        'advert' => [Advert::class, 'key' => 'book_id', 'otherKey' => 'id']
     ];
 
     public $hasMany = [
@@ -274,6 +282,7 @@ class Book extends Model
         );
     }
 
+
     public function isAuthor(Profile $profile)
     {
         return $this->authors()->where('profile_id', $profile->id)->exists();
@@ -310,12 +319,12 @@ class Book extends Model
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn($e) => $e->free(false)->minPrice($price));
+        return $builder->whereHas('editions', fn($e) => $e->minPrice($price));
     }
 
     public function scopeMaxPrice(Builder $builder, ?int $price): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn($e) => $e->free(false)->maxPrice($price));
+        return $builder->whereHas('editions', fn($e) => $e->maxPrice($price));
     }
 
     public function scopeFree(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
@@ -328,9 +337,23 @@ class Book extends Model
         return $builder->whereHas('editions', fn($e) => $e->status(BookStatus::COMPLETE));
     }
 
-    public function scopeHasGenres(Builder $builder, array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
+    public function scopeEditionTypeIn(Builder $builder, BookStatus ...$status): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if (!count($ids)) {
+        return $builder->whereHas('editions', fn($query) => $query->type($status));
+    }
+
+    public function scopeDiffWithUnloved(Builder $builder, ?User $user = null)
+    {
+        $user ??= Auth::getUser();
+        if (!$user) {
+            return $builder;
+        }
+        return $builder->hasGenres($user->unloved_genres, 'exclude');
+    }
+
+    public function scopeHasGenres(Builder $builder, ?array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        if ($ids === null || !count($ids)) {
             return $builder;
         }
 
@@ -338,9 +361,9 @@ class Book extends Model
             fn($genres) => $genres->where(fn($q) => $q->whereIn('id', $ids))->orWhereIn('parent_id', $ids));
     }
 
-    public function scopeHasTags(Builder $builder, array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
+    public function scopeHasTags(Builder $builder, ?array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if (!count($ids)) {
+        if ($ids === null || !count($ids)) {
             return $builder;
         }
 
@@ -384,9 +407,28 @@ class Book extends Model
 
     public function scopeDefaultEager(Builder $q): Builder
     {
-        return $q->with(['cover', 'tags', 'genres', 'stats', 'ebook', 'author.profile', 'authors.profile'])
+        return $q->with([
+            'cover',
+            'tags',
+            'genres',
+            'stats',
+            'ebook' => fn($ebook) => $ebook->withActiveDiscountExist(),
+            'ebook.discount',
+            'author.profile',
+            'authors.profile',
+        ])
             ->inLibExists()
             ->likeExists();
+    }
+
+    public function scopeAllowedForDiscount(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('editions', fn($editions) => $editions->allowedForDiscount());
+    }
+
+    public function scopeActiveDiscountExist(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('editions', fn($editions) => $editions->activeDiscountExist());
     }
 
     public function scopeWithChapters(Builder $builder): Builder
@@ -446,6 +488,26 @@ class Book extends Model
         $this->setDefaultCover();
         $this->setDefaultEdition();
         $this->stats()->add(new Stats());
+        $this->advert()->create();
+    }
+
+    public function scopeOrderByDiscountAmount(Builder $builder, bool $asc = false)
+    {
+        return $builder->orderByPowerJoins('editions.discount.amount', $asc ? 'asc' : 'desc');
+    }
+
+    public function refreshAllowedVisits(): int
+    {
+        $sold_count = $this->editions()->get()->pluck('sold_count')->sum();
+        $additional_visits = match ($sold_count) {
+            0 => 0,
+            1 => 350,
+            50, 100 => 250,
+            500, 1000 => 2000,
+            default => (($sold_count % 1500) === 0 ? 1000 : 0)
+        };
+        $this->advert()->increment('allowed_visit_count', $additional_visits);
+        return $additional_visits;
     }
 
     public function createEventHandler()

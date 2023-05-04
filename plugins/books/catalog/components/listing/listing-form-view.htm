@@ -181,6 +181,14 @@
                         <div class="ui-radio-checker"></div>
                         <span class="ui-radio-text">Набирают популярность</span>
                     </label>
+                    <label class="ui-radio">
+                        <input data-request="listing::onSearch"
+                               data-track-input="{{bind.trackInputTime}}"
+                               type="radio" name="widget" value="todayDiscount" {{bind.widget.value == 'todayDiscount' ?
+                        'checked' : '' }} hidden>
+                        <div class="ui-radio-checker"></div>
+                        <span class="ui-radio-text">Скидки сегодня</span>
+                    </label>
                 </div>
                 {% partial 'controls/autocomplete'
                 label='Теги'

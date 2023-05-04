@@ -18,29 +18,21 @@ return new class extends Migration {
     {
         Schema::create('books_book_promocodes', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->increments('id');
-
-            // code
+            $table->id();
             $table->string('code', Promocode::CODE_LENGTH)->unique();
 
-            // book
             $table->unsignedBigInteger('book_id');
             $table->foreign('book_id')->references('id')->on('books_book_books')->cascadeOnDelete();
 
-            // profile
             $table->unsignedInteger('profile_id');
             $table->foreign('profile_id')->references('id')->on('books_profile_profiles')->cascadeOnDelete();
 
-            // is_activated
             $table->boolean('is_activated')->default(false);
 
-            // user_id
             $table->unsignedInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
 
-            // activated_at
             $table->dateTime('activated_at')->nullable();
-
             $table->timestamp('expire_in');
             $table->timestamps();
         });

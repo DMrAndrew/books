@@ -1,0 +1,32 @@
+title = "Личный кабинет - Скидки"
+layout = "default"
+url = "/lc-discounts/:book_id?"
+title = "Личный кабинет - Скидки"
+description = "Личный кабинет - Скидки"
+
+[session]
+security = "user"
+redirect = "/"
+[discountLC]
+==
+{% partial 'profile/personal_area_header' %}
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
+            {% partial "profile/sidebarmenu" %}
+            <div class="ui-col-sm-9">
+                <div class="personal-area__subtitle">
+                    <span class="ui-text-head--3 ui-text--bold">Скидки</span>
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                    </svg>
+                </div>
+                <div id="discount_spawn">
+                    {% component 'discountLC' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

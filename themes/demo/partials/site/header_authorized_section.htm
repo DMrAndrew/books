@@ -117,7 +117,7 @@ recordsPerView = 11
             <div class="dropwdown-profile">
                 <ul class="dropwdown-profile__list">
                     <li class="dropwdown-profile__name">{{user.profile.username~' ID:'~user.profile.id}}</li>
-                    <li><a href="/author-page">Моя страница</a></li>
+                    <li><a href="/author-page/{{user.profile.id}}">Моя страница</a></li>
                     <li class="dropwdown-profile__separator"></li>
                     <li><a href="/lc-profile" data-turbo="false">Личный кабинет</a></li>
                     <li><a href="/lc-books" data-turbo="false">Книги</a></li>

@@ -8,7 +8,6 @@
                     {% for profile in book.profiles %}
                     <a href="/author-page/{{profile.id}}" class="book-card-full__author ui-link _violet">{{profile.username}}</a>
                     {% endfor %}
-
                 </div>
 <!--                                <a href="" class="ui-link _violet _icon book-card-full__author-support">-->
 <!--                                    <script type="text/javascript">-->
@@ -48,14 +47,27 @@
                                     <a class="ui-link _violet cursor-pointer" data-modal="open-history">История</a>
                                     {% endif %}
                                 </div>
-<!--                                {{book.ebook.price ? '_double' : ''}}-->
-                                <div class="book-card-full-type__link-wrapper ">
+
+
+                                <div class="book-card-full-type__link-wrapper {{buyBtn and readBtn ? '_double' : ''}}">
+                                    {% if readBtn %}
                                     <a href="/reader/{{book.ebook.id}}"
                                        class="ui-button ui-button-size--56 ui-button-view--2 ui-button--full">Читать</a>
-<!--                                    {% if book.ebook.price %}-->
-<!--                                    <a href=""-->
-<!--                                       class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full cursor-not-allowed">Купить {{book.ebook.price}} ₽</a>-->
-<!--                                    {% endif %}-->
+                                    {% endif %}
+                                    {% if buyBtn %}
+
+                                    <a data-request="onBuyBook"
+                                       class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
+                                        {% if book.ebook.discount %}
+                                        <span>
+                        <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
+                        <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
+                      </span>
+                                        {% else %}
+                                       <span> Купить {{book.ebook.price}} ₽</span>
+                                        {% endif %}
+                                    </a>
+                                    {% endif %}
                                 </div>
 
                                 <!--                                <div class="book-card-full-type__description _indent-top">-->
@@ -206,10 +218,7 @@
             {% component 'comments' %}
         </div>
         <div class="ui-col-12 ui-col-sm-4 ui-col-md-3">
-            <!--            <div class="advert _trash">-->
-            <!--                <img src="" alt="">-->
-            <!--            </div>-->
-
+           {% component 'advertBanner' %}
            {% component 'recommend' %}
 
         </div>

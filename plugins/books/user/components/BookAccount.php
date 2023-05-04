@@ -44,6 +44,9 @@ class BookAccount extends Account
 
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true, withAll: true);
+
+        $todayDiscount = $this->addComponent(Widget::class, 'todayDiscount');
+        $todayDiscount->setUpWidget(WidgetEnum::todayDiscount, withAll: true);
     }
 
     public function onLogout()

@@ -57,18 +57,19 @@ class Reader extends ComponentBase
         $this->chapter = $this->param('chapter_id') ? Chapter::find($this->param('chapter_id')) ?? abort(404) : null;
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
+        $advert = $this->addComponent(AdvertBanner::class, 'advertBanner');
     }
 
     public function onRun()
     {
-        if (! $this->chapter) {
+        if (!$this->chapter) {
             if ($paginator = $this->getLastTrackedPaginator()) {
-                return Redirect::to('/reader/'.$this->book->id.'/'.$paginator->chapter_id.'/'.$paginator->page);
+                return Redirect::to('/reader/' . $this->book->id . '/' . $paginator->chapter_id . '/' . $paginator->page);
             }
         }
 
-        if (! $this->service()->isPageAllowed()) {
-            return Redirect::to('/out-of-free/'.$this->book->id.'/'.$this->chapter?->id);
+        if (!$this->service()->isPageAllowed()) {
+            return Redirect::to('/out-of-free/' . $this->book->id . '/' . $this->chapter?->id);
         }
     }
 
@@ -89,7 +90,7 @@ class Reader extends ComponentBase
 
     public function service(): Service
     {
-        if (! $this->service) {
+        if (!$this->service) {
             $this->service = new Service(
                 book: $this->book,
                 chapter: $this->chapter,
@@ -117,12 +118,12 @@ class Reader extends ComponentBase
             return $this->onMove();
         }
         if ($chapter = $this->service()->nextChapter()) {
-            return Redirect::to('/reader/'.$this->book->id.'/'.$chapter->id);
+            return Redirect::to('/reader/' . $this->book->id . '/' . $chapter->id);
         }
         if ($this->service()->readBtn()) {
             $this->user->library($this->book)->read();
 
-            return Redirect::to('/book-card/'.$this->book->id);
+            return Redirect::to('/book-card/' . $this->book->id);
         }
 
         return false;
@@ -136,7 +137,7 @@ class Reader extends ComponentBase
             return $this->onMove();
         }
         if ($chapter = $this->service()->prevChapter()) {
-            return Redirect::to('/reader/'.$this->book->id.'/'.$chapter->id);
+            return Redirect::to('/reader/' . $this->book->id . '/' . $chapter->id);
         }
 
         return false;
@@ -145,7 +146,7 @@ class Reader extends ComponentBase
     public function onChapter()
     {
         if ($chapter = post('value')) {
-            return Redirect::to('/reader/'.$this->book->id.'/'.$chapter);
+            return Redirect::to('/reader/' . $this->book->id . '/' . $chapter);
         }
     }
 
@@ -161,7 +162,7 @@ class Reader extends ComponentBase
 
     public function onTrack()
     {
-        return $this->service()->track((int) post('ms'), (int) post('paginator_id'));
+        return $this->service()->track((int)post('ms'), (int)post('paginator_id'));
     }
 
     public function getCurrentPaginatorKey()

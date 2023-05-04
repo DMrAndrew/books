@@ -50,6 +50,7 @@ class BookCard extends ComponentBase
             fn($lib) => $lib->get() && $lib->interested());
 
         $this->book->rater()->libs()->apply();
+
         return $this->render();
     }
 

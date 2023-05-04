@@ -28,7 +28,8 @@
         "books/comments-plugin": "*",
         "staudenmeir/eloquent-has-many-deep": "1.17",
         "books/notifications-plugin": "*",
-        "books/wallet-plugin": "*"
+        "books/wallet-plugin": "dev-feature/wallet",
+        "kirschbaum-development/eloquent-power-joins": "^3.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
