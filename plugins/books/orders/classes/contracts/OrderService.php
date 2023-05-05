@@ -3,6 +3,7 @@
 namespace Books\Orders\Classes\Contracts;
 
 use Books\Orders\Models\Order;
+use October\Rain\Database\Model;
 use RainLab\User\Models\User;
 
 interface OrderService
@@ -11,7 +12,7 @@ interface OrderService
 
     public function calculateAmount(): int;
 
-    public function createOrder(User $user, array $attributes): Order;
+    public function createOrder(User $user, Model $product): Order;
 
     public function payOrderByTransaction(Order $order): bool;
     public function payOrderFromBalance(Order $order): bool;
@@ -21,7 +22,7 @@ interface OrderService
 
     public function applyPromocode(Order $order): void;
     public function applyDiscount(Order $order): void;
-    public function applyReward(Order $order): void;
+    public function applyAward(Order $order): void;
     public function applyAuthorSupport(Order $order): void;
     public function updateAuthorsBalance(Order $order): void;
 }

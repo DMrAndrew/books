@@ -6,7 +6,10 @@ use Backend;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Classes\Services\OrderService;
 use Books\Orders\Components\Order;
+use Books\Orders\Models\OrderProduct;
+use Illuminate\Foundation\AliasLoader;
 use System\Classes\PluginBase;
+use Books\Orders\Models\Order as OrderModel;
 
 /**
  * Plugin Information File
@@ -47,7 +50,8 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+        AliasLoader::getInstance()->alias('Order', OrderModel::class);
+        AliasLoader::getInstance()->alias('OrderProduct', OrderProduct::class);
     }
 
     /**

@@ -5,11 +5,12 @@ namespace Books\Orders\Classes\Services;
 
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Models\Order;
+use October\Rain\Database\Model;
 use RainLab\User\Models\User;
 
 class OrderService implements OrderServiceContract
 {
-    public function createOrder(User $user, array $attributes): Order
+    public function createOrder(User $user, Model $product): Order
     {
         $order = new Order();
         $order->user = $user;
@@ -58,7 +59,7 @@ class OrderService implements OrderServiceContract
         // TODO: Implement applyDiscount() method.
     }
 
-    public function applyReward(Order $order): void
+    public function applyAward(Order $order): void
     {
         // TODO: Implement applyReward() method.
     }

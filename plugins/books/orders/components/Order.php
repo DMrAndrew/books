@@ -2,9 +2,13 @@
 
 use Books\Book\Models\Award;
 use Books\Book\Models\Book;
+use Books\Book\Models\Edition;
+use Books\Orders\Models\Order as OrderModel;
+use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Classes\Services\OrderService;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 
 /**
  * Order Component
@@ -59,13 +63,9 @@ class Order extends ComponentBase
 
     public function onCreateOrder()
     {
-        if (!Auth::check()) {
-            $this->controller->run('/404');
-        }
-
         $data = post();
-
-        $order = $this->service->createOrder(Auth::getUser(), $data);
+        $user = $this->getUser();
+        $order = $this->getOrder($user, $this->book);
 
         return [
             '#order_form' => $this->renderPartial('@create-card', [
@@ -79,5 +79,37 @@ class Order extends ComponentBase
     private function awards(): array
     {
         return Award::all()->toArray();
+    }
+
+    private function getOrder(User $user, Book $book): OrderModel
+    {
+        /**
+         * Если пользователь оставил неоплаченный заказ - возвращаемся к нему
+         */
+        $order = OrderModel
+            ::where('user_id', $user->id)
+            ->whereStatus(OrderStatusEnum::CREATED)
+            ->whereHasMorph('orderable', [Edition::class], function($query) use ($book){
+                $query->where('id', $book->ebook->id);
+            })->first();
+
+        /**
+         * Иначе - новый заказ
+         */
+        if (!$order) {
+            $order = $this->service->createOrder($user, $book->ebook);
+        }
+
+        return $order;
+
+    }
+
+    private function getUser(): User
+    {
+        if (!Auth::check()) {
+            $this->controller->run('/404');
+        }
+
+        return Auth::getUser();
     }
 }

@@ -1,8 +1,3 @@
-<!--<a onclick="orderFormPopup()"
-   class="ui-button ui-button-view&#45;&#45;3 ui-button-size&#45;&#45;32 ui-button&#45;&#45;full-mobile cursor-pointer">
-    <span class="ui-text&#45;&#45;medium">Войти</span>
-</a>-->
-
 <div id="auth_popup" class="auth" style="display: none">
     <div id="order_form_popup" class="auth__container _small">
         <div class="auth__header _desktop">
@@ -22,11 +17,7 @@
                     <td class="_right">{{book.ebook.priceTag.price}} ₽</td>
                 </tr>
 
-                <tr>
-                    <td colspan="2">
-                        <hr>
-                    </td>
-                </tr>
+                <tr><td colspan="2"><hr></td></tr>
 
                 <tr><td colspan="2">Награды</td></tr>
                 {% for award in awards %}
@@ -51,7 +42,59 @@
                     </td>
                     <td class="_right"></td>
                 </tr>
-                {% endfor %}}
+                {% endfor %}
+
+                <tr><td colspan="2"><hr></td></tr>
+
+                <tr><td colspan="2">Поддержка автора</td></tr>
+                <tr>
+                    <td class="_left">
+                        <div class="buy-book-modal__wrapper-item">
+                            <div class="ui-input-wrapper">
+                                <input class="ui-input-item _size-32" type="text" name="donate" placeholder="200">
+                                <div class="ui-select-hitn"></div>
+                                <div class="ui-select-error" data-validate-for="donate"></div>
+                            </div>
+                            <div class="buy-book-modal__text">100  ₽</div>
+
+                        </div>
+                    </td>
+                    <td class="_right"></td>
+                </tr>
+
+                <tr><td colspan="2"><hr></td></tr>
+
+                <tr>
+                    <td class="_left"><div class="ellipsis">Итого к оплате:</div></td>
+                    <td class="_right">{{book.ebook.priceTag.price}} ₽</td>
+                </tr>
+
+                <tr><td colspan="2"><hr></td></tr>
+
+                <tr><td colspan="2">
+                    <button type="submit" class="auth__action ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                        <span class="ui-text--medium">Продолжить</span>
+                    </button>
+                </td></tr>
+
+                <tr><td colspan="2"><hr></td></tr>
+
+                <tr>
+                    <td class="_left">
+                        <div class="buy-book-modal__wrapper-item">
+                            <div class="ui-input-wrapper">
+                                <input class="ui-input-item _size-32" type="text" name="promocode" placeholder="Промокод">
+                                <div class="ui-select-hitn"></div>
+                                <div class="ui-select-error" data-validate-for="donate"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="_right">
+                        <button type="submit" class="auth__action ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                            <span class="ui-text--medium">Применить</span>
+                        </button>
+                    </td>
+                </tr>
 
                 </tbody>
             </table>
@@ -61,4 +104,6 @@
 </div>
 <script>
     orderFormPopup();
+
+    // sync donate value
 </script>

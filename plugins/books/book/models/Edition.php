@@ -7,6 +7,8 @@ use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\PriceTag;
+use Books\Orders\Models\Order;
+use Books\Orders\Models\OrderProduct;
 use Cache;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -115,6 +117,10 @@ class Edition extends Model
         'promocodes' => [
             Promocode::class,
             'name' => 'promoable',
+        ],
+        'products' => [
+            OrderProduct::class,
+            'name' => 'orderable',
         ],
     ];
 
