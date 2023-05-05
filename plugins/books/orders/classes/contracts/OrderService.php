@@ -1,0 +1,43 @@
+<?php
+
+namespace Books\Orders\Classes\Contracts;
+
+use Books\Orders\Models\Order;
+use RainLab\User\Models\User;
+
+/**
+ * createOrder()
+ * calculateAmount()
+    * #getAmount()
+    * payOrderByTransaction()
+    * payOrderFromBalance()
+    * cancelOrder()
+    * approveOrder()
+ *
+* private applyPromocode()
+* private applyDiscount()
+* private applyReward()
+* private applyAuthorSupport()
+* private updateAuthorsBalance()
+ *
+ */
+interface OrderService
+{
+    public function getPrice(): int;
+
+    public function calculateAmount(): int;
+
+    public function createOrder(User $user, array $attributes): Order;
+
+    public function payOrderByTransaction(Order $order): bool;
+    public function payOrderFromBalance(Order $order): bool;
+
+    public function approveOrder(Order $order): bool;
+    public function cancelOrder(Order $order): bool;
+
+    public function applyPromocode(Order $order): void;
+    public function applyDiscount(Order $order): void;
+    public function applyReward(Order $order): void;
+    public function applyAuthorSupport(Order $order): void;
+    public function updateAuthorsBalance(Order $order): void;
+}

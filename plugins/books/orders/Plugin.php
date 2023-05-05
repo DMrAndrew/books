@@ -1,6 +1,9 @@
-<?php namespace Books\Orders;
+<?php
+
+namespace Books\Orders;
 
 use Backend;
+use Books\Orders\Components\Order;
 use System\Classes\PluginBase;
 
 /**
@@ -8,6 +11,8 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
+    public $require = ['RainLab.User'];
+
     /**
      * Returns information about this plugin.
      *
@@ -50,10 +55,8 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
         return [
-            'Books\Orders\Components\MyComponent' => 'myComponent',
+            Order::class => 'order',
         ];
     }
 
