@@ -20,6 +20,12 @@ class Order extends Model
      */
     public $table = 'books_orders_orders';
 
+    public $rules = [
+        'user_id' => 'required|integer',
+        'status' => 'integer',
+        'amount' => 'sometimes|integer|min:0',
+    ];
+
     /**
      * @var array fillable attributes are mass assignable
      */
@@ -42,6 +48,13 @@ class Order extends Model
      */
     protected $enums = [
         'status' => OrderStatusEnum::class,
+    ];
+
+    /**
+     * @var array Attributes to be cast to native types
+     */
+    protected $casts = [
+        'type' => OrderStatusEnum::class,
     ];
 
     /**
@@ -70,6 +83,6 @@ class Order extends Model
      */
     public function scopeWhereStatus($query, OrderStatusEnum $status): void
     {
-        $query->where('status', $status->getValue());
+        $query->where('status', $status->value);
     }
 }

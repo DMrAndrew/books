@@ -3,6 +3,8 @@
 namespace Books\Orders;
 
 use Backend;
+use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
+use Books\Orders\Classes\Services\OrderService;
 use Books\Orders\Components\Order;
 use System\Classes\PluginBase;
 
@@ -35,7 +37,7 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-
+        $this->app->bind(OrderServiceContract::class, OrderService::class);
     }
 
     /**
@@ -56,7 +58,7 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            Order::class => 'order',
+            Order::class => 'Order',
         ];
     }
 

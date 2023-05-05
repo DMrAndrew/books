@@ -11,6 +11,7 @@ let loginPopup = () => toForm('login_popup');
 let registerPopup = () => toForm('register_popup');
 let loginForm = () => toForm('login_form');
 let registerForm = () => toForm('register_form');
+let orderFormPopup = () => toForm('order_form_popup');
 
 let openChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'flex'
 let closeChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'none'

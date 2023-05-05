@@ -17,16 +17,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('books_orders_orders', function(Blueprint $table) {
+        Schema::create('books_orders_products', function(Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('user_id');
-            $table->tinyInteger('status')->default(OrderStatusEnum::CREATED->value);
-            $table->integer('amount')->default(0);
+            $table->unsignedInteger('order_id');
+            $table->morphs('orderable');
             $table->timestamps();
 
-            $table->foreign('user_id')
+            $table->foreign('order_id')
                 ->references('id')
-                ->on('users')
+                ->on('books_orders_orders')
                 ->onDelete('cascade');
         });
     }
@@ -36,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('books_orders_orders');
+        Schema::dropIfExists('books_orders_products');
     }
 };

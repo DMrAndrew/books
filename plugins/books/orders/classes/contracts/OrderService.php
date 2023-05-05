@@ -5,22 +5,6 @@ namespace Books\Orders\Classes\Contracts;
 use Books\Orders\Models\Order;
 use RainLab\User\Models\User;
 
-/**
- * createOrder()
- * calculateAmount()
-    * #getAmount()
-    * payOrderByTransaction()
-    * payOrderFromBalance()
-    * cancelOrder()
-    * approveOrder()
- *
-* private applyPromocode()
-* private applyDiscount()
-* private applyReward()
-* private applyAuthorSupport()
-* private updateAuthorsBalance()
- *
- */
 interface OrderService
 {
     public function getPrice(): int;
