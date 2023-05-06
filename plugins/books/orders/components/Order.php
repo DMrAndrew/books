@@ -89,6 +89,13 @@ class Order extends ComponentBase
         }
     }
 
+    public function onUpdateOrder()
+    {
+        $data = post();
+
+        dd($data);
+    }
+
     private function awards(): array
     {
         return Award::all()->toArray();

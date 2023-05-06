@@ -7,7 +7,6 @@ use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\PriceTag;
-use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
 use Cache;
 use Carbon\Carbon;
