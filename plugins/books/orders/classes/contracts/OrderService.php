@@ -3,7 +3,6 @@
 namespace Books\Orders\Classes\Contracts;
 
 use Books\Orders\Models\Order;
-use October\Rain\Database\Model;
 use RainLab\User\Models\User;
 
 interface OrderService
@@ -12,7 +11,7 @@ interface OrderService
 
     public function calculateAmount(): int;
 
-    public function createOrder(User $user, Model $product): Order;
+    public function createOrder(User $user, array $products): Order;
 
     public function payOrderByTransaction(Order $order): bool;
     public function payOrderFromBalance(Order $order): bool;

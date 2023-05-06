@@ -5,16 +5,23 @@ namespace Books\Orders\Classes\Services;
 
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Models\Order;
-use October\Rain\Database\Model;
+use Books\Orders\Models\OrderProduct;
 use RainLab\User\Models\User;
 
 class OrderService implements OrderServiceContract
 {
-    public function createOrder(User $user, Model $product): Order
+    public function createOrder(User $user, array $products): Order
     {
         $order = new Order();
         $order->user = $user;
         $order->save();
+
+        foreach ($products as $product) {
+            $orderProduct = new OrderProduct();
+            $orderProduct->order_id = $order->id;
+            $orderProduct->orderable()->associate($product);
+            $orderProduct->save();
+        }
 
         return $order;
     }

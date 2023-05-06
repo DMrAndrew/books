@@ -2,6 +2,7 @@
 
 namespace Books\Orders\Models;
 
+use Books\Book\Models\Edition;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Model;
 use RainLab\User\Models\User;
@@ -58,5 +59,7 @@ class OrderProduct extends Model
     /**
      * @var array
      */
-    public $morphTo = ['orderable'];
+    public $morphTo = [
+        'orderable' => []
+    ];
 }

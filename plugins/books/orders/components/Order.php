@@ -7,6 +7,10 @@ use Books\Orders\Models\Order as OrderModel;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Classes\Services\OrderService;
 use Cms\Classes\ComponentBase;
+use Dflydev\DotAccessData\Data;
+use Exception;
+use Flash;
+use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -65,15 +69,24 @@ class Order extends ComponentBase
     {
         $data = post();
         $user = $this->getUser();
-        $order = $this->getOrder($user, $this->book);
 
-        return [
-            '#order_form' => $this->renderPartial('@create-card', [
-                'order' => $order,
-                'book' => $this->book,
-                'awards' => $this->awards(),
-            ]),
-        ];
+        try {
+            $order = $this->getOrder($user, $this->book);
+
+            return [
+                '#order_form' => $this->renderPartial('@create-card', [
+                    'order' => $order,
+                    'book' => $this->book,
+                    'awards' => $this->awards(),
+                ]),
+            ];
+
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            Flash::error($e->getMessage());
+
+            return [];
+        }
     }
 
     private function awards(): array
@@ -89,15 +102,18 @@ class Order extends ComponentBase
         $order = OrderModel
             ::where('user_id', $user->id)
             ->whereStatus(OrderStatusEnum::CREATED)
-            ->whereHasMorph('orderable', [Edition::class], function($query) use ($book){
-                $query->where('id', $book->ebook->id);
-            })->first();
+            ->whereHas('products', function($query) use ($book){
+                $query->whereHasMorph('orderable', [Edition::class], function($q) use ($book){
+                    $q->where('id', $book->ebook->id);
+                });
+            })
+            ->first();
 
         /**
          * Иначе - новый заказ
          */
         if (!$order) {
-            $order = $this->service->createOrder($user, $book->ebook);
+            $order = $this->service->createOrder($user, [$book->ebook]);
         }
 
         return $order;
