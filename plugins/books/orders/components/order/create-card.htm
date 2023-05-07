@@ -4,6 +4,7 @@
     <div class="ui-modal-container">
         <!-- Форма заказа -->
         {{ form_ajax('onBuyBook') }}
+        <input type="hidden" name="order_id" value="{{order.id}}">
 
         <div class="buy-book-modal__container ui-modal-content">
 
@@ -39,7 +40,7 @@
                         <label class="ui-checkbox">
                             <input type="hidden" name="awards[{{award.id}}]" value="0">
                             <input name="awards[{{award.id}}]" type="checkbox" hidden data-track-input="200"
-                                   data-request="onChangeAwardBag">
+                                   data-request="onOrderAddAward">
                             <div class="ui-checkbox-checker">
                                 <svg>
                                     <use
@@ -60,7 +61,8 @@
                     </div>
                     <div class="buy-book-modal__wrapper-item">
                         <label class="">
-                            <input class="ui-input-item _size-32" type="text" name="donate" placeholder="200">
+                            <input class="ui-input-item _size-32" type="text" name="donate" placeholder="200"
+                                   data-request="onOrderAddDonate">
                         </label>
                         <div class="buy-book-modal__text">{{order.donate}} ₽</div>
                     </div>
@@ -71,7 +73,7 @@
                 <div class="buy-book-modal__wrapper">
                     <div class="buy-book-modal__wrapper-item ui-text-body--1 ui-text--bold">
                         <div class="buy-book-modal__text _green">Итого к оплате</div>
-                        <div class="buy-book-modal__text _green" id="awardPriceSpawn">0 ₽</div>
+                        <div class="buy-book-modal__text _green" id="orderTotalAmountSpawn">0 ₽</div>
                     </div>
                 </div>
 
@@ -104,7 +106,6 @@
 
 
 <script>
-
     openModal('[data-modal="buy_book"]', '[data-modal="open_buy_book"]');
     document.querySelector('[data-modal="open_buy_book"]').click();
     document.body.style.overflow = 'initial';

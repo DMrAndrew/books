@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Books\Orders\Classes\Services;
 
+use Books\Book\Models\Award;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
+use October\Rain\Database\Collection;
 use RainLab\User\Models\User;
 
 class OrderService implements OrderServiceContract
@@ -18,8 +20,10 @@ class OrderService implements OrderServiceContract
 
         foreach ($products as $product) {
             $orderProduct = new OrderProduct();
-            $orderProduct->order_id = $order->id;
             $orderProduct->orderable()->associate($product);
+            $orderProduct->order_id = $order->id;
+            $orderProduct->initial_price = $product->price;
+            $orderProduct->amount = $product->priceTag()->price() ?? $product->price;
             $orderProduct->save();
         }
 
@@ -31,9 +35,9 @@ class OrderService implements OrderServiceContract
         // TODO: Implement getPrice() method.
     }
 
-    public function calculateAmount(): int
+    public function calculateAmount(Order $order): int
     {
-        // TODO: Implement calculateAmount() method.
+        return $order->products->sum('amount');
     }
 
     public function payOrderByTransaction(Order $order): bool
@@ -66,9 +70,22 @@ class OrderService implements OrderServiceContract
         // TODO: Implement applyDiscount() method.
     }
 
-    public function applyAward(Order $order): void
+    public function applyAwards(Order $order, Collection $awards): void
     {
-        // TODO: Implement applyReward() method.
+        $appliedAwards = $order->products()->whereHasMorph('orderable', [Award::class])->get();
+
+        $appliedAwards->each(function($appliedAward) {
+            $appliedAward->delete();
+        });
+
+        foreach ($awards as $award) {
+            $orderProduct = new OrderProduct();
+            $orderProduct->orderable()->associate($award);
+            $orderProduct->order_id = $order->id;
+            $orderProduct->initial_price = $award->price;
+            $orderProduct->amount = $award->price;
+            $orderProduct->save();
+        }
     }
 
     public function applyAuthorSupport(Order $order): void

@@ -1,6 +1,7 @@
 <?php namespace Books\Book\Models;
 
 use Books\Book\Classes\Enums\AwardsEnum;
+use Books\Orders\Models\OrderProduct;
 use Model;
 use October\Rain\Database\Traits\Validation;
 
@@ -26,4 +27,11 @@ class Award extends Model
      * @var array rules for validation
      */
     public $rules = [];
+
+    public $morphMany = [
+        'products' => [
+            OrderProduct::class,
+            'name' => 'orderable',
+        ],
+    ];
 }

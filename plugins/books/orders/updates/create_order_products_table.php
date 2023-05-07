@@ -21,6 +21,8 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('order_id');
             $table->morphs('orderable');
+            $table->unsignedInteger('initial_price')->nullable();
+            $table->unsignedInteger('amount')->default(0);
             $table->timestamps();
 
             $table->foreign('order_id')

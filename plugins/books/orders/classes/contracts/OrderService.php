@@ -3,13 +3,14 @@
 namespace Books\Orders\Classes\Contracts;
 
 use Books\Orders\Models\Order;
+use October\Rain\Database\Collection;
 use RainLab\User\Models\User;
 
 interface OrderService
 {
     public function getPrice(): int;
 
-    public function calculateAmount(): int;
+    public function calculateAmount(Order $order): int;
 
     public function createOrder(User $user, array $products): Order;
 
@@ -21,7 +22,7 @@ interface OrderService
 
     public function applyPromocode(Order $order): void;
     public function applyDiscount(Order $order): void;
-    public function applyAward(Order $order): void;
+    public function applyAwards(Order $order, Collection $awards): void;
     public function applyAuthorSupport(Order $order): void;
     public function updateAuthorsBalance(Order $order): void;
 }

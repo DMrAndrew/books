@@ -2,10 +2,7 @@
 
 namespace Books\Orders\Models;
 
-use Books\Book\Models\Edition;
-use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Model;
-use RainLab\User\Models\User;
 
 /**
  * OrderProduct Model
@@ -23,6 +20,8 @@ class OrderProduct extends Model
 
     public $rules = [
         'order_id' => 'required|integer',
+        'initial_price' => 'sometimes|integer',
+        'amount' => 'sometimes|integer',
     ];
 
     /**
@@ -30,6 +29,8 @@ class OrderProduct extends Model
      */
     protected $fillable = [
         'order_id',
+        'initial_price',
+        'amount',
     ];
 
     /**
@@ -38,13 +39,6 @@ class OrderProduct extends Model
     protected $dates = [
         'created_at',
         'updated_at',
-    ];
-
-    /**
-     * @var array Attributes to be cast to native types
-     */
-    protected $casts = [
-        'type' => OrderStatusEnum::class,
     ];
 
     /**

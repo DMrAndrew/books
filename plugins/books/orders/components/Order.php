@@ -7,7 +7,6 @@ use Books\Orders\Models\Order as OrderModel;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Classes\Services\OrderService;
 use Cms\Classes\ComponentBase;
-use Dflydev\DotAccessData\Data;
 use Exception;
 use Flash;
 use Log;
@@ -67,11 +66,8 @@ class Order extends ComponentBase
 
     public function onCreateOrder()
     {
-        $data = post();
-        $user = $this->getUser();
-
         try {
-            $order = $this->getOrder($user, $this->book);
+            $order = $this->getOrder($this->getUser(), $this->book);
 
             return [
                 '#order_form' => $this->renderPartial('@create-card', [
@@ -79,6 +75,7 @@ class Order extends ComponentBase
                     'book' => $this->book,
                     'awards' => $this->awards(),
                 ]),
+                '#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽',
             ];
 
         } catch (Exception $e) {
@@ -89,11 +86,20 @@ class Order extends ComponentBase
         }
     }
 
-    public function onUpdateOrder()
+    public function onOrderAddAward(): array
     {
-        $data = post();
+        $order = $this->getOrder($this->getUser(), $this->book);
+        $awards = Award::find($this->getAwardsIds());
 
-        dd($data);
+        $this->service->applyAwards($order, $awards);
+        $this->service->calculateAmount($order);
+
+        return ['#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽'];
+    }
+
+    private function getAwardsIds(): array
+    {
+        return collect(post('awards'))->filter(fn($i) => !!$i)->keys()->toArray();
     }
 
     private function awards(): array
@@ -103,6 +109,13 @@ class Order extends ComponentBase
 
     private function getOrder(User $user, Book $book): OrderModel
     {
+        /**
+         * Если редактируем поля
+         */
+        if (post('order_id') !== null) {
+            return OrderModel::findOrFail(post('order_id'));
+        }
+
         /**
          * Если пользователь оставил неоплаченный заказ - возвращаемся к нему
          */
