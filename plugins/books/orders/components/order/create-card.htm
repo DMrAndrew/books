@@ -1,109 +1,113 @@
-<div id="auth_popup" class="auth" style="display: none">
-    <div id="order_form_popup" class="auth__container _small">
-        <div class="auth__header _desktop">
-            <svg class="square-24 auth__button-back">
-                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
-            </svg>
-            <div class="auth__title ui-text--bold">Покупка книги</div>
-            <svg onclick="closeForm()" class="auth__button-close square-24">
-                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-            </svg>
-        </div>
-        <div class="auth__body">
-            <table class="table">
-                <tbody>
-                <tr>
-                    <td class="_left"><div class="ellipsis">{{book.title}}</div></td>
-                    <td class="_right">{{book.ebook.priceTag.price}} ₽</td>
-                </tr>
+<button data-modal="open_buy_book" class="hidden">модаль</button>
+<div data-modal="buy_book" class="buy-book-modal ui-modal">
 
-                <tr><td colspan="2"><hr></td></tr>
+    <div class="ui-modal-container">
+        <!-- Форма заказа -->
+        {{ form_ajax('onBuyBook') }}
 
-                <tr><td colspan="2">Награды</td></tr>
-                {% for award in awards %}
-                <tr>
-                    <td class="_left">
-                        <div class="buy-book-modal__wrapper-item">
-                            <label class="ui-checkbox">
-                                <input type="hidden" name="awards[{{award.id}}]" value="0">
-                                <input name="awards[{{award.id}}]" type="checkbox" hidden data-track-input="200"
-                                       data-request="onChangeAwardBag">
-                                <div class="ui-checkbox-checker">
-                                    <svg>
-                                        <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
-                                    </svg>
-                                </div>
-                                <span class="ui-checkbox-text">{{award.name}}</span>
-                            </label>
-                            <div class="buy-book-modal__text">{{award.price}} ₽</div>
+        <div class="buy-book-modal__container ui-modal-content">
 
-                        </div>
-                    </td>
-                    <td class="_right"></td>
-                </tr>
-                {% endfor %}
+            <!-- заголовок -->
+            <div class="buy-book-modal__header">
+                <div class="ui-text-head--2 ui-text--bold">Покупка книги</div>
+                <svg class="square-24" data-modal="close">
+                    <use
+                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                </svg>
+            </div>
 
-                <tr><td colspan="2"><hr></td></tr>
+            <div class="buy-book-modal__wrap">
 
-                <tr><td colspan="2">Поддержка автора</td></tr>
-                <tr>
-                    <td class="_left">
-                        <div class="buy-book-modal__wrapper-item">
-                            <div class="ui-input-wrapper">
-                                <input class="ui-input-item _size-32" type="text" name="donate" placeholder="200">
-                                <div class="ui-select-hitn"></div>
-                                <div class="ui-select-error" data-validate-for="donate"></div>
+                <!-- книга -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <label class="ui-checkbox">
+                            <span class="ui-checkbox-text">{{book.title}}</span>
+                        </label>
+                        <div class="buy-book-modal__text">{{book.ebook.priceTag.price}} ₽</div>
+                    </div>
+                    <div class="buy-book-modal__wrapper-item"></div>
+                </div>
+
+                <!-- награды -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <span class="ui-checkbox-text">Награды</span>
+                    </div>
+                    {% for award in awards %}
+                    <div class="buy-book-modal__wrapper-item">
+                        <label class="ui-checkbox">
+                            <input type="hidden" name="awards[{{award.id}}]" value="0">
+                            <input name="awards[{{award.id}}]" type="checkbox" hidden data-track-input="200"
+                                   data-request="onChangeAwardBag">
+                            <div class="ui-checkbox-checker">
+                                <svg>
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                </svg>
                             </div>
-                            <div class="buy-book-modal__text">100  ₽</div>
+                            <span class="ui-checkbox-text">{{award.name}}</span>
+                        </label>
+                        <div class="buy-book-modal__text">{{award.price}} ₽</div>
+                    </div>
+                    {% endfor %}
+                </div>
 
-                        </div>
-                    </td>
-                    <td class="_right"></td>
-                </tr>
+                <!-- поддержка автора -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <span class="ui-checkbox-text">Поддержка автора</span>
+                    </div>
+                    <div class="buy-book-modal__wrapper-item">
+                        <label class="">
+                            <input class="ui-input-item _size-32" type="text" name="donate" placeholder="200">
+                        </label>
+                        <div class="buy-book-modal__text">{{order.donate}} ₽</div>
+                    </div>
+                    <div class="buy-book-modal__wrapper-item"></div>
+                </div>
 
-                <tr><td colspan="2"><hr></td></tr>
+                <!-- итого -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item ui-text-body--1 ui-text--bold">
+                        <div class="buy-book-modal__text _green">Итого к оплате</div>
+                        <div class="buy-book-modal__text _green" id="awardPriceSpawn">0 ₽</div>
+                    </div>
+                </div>
 
-                <tr>
-                    <td class="_left"><div class="ellipsis">Итого к оплате:</div></td>
-                    <td class="_right">{{book.ebook.priceTag.price}} ₽</td>
-                </tr>
+                <!-- продолжить -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                            <span class="ui-text--medium">Продолжить</span>
+                        </button>
+                    </div>
+                </div>
 
-                <tr><td colspan="2"><hr></td></tr>
-
-                <tr><td colspan="2">
-                    <button type="submit" class="auth__action ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
-                        <span class="ui-text--medium">Продолжить</span>
-                    </button>
-                </td></tr>
-
-                <tr><td colspan="2"><hr></td></tr>
-
-                <tr>
-                    <td class="_left">
-                        <div class="buy-book-modal__wrapper-item">
-                            <div class="ui-input-wrapper">
-                                <input class="ui-input-item _size-32" type="text" name="promocode" placeholder="Промокод">
-                                <div class="ui-select-hitn"></div>
-                                <div class="ui-select-error" data-validate-for="donate"></div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="_right">
-                        <button type="submit" class="auth__action ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                <!-- промокод -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <label class="">
+                            <input class="ui-input-item _size-32" type="text" name="promocode" placeholder="Промокод">
+                        </label>
+                        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2">
                             <span class="ui-text--medium">Применить</span>
                         </button>
-                    </td>
-                </tr>
+                    </div>
+                </div>
 
-                </tbody>
-            </table>
-
+            </div>
         </div>
+        {{ form_close()}}
     </div>
 </div>
+
+
 <script>
-    orderFormPopup();
+
+    openModal('[data-modal="buy_book"]', '[data-modal="open_buy_book"]');
+    document.querySelector('[data-modal="open_buy_book"]').click();
+    document.body.style.overflow = 'initial';
 
     // sync donate value
 </script>
