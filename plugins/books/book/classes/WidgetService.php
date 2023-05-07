@@ -26,6 +26,8 @@ class WidgetService
 
     protected $values;
 
+    protected $limit = 10;
+
     /**
      * @throws Exception
      */
@@ -49,6 +51,25 @@ class WidgetService
             $this->cacheKey .= $this->book->id;
         }
         $this->query = Book::query()->onlyPublicStatus(); // Не использовать scope Public, который содержит scope adult, иначе в кэш не попадут 18+
+        $this->setShort($this->short);
+    }
+
+
+    /**
+     * @param bool $short
+     */
+    public function setShort(bool $short): void
+    {
+        $this->short = $short;
+        $this->limit = $this->short ? 3 : 10;
+    }
+
+    /**
+     * @param int $limit
+     */
+    public function setLimit(int $limit): void
+    {
+        $this->limit = $limit;
     }
 
     /**
@@ -209,13 +230,13 @@ class WidgetService
         }
         $this->values = $this->query
             ->defaultEager()
-            ->whereIn('id', $ids)
+            ->whereIn((new Book())->getTable() . '.id', $ids)
             ->when($this->diffWithUser, function ($builder) {
-                $builder->whereNotIn('id', $this->user?->queryLibs()->with('favorable')->get()->pluck('favorable')->pluck('book_id')->toArray() ?? [])
+                $builder->whereNotIn((new Book())->getTable() . '.id', $this->user?->queryLibs()->with('favorable')->get()->pluck('favorable')->pluck('book_id')->toArray() ?? [])
                     ->hasGenres($this->user?->unloved_genres ?? Cookie::has('unloved_genres') ? json_decode(Cookie::get('unloved_genres')) : [], 'exclude');
             })
             ->public()
-            ->limit($this->short ? 3 : 10)
+            ->limit($this->limit)
             ->get();
 
         return $this->sort();
@@ -271,7 +292,7 @@ class WidgetService
 
     public function todayDiscount()
     {
-        return $this->query->activeDiscountExist()->orderByDiscountAmount()->get();
+        return $this->query()->activeDiscountExist()->orderByDiscountAmount()->get();
     }
 
     public function recommend()
