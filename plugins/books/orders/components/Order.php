@@ -101,7 +101,10 @@ class Order extends ComponentBase
         $order = $this->getOrder($this->getUser(), $this->book);
         $this->service->applyAuthorSupport($order, (int) post('donate'));
 
-        return ['#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽'];
+        return [
+            '#orderDonationAmountSpawn' => (int) post('donate') . ' ₽',
+            '#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽',
+        ];
     }
 
     private function getAwardsIds(): array
