@@ -23,6 +23,6 @@ interface OrderService
     public function applyPromocode(Order $order): void;
     public function applyDiscount(Order $order): void;
     public function applyAwards(Order $order, Collection $awards): void;
-    public function applyAuthorSupport(Order $order): void;
+    public function applyAuthorSupport(Order $order, int $donate): void;
     public function updateAuthorsBalance(Order $order): void;
 }

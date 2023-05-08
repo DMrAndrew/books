@@ -1,5 +1,6 @@
 <?php namespace Books\Book\Models;
 
+use Books\Orders\Models\OrderProduct;
 use Model;
 
 /**
@@ -19,5 +20,21 @@ class Donation extends Model
     /**
      * @var array rules for validation
      */
-    public $rules = [];
+    public $rules = [
+        'amount' => 'required|integer|min:1'
+    ];
+
+    /**
+     * @var array fillable attributes are mass assignable
+     */
+    protected $fillable = [
+        'amount',
+    ];
+
+    public $morphMany = [
+        'products' => [
+            OrderProduct::class,
+            'name' => 'orderable',
+        ],
+    ];
 }

@@ -92,7 +92,14 @@ class Order extends ComponentBase
         $awards = Award::find($this->getAwardsIds());
 
         $this->service->applyAwards($order, $awards);
-        $this->service->calculateAmount($order);
+
+        return ['#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽'];
+    }
+
+    public function onOrderAddDonation(): array
+    {
+        $order = $this->getOrder($this->getUser(), $this->book);
+        $this->service->applyAuthorSupport($order, (int) post('donate'));
 
         return ['#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽'];
     }

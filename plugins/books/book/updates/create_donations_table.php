@@ -18,6 +18,7 @@ return new class extends Migration
     {
         Schema::create('books_book_donations', function(Blueprint $table) {
             $table->id();
+            $table->unsignedInteger('amount');
             $table->timestamps();
         });
     }

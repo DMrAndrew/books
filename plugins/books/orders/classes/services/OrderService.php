@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Books\Orders\Classes\Services;
 
 use Books\Book\Models\Award;
+use Books\Book\Models\Donation;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
@@ -88,9 +89,22 @@ class OrderService implements OrderServiceContract
         }
     }
 
-    public function applyAuthorSupport(Order $order): void
+    public function applyAuthorSupport(Order $order, int $donateAmount): void
     {
-        // TODO: Implement applyAuthorSupport() method.
+        $appliedDonations = $order->products()->whereHasMorph('orderable', [Donation::class])->get();
+        $appliedDonations->each(function($appliedDonation) {
+            $appliedDonation->delete();
+        });
+
+        if ($donateAmount > 0) {
+            $donation = Donation::create(['amount' => $donateAmount]);
+
+            $orderProduct = new OrderProduct();
+            $orderProduct->orderable()->associate($donation);
+            $orderProduct->order_id = $order->id;
+            $orderProduct->amount = $donateAmount;
+            $orderProduct->save();
+        }
     }
 
     public function updateAuthorsBalance(Order $order): void
