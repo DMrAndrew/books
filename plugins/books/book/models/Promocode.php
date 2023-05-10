@@ -53,7 +53,7 @@ class Promocode extends Model
      * @var array rules for validation
      */
     public $rules = [
-        'code' => 'missing|unique:books_book_promocodes,code',
+        'code' => 'string|unique:books_book_promocodes,code',
         'profile_id' => 'required|nullable|exists:books_profile_profiles,id',
         'is_activated' => 'sometimes|nullable|boolean',
         'user_id' => 'sometimes|nullable|integer|exists:users,id',

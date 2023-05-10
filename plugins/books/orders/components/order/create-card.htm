@@ -102,6 +102,13 @@
                         <div class="buy-book-modal__text" id="orderPromocodeAppliedResult"></div>
                     </div>
 
+                    {% for orderpromocode in order.promocodes %}
+                    <div class="buy-book-modal__wrapper-item">
+                        <div class="buy-book-modal__text">{{orderpromocode.promocode.code}}</div>
+                        <div class="buy-book-modal__text">Применен</div>
+                    </div>
+                    {% endfor %}
+
                 </div>
 
             </div>

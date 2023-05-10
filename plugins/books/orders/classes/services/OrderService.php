@@ -10,7 +10,9 @@ use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
+use Carbon\Carbon;
 use October\Rain\Database\Collection;
+use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
 class OrderService implements OrderServiceContract
@@ -86,6 +88,13 @@ class OrderService implements OrderServiceContract
         $appliedPromocode = OrderPromocode::create([
             'order_id' => $order->id,
             'promocode_id' => $promocode->id,
+        ]);
+
+        // activate promocode
+        $promocode->update([
+            'is_activated' => true,
+            'activated_at' => Carbon::now(),
+            'user_id' => Auth::getUser()->id,
         ]);
 
         return true;
