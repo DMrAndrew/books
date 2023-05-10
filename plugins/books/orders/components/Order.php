@@ -106,6 +106,16 @@ class Order extends ComponentBase
             '#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽',
         ];
     }
+    public function onOrderAddPromocode(): array
+    {
+        $order = $this->getOrder($this->getUser(), $this->book);
+        $promocodeIsApplied = $this->service->applyPromocode($order, (string) post('promocode'));
+
+        return [
+            '#orderPromocodeApplied' => (string) post('promocode'),
+            '#orderPromocodeAppliedResult' => $promocodeIsApplied ? 'Применен' : 'Промокод недействителен',
+        ];
+    }
 
     private function getAwardsIds(): array
     {

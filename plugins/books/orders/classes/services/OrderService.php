@@ -5,9 +5,11 @@ namespace Books\Orders\Classes\Services;
 
 use Books\Book\Models\Award;
 use Books\Book\Models\Donation;
+use Books\Book\Models\Promocode;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
+use Books\Orders\Models\OrderPromocode;
 use October\Rain\Database\Collection;
 use RainLab\User\Models\User;
 
@@ -56,9 +58,37 @@ class OrderService implements OrderServiceContract
         // TODO: Implement cancelOrder() method.
     }
 
-    public function applyPromocode(Order $order): void
+    public function applyPromocode(Order $order, string $code): bool
     {
-        // TODO: Implement applyPromocode() method.
+        // get promocode
+        $promocode = Promocode::query()
+            ->notActivated()
+            ->where('code', $code)
+            ->first();
+
+        if (!$promocode) {
+            return false;
+        }
+
+        // check promocode product
+        $promocodeProduct = $promocode->promoable;
+
+        $promoableProductInOrder = $order->products
+            ->where('orderable_type', $promocodeProduct::class)
+            ->where('orderable_id', $promocodeProduct->id)
+            ->first();
+
+        if (!$promoableProductInOrder) {
+            return false;
+        }
+
+        // apply promocode
+        $appliedPromocode = OrderPromocode::create([
+            'order_id' => $order->id,
+            'promocode_id' => $promocode->id,
+        ]);
+
+        return true;
     }
 
     public function applyAwards(Order $order, Collection $awards): void

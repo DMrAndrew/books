@@ -3,3 +3,6 @@
     - "Таблица заказов"
     - create_orders_table.php
     - create_order_products_table.php
+1.0.3:
+    - "Промокоды заказов"
+    - create_order_promocodes_table.php

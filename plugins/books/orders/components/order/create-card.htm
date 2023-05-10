@@ -90,12 +90,18 @@
                 <div class="buy-book-modal__wrapper">
                     <div class="buy-book-modal__wrapper-item">
                         <label class="">
-                            <input class="ui-input-item _size-32" type="text" name="promocode" placeholder="Промокод">
+                            <input class="ui-input-item _size-32" type="text" id="promocode" name="promocode" placeholder="Промокод" maxlength="8">
                         </label>
-                        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2">
+                        <button type="button" id="promocodeSubmit" class="ui-button ui-button-size--32 ui-button-view--2">
                             <span class="ui-text--medium">Применить</span>
                         </button>
                     </div>
+
+                    <div class="buy-book-modal__wrapper-item">
+                        <div class="buy-book-modal__text" id="orderPromocodeApplied"></div>
+                        <div class="buy-book-modal__text" id="orderPromocodeAppliedResult"></div>
+                    </div>
+
                 </div>
 
             </div>
@@ -112,9 +118,15 @@
     document.body.style.overflow = 'initial';
 
     // donation
-    $(document).on('keyup', 'input', function(){
+    $(document).on('keyup', '#donate', function(){
         this.value = this.value.replace(/[^\d.]/g, '');
         oc.request('#orderForm', 'onOrderAddDonation', {})
+    });
+
+    // promocode
+    $(document).on('click', '#promocodeSubmit', function(){
+        this.value = this.value.replace(/[^\d.]/g, '');
+        oc.request('#orderForm', 'onOrderAddPromocode', {})
     });
 
     // sync donate value

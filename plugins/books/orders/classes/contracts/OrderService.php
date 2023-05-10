@@ -10,7 +10,7 @@ interface OrderService
 {
     public function createOrder(User $user, array $products): Order;
 
-    public function applyPromocode(Order $order): void;
+    public function applyPromocode(Order $order, string $promocode): bool;
     public function applyAwards(Order $order, Collection $awards): void;
     public function applyAuthorSupport(Order $order, int $donate): void;
 

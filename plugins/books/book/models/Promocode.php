@@ -67,6 +67,13 @@ class Promocode extends Model
         'profile' => Profile::class,
     ];
 
+    /**
+     * @var array
+     */
+    public $morphTo = [
+        'promoable' => []
+    ];
+
     public static function boot(): void
     {
         parent::boot();

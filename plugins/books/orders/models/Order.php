@@ -70,7 +70,8 @@ class Order extends Model
      * @var array hasMany relationship
      */
     public $hasMany = [
-        'products' => [OrderProduct::class]
+        'products' => [OrderProduct::class],
+        'promocodes' => [OrderPromocodes::class],
     ];
 
     /**
