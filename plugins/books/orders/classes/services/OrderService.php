@@ -31,11 +31,6 @@ class OrderService implements OrderServiceContract
         return $order;
     }
 
-    public function getPrice(): int
-    {
-        // TODO: Implement getPrice() method.
-    }
-
     public function calculateAmount(Order $order): int
     {
         return $order->products->sum('amount');
@@ -64,11 +59,6 @@ class OrderService implements OrderServiceContract
     public function applyPromocode(Order $order): void
     {
         // TODO: Implement applyPromocode() method.
-    }
-
-    public function applyDiscount(Order $order): void
-    {
-        // TODO: Implement applyDiscount() method.
     }
 
     public function applyAwards(Order $order, Collection $awards): void
