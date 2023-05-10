@@ -60,7 +60,7 @@ class Order extends ComponentBase
     {
         return [
             'book' => $this->book,
-            'awards' => $this->awards(),
+            'availableAwards' => $this->getAvailableAwards(),
         ];
     }
 
@@ -73,7 +73,7 @@ class Order extends ComponentBase
                 '#order_form' => $this->renderPartial('@create-card', [
                     'order' => $order,
                     'book' => $this->book,
-                    'awards' => $this->awards(),
+                    'availableAwards' => $this->getAvailableAwards(),
                 ]),
                 '#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽',
             ];
@@ -93,7 +93,14 @@ class Order extends ComponentBase
 
         $this->service->applyAwards($order, $awards);
 
-        return ['#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽'];
+        return [
+            '#order_form' => $this->renderPartial('@create-card', [
+                'order' => $order,
+                'book' => $this->book,
+                'availableAwards' => $this->getAvailableAwards(),
+            ]),
+            '#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽',
+        ];
     }
 
     public function onOrderAddDonation(): array
@@ -102,8 +109,13 @@ class Order extends ComponentBase
         $this->service->applyAuthorSupport($order, (int) post('donate'));
 
         return [
-            '#orderDonationAmountSpawn' => (int) post('donate') . ' ₽',
+            '#order_form' => $this->renderPartial('@create-card', [
+                'order' => $order,
+                'book' => $this->book,
+                'availableAwards' => $this->getAvailableAwards(),
+            ]),
             '#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽',
+           // '#orderDonationAmountSpawn' => (int) post('donate') . ' ₽',
         ];
     }
     public function onOrderAddPromocode(): array
@@ -112,8 +124,14 @@ class Order extends ComponentBase
         $promocodeIsApplied = $this->service->applyPromocode($order, (string) post('promocode'));
 
         return [
-            '#orderPromocodeApplied' => (string) post('promocode'),
-            '#orderPromocodeAppliedResult' => $promocodeIsApplied ? 'Применен' : 'Промокод недействителен',
+            '#order_form' => $this->renderPartial('@create-card', [
+                'order' => $order,
+                'book' => $this->book,
+                'availableAwards' => $this->getAvailableAwards(),
+            ]),
+            '#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽',
+            //'#orderPromocodeApplied' => (string) post('promocode'),
+            //'#orderPromocodeAppliedResult' => $promocodeIsApplied ? 'Применен' : 'Промокод недействителен',
         ];
     }
 
@@ -122,7 +140,7 @@ class Order extends ComponentBase
         return collect(post('awards'))->filter(fn($i) => !!$i)->keys()->toArray();
     }
 
-    private function awards(): array
+    private function getAvailableAwards(): array
     {
         return Award::all()->toArray();
     }

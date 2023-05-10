@@ -32,6 +32,8 @@ return new class extends Migration
                 ->references('id')
                 ->on('books_book_promocodes')
                 ->onDelete('cascade');
+
+            $table->unique(['order_id', 'promocode_id']);
         });
     }
 

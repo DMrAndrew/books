@@ -17,6 +17,12 @@ use RainLab\User\Models\User;
 
 class OrderService implements OrderServiceContract
 {
+    /**
+     * @param User $user
+     * @param array $products
+     *
+     * @return Order
+     */
     public function createOrder(User $user, array $products): Order
     {
         $order = new Order();
@@ -35,14 +41,25 @@ class OrderService implements OrderServiceContract
         return $order;
     }
 
+    /**
+     * @param Order $order
+     *
+     * @return int
+     */
     public function calculateAmount(Order $order): int
     {
+        // products
         $initialOrderAmount = $order->products->sum('amount');
 
+        // promocodes
         $appliedPromocodesAmount = 0;
         $order->promocodes->each(function($orderPromocode) use (&$appliedPromocodesAmount) {
             $appliedPromocodesAmount += (int) $orderPromocode->promocode->promoable->priceTag()->price();
         });
+
+        // todo ? book discounts
+
+       // dd($initialOrderAmount, $appliedPromocodesAmount);
 
         return max(($initialOrderAmount - $appliedPromocodesAmount), 0);
     }
@@ -67,6 +84,12 @@ class OrderService implements OrderServiceContract
         // TODO: Implement cancelOrder() method.
     }
 
+    /**
+     * @param Order $order
+     * @param string $code
+     *
+     * @return bool
+     */
     public function applyPromocode(Order $order, string $code): bool
     {
         // get promocode
@@ -92,7 +115,7 @@ class OrderService implements OrderServiceContract
         }
 
         // apply promocode
-        $appliedPromocode = OrderPromocode::create([
+        OrderPromocode::create([
             'order_id' => $order->id,
             'promocode_id' => $promocode->id,
         ]);
@@ -107,9 +130,15 @@ class OrderService implements OrderServiceContract
         return true;
     }
 
+    /**
+     * @param Order $order
+     * @param Collection $awards
+     *
+     * @return void
+     */
     public function applyAwards(Order $order, Collection $awards): void
     {
-        $appliedAwards = $order->products()->whereHasMorph('orderable', [Award::class])->get();
+        $appliedAwards = $order->awards()->get();
 
         $appliedAwards->each(function($appliedAward) {
             $appliedAward->delete();
@@ -125,9 +154,15 @@ class OrderService implements OrderServiceContract
         }
     }
 
+    /**
+     * @param Order $order
+     * @param int $donateAmount
+     *
+     * @return void
+     */
     public function applyAuthorSupport(Order $order, int $donateAmount): void
     {
-        $appliedDonations = $order->products()->whereHasMorph('orderable', [Donation::class])->get();
+        $appliedDonations = $order->donations()->get();
         $appliedDonations->each(function($appliedDonation) {
             $appliedDonation->delete();
         });
