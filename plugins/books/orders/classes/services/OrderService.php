@@ -37,7 +37,14 @@ class OrderService implements OrderServiceContract
 
     public function calculateAmount(Order $order): int
     {
-        return $order->products->sum('amount');
+        $initialOrderAmount = $order->products->sum('amount');
+
+        $appliedPromocodesAmount = 0;
+        $order->promocodes->each(function($orderPromocode) use (&$appliedPromocodesAmount) {
+            $appliedPromocodesAmount += (int) $orderPromocode->promocode->promoable->priceTag()->price();
+        });
+
+        return max(($initialOrderAmount - $appliedPromocodesAmount), 0);
     }
 
     public function payOrderByTransaction(Order $order): bool

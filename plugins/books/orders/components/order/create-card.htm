@@ -73,6 +73,17 @@
                     <div class="buy-book-modal__wrapper-item"></div>
                 </div>
 
+                {% if order.promocodes|length %}
+                    <div class="buy-book-modal__wrapper">
+                    {% for orderpromocode in order.promocodes %}
+                        <div class="buy-book-modal__wrapper-item">
+                            <div class="buy-book-modal__text">Скидка по промокоду</div>
+                            <div class="buy-book-modal__text">{{orderpromocode.promocode.promoable.priceTag.price}}</div>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+
                 <!-- итого -->
                 <div class="buy-book-modal__wrapper">
                     <div class="buy-book-modal__wrapper-item ui-text-body--1 ui-text--bold">
