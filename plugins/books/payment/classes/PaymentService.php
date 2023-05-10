@@ -2,6 +2,9 @@
 
 namespace Books\Payment\Classes;
 
+use Books\Orders\Classes\Services\OrderService;
+use Books\Payment\Contracts\PaymentService as PaymentServiceContract;
+use Books\Orders\Models\Order;
 use Books\Payment\Models\Payment;
 use Exception;
 use Illuminate\Http\Request;
@@ -17,15 +20,18 @@ use Omnipay\Omnipay;
  * https://yookassa.ru/developers/payment-acceptance/testing-and-going-live/testing?ysclid=lgwcau6d1r312270278#test-bank-card-success
  * Успешная оплата: 5555555555554477
  */
-class PaymentService
+class PaymentService implements PaymentServiceContract
 {
     private $gateway;
+    private OrderService $orderService;
 
     public function __construct()
     {
         $this->gateway = Omnipay::create('YooKassa');
         $this->gateway->setShopId(env('YOOKASSA_SHOP_ID'));
         $this->gateway->setSecret(env('YOOKASSA_SECRET'));
+
+        $this->orderService = app(OrderService::class);
     }
 
     /**
@@ -37,43 +43,36 @@ class PaymentService
     }
 
     /**
-     * Initiate a payment on PayPal.
-     *
-     * @param Request $request
+     * Initiate a payment
      *
      * @return string|void|null
      */
-    public function charge(Request $request)
+    public function charge(Order $order)
     {
-        //if($request->input('submit'))
-        //{
-        $orderId = rand(1, 9999);
+        try {
+            $response = $this->gateway->purchase([
+                'amount' => $this->orderService->calculateAmount($order),
+                'currency' => Payment::CURRENCY,
+                'description' => "Заказ №{$order->id}",
 
-            try {
-                $response = $this->gateway->purchase([
-                    'amount' => 100, //$request->input('amount'),
-                    'currency' => Payment::CURRENCY,
-                    'description' => "Заказ №{$orderId}",
+                //'status' => 'pending',
+                'capture' => false,
+                'recipient' => 'blaqdog@mail.ru',
+                'transactionId' => Str::uuid(),
 
-                    //'status' => 'pending',
-                    'capture' => false,
-                    'recipient' => 'blaqdog@mail.ru',
-                    'transactionId' => Str::uuid(),
+                'returnUrl' => route('payment.success', ['order' => $order->id]),
+                'cancelUrl' => route('payment.error', ['order' => $order->id]),
+            ])->send();
 
-                    'returnUrl' => route('payment.success', ['order' => $orderId]),
-                    'cancelUrl' => route('payment.error', ['order' => $orderId]),
-                ])->send();
-
-                if ($response->isRedirect()) {
-                    $response->redirect(); // this will automatically forward the customer
-                } else {
-                    // not successful
-                    return $response->getMessage();
-                }
-            } catch(Exception $e) {
-                return $e->getMessage();
+            if ($response->isRedirect()) {
+                $response->redirect(); // this will automatically forward the customer
+            } else {
+                // not successful
+                return $response->getMessage();
             }
-        //}
+        } catch(Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     /**

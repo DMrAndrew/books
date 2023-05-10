@@ -6,6 +6,7 @@ use Books\Book\Models\Edition;
 use Books\Orders\Models\Order as OrderModel;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Classes\Services\OrderService;
+use Books\Payment\Classes\PaymentService;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
@@ -21,7 +22,8 @@ use RainLab\User\Models\User;
 class Order extends ComponentBase
 {
     protected Book $book;
-    private OrderService $service;
+    private OrderService $orderService;
+    private PaymentService $paymentService;
 
     public function componentDetails()
     {
@@ -41,7 +43,7 @@ class Order extends ComponentBase
 
     public function init(): void
     {
-        $this->service = app(OrderService::class);
+        $this->orderService = app(OrderService::class);
 
         $this->user = Auth::getUser();
         $book_id = $this->param('book_id');
@@ -64,18 +66,18 @@ class Order extends ComponentBase
         ];
     }
 
-    public function onCreateOrder()
+    public function onCreateOrder(): array
     {
         try {
             $order = $this->getOrder($this->getUser(), $this->book);
 
             return [
-                '#order_form' => $this->renderPartial('@create-card', [
+                '#order_form' => $this->renderPartial('@order_create', [
                     'order' => $order,
                     'book' => $this->book,
                     'availableAwards' => $this->getAvailableAwards(),
                 ]),
-                '#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽',
+                '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
             ];
 
         } catch (Exception $e) {
@@ -86,52 +88,84 @@ class Order extends ComponentBase
         }
     }
 
+    public function onOrderSubmit(): array
+    {
+        try {
+            $order = $this->getOrder($this->getUser(), $this->book);
+
+            return [
+                '#order_form' => $this->renderPartial('@order_submit', [
+                    'order' => $order,
+                    'book' => $this->book,
+                    'availableAwards' => $this->getAvailableAwards(),
+                ]),
+                '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
+            ];
+
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            Flash::error($e->getMessage());
+
+            return [];
+        }
+    }
+
+    public function onPayOrder()
+    {
+        $payType = post('payType');
+        if (!in_array($payType, ['balance', 'card'])) {
+            return [];
+        }
+
+        if ($payType === 'card') {
+
+        }
+    }
+
+
     public function onOrderAddAward(): array
     {
         $order = $this->getOrder($this->getUser(), $this->book);
         $awards = Award::find($this->getAwardsIds());
 
-        $this->service->applyAwards($order, $awards);
+        $this->orderService->applyAwards($order, $awards);
 
         return [
-            '#order_form' => $this->renderPartial('@create-card', [
+            '#order_form' => $this->renderPartial('@order_create', [
                 'order' => $order,
                 'book' => $this->book,
                 'availableAwards' => $this->getAvailableAwards(),
             ]),
-            '#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽',
+            '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
         ];
     }
 
     public function onOrderAddDonation(): array
     {
         $order = $this->getOrder($this->getUser(), $this->book);
-        $this->service->applyAuthorSupport($order, (int) post('donate'));
+        $this->orderService->applyAuthorSupport($order, (int) post('donate'));
 
         return [
-            '#order_form' => $this->renderPartial('@create-card', [
+            '#order_form' => $this->renderPartial('@order_create', [
                 'order' => $order,
                 'book' => $this->book,
                 'availableAwards' => $this->getAvailableAwards(),
             ]),
-            '#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽',
-           // '#orderDonationAmountSpawn' => (int) post('donate') . ' ₽',
+            '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
         ];
     }
     public function onOrderAddPromocode(): array
     {
         $order = $this->getOrder($this->getUser(), $this->book);
-        $promocodeIsApplied = $this->service->applyPromocode($order, (string) post('promocode'));
+        $promocodeIsApplied = $this->orderService->applyPromocode($order, (string) post('promocode'));
 
         return [
-            '#order_form' => $this->renderPartial('@create-card', [
+            '#order_form' => $this->renderPartial('@order_create', [
                 'order' => $order,
                 'book' => $this->book,
                 'availableAwards' => $this->getAvailableAwards(),
             ]),
-            '#orderTotalAmountSpawn' => $this->service->calculateAmount($order) . ' ₽',
-            //'#orderPromocodeApplied' => (string) post('promocode'),
-            //'#orderPromocodeAppliedResult' => $promocodeIsApplied ? 'Применен' : 'Промокод недействителен',
+            '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
         ];
     }
 
@@ -171,7 +205,7 @@ class Order extends ComponentBase
          * Иначе - новый заказ
          */
         if (!$order) {
-            $order = $this->service->createOrder($user, [$book->ebook]);
+            $order = $this->orderService->createOrder($user, [$book->ebook]);
         }
 
         return $order;

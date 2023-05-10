@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Books\Orders\Classes\Services;
 
-use Books\Book\Models\Award;
 use Books\Book\Models\Donation;
 use Books\Book\Models\Promocode;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
@@ -58,8 +57,6 @@ class OrderService implements OrderServiceContract
         });
 
         // todo ? book discounts
-
-       // dd($initialOrderAmount, $appliedPromocodesAmount);
 
         return max(($initialOrderAmount - $appliedPromocodesAmount), 0);
     }
