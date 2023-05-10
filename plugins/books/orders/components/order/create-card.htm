@@ -36,21 +36,25 @@
                         <span class="ui-checkbox-text">Награды</span>
                     </div>
                     {% for award in awards %}
-                    <div class="buy-book-modal__wrapper-item">
-                        <label class="ui-checkbox">
-                            <input type="hidden" name="awards[{{award.id}}]" value="0">
-                            <input name="awards[{{award.id}}]" type="checkbox" hidden data-track-input="200"
-                                   data-request="onOrderAddAward" checked>
-                            <div class="ui-checkbox-checker">
-                                <svg>
-                                    <use
-                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
-                                </svg>
-                            </div>
-                            <span class="ui-checkbox-text">{{award.name}}</span>
-                        </label>
-                        <div class="buy-book-modal__text">{{award.price}} ₽</div>
-                    </div>
+                        {% set awardOrdered = false %}
+                        {% if award.id in order.awards.pluck('orderable_id').toArray %}
+                            {% set awardOrdered = true %}
+                        {% endif %}
+                        <div class="buy-book-modal__wrapper-item">
+                            <label class="ui-checkbox">
+                                <input type="hidden" name="awards[{{award.id}}]" value="0">
+                                <input name="awards[{{award.id}}]" type="checkbox" hidden data-track-input="200"
+                                       data-request="onOrderAddAward" {{ awardOrdered ? 'checked' : '' }}>
+                                <div class="ui-checkbox-checker">
+                                    <svg>
+                                        <use
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                    </svg>
+                                </div>
+                                <span class="ui-checkbox-text">{{award.name}}</span>
+                            </label>
+                            <div class="buy-book-modal__text">{{award.price}} ₽</div>
+                        </div>
                     {% endfor %}
                 </div>
 
@@ -61,10 +65,10 @@
                     </div>
                     <div class="buy-book-modal__wrapper-item">
                         <label class="">
-                            <input class="ui-input-item _size-32" type="text" id="donate" name="donate" value="" placeholder="200" pattern="[0-9]?"
+                            <input class="ui-input-item _size-32" type="text" id="donate" name="donate" value="{{order.donations.sum('amount')}}" placeholder="200" pattern="[0-9]?"
                                    data-request="onOrderAddDonation">
                         </label>
-                        <div class="buy-book-modal__text" id="orderDonationAmountSpawn">{{order.donate}} ₽</div>
+                        <div class="buy-book-modal__text" id="orderDonationAmountSpawn">{{order.donations.sum('amount')}} ₽</div>
                     </div>
                     <div class="buy-book-modal__wrapper-item"></div>
                 </div>

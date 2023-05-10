@@ -71,6 +71,14 @@ class Order extends Model
      */
     public $hasMany = [
         'products' => [OrderProduct::class],
+        'awards' => [
+            OrderProduct::class,
+            'scope' => 'awards',
+        ],
+        'donations' => [
+            OrderProduct::class,
+            'scope' => 'donations',
+        ],
         'promocodes' => [OrderPromocode::class],
     ];
 

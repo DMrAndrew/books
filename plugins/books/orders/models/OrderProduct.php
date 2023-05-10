@@ -2,7 +2,10 @@
 
 namespace Books\Orders\Models;
 
+use Books\Book\Models\Award;
+use Books\Book\Models\Donation;
 use Model;
+use October\Rain\Database\Builder;
 
 /**
  * OrderProduct Model
@@ -56,4 +59,14 @@ class OrderProduct extends Model
     public $morphTo = [
         'orderable' => []
     ];
+
+    public function scopeAwards(Builder $builder)
+    {
+        return $builder->where('orderable_type', Award::class);
+    }
+
+    public function scopeDonations(Builder $builder)
+    {
+        return $builder->where('orderable_type', Donation::class);
+    }
 }
