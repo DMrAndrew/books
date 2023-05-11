@@ -2,6 +2,7 @@
 
 namespace Books\Payment\Classes;
 
+
 use Books\Orders\Classes\Services\OrderService;
 use Books\Orders\Models\Order as OrderModel;
 use Books\Payment\Contracts\PaymentService as PaymentServiceContract;
@@ -10,10 +11,10 @@ use Books\Payment\Models\Payment;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Str;
 use Log;
 use Omnipay\Omnipay;
 use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 
 /**
  * YooKassa - https://yookassa.ru/docs
@@ -34,14 +35,6 @@ class PaymentService implements PaymentServiceContract
         $this->gateway->setSecret(env('YOOKASSA_SECRET'));
 
         $this->orderService = app(OrderService::class);
-    }
-
-    /**
-     * Call a view.
-     */
-    public function index()
-    {
-        return 'payment index';
     }
 
     /**
@@ -156,14 +149,20 @@ class PaymentService implements PaymentServiceContract
 
     private function getOrder(int $orderId): Order
     {
-//        if (!Auth::check()) {
-//            abort(404);
-//        }
-
         $order = OrderModel::findOrFail($orderId);
 
         return $order;
     }
+
+    private function getUser(): User
+    {
+        if (!Auth::check()) {
+            $this->controller->run('/404');
+        }
+
+        return Auth::getUser();
+    }
+
 
     private function getPayment(Order $order): Payment
     {

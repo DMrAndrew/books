@@ -2,6 +2,7 @@
 
 namespace Books\Payment;
 
+use Books\Payment\Components\Payment;
 use System\Classes\PluginBase;
 
 /**
@@ -9,7 +10,10 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User'];
+    public $require = [
+        'RainLab.User',
+        'Books.Orders',
+    ];
 
     /**
      * Returns information about this plugin.
@@ -19,10 +23,22 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name' => 'Pyament',
+            'name' => 'Payment',
             'description' => 'No description provided yet...',
             'author' => 'Books',
             'icon' => 'icon-leaf',
+        ];
+    }
+
+    /**
+     * Registers any front-end components implemented in this plugin.
+     *
+     * @return array
+     */
+    public function registerComponents()
+    {
+        return [
+            Payment::class => 'Payment',
         ];
     }
 }
