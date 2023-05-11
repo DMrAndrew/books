@@ -122,7 +122,7 @@ class Order extends ComponentBase
         $order = $this->getOrder($this->getUser(), $this->book);
 
         if ($payType === 'card') {
-            return Redirect::to(route('payment.charge', ['order_id' => $order->id]));
+            return Redirect::to(route('payment.charge', ['order' => $order->id]));
         }
     }
 
