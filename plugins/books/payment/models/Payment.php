@@ -1,6 +1,5 @@
 <?php namespace Books\Payment\Models;
 
-use Books\Payment\Classes\Enums\PaymentStatusEnum;
 use Illuminate\Support\Str;
 use Model;
 use RainLab\User\Models\User;
@@ -30,7 +29,7 @@ class Payment extends Model
         'payer_email' => 'required|email',
         'amount' => 'required|integer|min:1',
         'currency' => 'required|string',
-        'payment_status' => 'integer',
+        'payment_status' => 'string', // from yookassa
     ];
 
     /**
@@ -43,13 +42,6 @@ class Payment extends Model
         'amount',
         'currency',
         'payment_status',
-    ];
-
-    /**
-     * @var array Attributes to be cast to native types
-     */
-    protected $casts = [
-        'payment_status' => PaymentStatusEnum::class,
     ];
 
     public static function boot(): void
@@ -70,14 +62,4 @@ class Payment extends Model
             'payer_id',
         ],
     ];
-
-    /**
-     * @param $query
-     * @param PaymentStatusEnum $status
-     * @return void
-     */
-    public function scopeWhereStatus($query, PaymentStatusEnum $status): void
-    {
-        $query->where('status', $status->value);
-    }
 }

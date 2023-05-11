@@ -4,7 +4,6 @@ namespace Books\Payment\Classes;
 
 use Books\Orders\Classes\Services\OrderService;
 use Books\Orders\Models\Order as OrderModel;
-use Books\Payment\Classes\Enums\PaymentStatusEnum;
 use Books\Payment\Contracts\PaymentService as PaymentServiceContract;
 use Books\Orders\Models\Order;
 use Books\Payment\Models\Payment;
@@ -56,14 +55,7 @@ class PaymentService implements PaymentServiceContract
 
         try {
             // create payment
-            $payment = Payment::create([
-                'order_id' => $order->id,
-                'payer_id' => $order->user->id,
-                'payer_email' => $order->user->email,
-                'amount' => $this->orderService->calculateAmount($order),
-                'currency' => Payment::CURRENCY,
-                'payment_status' => PaymentStatusEnum::CREATED->value,
-            ]);
+            $payment = $this->getPayment($order);
 
             dd($payment);
 
@@ -171,5 +163,19 @@ class PaymentService implements PaymentServiceContract
         $order = OrderModel::findOrFail($orderId);
 
         return $order;
+    }
+
+    private function getPayment(Order $order): Payment
+    {
+        return Payment::firstOrCreate(
+        [
+            'order_id' => $order->id,
+        ],[
+            'payer_id' => $order->user->id,
+            'payer_email' => $order->user->email,
+            'amount' => $this->orderService->calculateAmount($order),
+            'currency' => Payment::CURRENCY,
+            'payment_status' => 'created',
+        ]);
     }
 }

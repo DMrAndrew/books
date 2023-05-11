@@ -1,6 +1,5 @@
 <?php namespace Books\Payment\Updates;
 
-use Books\Payment\Classes\Enums\PaymentStatusEnum;
 use Schema;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
@@ -25,7 +24,7 @@ return new class extends Migration
             $table->string('payer_email');
             $table->float('amount', 10, 2);
             $table->string('currency');
-            $table->tinyInteger('payment_status')->default(PaymentStatusEnum::CREATED->value);
+            $table->string('payment_status');
             $table->timestamps();
 
             $table->foreign('order_id')
