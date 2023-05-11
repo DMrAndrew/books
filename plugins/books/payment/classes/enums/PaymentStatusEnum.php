@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Books\Orders\Classes\Enums;
+namespace Books\Payment\Classes\Enums;
 
-enum OrderStatusEnum: int
+enum PaymentStatusEnum: int
 {
     case CREATED = 1;
     case PENDING = 2;
@@ -13,14 +13,14 @@ enum OrderStatusEnum: int
     public function label(): string
     {
         return match ($this) {
-            self::CREATED => 'Создан',
+            self::CREATED => 'Создана',
             self::PENDING => 'Ожидает оплаты',
-            self::PAID => 'Оплачен',
-            self::CANCELED => 'Отменен',
+            self::PAID => 'Оплачена',
+            self::CANCELED => 'Отменена',
         };
     }
 
-    public static function default(): OrderStatusEnum
+    public static function default(): PaymentStatusEnum
     {
         return self::CREATED;
     }

@@ -3,6 +3,8 @@
 namespace Books\Payment\Classes;
 
 use Books\Orders\Classes\Services\OrderService;
+use Books\Orders\Models\Order as OrderModel;
+use Books\Payment\Classes\Enums\PaymentStatusEnum;
 use Books\Payment\Contracts\PaymentService as PaymentServiceContract;
 use Books\Orders\Models\Order;
 use Books\Payment\Models\Payment;
@@ -12,6 +14,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Log;
 use Omnipay\Omnipay;
+use RainLab\User\Facades\Auth;
 
 /**
  * YooKassa - https://yookassa.ru/docs
@@ -47,18 +50,33 @@ class PaymentService implements PaymentServiceContract
      *
      * @return string|void|null
      */
-    public function charge(Order $order)
+    public function charge(Request $request)
     {
+        $order = $this->getOrder($request->input('order_id'));
+
         try {
-            $response = $this->gateway->purchase([
+            // create payment
+            $payment = Payment::create([
+                'order_id' => $order->id,
+                'payer_id' => $order->user->id,
+                'payer_email' => $order->user->email,
                 'amount' => $this->orderService->calculateAmount($order),
                 'currency' => Payment::CURRENCY,
+                'payment_status' => PaymentStatusEnum::CREATED->value,
+            ]);
+
+            dd($payment);
+
+            // run yookassa payment
+            $response = $this->gateway->purchase([
+                'amount' => $payment->amount,
+                'currency' => $payment->currency,
                 'description' => "Заказ №{$order->id}",
 
                 //'status' => 'pending',
                 'capture' => false,
-                'recipient' => 'blaqdog@mail.ru',
-                'transactionId' => Str::uuid(),
+                'recipient' => $payment->payer_email,
+                'transactionId' => $payment->payment_id,
 
                 'returnUrl' => route('payment.success', ['order' => $order->id]),
                 'cancelUrl' => route('payment.error', ['order' => $order->id]),
@@ -142,5 +160,16 @@ class PaymentService implements PaymentServiceContract
     public function error(Request $request)
     {
         return 'User cancelled the payment.';
+    }
+
+    private function getOrder(int $orderId): Order
+    {
+//        if (!Auth::check()) {
+//            abort(404);
+//        }
+
+        $order = OrderModel::findOrFail($orderId);
+
+        return $order;
     }
 }

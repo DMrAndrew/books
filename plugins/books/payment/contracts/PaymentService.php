@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 interface PaymentService
 {
-    public function charge(Order $order);
+    public function charge(Request $request);
     public function webhook(Request $request);
     public function success(Request $request);
     public function error(Request $request);

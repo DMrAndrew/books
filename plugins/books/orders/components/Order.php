@@ -10,6 +10,7 @@ use Books\Payment\Classes\PaymentService;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
+use Illuminate\Support\Facades\Redirect;
 use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -118,11 +119,12 @@ class Order extends ComponentBase
             return [];
         }
 
-        if ($payType === 'card') {
+        $order = $this->getOrder($this->getUser(), $this->book);
 
+        if ($payType === 'card') {
+            return Redirect::to(route('payment.charge', ['order_id' => $order->id]));
         }
     }
-
 
     public function onOrderAddAward(): array
     {

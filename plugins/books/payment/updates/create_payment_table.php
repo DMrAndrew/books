@@ -1,5 +1,6 @@
 <?php namespace Books\Payment\Updates;
 
+use Books\Payment\Classes\Enums\PaymentStatusEnum;
 use Schema;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
@@ -18,13 +19,24 @@ return new class extends Migration
     {
         Schema::create('books_payment_payments', function(Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedInteger('order_id')->nullable();
             $table->string('payment_id');
-            $table->string('payer_id');
+            $table->unsignedInteger('payer_id');
             $table->string('payer_email');
             $table->float('amount', 10, 2);
             $table->string('currency');
-            $table->string('payment_status');
+            $table->tinyInteger('payment_status')->default(PaymentStatusEnum::CREATED->value);
             $table->timestamps();
+
+            $table->foreign('order_id')
+                ->references('id')
+                ->on('books_orders_orders')
+                ->onDelete('cascade');
+
+            $table->foreign('payer_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
         });
     }
 
