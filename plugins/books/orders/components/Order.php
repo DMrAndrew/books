@@ -44,6 +44,7 @@ class Order extends ComponentBase
     public function init(): void
     {
         $this->orderService = app(OrderService::class);
+        $this->paymentService = app(PaymentService::class);
 
         $this->user = Auth::getUser();
         $book_id = $this->param('book_id');
@@ -165,6 +166,8 @@ class Order extends ComponentBase
                 'book' => $this->book,
                 'availableAwards' => $this->getAvailableAwards(),
             ]),
+            '#orderPromocodeApplied' => (string) post('promocode'),
+            '#orderPromocodeAppliedResult' => $promocodeIsApplied ? 'Применен' : 'Не действителен',
             '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
         ];
     }

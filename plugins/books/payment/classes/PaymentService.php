@@ -139,7 +139,7 @@ class PaymentService implements PaymentServiceContract
     /**
      * Error Handling.
      */
-    public function error()
+    public function error(Request $request)
     {
         return 'User cancelled the payment.';
     }
