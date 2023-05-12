@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace Books\Payment\Controllers;
 
+use Backend\Classes\Controller;
+use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Classes\Services\OrderService;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\Order as OrderModel;
 use Books\Payment\Classes\PaymentService;
 use Books\Payment\Models\Payment as PaymentModel;
 use Cms\Classes\CmsException;
-use Cms\Classes\Controller;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -53,7 +54,7 @@ class PaymentController extends Controller
      *
      * @return Application|ResponseFactory|Response|string|null
      */
-    public function charge(Request $request, int $order)
+    public function charge(Request $request, int $order): Response|string|Application|ResponseFactory|null
     {
         $order = $this->getOrder($order);
 
@@ -86,50 +87,77 @@ class PaymentController extends Controller
             return $e->getMessage();
         }
 
-        return response();
+        return response('', 200);
     }
 
     /**
-     * @param Request $request
+     * Webhook from payment gateway for updating status
      *
-     * @return string
+     * @param Request $request
      */
     public function webhook(Request $request)
     {
-        Log::info('service webhook');
-        Log::info(json_encode($request->toArray()));
+        try {
+            // Once the transaction has been approved, we need to complete it
+            $object = $request->object ?? null;
 
-        // Once the transaction has been approved, we need to complete it.
-        if ($request->input('paymentId') && $request->input('PayerID'))
-        {
-            $transaction = $this->gateway->completePurchase(array(
-                'payer_id'             => $request->input('PayerID'),
-                'transactionReference' => $request->input('paymentId'),
-            ));
-            $response = $transaction->send();
+            if ($object) {
+                $transactionId = $object['metadata']['transactionId'];
+                $paymentStatus = $object['status'];
 
-            if ($response->isSuccessful())
-            {
-                // The customer has successfully paid.
-                $arr_body = $response->getData();
+                //dump('transaction id : ', $transactionId);
 
-                Log::info('successful payment request data:');
-                Log::info($arr_body);
+                // update payment status
+                $payment = PaymentModel::where('payment_id', $transactionId)->firstOrFail();
+                $payment->update(['payment_status' => $paymentStatus]);
 
-                // Insert transaction data into the database
-                // todo
+                // update order status
+                $order = $payment->order;
 
-                return "Payment is successful. Your transaction id is: ". $arr_body['id'];
-            } else {
-                return $response->getMessage();
+                /**
+                 * available YooKassa payment statuses - https://yookassa.ru/developers/using-api/webhooks#events-basics
+                 */
+                $orderStatus = match ($paymentStatus) {
+                    'waiting_for_capture' => OrderStatusEnum::PENDING,
+                    'succeeded' => OrderStatusEnum::PAID,
+                    'canceled' => OrderStatusEnum::CANCELED,
+                };
+                $this->orderService->updateOrderstatus($order, $orderStatus);
+
+                switch ($paymentStatus) {
+                    // ожидает подтверждения
+                    case 'waiting_for_capture':
+                        $this->orderService->updateOrderstatus($order, OrderStatusEnum::PENDING);
+                        break;
+
+                    // успешно
+                    case 'succeeded':
+                        $this->orderService->updateOrderstatus($order, OrderStatusEnum::PAID);
+                        $isApproved = $this->orderService->approveOrder($order);
+
+                        if (!$isApproved) {
+                            throw new Exception("Something went wrong with updating order # {$order->id}");
+                        }
+                        break;
+
+                    // отменен
+                    case 'canceled':
+                        $this->orderService->updateOrderstatus($order, OrderStatusEnum::CANCELED);
+                        $isCancelled = $this->orderService->cancelOrder($order);
+
+                        if (!$isCancelled) {
+                            throw new Exception("Something went wrong with cancelling order # {$order->id}");
+                        }
+                }
             }
-        } else {
-            return 'Transaction is declined';
+        }
+        catch (Exception $e) {
+            abort(300, $e->getMessage());
         }
     }
 
     /**
-     * Charge a payment and store the transaction.
+     * Success page for customer
      *
      * @param Request $request
      * @param int $order
@@ -145,7 +173,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Error Handling.
+     * Error page for customer
      */
     public function error(Request $request, int $order)
     {
@@ -155,11 +183,21 @@ class PaymentController extends Controller
         return 'Something went wrong';
     }
 
+    /**
+     * @param int $orderId
+     *
+     * @return OrderModel
+     */
     private function getOrder(int $orderId): Order
     {
         return OrderModel::findOrFail($orderId);
     }
 
+    /**
+     * @param OrderModel $order
+     *
+     * @return PaymentModel
+     */
     private function getPayment(Order $order): PaymentModel
     {
         return PaymentModel::firstOrCreate(

@@ -1,5 +1,6 @@
 <?php namespace Books\Payment\Models;
 
+use Books\Orders\Models\Order;
 use Illuminate\Support\Str;
 use Model;
 use RainLab\User\Models\User;
@@ -60,6 +61,9 @@ class Payment extends Model
         'user' => [
             User::class,
             'payer_id',
+        ],
+        'order' => [
+            Order::class,
         ],
     ];
 }

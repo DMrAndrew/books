@@ -6,6 +6,7 @@ namespace Books\Orders\Classes\Services;
 use Books\Book\Models\Donation;
 use Books\Book\Models\Promocode;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
+use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
@@ -61,24 +62,27 @@ class OrderService implements OrderServiceContract
         return max(($initialOrderAmount - $appliedPromocodesAmount), 0);
     }
 
-    public function payOrderByTransaction(Order $order): bool
+    public function updateOrderstatus(Order $order, OrderStatusEnum $status): bool
     {
-        // TODO: Implement payOrderByTransaction() method.
-    }
-
-    public function payOrderFromBalance(Order $order): bool
-    {
-        // TODO: Implement payOrderFromBalance() method.
+        return $order->update(['status' => $status->value]);
     }
 
     public function approveOrder(Order $order): bool
     {
-        // TODO: Implement approveOrder() method.
+        // выдать покупателю товар
+
+        // создать награды
+
+        // пополнить баланс автора
+
+        // добавить историю транзакций
+
+        return true;
     }
 
     public function cancelOrder(Order $order): bool
     {
-        // TODO: Implement cancelOrder() method.
+        return true;
     }
 
     /**

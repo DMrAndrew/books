@@ -2,6 +2,7 @@
 
 namespace Books\Orders\Classes\Contracts;
 
+use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Models\Order;
 use October\Rain\Database\Collection;
 use RainLab\User\Models\User;
@@ -16,9 +17,7 @@ interface OrderService
 
     public function calculateAmount(Order $order): int;
 
-    public function payOrderByTransaction(Order $order): bool;
-    public function payOrderFromBalance(Order $order): bool;
-
+    public function updateOrderstatus(Order $order, OrderStatusEnum $status): bool;
     public function approveOrder(Order $order): bool;
     public function cancelOrder(Order $order): bool;
 
