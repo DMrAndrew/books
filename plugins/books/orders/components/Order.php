@@ -214,7 +214,6 @@ class Order extends ComponentBase
         }
 
         return $order;
-
     }
 
     private function getUser(): User
