@@ -7,14 +7,16 @@ enum OrderStatusEnum: int
 {
     case CREATED = 1;
     case PENDING = 2;
-    case PAID = 3;
-    case CANCELED = 4;
+    case AWAIT_APPROVE = 3;
+    case PAID = 4;
+    case CANCELED = 5;
 
     public function label(): string
     {
         return match ($this) {
             self::CREATED => 'Создан',
             self::PENDING => 'Ожидает оплаты',
+            self::AWAIT_APPROVE => 'Ожидает подтверждения',
             self::PAID => 'Оплачен',
             self::CANCELED => 'Отменен',
         };

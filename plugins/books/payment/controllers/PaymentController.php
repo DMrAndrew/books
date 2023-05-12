@@ -56,9 +56,10 @@ class PaymentController extends Controller
      */
     public function charge(Request $request, int $order): Response|string|Application|ResponseFactory|null
     {
-        $order = $this->getOrder($order);
-
         try {
+            $order = $this->getOrder($order);
+            $this->orderService->updateOrderstatus($order, OrderStatusEnum::PENDING);
+
             // create payment
             $payment = $this->getPayment($order);
 
@@ -68,8 +69,7 @@ class PaymentController extends Controller
                 'currency' => $payment->currency,
                 'description' => "Заказ №{$order->id}",
 
-                //'status' => 'pending',
-                'capture' => false,
+                'capture' => true,
                 'recipient' => $payment->payer_email,
                 'transactionId' => $payment->payment_id,
 
@@ -84,6 +84,8 @@ class PaymentController extends Controller
                 return $response->getMessage();
             }
         } catch(Exception $e) {
+            Log::error($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -105,8 +107,6 @@ class PaymentController extends Controller
                 $transactionId = $object['metadata']['transactionId'];
                 $paymentStatus = $object['status'];
 
-                //dump('transaction id : ', $transactionId);
-
                 // update payment status
                 $payment = PaymentModel::where('payment_id', $transactionId)->firstOrFail();
                 $payment->update(['payment_status' => $paymentStatus]);
@@ -127,7 +127,7 @@ class PaymentController extends Controller
                 switch ($paymentStatus) {
                     // ожидает подтверждения
                     case 'waiting_for_capture':
-                        $this->orderService->updateOrderstatus($order, OrderStatusEnum::PENDING);
+                        $this->orderService->updateOrderstatus($order, OrderStatusEnum::AWAIT_APPROVE);
                         break;
 
                     // успешно
@@ -150,8 +150,8 @@ class PaymentController extends Controller
                         }
                 }
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
             abort(300, $e->getMessage());
         }
     }
