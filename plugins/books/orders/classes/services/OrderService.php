@@ -72,6 +72,7 @@ class OrderService implements OrderServiceContract
         // выдать покупателю товар
 
         // создать награды
+            // books_book_award_books
 
         // пополнить баланс автора
 
