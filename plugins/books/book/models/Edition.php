@@ -121,6 +121,10 @@ class Edition extends Model
             OrderProduct::class,
             'name' => 'orderable',
         ],
+        'customers' => [
+            UserBook::class,
+            'name' => 'ownable',
+        ]
     ];
 
     public function discount()
