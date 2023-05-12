@@ -41,7 +41,7 @@ class Reader
     }
 
     /**
-     * @param  bool  $contentGuard
+     * @param bool $contentGuard
      */
     public function setContentGuard(bool $contentGuard): void
     {
@@ -49,7 +49,7 @@ class Reader
     }
 
     /**
-     * @param  int|null  $page
+     * @param int|null $page
      *
      * @throws ChapterIsClosed
      */
@@ -61,10 +61,10 @@ class Reader
 
     public function isPageAllowed(): bool
     {
-        return ! $this->contentGuard
+        return !$this->contentGuard
             || $this->chapter->isFree()
-            || $this->book->isAuthor($this->user->profile)
-            || $this->user->bookIsBought($this->edition);
+            || ($this->user ? $this->book->isAuthor($this->user->profile) : false)
+            || ($this->user ? $this->user->bookIsBought($this->edition) : false);
     }
 
     public function track(?int $ms, int $paginator_id)
@@ -81,10 +81,10 @@ class Reader
 
     public function readBtn(): bool
     {
-        return ! $this->nextPage()
-            && ! $this->nextChapter()
+        return !$this->nextPage()
+            && !$this->nextChapter()
             && $this->book->ebook->status === BookStatus::COMPLETE
-            && ! $this->user->library($this->book)->is(CollectionEnum::READ);
+            && !$this->user->library($this->book)->is(CollectionEnum::READ);
     }
 
     /**
@@ -92,15 +92,15 @@ class Reader
      */
     public function getReaderPage(): array
     {
-        if (! $this->isPageAllowed()) {
+        if (!$this->isPageAllowed()) {
             throw new ChapterIsClosed();
         }
 
         return [
 
             'pagination' => [
-                'prev' => (bool) ($this->prevPage() ?? $this->prevChapter()),
-                'next' => (bool) ($this->nextPage() ?? $this->nextChapter()),
+                'prev' => (bool)($this->prevPage() ?? $this->prevChapter()),
+                'next' => (bool)($this->nextPage() ?? $this->nextChapter()),
                 'read' => $this->readBtn(),
                 'links' => $this->chapter->service()->getPaginationLinks($this->page),
             ],

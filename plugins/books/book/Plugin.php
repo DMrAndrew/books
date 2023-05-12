@@ -112,7 +112,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Discount', Discount::class);
 
         Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
-        Event::listen('books.book.updated', fn(Book $book) => $book->updateEventHandler());
+
 
         Book::extend(function (Book $book) {
             $book->implementClassWith(Favorable::class);

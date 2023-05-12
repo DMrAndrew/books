@@ -5,3 +5,6 @@
 1.0.1:
     - 'Date для дата рождения'
     - users_birthday_to_date.php
+1.0.2:
+    - 'Суточный 18+ пропуск для гостей.'
+    - create_temp_adult_passes_table.php

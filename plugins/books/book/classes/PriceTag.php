@@ -23,7 +23,7 @@ class PriceTag
 
     public function price(): int
     {
-        return (int)ceil($this->initialPrice() - ($this->initialPrice() * $this->discountAmount() / 100));
+        return (int)floor($this->initialPrice() - ($this->initialPrice() * $this->discountAmount() / 100));
     }
 
     public function initialPrice(): int

@@ -38,7 +38,11 @@ class OutOfFree extends ComponentBase
 
     public function init()
     {
-        $this->book = Book::query()->public()->find($this->param('book_id')) ?? abort(404);
+        $this->book = Book::query()
+            ->public()->with([
+                'ebook' => fn($ebook) => $ebook->withActiveDiscountExist()->with('discount'),
+            ])
+            ->find($this->param('book_id')) ?? abort(404);
         $this->chapter = Chapter::find($this->param('chapter_id'));
         $this->page['book'] = $this->book;
         $this->page['chapter'] = $this->chapter;

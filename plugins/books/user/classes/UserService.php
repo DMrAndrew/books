@@ -2,7 +2,9 @@
 
 namespace Books\User\Classes;
 
+use Books\User\Models\TempAdultPass;
 use RainLab\Location\Models\Country;
+use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
 class UserService
@@ -22,7 +24,7 @@ class UserService
             $payload->forget('birthday');
         }
 
-        if($payload->has('see_adult')){
+        if ($payload->has('see_adult')) {
             $payload['see_adult'] = $this->user->canSetAdult() ? $payload['see_adult'] : false;
         }
 
@@ -34,5 +36,31 @@ class UserService
         $this->user->fill($payload->toArray());
         $this->user->save();
         return $this->user;
+    }
+
+    public static function allowedSeeAdult(): bool
+    {
+        if ($user = Auth::getUser()) {
+            return $user->allowedSeeAdult();
+        }
+        return static::guestAllowedSeeAdult();
+    }
+
+    public static function guestAllowedSeeAdult()
+    {
+        return TempAdultPass::lookUp()->agree()->active()->exists();
+    }
+
+    public static function canBeAskedAdultPermission(): bool
+    {
+        if ($user = Auth::getUser()) {
+            return $user->requiredAskAdult();
+        }
+        return static::canGuestBeAskedAdultPermission();
+    }
+
+    public static function canGuestBeAskedAdultPermission(): bool
+    {
+        return TempAdultPass::lookUp()->doesntExist();
     }
 }
