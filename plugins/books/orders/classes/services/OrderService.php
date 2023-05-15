@@ -5,6 +5,7 @@ namespace Books\Orders\Classes\Services;
 
 use Books\Book\Models\Donation;
 use Books\Book\Models\Promocode;
+use Books\Book\Models\UserBook;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Models\Order;
@@ -12,6 +13,7 @@ use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
 use Carbon\Carbon;
 use October\Rain\Database\Collection;
+use October\Rain\Database\Model;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -62,23 +64,64 @@ class OrderService implements OrderServiceContract
         return max(($initialOrderAmount - $appliedPromocodesAmount), 0);
     }
 
+    /**
+     * @param Order $order
+     * @param OrderStatusEnum $status
+     *
+     * @return bool
+     */
     public function updateOrderstatus(Order $order, OrderStatusEnum $status): bool
     {
         return $order->update(['status' => $status->value]);
     }
 
+    /**
+     * @param Order $order
+     *
+     * @return bool
+     */
     public function approveOrder(Order $order): bool
     {
+        $user = $order->user;
+
         // выдать покупателю товар
+        foreach ($order->products as $orderProduct) {
+            $product = $orderProduct->orderable;
+
+            if ($this->isProductOwnable($product)) {
+                $newUserOwning = new UserBook();
+                $newUserOwning->user_id = $user->id;
+                $newUserOwning->ownable()->associate($product);
+                $newUserOwning->save();
+            }
+        }
 
         // создать награды
             // books_book_award_books
 
         // пополнить баланс автора
 
-        // добавить историю транзакций
+        // добавить историю операций
 
         return true;
+    }
+
+    /**
+     * @param Model $product
+     *
+     * @return bool
+     */
+    private function isProductOwnable(Model $product): bool
+    {
+        if ($product->morphMany == null || !is_array($product->morphMany)) {
+            return false;
+        }
+
+        if (empty($product->morphMany)) {
+            return false;
+        }
+
+        return in_array('customers', array_keys($product->morphMany));
     }
 
     public function cancelOrder(Order $order): bool

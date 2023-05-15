@@ -132,26 +132,34 @@ class PaymentController extends Controller
 
                     // успешно
                     case 'succeeded':
-                        $this->orderService->updateOrderstatus($order, OrderStatusEnum::PAID);
-                        $isApproved = $this->orderService->approveOrder($order);
+                        if ($order->status != OrderStatusEnum::PAID->value) {
+                            $this->orderService->updateOrderstatus($order, OrderStatusEnum::PAID);
+                            $isApproved = $this->orderService->approveOrder($order);
 
-                        if (!$isApproved) {
-                            throw new Exception("Something went wrong with updating order # {$order->id}");
+                            if (!$isApproved) {
+                                throw new Exception("Something went wrong with updating order #{$order->id}");
+                            }
                         }
                         break;
 
                     // отменен
                     case 'canceled':
-                        $this->orderService->updateOrderstatus($order, OrderStatusEnum::CANCELED);
-                        $isCancelled = $this->orderService->cancelOrder($order);
+                        if ($order->status != OrderStatusEnum::CANCELED->value) {
+                            $this->orderService->updateOrderstatus($order, OrderStatusEnum::CANCELED);
+                            $isCancelled = $this->orderService->cancelOrder($order);
 
-                        if (!$isCancelled) {
-                            throw new Exception("Something went wrong with cancelling order # {$order->id}");
+                            if (!$isCancelled) {
+                                throw new Exception("Something went wrong with cancelling order #{$order->id}");
+                            }
                         }
                 }
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
+
+            /**
+             * Yookassa webhook needs response 200
+             */
             abort(300, $e->getMessage());
         }
     }
