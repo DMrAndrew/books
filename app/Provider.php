@@ -59,14 +59,6 @@ class Provider extends AppBase
     public function boot()
     {
         parent::boot();
-        Request::setTrustedProxies([
-            '192.168.48.1'
-        ], -1);
-//        \App::error(function (HttpException $e) {
-//            $code = $e->getStatusCode();
-//            $controller = new Controller(Theme::getActiveTheme());
-//            $controller->setStatusCode($code);
-//            return $controller->run(in_array($code, [404]) ? '/404' : '/error');
-//        });
+        Request::setTrustedProxies(config('app.trusted_proxies'), -1);
     }
 }
