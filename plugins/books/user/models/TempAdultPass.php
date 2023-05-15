@@ -62,9 +62,9 @@ class TempAdultPass extends Model
 
     public static function make($attributes = [])
     {
-        return parent::make(array_merge($attributes, [
+        return parent::make(array_merge([
             'ip' => request()->ip(),
-        ]));
+        ], $attributes));
     }
 
     protected function beforeCreate()

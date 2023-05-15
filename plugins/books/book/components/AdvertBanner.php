@@ -60,6 +60,6 @@ class AdvertBanner extends ComponentBase
 
     public function onVisit()
     {
-        return $this->book?->advert->registerVisit();
+        return Book::find(post('book_id'))?->advert?->registerVisit();
     }
 }
