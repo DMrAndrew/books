@@ -58,14 +58,15 @@ class TempAdultPass extends Model
 
     public static function lookUp()
     {
-        Log::info(request()->getClientIp());
-        return static::query()->findByCredential(request()->getClientIp(), Cookie::get(CookieEnum::ADULT_ULID->value));
+        Log::info(request()->ip());
+
+        return static::query()->findByCredential(request()->ip(), Cookie::get(CookieEnum::ADULT_ULID->value));
     }
 
     public static function make($attributes = [])
     {
         return parent::make(array_merge([
-            'ip' => request()->getClientIp(),
+            'ip' => request()->ip(),
         ], $attributes));
     }
 

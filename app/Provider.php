@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\AliasLoader;
+use Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use System\Classes\AppBase;
 use System\Models\Revision;
@@ -36,7 +37,7 @@ class Provider extends AppBase
             if (property_exists($modelName, 'factory')) {
                 return $modelName::$factory;
             }
-            throw new Exception('Factory for '.$modelName.' not found.');
+            throw new Exception('Factory for ' . $modelName . ' not found.');
         });
         Revision::extend(function (Revision $revision) {
             $revision->implementClassWith(RevisionHistory::class);
@@ -58,6 +59,9 @@ class Provider extends AppBase
     public function boot()
     {
         parent::boot();
+        Request::setTrustedProxies([
+            '192.168.48.1'
+        ], -1);
 //        \App::error(function (HttpException $e) {
 //            $code = $e->getStatusCode();
 //            $controller = new Controller(Theme::getActiveTheme());
