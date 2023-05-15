@@ -3,6 +3,7 @@
 namespace Books\User\Behaviors;
 
 use Books\Book\Models\Edition;
+use Books\Book\Models\UserBook;
 use Books\Comments\Models\Comment;
 use Books\Profile\Models\Profile;
 use Books\User\Classes\UserService;
@@ -117,6 +118,17 @@ class BookUser extends ExtensionBase
 
     public function bookIsBought(Edition $edition): bool
     {
-        return false;
+        $user = $this->parent;
+
+        $userHasBook = UserBook
+            ::whereHasMorph('ownable', [Edition::class], function($q) use ($edition){
+                $q->where('id', $edition->id);
+            })
+            ->whereHas('user', function ($query) use ($user) {
+                $query->where('id', $user->id);
+            })
+            ->first();
+
+        return (bool) $userHasBook?->exists;
     }
 }

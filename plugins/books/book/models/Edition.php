@@ -206,7 +206,17 @@ class Edition extends Model
 
     public function isSold(User $user): bool
     {
-        return $this->sells()->search($user->id) !== false;
+        $edition = $this;
+        $isSold = UserBook
+            ::whereHasMorph('ownable', [Edition::class], function($q) use ($edition){
+                $q->where('id', $edition->id);
+            })
+            ->whereHas('user', function ($query) use ($user) {
+                $query->where('id', $user->id);
+            })
+            ->first();
+
+        return (bool) $isSold?->exists;
     }
 
     public function getSoldCountAttribute(): int
