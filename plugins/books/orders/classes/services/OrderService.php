@@ -67,6 +67,19 @@ class OrderService implements OrderServiceContract
 
     /**
      * @param Order $order
+     *
+     * @return int
+     */
+    public function calculateAuthorsOrderReward(Order $order): int
+    {
+        $orderAmount = $this->calculateAmount($order);
+        $awardsAmount = $order->awards->sum('amount');
+
+        return max(($orderAmount - $awardsAmount), 0);
+    }
+
+    /**
+     * @param Order $order
      * @param OrderStatusEnum $status
      *
      * @return bool
@@ -117,7 +130,7 @@ class OrderService implements OrderServiceContract
         }
 
         // пополнить баланс автора
-
+        $user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
 
         // добавить историю операций
 

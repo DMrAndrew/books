@@ -132,6 +132,14 @@ class PaymentController extends Controller
                     // успешно
                     case 'succeeded':
                         if ($order->status != OrderStatusEnum::PAID->value) {
+
+                            $paymentAmount = (int) $object['amount']['value'];
+                            $orderAmount = $this->orderService->calculateAmount($order);
+
+                            if ($paymentAmount !== $orderAmount) {
+                                throw new Exception("Payment amount does not match the order amount. Order #{$order->id}");
+                            }
+
                             $this->orderService->updateOrderstatus($order, $orderStatus);
                             $isApproved = $this->orderService->approveOrder($order);
 
