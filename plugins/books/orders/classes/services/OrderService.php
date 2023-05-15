@@ -5,6 +5,7 @@ namespace Books\Orders\Classes\Services;
 
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Donation;
+use Books\Book\Models\Edition;
 use Books\Book\Models\Promocode;
 use Books\Book\Models\UserBook;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
@@ -13,6 +14,7 @@ use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
 use Carbon\Carbon;
+use Exception;
 use October\Rain\Database\Collection;
 use October\Rain\Database\Model;
 use RainLab\User\Facades\Auth;
@@ -130,9 +132,21 @@ class OrderService implements OrderServiceContract
         }
 
         // пополнить баланс автора
-        $user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
+        $author = $order->products()
+            ->where('orderable_type', [Edition::class])
+            ->first()
+            ?->orderable
+            ?->book
+            ?->author;
+
+        if (!$author) {
+            throw new Exception("Unable to resolve product author for order #{$order->id}");
+        }
+
+        $author->profile->user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
 
         // добавить историю операций
+        // todo
 
         return true;
     }
@@ -254,13 +268,14 @@ class OrderService implements OrderServiceContract
         }
     }
 
-    public function getOrderRedirectPage(Order $order): string
+    public function getOrderSuccessRedirectPage(Order $order): string
     {
-
+        // get book page
+        return '';
     }
 
-    public function updateAuthorsBalance(Order $order): void
+    public function getOrderErrorRedirectPage(Order $order): string
     {
-        // TODO: Implement updateAuthorsBalance() method.
+        return '';
     }
 }

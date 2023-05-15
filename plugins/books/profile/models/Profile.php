@@ -2,7 +2,6 @@
 
 namespace Books\Profile\Models;
 
-use Bavix\Wallet\Interfaces\Wallet;
 use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
@@ -17,7 +16,6 @@ use Books\Reposts\Models\Repost;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
-use Books\Wallet\Traits\HasWallet;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
@@ -47,14 +45,13 @@ use WordForm;
  * @method AttachOne banner
  * @method AttachOne avatar
  */
-class Profile extends Model implements Wallet
+class Profile extends Model
 {
     use Validation;
     use Revisionable;
     use Subscribable;
     use HasFactory;
     use HasRelationships;
-    use HasWallet;
 
     const MAX_USER_PROFILES_COUNT = 5;
 

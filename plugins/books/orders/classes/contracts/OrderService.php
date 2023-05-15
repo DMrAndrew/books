@@ -21,5 +21,6 @@ interface OrderService
     public function approveOrder(Order $order): bool;
     public function cancelOrder(Order $order): bool;
 
-    public function updateAuthorsBalance(Order $order): void;
+    public function getOrderSuccessRedirectPage(Order $order): string;
+    public function getOrderErrorRedirectPage(Order $order): string;
 }
