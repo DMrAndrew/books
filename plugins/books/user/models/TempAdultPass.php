@@ -58,8 +58,6 @@ class TempAdultPass extends Model
 
     public static function lookUp()
     {
-        Log::info(request()->ip());
-
         return static::query()->findByCredential(request()->ip(), Cookie::get(CookieEnum::ADULT_ULID->value));
     }
 
