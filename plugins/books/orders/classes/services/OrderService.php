@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Books\Orders\Classes\Services;
 
+use Books\Book\Models\AwardBook;
 use Books\Book\Models\Donation;
 use Books\Book\Models\Promocode;
 use Books\Book\Models\UserBook;
@@ -84,7 +85,7 @@ class OrderService implements OrderServiceContract
     {
         $user = $order->user;
 
-        // выдать покупателю товар
+        // выдать покупателю товар(ы)
         foreach ($order->products as $orderProduct) {
             $product = $orderProduct->orderable;
 
@@ -96,10 +97,27 @@ class OrderService implements OrderServiceContract
             }
         }
 
-        // создать награды
-            // books_book_award_books
+        // добавить награды книгам
+        $orderAwards = $order->awards;
+        foreach ($orderAwards as $orderAward) {
+            $award = $orderAward->orderable;
+
+            // награду на каждый товар заказа (в перспективе)
+            foreach ($order->products as $orderProduct) {
+                $product = $orderProduct->orderable;
+
+                if (isset($product->book)) {
+                    AwardBook::create([
+                        'user_id' => $user->id,
+                        'award_id' => $award->id,
+                        'book_id' => $product->book->id,
+                    ]);
+                }
+            }
+        }
 
         // пополнить баланс автора
+
 
         // добавить историю операций
 
@@ -221,6 +239,11 @@ class OrderService implements OrderServiceContract
             $orderProduct->amount = $donateAmount;
             $orderProduct->save();
         }
+    }
+
+    public function getOrderRedirectPage(Order $order): string
+    {
+
     }
 
     public function updateAuthorsBalance(Order $order): void

@@ -122,18 +122,17 @@ class PaymentController extends Controller
                     'succeeded' => OrderStatusEnum::PAID,
                     'canceled' => OrderStatusEnum::CANCELED,
                 };
-                $this->orderService->updateOrderstatus($order, $orderStatus);
 
                 switch ($paymentStatus) {
                     // ожидает подтверждения
                     case 'waiting_for_capture':
-                        $this->orderService->updateOrderstatus($order, OrderStatusEnum::AWAIT_APPROVE);
+                        $this->orderService->updateOrderstatus($order, $orderStatus);
                         break;
 
                     // успешно
                     case 'succeeded':
                         if ($order->status != OrderStatusEnum::PAID->value) {
-                            $this->orderService->updateOrderstatus($order, OrderStatusEnum::PAID);
+                            $this->orderService->updateOrderstatus($order, $orderStatus);
                             $isApproved = $this->orderService->approveOrder($order);
 
                             if (!$isApproved) {
@@ -145,13 +144,14 @@ class PaymentController extends Controller
                     // отменен
                     case 'canceled':
                         if ($order->status != OrderStatusEnum::CANCELED->value) {
-                            $this->orderService->updateOrderstatus($order, OrderStatusEnum::CANCELED);
+                            $this->orderService->updateOrderstatus($order, $orderStatus);
                             $isCancelled = $this->orderService->cancelOrder($order);
 
                             if (!$isCancelled) {
                                 throw new Exception("Something went wrong with cancelling order #{$order->id}");
                             }
                         }
+                        break;
                 }
             }
         } catch (Exception $e) {
