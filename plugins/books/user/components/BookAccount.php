@@ -4,6 +4,10 @@ namespace Books\User\Components;
 
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Components\Widget;
+use Books\User\Classes\CookieEnum;
+use Books\User\Classes\UserService;
+use Books\User\Models\TempAdultPass;
+use Cookie;
 use Db;
 use Exception;
 use Flash;
@@ -65,7 +69,16 @@ class BookAccount extends Account
 
     public function onAdultAgreementSave()
     {
-        $this->user()->update(['see_adult' => post('action') === 'accept', 'asked_adult_agreement' => 1]);
+        $agree = post('action') === 'accept';
+        if ($this->user()) {
+            $this->user()->update(['see_adult' => $agree, 'asked_adult_agreement' => 1]);
+        } else {
+            if (UserService::canGuestBeAskedAdultPermission()) {
+                $pass = TempAdultPass::make(['is_agree' => $agree]);
+                $pass->save();
+                Cookie::queue(Cookie::forever(CookieEnum::ADULT_ULID->value, $pass->id));
+            }
+        }
 
         return Redirect::refresh();
     }

@@ -48,7 +48,6 @@
                                     {% endif %}
                                 </div>
 
-
                                 <div class="book-card-full-type__link-wrapper {{buyBtn and readBtn ? '_double' : ''}}">
                                     {% if readBtn %}
                                     <a href="/reader/{{book.ebook.id}}"
@@ -59,7 +58,7 @@
                                     {% if not book.ebook.isBought %}
                                     <a data-request="Order::onCreateOrder"
                                        class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
-                                        {% if book.ebook.discount %}
+                                        {% if book.ebook.discount_exists %}
                                         <span>
                                             <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
                                             <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
@@ -270,7 +269,9 @@
             </div>
         </div>
     </div>
-
+{% if ask_adult %}
+    {% partial 'auth/adult-modal' active=1 %}
+{% endif %}
     <script>
         initTabs('[data-tabs="1"]');
         initTabs('[data-tabs="2"]');

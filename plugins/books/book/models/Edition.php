@@ -204,8 +204,12 @@ class Edition extends Model
         return $builder->status(BookStatus::COMPLETE, BookStatus::WORKING)->free(false);
     }
 
-    public function isSold(User $user): bool
+    public function isSold(?User $user): bool
     {
+        if (!$user) {
+            return false;
+        }
+
         $edition = $this;
         $isSold = UserBook
             ::whereHasMorph('ownable', [Edition::class], function($q) use ($edition){

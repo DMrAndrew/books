@@ -375,6 +375,11 @@ class Book extends Model
         return $query->public()->where('title', 'like', "%$string%");
     }
 
+    public function isAdult(): bool
+    {
+        return $this->age_restriction === AgeRestrictionsEnum::A18;
+    }
+
     public function scopeAdult(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
         if (!shouldRestrictAdult()) {
@@ -515,7 +520,7 @@ class Book extends Model
         $this->setSortOrder();
     }
 
-    public function updateEventHandler()
+    public function afterUpdate()
     {
         $this->setAdultIfHasOne();
     }

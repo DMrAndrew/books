@@ -158,7 +158,7 @@ return [
 
     'timezone' => env('APP_TIMEZONE', 'UTC'),
 
-    'version' => '0.1.0',
+    'trusted_proxies' => ['192.168.48.1'],
 
     'foreign_url' => env('APP_FOREIGN_URL'),
 

@@ -7,7 +7,11 @@
 </a>
 <script>
     function visit() {
-        oc.ajax(`{{__SELF__}}` + '::onVisit')
+        oc.ajax(`{{__SELF__}}` + '::onVisit', {
+            data: {
+                book_id: `{{advert.book.id}}`
+            }
+        })
     }
 </script>
 {% endif %}

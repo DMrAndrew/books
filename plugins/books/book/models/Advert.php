@@ -64,11 +64,15 @@ class Advert extends Model
 
     public function registerVisit(?User $user = null, ?string $ip = null): ?AdvertVisit
     {
+        $user ??= Auth::getUser();
+        if (!$user) {
+            return null;
+        }
         if (!$this->getOriginal('enabled') || $this->visits()->count() >= $this->allowed_visit_count) {
             return null;
         }
         $ip ??= request()->ip();
-        $user ??= Auth::getUser();
+
         if (!$user && !$ip) {
             throw new ValidationException(['user' => 'User or IP required']);
         }

@@ -6,7 +6,11 @@ use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Models\Book;
 use Books\Comments\Components\Comments;
 use Books\Reposts\Components\Reposter;
+use Books\User\Classes\CookieEnum;
+use Books\User\Classes\UserService;
 use Cms\Classes\ComponentBase;
+use Cookie;
+use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\Settings;
 use RainLab\User\Models\User;
@@ -19,7 +23,7 @@ use Redirect;
  */
 class BookPage extends ComponentBase
 {
-    protected Book $book;
+    protected ?Book $book;
 
     protected ?User $user;
 
@@ -48,12 +52,19 @@ class BookPage extends ComponentBase
     {
         $this->user = Auth::getUser();
         $book_id = $this->param('book_id');
-        $this->book = Book::query()->public()->find($book_id) ?? $this->user?->profile->books()->find($book_id)
-            ?? abort(404);
+        $this->book = Book::query()->public()->find($book_id) ?? $this->user?->profile->books()->find($book_id);
+
+        if (!$this->book && $book_id && Book::find($book_id)?->isAdult()) {
+            $this->book = Book::find($book_id);
+            UserService::canBeAskedAdultPermission() ? ($this->page['ask_adult'] = 1) : abort(404);
+        }
+        if (!$this->book) {
+            abort(404);
+        }
         $this->user?->library($this->book)->get(); //Добавить в библиотеку
         $this->book = Book::query()
-            ->defaultEager()
             ->withChapters()
+            ->defaultEager()
             ->with(['cycle' => fn($cycle) => $cycle->booksEager()])
             ->find($this->book->id);
 
