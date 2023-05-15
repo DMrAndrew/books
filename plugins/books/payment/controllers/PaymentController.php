@@ -74,8 +74,8 @@ class PaymentController extends Controller
                 'recipient' => $payment->payer_email,
                 'transactionId' => $payment->payment_id,
 
-                'returnUrl' => route('payment.success', ['order' => $order->id]),
-                'cancelUrl' => route('payment.error', ['order' => $order->id]),
+                'returnUrl' => $this->orderService->getOrderSuccessRedirectPage($order),
+                'cancelUrl' => $this->orderService->getOrderErrorRedirectPage($order),
             ])->send();
 
             if ($response->isRedirect()) {
@@ -100,6 +100,10 @@ class PaymentController extends Controller
      */
     public function webhook(Request $request)
     {
+        if (config('app.log_yookassa_webhook')) {
+            Log::channel('yookassa_webhook')->info($request);
+        }
+
         try {
             // Once the transaction has been approved, we need to complete it
             $object = $request->object ?? null;
@@ -113,11 +117,11 @@ class PaymentController extends Controller
                     $payment = PaymentModel::where('payment_id', $transactionId)->firstOrFail();
                     $order = $payment->order;
 
-                    // update payment status
+                    /** update payment status */
                     $payment->update(['payment_status' => $paymentStatus]);
 
-                    // update order status
                     /**
+                     * update order status
                      * available YooKassa payment statuses - https://yookassa.ru/developers/using-api/webhooks#events-basics
                      */
                     $orderStatus = match ($paymentStatus) {

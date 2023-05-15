@@ -271,14 +271,45 @@ class OrderService implements OrderServiceContract
         }
     }
 
+    /**
+     * @param Order $order
+     *
+     * @return string
+     */
     public function getOrderSuccessRedirectPage(Order $order): string
     {
         // get book page
-        return '';
+        $book = $order->products()
+            ->where('orderable_type', [Edition::class])
+            ->first()
+            ?->orderable
+            ?->book;
+
+        if ($book) {
+            return url('book-card', ['book_id' => $book->id]);
+        }
+
+        return url('/');
     }
 
+    /**
+     * @param Order $order
+     *
+     * @return string
+     */
     public function getOrderErrorRedirectPage(Order $order): string
     {
-        return '';
+        // get book page
+        $book = $order->products()
+            ->where('orderable_type', [Edition::class])
+            ->first()
+            ?->orderable
+            ?->book;
+
+        if ($book) {
+            return url('book-card', ['book_id' => $book->id]);
+        }
+
+        return url('/');
     }
 }

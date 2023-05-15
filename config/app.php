@@ -160,6 +160,8 @@ return [
 
     'version' => '0.1.0',
 
-    'foreign_url' => env('APP_FOREIGN_URL')
+    'foreign_url' => env('APP_FOREIGN_URL'),
+
+    'log_yookassa_webhook' => env('LOG_YOOKASSA_WEBHOOK', false),
 
 ];
