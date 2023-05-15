@@ -11,6 +11,7 @@ use Books\Orders\Models\Order as OrderModel;
 use Books\Payment\Classes\PaymentService;
 use Books\Payment\Models\Payment as PaymentModel;
 use Cms\Classes\CmsException;
+use Db;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -104,63 +105,66 @@ class PaymentController extends Controller
             $object = $request->object ?? null;
 
             if ($object) {
-                $transactionId = $object['metadata']['transactionId'];
-                $paymentStatus = $object['status'];
+                DB::transaction( function() use ($object) {
 
-                // update payment status
-                $payment = PaymentModel::where('payment_id', $transactionId)->firstOrFail();
-                $payment->update(['payment_status' => $paymentStatus]);
+                    $transactionId = $object['metadata']['transactionId'];
+                    $paymentStatus = $object['status'];
 
-                // update order status
-                $order = $payment->order;
+                    $payment = PaymentModel::where('payment_id', $transactionId)->firstOrFail();
+                    $order = $payment->order;
 
-                /**
-                 * available YooKassa payment statuses - https://yookassa.ru/developers/using-api/webhooks#events-basics
-                 */
-                $orderStatus = match ($paymentStatus) {
-                    'waiting_for_capture' => OrderStatusEnum::PENDING,
-                    'succeeded' => OrderStatusEnum::PAID,
-                    'canceled' => OrderStatusEnum::CANCELED,
-                };
+                    // update payment status
+                    $payment->update(['payment_status' => $paymentStatus]);
 
-                switch ($paymentStatus) {
-                    // ожидает подтверждения
-                    case 'waiting_for_capture':
-                        $this->orderService->updateOrderstatus($order, $orderStatus);
-                        break;
+                    // update order status
+                    /**
+                     * available YooKassa payment statuses - https://yookassa.ru/developers/using-api/webhooks#events-basics
+                     */
+                    $orderStatus = match ($paymentStatus) {
+                        'waiting_for_capture' => OrderStatusEnum::PENDING,
+                        'succeeded' => OrderStatusEnum::PAID,
+                        'canceled' => OrderStatusEnum::CANCELED,
+                    };
 
-                    // успешно
-                    case 'succeeded':
-                        if ($order->status != OrderStatusEnum::PAID->value) {
-
-                            $paymentAmount = (int) $object['amount']['value'];
-                            $orderAmount = $this->orderService->calculateAmount($order);
-
-                            if ($paymentAmount !== $orderAmount) {
-                                throw new Exception("Payment amount does not match the order amount. Order #{$order->id}");
-                            }
-
+                    switch ($paymentStatus) {
+                        // ожидает подтверждения
+                        case 'waiting_for_capture':
                             $this->orderService->updateOrderstatus($order, $orderStatus);
-                            $isApproved = $this->orderService->approveOrder($order);
+                            break;
 
-                            if (!$isApproved) {
-                                throw new Exception("Something went wrong with updating order #{$order->id}");
+                        // успешно
+                        case 'succeeded':
+                            if ($order->status != OrderStatusEnum::PAID->value) {
+
+                                $paymentAmount = (int) $object['amount']['value'];
+                                $orderAmount = $this->orderService->calculateAmount($order);
+
+                                if ($paymentAmount !== $orderAmount) {
+                                    throw new Exception("Payment amount does not match the order amount. Order #{$order->id}");
+                                }
+
+                                $this->orderService->updateOrderstatus($order, $orderStatus);
+                                $isApproved = $this->orderService->approveOrder($order);
+
+                                if (!$isApproved) {
+                                    throw new Exception("Something went wrong with updating order #{$order->id}");
+                                }
                             }
-                        }
-                        break;
+                            break;
 
-                    // отменен
-                    case 'canceled':
-                        if ($order->status != OrderStatusEnum::CANCELED->value) {
-                            $this->orderService->updateOrderstatus($order, $orderStatus);
-                            $isCancelled = $this->orderService->cancelOrder($order);
+                        // отменен
+                        case 'canceled':
+                            if ($order->status != OrderStatusEnum::CANCELED->value) {
+                                $this->orderService->updateOrderstatus($order, $orderStatus);
+                                $isCancelled = $this->orderService->cancelOrder($order);
 
-                            if (!$isCancelled) {
-                                throw new Exception("Something went wrong with cancelling order #{$order->id}");
+                                if (!$isCancelled) {
+                                    throw new Exception("Something went wrong with cancelling order #{$order->id}");
+                                }
                             }
-                        }
-                        break;
-                }
+                            break;
+                    }
+                });
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());

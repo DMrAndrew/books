@@ -132,18 +132,21 @@ class OrderService implements OrderServiceContract
         }
 
         // пополнить баланс автора
-        $author = $order->products()
-            ->where('orderable_type', [Edition::class])
-            ->first()
-            ?->orderable
-            ?->book
-            ?->author;
+        $authorRewardAmount = $this->calculateAuthorsOrderReward($order);
+        if ($authorRewardAmount > 0) {
+            $author = $order->products()
+                ->where('orderable_type', [Edition::class])
+                ->first()
+                ?->orderable
+                ?->book
+                ?->author;
 
-        if (!$author) {
-            throw new Exception("Unable to resolve product author for order #{$order->id}");
+            if (!$author) {
+                throw new Exception("Unable to resolve product Author for order #{$order->id}");
+            }
+
+            $author->profile->user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
         }
-
-        $author->profile->user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
 
         // добавить историю операций
         // todo
