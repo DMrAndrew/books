@@ -56,10 +56,7 @@ class BookPage extends ComponentBase
 
         if (!$this->book && $book_id && Book::find($book_id)?->isAdult()) {
             $this->book = Book::find($book_id);
-            $q = UserService::canBeAskedAdultPermission();
-            Log::info('canBeAskedAdultPermission:' . $q);
-            Log::info(request()->ip());
-            $q ? ($this->page['ask_adult'] = 1) : abort(404);
+            UserService::canBeAskedAdultPermission() ? ($this->page['ask_adult'] = 1) : abort(404);
         }
         if (!$this->book) {
             abort(404);

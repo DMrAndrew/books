@@ -71,7 +71,7 @@ class Advert extends Model
         if (!$this->getOriginal('enabled') || $this->visits()->count() >= $this->allowed_visit_count) {
             return null;
         }
-        $ip ??= request()->ip();
+        $ip ??= request()->getClientIp();
 
         if (!$user && !$ip) {
             throw new ValidationException(['user' => 'User or IP required']);
