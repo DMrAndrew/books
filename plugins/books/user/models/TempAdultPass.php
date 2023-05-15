@@ -3,6 +3,7 @@
 use Books\User\Classes\CookieEnum;
 use Carbon\Carbon;
 use Cookie;
+use Log;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
@@ -57,6 +58,7 @@ class TempAdultPass extends Model
 
     public static function lookUp()
     {
+        Log::info(request()->getClientIp());
         return static::query()->findByCredential(request()->getClientIp(), Cookie::get(CookieEnum::ADULT_ULID->value));
     }
 
