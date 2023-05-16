@@ -5,8 +5,11 @@ namespace Books\Orders;
 use Backend;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Classes\Services\OrderService;
+use Books\Orders\Components\BalanceDeposit;
 use Books\Orders\Components\Order;
+use Books\Orders\Models\BalanceDeposit as DepositModel;
 use Books\Orders\Models\OrderProduct;
+use Books\Orders\Models\OrderPromocode;
 use Illuminate\Foundation\AliasLoader;
 use System\Classes\PluginBase;
 use Books\Orders\Models\Order as OrderModel;
@@ -52,6 +55,8 @@ class Plugin extends PluginBase
     {
         AliasLoader::getInstance()->alias('Order', OrderModel::class);
         AliasLoader::getInstance()->alias('OrderProduct', OrderProduct::class);
+        AliasLoader::getInstance()->alias('OrderPromocode', OrderPromocode::class);
+        AliasLoader::getInstance()->alias('Deposit', DepositModel::class);
     }
 
     /**
@@ -63,6 +68,7 @@ class Plugin extends PluginBase
     {
         return [
             Order::class => 'Order',
+            BalanceDeposit::class => 'BalanceDeposit',
         ];
     }
 

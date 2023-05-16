@@ -79,6 +79,10 @@ class Order extends Model
             OrderProduct::class,
             'scope' => 'donations',
         ],
+        'deposits' => [
+            OrderProduct::class,
+            'scope' => 'deposits',
+        ],
         'promocodes' => [OrderPromocode::class],
     ];
 
