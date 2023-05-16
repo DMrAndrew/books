@@ -408,4 +408,29 @@ class OrderService implements OrderServiceContract
             $order->user->proxyWallet()->deposit($depositAmount);
         }
     }
+
+    /**
+     * @throws Exception
+     */
+    public function payFromDeposit(Order $order): bool
+    {
+        // order amount
+        $orderAmount = $this->calculateAmount($order);
+
+        // check user balance
+        $userBalance = (int) $order->user->proxyWallet()->balance;
+        if ($userBalance < $orderAmount) {
+            throw new Exception('Недостаточно средств на балансе');
+        }
+
+        return DB::transaction( function() use ($order, $orderAmount){
+            // approve order
+            $this->approveOrder($order);
+
+            // withdraw balance
+            $order->user->proxyWallet()->withdraw($orderAmount);
+
+            return true;
+        });
+    }
 }

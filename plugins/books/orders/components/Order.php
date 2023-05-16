@@ -124,6 +124,21 @@ class Order extends ComponentBase
         if ($payType === 'card') {
             return Redirect::to(route('payment.charge', ['order' => $order->id]));
         }
+
+        if ($payType === 'balance') {
+            try {
+                $this->orderService->payFromDeposit($order);
+
+                return Redirect::to($this->currentPageUrl());
+
+            } catch(Exception $e) {
+                return [
+                    '#orderPayFromBalanceSpawn' => $e->getMessage(),
+                ];
+            }
+        }
+
+        return [];
     }
 
     public function onOrderAddAward(): array
@@ -163,11 +178,6 @@ class Order extends ComponentBase
         $promocodeIsApplied = $this->orderService->applyPromocode($order, (string) post('promocode'));
 
         return [
-//            '#order_form' => $this->renderPartial('@order_create', [
-//                'order' => $order,
-//                'book' => $this->book,
-//                'availableAwards' => $this->getAvailableAwards(),
-//            ]),
             '#orderPromocodeApplied' => (string) post('promocode'),
             '#orderPromocodeAppliedResult' => $promocodeIsApplied ? 'Применен' : 'Не действителен',
             '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
