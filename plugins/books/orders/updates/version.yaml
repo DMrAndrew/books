@@ -6,3 +6,6 @@
 1.0.3:
     - "Промокоды заказов"
     - create_order_promocodes_table.php
+1.0.4:
+    - "Модель Пополнение баланса"
+    - create_balance_deposits_table.php

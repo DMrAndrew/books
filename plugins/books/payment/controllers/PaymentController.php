@@ -10,7 +10,6 @@ use Books\Orders\Models\Order;
 use Books\Orders\Models\Order as OrderModel;
 use Books\Payment\Classes\PaymentService;
 use Books\Payment\Models\Payment as PaymentModel;
-use Cms\Classes\CmsException;
 use Db;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -31,9 +30,6 @@ class PaymentController extends Controller
     private OrderService $orderService;
     private PaymentService $paymentService;
 
-    /**
-     * @throws CmsException
-     */
     public function __construct()
     {
         parent::__construct();

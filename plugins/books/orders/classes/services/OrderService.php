@@ -10,40 +10,49 @@ use Books\Book\Models\Promocode;
 use Books\Book\Models\UserBook;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
+use Books\Orders\Models\BalanceDeposit as DepositModel;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
 use Carbon\Carbon;
+use Db;
 use Exception;
-use October\Rain\Database\Collection;
+use October\Rain\Support\Collection;
 use October\Rain\Database\Model;
-use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
 class OrderService implements OrderServiceContract
 {
     /**
      * @param User $user
-     * @param array $products
      *
      * @return Order
      */
-    public function createOrder(User $user, array $products): Order
+    public function createOrder(User $user): Order
     {
-        $order = new Order();
-        $order->user = $user;
-        $order->save();
+        return Order::create(['user_id' => $user->id]);
+    }
 
+    /**
+     * @param Order $order
+     * @param Collection $products
+     *
+     * @return bool
+     */
+    public function addProducts(Order $order, Collection $products): bool
+    {
         foreach ($products as $product) {
-            $orderProduct = new OrderProduct();
-            $orderProduct->orderable()->associate($product);
-            $orderProduct->order_id = $order->id;
-            $orderProduct->initial_price = $product->price;
-            $orderProduct->amount = $product->priceTag()->price() ?? $product->price;
-            $orderProduct->save();
+            if ($this->isProductOrderable($product)) {
+                $orderProduct = new OrderProduct();
+                $orderProduct->orderable()->associate($product);
+                $orderProduct->order_id = $order->id;
+                $orderProduct->initial_price = $product->price;
+                $orderProduct->amount = $product->priceTag()->price() ?? $product->price;
+                $orderProduct->save();
+            }
         }
 
-        return $order;
+        return true;
     }
 
     /**
@@ -76,8 +85,9 @@ class OrderService implements OrderServiceContract
     {
         $orderAmount = $this->calculateAmount($order);
         $awardsAmount = $order->awards->sum('amount');
+        $depositAmount = $order->deposits->sum('amount');
 
-        return max(($orderAmount - $awardsAmount), 0);
+        return max(($orderAmount - $awardsAmount - $depositAmount), 0);
     }
 
     /**
@@ -95,58 +105,21 @@ class OrderService implements OrderServiceContract
      * @param Order $order
      *
      * @return bool
+     * @throws Exception
      */
     public function approveOrder(Order $order): bool
     {
-        $user = $order->user;
-
         // выдать покупателю товар(ы)
-        foreach ($order->products as $orderProduct) {
-            $product = $orderProduct->orderable;
-
-            if ($this->isProductOwnable($product)) {
-                $newUserOwning = new UserBook();
-                $newUserOwning->user_id = $user->id;
-                $newUserOwning->ownable()->associate($product);
-                $newUserOwning->save();
-            }
-        }
+        $this->giveCustomerProducts($order);
 
         // добавить награды книгам
-        $orderAwards = $order->awards;
-        foreach ($orderAwards as $orderAward) {
-            $award = $orderAward->orderable;
-
-            // награду на каждый товар заказа (в перспективе)
-            foreach ($order->products as $orderProduct) {
-                $product = $orderProduct->orderable;
-
-                if (isset($product->book)) {
-                    AwardBook::create([
-                        'user_id' => $user->id,
-                        'award_id' => $award->id,
-                        'book_id' => $product->book->id,
-                    ]);
-                }
-            }
-        }
+        $this->addAwardsToEditions($order);
 
         // пополнить баланс автора
-        $authorRewardAmount = $this->calculateAuthorsOrderReward($order);
-        if ($authorRewardAmount > 0) {
-            $author = $order->products()
-                ->where('orderable_type', [Edition::class])
-                ->first()
-                ?->orderable
-                ?->book
-                ?->author;
+        $this->updateAuthorsBalance($order);
 
-            if (!$author) {
-                throw new Exception("Unable to resolve product Author for order #{$order->id}");
-            }
-
-            $author->profile->user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
-        }
+        // зачислить пополнение баланса пользователю
+        $this->transferDepositToUserBalance($order);
 
         // добавить историю операций
         // todo
@@ -159,19 +132,34 @@ class OrderService implements OrderServiceContract
      *
      * @return bool
      */
-    private function isProductOwnable(Model $product): bool
+    private function isProductOwnable(mixed $product): bool
     {
-        if ($product->morphMany == null || !is_array($product->morphMany)) {
-            return false;
+        if ($product instanceof Model) {
+            return in_array('customers', array_keys($product->morphMany));
         }
 
-        if (empty($product->morphMany)) {
-            return false;
-        }
-
-        return in_array('customers', array_keys($product->morphMany));
+        return false;
     }
 
+    /**
+     * @param Model $product
+     *
+     * @return bool
+     */
+    private function isProductOrderable(mixed $product): bool
+    {
+        if ($product instanceof Model) {
+            return in_array('products', array_keys($product->morphMany));
+        }
+
+        return false;
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return bool
+     */
     public function cancelOrder(Order $order): bool
     {
         return true;
@@ -185,17 +173,35 @@ class OrderService implements OrderServiceContract
      */
     public function applyPromocode(Order $order, string $code): bool
     {
-        // get promocode
-        $promocode = Promocode::query()
-            ->notActivated()
-            ->where('code', $code)
-            ->first();
+        return DB::transaction( function() use ($order, $code) {
+            // get promocode
+            $promocode = Promocode::where('code', $code)->notActivated()->first();
 
-        if (!$promocode) {
-            return false;
-        }
+            if (!$promocode) {
+                return false;
+            }
 
-        // check promocode product
+            // check promocode product
+            if (!$this->isPromoableProductInOrderProductsList($order, $promocode)) {
+                return false;
+            }
+
+            // apply promocode
+            $this->activatePromocode($order, $promocode);
+
+            return true;
+        });
+    }
+
+    /**
+     * @param Order $order
+     * @param Promocode $promocode
+     *
+     * @return bool
+     */
+    public function isPromoableProductInOrderProductsList(Order $order, Promocode $promocode): bool
+    {
+        /** @var Promocode $promocodeProduct */
         $promocodeProduct = $promocode->promoable;
 
         $promoableProductInOrder = $order->products
@@ -203,24 +209,21 @@ class OrderService implements OrderServiceContract
             ->where('orderable_id', $promocodeProduct->id)
             ->first();
 
-        if (!$promoableProductInOrder) {
-            return false;
-        }
+        return $promoableProductInOrder->exists;
+    }
 
-        // apply promocode
+    public function activatePromocode(Order $order, Promocode $promocode): void
+    {
         OrderPromocode::create([
             'order_id' => $order->id,
             'promocode_id' => $promocode->id,
         ]);
 
-        // activate promocode
         $promocode->update([
             'is_activated' => true,
             'activated_at' => Carbon::now(),
-            'user_id' => Auth::getUser()->id,
+            'user_id' => $order->user_id,
         ]);
-
-        return true;
     }
 
     /**
@@ -229,7 +232,7 @@ class OrderService implements OrderServiceContract
      *
      * @return void
      */
-    public function applyAwards(Order $order, Collection $awards): void
+    public function applyAwards(Order $order, mixed $awards): void
     {
         $appliedAwards = $order->awards()->get();
 
@@ -299,17 +302,110 @@ class OrderService implements OrderServiceContract
      */
     public function getOrderErrorRedirectPage(Order $order): string
     {
-        // get book page
-        $book = $order->products()
-            ->where('orderable_type', [Edition::class])
-            ->first()
-            ?->orderable
-            ?->book;
+        return $this->getOrderSuccessRedirectPage($order);
+    }
 
-        if ($book) {
-            return url('book-card', ['book_id' => $book->id]);
+    public function addDeposit(Order $order, int $depositAmount): void
+    {
+        if ($depositAmount > 0) {
+            $deposit = DepositModel::create([
+                'amount' => $depositAmount,
+            ]);
+
+            $orderProduct = new OrderProduct();
+            $orderProduct->orderable()->associate($deposit);
+            $orderProduct->order_id = $order->id;
+            $orderProduct->amount = $depositAmount;
+            $orderProduct->save();
         }
+    }
 
-        return url('/');
+    /**
+     * @param Order $order
+     *
+     * @return void
+     */
+    private function giveCustomerProducts(Order $order): void
+    {
+        $user = $order->user;
+
+        foreach ($order->products as $orderProduct) {
+            $product = $orderProduct->orderable;
+
+            if ($this->isProductOwnable($product)) {
+                $newUserOwning = new UserBook();
+                $newUserOwning->user_id = $user->id;
+                $newUserOwning->ownable()->associate($product);
+                $newUserOwning->save();
+            }
+        }
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return void
+     */
+    private function addAwardsToEditions(Order $order): void
+    {
+        $user = $order->user;
+
+        $orderAwards = $order->awards;
+        foreach ($orderAwards as $orderAward) {
+            $award = $orderAward->orderable;
+
+            // награду на каждый товар заказа (в перспективе)
+            foreach ($order->products as $orderProduct) {
+                $product = $orderProduct->orderable;
+
+                if (isset($product->book)) {
+                    AwardBook::create([
+                        'user_id' => $user->id,
+                        'award_id' => $award->id,
+                        'book_id' => $product->book->id,
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return void
+     * @throws Exception
+     */
+    private function updateAuthorsBalance(Order $order): void
+    {
+        $authorRewardAmount = $this->calculateAuthorsOrderReward($order);
+
+        if ($authorRewardAmount > 0) {
+            $author = $order->products()
+                ->where('orderable_type', [Edition::class])
+                ->first()
+                ?->orderable
+                ?->book
+                ?->author;
+
+            if (!$author) {
+                throw new Exception("Unable to resolve product Author for order #{$order->id}");
+            }
+
+            $author->profile->user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
+        }
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return void
+     */
+    private function transferDepositToUserBalance(Order $order): void
+    {
+        $depositAmount = $order->deposits->sum('amount');
+
+        if ($depositAmount > 0) {
+            $order->user->proxyWallet()->deposit($depositAmount);
+        }
     }
 }

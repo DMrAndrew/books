@@ -69,4 +69,9 @@ class OrderProduct extends Model
     {
         return $builder->where('orderable_type', Donation::class);
     }
+
+    public function scopeDeposits(Builder $builder)
+    {
+        return $builder->where('orderable_type', BalanceDeposit::class);
+    }
 }
