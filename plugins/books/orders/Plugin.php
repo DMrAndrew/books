@@ -1,13 +1,23 @@
-<?php namespace Books\Orders;
+<?php
+
+namespace Books\Orders;
 
 use Backend;
+use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
+use Books\Orders\Classes\Services\OrderService;
+use Books\Orders\Components\Order;
+use Books\Orders\Models\OrderProduct;
+use Illuminate\Foundation\AliasLoader;
 use System\Classes\PluginBase;
+use Books\Orders\Models\Order as OrderModel;
 
 /**
  * Plugin Information File
  */
 class Plugin extends PluginBase
 {
+    public $require = ['RainLab.User'];
+
     /**
      * Returns information about this plugin.
      *
@@ -30,7 +40,7 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-
+        $this->app->bind(OrderServiceContract::class, OrderService::class);
     }
 
     /**
@@ -40,7 +50,8 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+        AliasLoader::getInstance()->alias('Order', OrderModel::class);
+        AliasLoader::getInstance()->alias('OrderProduct', OrderProduct::class);
     }
 
     /**
@@ -50,10 +61,8 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
         return [
-            'Books\Orders\Components\MyComponent' => 'myComponent',
+            Order::class => 'Order',
         ];
     }
 

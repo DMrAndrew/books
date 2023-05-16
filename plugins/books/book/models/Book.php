@@ -198,7 +198,6 @@ class Book extends Model
             'pivot' => ['percent', 'sort_order', 'is_owner'],
             'pivotSortable' => 'is_owner',
         ],
-
     ];
 
     public $morphTo = [];

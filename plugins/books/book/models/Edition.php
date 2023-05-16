@@ -7,6 +7,7 @@ use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\PriceTag;
+use Books\Orders\Models\OrderProduct;
 use Cache;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -116,6 +117,14 @@ class Edition extends Model
             Promocode::class,
             'name' => 'promoable',
         ],
+        'products' => [
+            OrderProduct::class,
+            'name' => 'orderable',
+        ],
+        'customers' => [
+            UserBook::class,
+            'name' => 'ownable',
+        ]
     ];
 
     public function discount()
@@ -200,7 +209,18 @@ class Edition extends Model
         if (!$user) {
             return false;
         }
-        return $this->sells()->search($user->id) !== false;
+
+        $edition = $this;
+        $isSold = UserBook
+            ::whereHasMorph('ownable', [Edition::class], function($q) use ($edition){
+                $q->where('id', $edition->id);
+            })
+            ->whereHas('user', function ($query) use ($user) {
+                $query->where('id', $user->id);
+            })
+            ->first();
+
+        return (bool) $isSold?->exists;
     }
 
     public function getSoldCountAttribute(): int

@@ -1,0 +1,163 @@
+<button data-modal="open_buy_book" class="hidden"></button>
+<div data-modal="buy_book" class="buy-book-modal ui-modal">
+
+    <div class="ui-modal-container">
+        <!-- Форма заказа -->
+        {{ form_ajax('onBuyBook', { id: 'orderForm'}) }}
+        <input type="hidden" name="order_id" value="{{order.id}}">
+
+        <div class="buy-book-modal__container ui-modal-content">
+
+            <!-- заголовок -->
+            <div class="buy-book-modal__header">
+                <div class="ui-text-head--2 ui-text--bold">Покупка книги</div>
+                <svg class="square-24" data-modal="close">
+                    <use
+                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                </svg>
+            </div>
+
+            <div class="buy-book-modal__wrap">
+
+                <!-- книга -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <label class="ui-checkbox">
+                            <span class="ui-checkbox-text">{{book.title}}</span>
+                        </label>
+                        <div class="buy-book-modal__text">{{book.ebook.priceTag.price}} ₽</div>
+                    </div>
+                    <div class="buy-book-modal__wrapper-item"></div>
+                </div>
+
+                <!-- награды -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <span class="ui-checkbox-text">Награды</span>
+                    </div>
+                    {% for award in availableAwards %}
+                        {% set awardOrdered = false %}
+                        {% if award.id in order.awards.pluck('orderable_id').toArray %}
+                            {% set awardOrdered = true %}
+                        {% endif %}
+                        <div class="buy-book-modal__wrapper-item">
+                            <label class="ui-checkbox">
+                                <input type="hidden" name="awards[{{award.id}}]" value="0">
+                                <input name="awards[{{award.id}}]" type="checkbox" hidden data-track-input="200"
+                                       data-request="onOrderAddAward" {{ awardOrdered ? 'checked' : '' }}>
+                                <div class="ui-checkbox-checker">
+                                    <svg>
+                                        <use
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                    </svg>
+                                </div>
+                                <span class="ui-checkbox-text">{{award.name}}</span>
+                            </label>
+                            <div class="buy-book-modal__text">{{award.price}} ₽</div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- поддержка автора -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <span class="ui-checkbox-text">Поддержка автора</span>
+                    </div>
+                    <div class="buy-book-modal__wrapper-item">
+                        <label class="">
+                            <input class="ui-input-item _size-32" type="text" id="donate" name="donate" value="{{order.donations.sum('amount')}}" placeholder="200"
+                                   data-request="onOrderAddDonation">
+                        </label>
+                        <div class="buy-book-modal__text" id="orderDonationAmountSpawn">{{order.donations.sum('amount')}} ₽</div>
+                    </div>
+                    <div class="buy-book-modal__wrapper-item"></div>
+                </div>
+
+                {% if order.promocodes|length %}
+                    <div class="buy-book-modal__wrapper">
+                    {% for orderpromocode in order.promocodes %}
+                        <div class="buy-book-modal__wrapper-item">
+                            <div class="buy-book-modal__text">Скидка по промокоду</div>
+                            <div class="buy-book-modal__text">{{orderpromocode.promocode.promoable.priceTag.price}} ₽</div>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- итого -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item ui-text-body--1 ui-text--bold">
+                        <div class="buy-book-modal__text _green">Итого к оплате</div>
+                        <div class="buy-book-modal__text _green" id="orderTotalAmountSpawn">0 ₽</div>
+                    </div>
+                </div>
+
+                <!-- продолжить -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full"
+                                data-request="onOrderSubmit">
+                            <span class="ui-text--medium">Продолжить</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- промокод -->
+                <div class="">
+                    <div class="">
+                        <div class="buy-book-modal__promocode">
+                            <input class="" type="text" id="promocode" name="promocode" placeholder="Промокод" maxlength="8">
+                            <button type="button" id="promocodeSubmit" class="ui-text-body--2">
+                                Применить
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="buy-book-modal__wrapper-item listing-book-info__block">
+                        <div class="buy-book-modal__text" id="orderPromocodeApplied"></div>
+                        <div class="buy-book-modal__text" id="orderPromocodeAppliedResult"></div>
+                    </div>
+
+                    {% for orderpromocode in order.promocodes %}
+                    <div class="buy-book-modal__wrapper-item">
+                        <div class="buy-book-modal__text">{{orderpromocode.promocode.code}}</div>
+                        <div class="buy-book-modal__text">Применен</div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+        </div>
+        {{ form_close()}}
+    </div>
+</div>
+
+
+<script>
+    // modal
+    openModal('[data-modal="buy_book"]', '[data-modal="open_buy_book"]');
+    document.querySelector('[data-modal="open_buy_book"]').click();
+    document.body.style.overflow = 'initial';
+
+    // donation
+    if (typeof updateDonateTimeout === 'undefined' || updateDonateTimeout == null) {
+        var updateDonateTimeout;
+    }
+    $(document).on('keyup', '#donate', function(e) {
+        e.preventDefault();
+        this.value = this.value.replace(/[^\d.]/g, '');
+
+        clearTimeout(updateDonateTimeout);
+        updateDonateTimeout = setTimeout(function() {
+            oc.request('#orderForm', 'onOrderAddDonation', {})
+        }, 1000);
+    });
+
+    // promocode
+    $(document).on('click', '#promocodeSubmit', function(e) {
+        e.preventDefault();
+        this.value = this.value.replace(/[^\d.]/g, '');
+        oc.request('#orderForm', 'onOrderAddPromocode', {})
+    });
+</script>

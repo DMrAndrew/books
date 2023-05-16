@@ -55,3 +55,9 @@
 1.0.15:
     - 'Скидки'
     - create_discounts_table.php
+1.0.16:
+    - 'Поддержка автору'
+    - create_donations_table.php
+1.0.17:
+    - 'Книги на аккаунте'
+    - create_user_books_table.php

@@ -125,16 +125,13 @@ class BookPage extends ComponentBase
 
     public function readBtn()
     {
+        if (!$this->user) {
+            return $this->book->ebook->isFree()
+                || $this->book->ebook->chapters->some(fn($i) => $i->isFree());
+        }
+
         return $this->book->ebook->isSold($this->user)
             || $this->book->ebook->isFree()
             || $this->book->ebook->chapters->some(fn($i) => $i->isFree());
-    }
-
-    public function onBuyBook()
-    {
-        if ($this->user) {
-            $this->book->ebook->sell($this->user);
-            return Redirect::refresh();
-        }
     }
 }

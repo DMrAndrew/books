@@ -28,7 +28,9 @@
         "books/comments-plugin": "*",
         "staudenmeir/eloquent-has-many-deep": "1.17",
         "books/notifications-plugin": "*",
-        "kirschbaum-development/eloquent-power-joins": "^3.0"
+        "kirschbaum-development/eloquent-power-joins": "^3.0",
+        "books/wallet-plugin": "dev-VK-24-4",
+        "books/payment-plugin": "dev-VK-24-4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -115,6 +117,14 @@
         "books/notifications-plugin": {
             "type": "path",
             "url": "./plugins/books/notifications"
+        },
+        "books/wallet-plugin": {
+            "type": "path",
+            "url": "./plugins/books/wallet"
+        },
+        "books/payment-plugin": {
+            "type": "path",
+            "url": "./plugins/books/payment"
         }
     }
 }

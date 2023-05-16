@@ -12,6 +12,7 @@ use Books\User\Components\BookAccount;
 use Books\User\Components\Searcher;
 use Books\User\Components\UserSettingsLC;
 use Books\User\Models\Settings;
+use Books\Wallet\Behaviors\WalletBehavior;
 use Books\User\Models\TempAdultPass;
 use Event;
 use Illuminate\Foundation\AliasLoader;
@@ -82,6 +83,7 @@ class Plugin extends PluginBase
             $model->implementClassWith(BookUser::class);
             $model->implementClassWith(LocationModel::class);
             $model->implementClassWith(CanShare::class);
+            $model->implementClassWith(WalletBehavior::class);
         });
     }
 

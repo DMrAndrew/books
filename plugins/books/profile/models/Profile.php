@@ -167,8 +167,6 @@ class Profile extends Model
 
     public $morphTo = [];
 
-    public $morphOne = [];
-
     public $morphMany = [
         'revision_history' => [Revision::class, 'name' => 'revisionable'],
     ];

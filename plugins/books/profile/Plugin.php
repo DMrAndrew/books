@@ -31,7 +31,9 @@ use System\Classes\PluginBase;
 class Plugin extends PluginBase
 {
     public $require = [
-        'RainLab.User', 'Books.User',
+        'RainLab.User',
+        'Books.User',
+        'Books.Wallet',
     ];
 
     /**
