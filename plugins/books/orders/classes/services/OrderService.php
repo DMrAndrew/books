@@ -14,6 +14,8 @@ use Books\Orders\Models\BalanceDeposit as DepositModel;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
+use Books\Profile\Classes\Enums\OperationType;
+use Books\Profile\Models\OperationHistory;
 use Carbon\Carbon;
 use Db;
 use Exception;
@@ -337,6 +339,17 @@ class OrderService implements OrderServiceContract
                 $newUserOwning->user_id = $user->id;
                 $newUserOwning->ownable()->associate($product);
                 $newUserOwning->save();
+
+                OperationHistory::create([
+                    'user_id' => $user->id,
+                    'type' => OperationType::Buy,
+                    'message' => "Куплено произведение {$product->name} на {$orderProduct->amount} ₽",
+                    'metadata' => [
+                        'edition_class' => $product::class,
+                        'edition_id' => $product->id,
+                        'amount' => $orderProduct->amount,
+                    ],
+                ]);
             }
         }
     }
@@ -406,6 +419,15 @@ class OrderService implements OrderServiceContract
 
         if ($depositAmount > 0) {
             $order->user->proxyWallet()->deposit($depositAmount);
+
+            OperationHistory::create([
+                'user_id' => $order->user->id,
+                'type' => OperationType::DepositOnBalance,
+                'message' => "Баланс пополнен на {$depositAmount} ₽",
+                'metadata' => [
+                    'amount' => $depositAmount,
+                ],
+            ]);
         }
     }
 
