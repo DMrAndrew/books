@@ -61,3 +61,7 @@
 1.0.17:
     - 'Книги на аккаунте'
     - create_user_books_table.php
+1.0.18:
+    - 'Запрещённый контент'
+    - create_prohibiteds_table.php
+    - seed_prohibited.php

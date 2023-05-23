@@ -1,0 +1,30 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+    prohibitable_type:
+        label: Тип контента
+        type: text
+        visible: true
+        displayFrom: content_type
+        searchable: true
+
+    prohibitable_id:
+        label: Название
+        type: text
+        visible: true
+        displayFrom: content_label
+        searchable: true
+
+    country:
+        label: rainlab.location::lang.country.label
+        searchable: true
+        relation: country
+        select: name
+        sortable: false
+
+    is_allowed:
+        label: Разрешено
+        type: switch
+        comment: Flick this switch to display content

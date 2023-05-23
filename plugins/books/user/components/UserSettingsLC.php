@@ -58,7 +58,7 @@ class UserSettingsLC extends ComponentBase
     public function vals()
     {
         $this->page['user'] = $this->user;
-        $this->page['countries'] = Country::query()->isEnabled()->get();
+        $this->page['countries'] = Country::query()->isEnabled()->orderBy('is_pinned', 'desc')->orderBy('name', 'asc')->get();
         $this->page['socials'] = $this->getSocials();
     }
 

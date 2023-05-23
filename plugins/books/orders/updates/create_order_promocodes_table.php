@@ -10,17 +10,16 @@ use October\Rain\Database\Updates\Migration;
  *
  * @link https://docs.octobercms.com/3.x/extend/database/structure.html
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * up builds the migration
      */
     public function up()
     {
-        Schema::create('books_orders_promocodes', function(Blueprint $table) {
+        Schema::create('books_orders_promocodes', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('order_id');
-            $table->unsignedInteger('promocode_id');
+            $table->unsignedBigInteger('promocode_id');
             $table->timestamps();
 
             $table->foreign('order_id')

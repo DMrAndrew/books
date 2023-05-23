@@ -27,6 +27,8 @@ class BookPage extends ComponentBase
 
     protected ?User $user;
 
+    protected ?int $book_id;
+
     /**
      * componentDetails
      */
@@ -51,16 +53,20 @@ class BookPage extends ComponentBase
     public function init()
     {
         $this->user = Auth::getUser();
-        $book_id = $this->param('book_id');
-        $this->book = Book::query()->public()->find($book_id) ?? $this->user?->profile->books()->find($book_id);
+        $this->book_id = $this->param('book_id');
+        $this->book = Book::query()->public()->find($this->book_id) ?? $this->user?->profile->books()->find($this->book_id);
 
-        if (!$this->book && $book_id && Book::find($book_id)?->isAdult()) {
-            $this->book = Book::find($book_id);
-            UserService::canBeAskedAdultPermission() ? ($this->page['ask_adult'] = 1) : abort(404);
+        if (!$this->book && $this->book_id && ($this->book = Book::find($this->book_id) ?? abort(404))) {
+
+            if (!isComDomainRequested() && (comDomain() ?? false) && $this->book->isProhibited()) {
+                abort(Redirect::to(comDomain() . '/book-card/' . $this->book->id));
+            }
+
+            if ($this->book->isAdult() && UserService::canBeAskedAdultPermission()) {
+                $this->page['ask_adult'] = 1;
+            }
         }
-        if (!$this->book) {
-            abort(404);
-        }
+
         $this->user?->library($this->book)->get(); //Добавить в библиотеку
         $this->book = Book::query()
             ->withChapters()

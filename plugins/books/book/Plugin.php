@@ -3,6 +3,7 @@
 namespace Books\Book;
 
 use Books\Book\Behaviors\Fillable;
+use Books\Book\Behaviors\Prohibitable;
 use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;
 use Books\Book\Classes\ChapterService;
@@ -39,8 +40,10 @@ use Books\Book\Models\Cycle;
 use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
+use Books\Book\Models\Prohibited;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
+use Books\Catalog\Models\Genre;
 use Books\Profile\Behaviors\Slavable;
 use Books\Reposts\behaviors\Shareable;
 use Books\Reposts\Components\Reposter;
@@ -49,6 +52,7 @@ use Event;
 use Illuminate\Database\Console\PruneCommand;
 use Illuminate\Foundation\AliasLoader;
 use Mobecan\Favorites\Behaviors\Favorable;
+use RainLab\Location\Behaviors\LocationModel;
 use System\Classes\PluginBase;
 
 /**
@@ -110,6 +114,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('WidgetService', WidgetService::class);
         AliasLoader::getInstance()->alias('Promocode', Models\Promocode::class);
         AliasLoader::getInstance()->alias('Discount', Discount::class);
+        AliasLoader::getInstance()->alias('Prohibited', Prohibited::class);
 
         Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
 
@@ -118,6 +123,16 @@ class Plugin extends PluginBase
             $book->implementClassWith(Favorable::class);
             $book->implementClassWith(Shareable::class);
         });
+
+        Prohibited::extend(function (Prohibited $prohibited) {
+            $prohibited->implementClassWith(LocationModel::class);
+        });
+        foreach (config('book.prohibited') as $class) {
+            $class::extend(function ($model) {
+                $model->implementClassWith(Prohibitable::class);
+
+            });
+        }
 
         AwardBook::extend(function (AwardBook $award) {
             $award->implementClassWith(Slavable::class);

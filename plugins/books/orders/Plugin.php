@@ -19,7 +19,7 @@ use Books\Orders\Models\Order as OrderModel;
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User'];
+    public $require = ['RainLab.User', 'Books.Book'];
 
     /**
      * Returns information about this plugin.
@@ -29,10 +29,10 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'Orders',
+            'name' => 'Orders',
             'description' => 'No description provided yet...',
-            'author'      => 'Books',
-            'icon'        => 'icon-leaf'
+            'author' => 'Books',
+            'icon' => 'icon-leaf'
         ];
     }
 
@@ -100,11 +100,11 @@ class Plugin extends PluginBase
 
         return [
             'orders' => [
-                'label'       => 'Orders',
-                'url'         => Backend::url('books/orders/mycontroller'),
-                'icon'        => 'icon-leaf',
+                'label' => 'Orders',
+                'url' => Backend::url('books/orders/mycontroller'),
+                'icon' => 'icon-leaf',
                 'permissions' => ['books.orders.*'],
-                'order'       => 500,
+                'order' => 500,
             ],
         ];
     }

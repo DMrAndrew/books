@@ -325,7 +325,9 @@
                         <svg class="square-32">
                             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#share-stroked-32' | theme}}"></use>
                         </svg>
-                        <div class="ui-text-head--3 ui-text--bold">У вас пока нет ни одного репоста</div>
+                        <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
+                            одного репоста
+                        </div>
                         <span>Когда они появятся, вы увидите их здесь</span>
                     </div>
                     {% endif %}

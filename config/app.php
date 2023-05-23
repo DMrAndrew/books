@@ -160,7 +160,7 @@ return [
 
     'trusted_proxies' => ['192.168.48.1'],
 
-    'foreign_url' => env('APP_FOREIGN_URL'),
+    'com_url' => env('APP_COM_URL'),
 
     'log_yookassa_webhook' => env('LOG_YOOKASSA_WEBHOOK', false),
 

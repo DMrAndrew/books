@@ -11,7 +11,6 @@ use Books\Book\Classes\ScopeToday;
 use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
-use Cache;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Kirschbaum\PowerJoins\PowerJoins;
@@ -392,7 +391,22 @@ class Book extends Model
 
     public function scopePublic(Builder $q)
     {
-        return $q->notEmptyEdition()->onlyPublicStatus()->adult();
+
+        return $q->withoutProhibited()
+            ->hasProhibitedGenres(has: false)
+            ->notEmptyEdition()
+            ->onlyPublicStatus()
+            ->adult();
+    }
+
+    public function isProhibited(): bool
+    {
+        return !!static::query()->prohibitedOnly()->orWhere(fn($b) => $b->hasProhibitedGenres(true))->find($this->id);
+    }
+
+    public function scopeHasProhibitedGenres(Builder $builder, bool $has = false)
+    {
+        return $builder->{$has ? 'whereHas' : 'whereDoesntHave'}('genres', fn($genres) => $genres->prohibitedOnly());
     }
 
     public function scopeOnlyPublicStatus(Builder $q): Builder|\Illuminate\Database\Eloquent\Builder
