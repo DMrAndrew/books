@@ -6,3 +6,6 @@
 1.0.2:
     - 'Подписки'
     - create_subscribers_table.php
+1.0.3:
+    - 'История операций'
+    - create_operation_histories_table.php
