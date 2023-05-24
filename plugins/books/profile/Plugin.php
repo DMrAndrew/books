@@ -10,6 +10,7 @@ use Books\Profile\Classes\ProfileEventHandler;
 use Books\Profile\Components\AuthorSpace;
 use Books\Profile\Components\NotificationLC;
 use Books\Profile\Components\OperationHistory;
+use Books\Profile\Components\OperationHistoryInHeader;
 use Books\Profile\Components\PrivacyLC;
 use Books\Profile\Components\Profile;
 use Books\Profile\Components\ProfileLC;
@@ -146,7 +147,8 @@ class Plugin extends PluginBase
             NotificationLC::class => 'notificationLC',
             AuthorSpace::class => 'author_space',
             Subs::class => 'subs',
-            OperationHistory::class => 'operation_history',
+            OperationHistory::class => 'OperationHistory',
+            OperationHistoryInHeader::class => 'OperationHistoryInHeader',
         ];
     }
 }

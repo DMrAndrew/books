@@ -1,22 +1,17 @@
 {% if operations | length > 0 %}
 <div class="notifications-page">
     <div class="ui-container-fluid">
-        <div class="library__content _wrapper">
 
-            {% for operation in operations %}
-            <div class="notification-menu__wrapper">
-                <div class="notification-menu__content">
-                    <div class="notification-menu__text notification-menu__content-wrapper">
-                        {{ operation.formattedByType|raw }}
-                    </div>
-                    <div class="notification-menu__date">{{ operation.created_at.diffForHumans() }}</div>
+        {% for operation in operations %}
+        <div class="notification-menu__wrapper">
+            <div class="notification-menu__content">
+                <div class="notification-menu__text notification-menu__content-wrapper">
+                    {{ operation.formattedByType|raw }}
                 </div>
+                <div class="notification-menu__date">{{ operation.created_at.diffForHumans() }}</div>
             </div>
-            {% endfor %}
-
         </div>
-
-        {% partial 'site/pagination' records = operations %}
+        {% endfor %}
 
     </div>
 </div>

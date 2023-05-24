@@ -5,7 +5,7 @@ url = "/all-operations/:page?"
 meta_title = "История операций"
 meta_description = "История операций"
 
-[operation_history]
+[OperationHistory]
 recordsPerPage = 16
 ==
 
@@ -14,39 +14,4 @@ recordsPerPage = 16
     <div class="library__title ui-text--bold ui-text-head--2">История операций</div>
 </div>
 
-{% if operations | length > 0 %}
-    <div class="notifications-page">
-        <div class="ui-container-fluid">
-            <div class="library__content _wrapper">
-
-                {% for operation in operations %}
-                <div class="notification-menu__wrapper">
-                    <div class="notification-menu__content">
-                        <div class="notification-menu__text notification-menu__content-wrapper">
-                            {{ operation.formattedByType|raw }}
-                        </div>
-                        <div class="notification-menu__date">6 часов назад</div>
-                    </div>
-                </div>
-                {% endfor %}
-
-            </div>
-
-            {% partial 'site/pagination' records = operations %}
-
-        </div>
-    </div>
-{% else %}
-    <div class="notifications-page">
-        <div class="ui-container-fluid">
-            <div class="library__content _wrapper">
-                <div class="popup-menu__placeholder">
-                    <svg class="square-32">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme}}"></use>
-                    </svg>
-                    <span>Здесь пока ничего нет</span>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}
+{% component 'OperationHistory' %}
