@@ -9,10 +9,14 @@ enum OperationType: int
     case TransferOnBalance = 2;
     case Sell = 3;
     case Buy = 4;
+
     case Subscribed = 5;
-    case GetReward = 6;
-    case Withdraw = 7;
-    case Support = 8;
+    case RewardMake = 6;
+    case RewardReceive = 7;
+    case Withdraw = 8;
+
+    case SupportMake = 9;
+    case SupportReceive = 10;
 
     public function label(): string
     {
@@ -21,10 +25,14 @@ enum OperationType: int
             self::TransferOnBalance => 'Зачисление на баланс',// Вы получили 500 руб от Виктора
             self::Sell => 'Продажа произведения', // todo?
             self::Buy => 'Покупка произведения', // Куплена книга "Воплощение мечты" за 300 руб
+
             self::Subscribed => 'Оформление подписки',// Оформлена подписка на книгу «Воплощение мечты» за 300 ₽
-            self::GetReward => 'Получение награды', // todo?
+            self::RewardMake => 'Награда', // Вы наградили книгу «Название произведения» на сумму XX ₽
+            self::RewardReceive => 'Получение награды', // todo?
             self::Withdraw => 'Вывод средств',
-            self::Support => 'Поддержка', // Выполучили 300 руб от Виктора
+
+            self::SupportMake => 'Поддержка', // Вы поддержали автора на сумму 300 руб
+            self::SupportReceive => 'Получение поддержки', // Вы получили 300 руб от Виктора
         };
     }
 }

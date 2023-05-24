@@ -14,17 +14,24 @@ use Books\Orders\Models\BalanceDeposit as DepositModel;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
-use Books\Profile\Classes\Enums\OperationType;
-use Books\Profile\Models\OperationHistory;
+use Books\Profile\Services\OperationHistoryService;
 use Carbon\Carbon;
 use Db;
 use Exception;
 use October\Rain\Support\Collection;
 use October\Rain\Database\Model;
 use RainLab\User\Models\User;
+use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceContract;
 
 class OrderService implements OrderServiceContract
 {
+    private OperationHistoryServiceContract $operationHistoryService;
+
+    public function __construct()
+    {
+        $this->operationHistoryService = app(OperationHistoryService::class);
+    }
+
     /**
      * @param User $user
      *
@@ -90,6 +97,18 @@ class OrderService implements OrderServiceContract
         $depositAmount = $order->deposits->sum('amount');
 
         return max(($orderAmount - $awardsAmount - $depositAmount), 0);
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return int
+     */
+    public function calculateAuthorsOrderSupport(Order $order): int
+    {
+        $supportAmount = $order->donations->sum('amount');
+
+        return max($supportAmount, 0);
     }
 
     /**
@@ -340,16 +359,7 @@ class OrderService implements OrderServiceContract
                 $newUserOwning->ownable()->associate($product);
                 $newUserOwning->save();
 
-                OperationHistory::create([
-                    'user_id' => $user->id,
-                    'type' => OperationType::Buy,
-                    'message' => "Куплено произведение {$product->name} на {$orderProduct->amount} ₽",
-                    'metadata' => [
-                        'edition_class' => $product::class,
-                        'edition_id' => $product->id,
-                        'amount' => $orderProduct->amount,
-                    ],
-                ]);
+                $this->operationHistoryService->addReceivingPurchase($order, $orderProduct);
             }
         }
     }
@@ -372,11 +382,13 @@ class OrderService implements OrderServiceContract
                 $product = $orderProduct->orderable;
 
                 if (isset($product->book)) {
-                    AwardBook::create([
+                    $awardBook = AwardBook::create([
                         'user_id' => $user->id,
                         'award_id' => $award->id,
                         'book_id' => $product->book->id,
                     ]);
+
+                    $this->operationHistoryService->addMakingAuthorReward($order, $awardBook);
                 }
             }
         }
@@ -405,6 +417,12 @@ class OrderService implements OrderServiceContract
             }
 
             $author->profile->user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
+
+            $donationAmount = $this->calculateAuthorsOrderSupport($order);
+            if ($donationAmount > 0) {
+                $this->operationHistoryService->addMakingAuthorSupport($order, $author);
+                $this->operationHistoryService->addReceivingAuthorSupport($order, $author);
+            }
         }
     }
 
@@ -420,14 +438,7 @@ class OrderService implements OrderServiceContract
         if ($depositAmount > 0) {
             $order->user->proxyWallet()->deposit($depositAmount);
 
-            OperationHistory::create([
-                'user_id' => $order->user->id,
-                'type' => OperationType::DepositOnBalance,
-                'message' => "Баланс пополнен на {$depositAmount} ₽",
-                'metadata' => [
-                    'amount' => $depositAmount,
-                ],
-            ]);
+            $this->operationHistoryService->addBalanceDeposit($order);
         }
     }
 
