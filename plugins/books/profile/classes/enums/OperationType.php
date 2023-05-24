@@ -35,5 +35,23 @@ enum OperationType: int
             self::SupportReceive => 'Получение поддержки', // Вы получили 300 руб от Виктора
         };
     }
+
+    public function bodyTemplate(): string
+    {
+        return match ($this) {
+            self::DepositOnBalance => 'deposit_on_balance',
+            self::TransferOnBalance => 'transfer_on_balance',
+            self::Sell => 'sell',
+            self::Buy => 'buy',
+
+            self::Subscribed => 'subscribed',
+            self::RewardMake => 'reward_make',
+            self::RewardReceive => 'reward_receive',
+            self::Withdraw => 'withdraw',
+
+            self::SupportMake => 'support_make',
+            self::SupportReceive => 'support_receive',
+        };
+    }
 }
 

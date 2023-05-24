@@ -21,7 +21,6 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->index();
             $table->unsignedInteger('type')->nullable();
             $table->string('message');
-            $table->json('metadata')->nullable();
             $table->timestamps();
         });
     }

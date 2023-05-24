@@ -6,7 +6,6 @@ use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Edition;
 use Books\Orders\Models\Order;
-use Books\Profile\Models\OperationHistory;
 
 interface OperationHistoryService
 {
@@ -36,7 +35,4 @@ interface OperationHistoryService
 
     /** Покупка награды (оплата) */
     public function addMakingAuthorReward(Order $order, AwardBook $awardBook): void;
-
-    /** Форматирование при отображении */
-    public function formatMessageByType(OperationHistory $operation): ?string;
 }
