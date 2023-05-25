@@ -1,0 +1,41 @@
+{{ form_ajax('privacyLC::onUpdate',{
+'data-request-validate':'true',
+class:'personal-area__wrapper ui-grid-container ui-grid-gap',
+'data-request-complete':'iniSelect()',
+'data-request-flash':1,
+}) }}
+<div class="ui-col-md-6">
+    <div class="personal-area__wrap _indent-large ui-select">
+        {% for setting in settings %}
+        <div class="personal-area__wrap _indent-large ui-select">
+            <div class="ui-select-header">
+                <label class="ui-select-label">{{ setting.type.label }}</label>
+            </div>
+            <div class="ui-select-container">
+                <div class="ui-select-item _size-32">
+                    <select class="book-select" name="options[{{setting.type.value}}]" style="display: none">
+                        {% for option in setting.type.options %}
+                        <option style="display: none"
+                                {{ setting.value == option.value ? 'selected' : ''  }}
+                        value="{{option.value}}">{{option.label}}</option>
+                        {% endfor %}
+
+                    </select>
+                    <svg class="ui-select-item-icon chevron_up _fake">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme }}"></use>
+                    </svg>
+                    <svg class="ui-select-item-icon chevron_down _fake">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme }}"></use>
+                    </svg>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button  data-attach-loading class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Сохранить</button>
+</div>
+
+{{ form_close() }}
+

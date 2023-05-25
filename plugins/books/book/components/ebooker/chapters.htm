@@ -12,16 +12,18 @@
                 <input type="hidden" name="chapters[{{chapter.id}}]" value="{{chapter.id}}"/>
                 <div class="chapter-book">
 
-                    <svg class="chapter-book__drag square-24 handle">
+                    <svg class="chapter-book__drag square-24 handle hide-mobile">
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#move-vertical-24' | theme}}"></use>
                     </svg>
 
                     <div class="chapter-book__body">
                         <div class="chapter-book__title ui-text-head--3">
+                            <a class="ui-link _violet" href="/book-add-text/{{book.id}}/{{chapter.id}}">
                     <span class="ui-text--bold chapter-title">
-                      {{chapter.title|raw}}
+                        {{chapter.title|raw}}
                     </span>
-                            {% if chapter.status.value == 'draft' %}
+                            </a>
+                            {% if not chapter.isFree %}
                             <svg class="square-16">
                                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#lock-filled-16' | theme}}"></use>
                             </svg>
@@ -34,6 +36,7 @@
                             <div class="chapter-book__status">
                                 <span>{{chapter.sales_type.getLabel()}}</span>
                             </div>
+
                             <div class="chapter-book__status">
                                 <span>{{carbon(chapter.created_at).format('d.m.y')}}</span>
                             </div>
@@ -52,23 +55,25 @@
                                 <a data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">
                                     <button class="dropdown-menu__item">Редактировать</button>
                                 </a>
-                                <button disabled class="dropdown-menu__item">Удалить</button>
+                                <a onclick="deleteChapter(`{{chapter.id}}`)" class=" cursor-pointer">
+                                    <button class="dropdown-menu__item">Удалить</button>
+                                </a>
                             </div>
                         </div>
                     </div>
-<!--                    <div class="chapter-book__action">-->
-<!--                        <a data-dropdown="button" >-->
-<!--                            <svg class="square-16">-->
-<!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>-->
-<!--                            </svg>-->
-<!--                            <div class="dropdown-menu__container" data-dropdown="menu">-->
-<!--                                <div class="dropdown-menu__wrapper">-->
-<!--                                    <div class="dropdown-menu__item"  data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">Редактировать</div>-->
-<!--                                    <div class="dropdown-menu__item">Удалить</div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </a>-->
-<!--                    </div>-->
+                    <!--                    <div class="chapter-book__action">-->
+                    <!--                        <a data-dropdown="button" >-->
+                    <!--                            <svg class="square-16">-->
+                    <!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>-->
+                    <!--                            </svg>-->
+                    <!--                            <div class="dropdown-menu__container" data-dropdown="menu">-->
+                    <!--                                <div class="dropdown-menu__wrapper">-->
+                    <!--                                    <div class="dropdown-menu__item"  data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">Редактировать</div>-->
+                    <!--                                    <div class="dropdown-menu__item">Удалить</div>-->
+                    <!--                                </div>-->
+                    <!--                            </div>-->
+                    <!--                        </a>-->
+                    <!--                    </div>-->
                 </div>
             </li>
             {% endfor %}
@@ -101,10 +106,21 @@
     </style>
 
     <script>
-        if(initSortable){
-            initSortable('#sortable','ebooker::onUpdateSortOrder')
+        if (initSortable) {
+            initSortable('#sortable', 'ebooker::onUpdateSortOrder')
         }
         openDropdown();
+
+        function deleteChapter(id) {
+            if (id && confirm('Вы уверены?')) {
+                oc.ajax('ebooker::onDeleteChapter', {
+                    data: {
+                        chapter_id: id
+                    },
+                    flash: true
+                })
+            }
+        }
     </script>
 
 </div>

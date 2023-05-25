@@ -1,3 +1,9 @@
+[socialconnect]
+
+[NotificationsInHeader]
+recordsPerView = 11
+==
+{% component 'BalanceDeposit' %}
 <div class="ui-container">
     <div class="header__panel">
         <svg class="header__menu-burger square-24 active" data-button-menu="mobile">
@@ -32,9 +38,9 @@
             </div>
         </div>
         {% if not user %}
-        {% partial "site/header_unauthorized_section" %}
+            {% partial "site/header_unauthorized_section" %}
         {% else %}
-        {% partial "site/header_authorized_section" %}
+            {% partial "site/header_authorized_section" %}
         {% endif %}
         <svg class="header__menu-search square-24" data-button-search="open">
             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#search-stroked-24' | theme}}"></use>
@@ -43,7 +49,7 @@
     <nav class="header__nav nav">
         <ul class="nav__list">
             <li class="nav__list-item _dropdown">
-                <a class="ui-text--medium nav__link _dropdown" href="#">
+                <a class="ui-text--medium nav__link _dropdown" href="/listing">
                     <span>Книги</span>
                     <svg class="square-16">
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
@@ -58,7 +64,7 @@
                                 <div class="book-type__icon-wrapper">
                                     <svg class="square-24">
                                         <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-lines-16' | theme}}"></use>
+                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-lines-16' | theme}}"></use>
                                     </svg>
                                 </div>
                                 <div class="book-type__text ui-text--medium">Все книги</div>
@@ -67,7 +73,7 @@
                                 <div class="book-type__icon-wrapper">
                                     <svg class="square-24">
                                         <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#phone-stroked-24' | theme}}"></use>
+                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#phone-stroked-24' | theme}}"></use>
                                     </svg>
                                 </div>
                                 <div class="book-type__text ui-text--medium">Электронные</div>
@@ -76,7 +82,7 @@
                                 <div class="book-type__icon-wrapper">
                                     <svg class="square-24">
                                         <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-stroked-24' | theme}}"></use>
+                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-stroked-24' | theme}}"></use>
                                     </svg>
                                 </div>
                                 <div class="book-type__text ui-text--medium">Аудио</div>
@@ -85,7 +91,7 @@
                                 <div class="book-type__icon-wrapper">
                                     <svg class="square-24">
                                         <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
+                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
                                     </svg>
                                 </div>
                                 <div class="book-type__text ui-text--medium">Бумажные</div>
@@ -94,7 +100,7 @@
                                 <div class="book-type__icon-wrapper">
                                     <svg class="square-24">
                                         <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#comics-stroked-24' | theme}}"></use>
+                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#comics-stroked-24' | theme}}"></use>
                                     </svg>
                                 </div>
                                 <div class="book-type__text ui-text--medium">Комиксы</div>
@@ -108,7 +114,7 @@
                             <a href="/all-genres" class="menu-book-genres__more">
                                 <svg class="square-16">
                                     <use
-                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-lines-16' | theme}}"></use>
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-lines-16' | theme}}"></use>
                                 </svg>
                                 <span class="ui-text--medium">Полный список жанров</span>
                             </a>
@@ -118,520 +124,373 @@
             </li>
             <li class="nav__list-item disabled"><a class="ui-text--medium nav__link">Конкурсы</a></li>
             <li class="nav__list-item "><a class="ui-text--medium nav__link" href="/library">Моя
-                библиотека</a></li>
+                    библиотека</a></li>
             <li class="nav__list-item disabled"><a class="ui-text--medium nav__link">Магазин</a></li>
             <li class="nav__list-item disabled"><a class="ui-text--medium nav__link">Чат</a></li>
             <li class="nav__list-item disabled"><a class="ui-text--medium nav__link">Реклама</a></li>
         </ul>
     </nav>
 </div>
-<!--<div class="menu-mobile " data-overlay="menu-mobile">-->
-<!--    &lt;!&ndash; Основное меню &ndash;&gt;-->
-<!--    <div class="menu-mobile__container _main active" data-menu-item="1">-->
-<!--        <div class="menu-mobile__body">-->
-<!--            <div class="menu-mobile__link _indent-large" data-menu-link="2">-->
-<!--                <span class="ui-text&#45;&#45;medium">Книги</span>-->
-<!--                <svg class="menu-mobile__link-chevron square-16">-->
-<!--                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>-->
-<!--                </svg>-->
-<!--            </div>-->
-<!--            <a href="#" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Конкурсы</span>-->
-<!--            </a>-->
-<!--            <a href="/frontend/library.html" class="menu-mobile__link _indent-large">-->
-<!--                <span class="ui-text&#45;&#45;medium">Моя библиотека</span>-->
-<!--            </a>-->
-<!--            <a href="#" class="menu-mobile__link _indent-large">-->
-<!--                <span class="ui-text&#45;&#45;medium">Чат</span>-->
-<!--            </a>-->
-<!--            <a href="#" class="menu-mobile__link _indent-large">-->
-<!--                <span class="ui-text&#45;&#45;medium">Реклама</span>-->
-<!--            </a>-->
+<div class="menu-mobile  " data-overlay="menu-mobile">
+    <!-- Основное меню -->
+    <div class="menu-mobile__container _main active" data-menu-item="1">
+        <div class="menu-mobile__body">
+            <div class="menu-mobile__link _indent-large" data-menu-link="2">
+                <span class="ui-text--medium">Книги</span>
+                <svg class="menu-mobile__link-chevron square-16">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
+                </svg>
+            </div>
+            <a class="menu-mobile__link _indent-large disabled">
+                <span class="ui-text--medium">Конкурсы</span>
+            </a>
+            <a href="/library" class="menu-mobile__link _indent-large">
+                <span class="ui-text--medium">Моя библиотека</span>
+            </a>
+            <a class="menu-mobile__link _indent-large disabled">
+                <span class="ui-text--medium">Чат</span>
+            </a>
+            <a class="menu-mobile__link _indent-large disabled">
+                <span class="ui-text--medium">Реклама</span>
+            </a>
 
-<!--            <div class="menu-mobile__separator"></div>-->
+            {% if user %}
+                <div class="menu-mobile__footer">
+                    <div class="menu-mobile__separator"></div>
 
-<!--            <div class="menu-mobile__link _indent-small" data-menu-link="4">-->
-<!--                <div class="menu-mobile__link-icon square-32">-->
-<!--                    <svg class="square-24">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#message-stroked-24"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <span class="ui-text&#45;&#45;medium">Сообщения</span>-->
-<!--                <div class="menu-mobile__link-label ui-label-number _red">10</div>-->
-<!--                <svg class="menu-mobile__link-chevron square-16">-->
-<!--                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>-->
-<!--                </svg>-->
-<!--            </div>-->
-<!--            <div class="menu-mobile__link _indent-small" data-menu-link="5">-->
-<!--                <div class="menu-mobile__link-icon square-32">-->
-<!--                    <svg class="square-24">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#notifications-stroked-24"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <span class="ui-text&#45;&#45;medium">Уведомления</span>-->
-<!--                <div class="menu-mobile__link-label ui-label-number _red">4</div>-->
-<!--                <svg class="menu-mobile__link-chevron square-16">-->
-<!--                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>-->
-<!--                </svg>-->
-<!--            </div>-->
-<!--            <div class="menu-mobile__link _indent-small" >-->
-<!--                <div class="menu-mobile__link-icon square-32">-->
-<!--                    <svg class="square-24">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#bag-stroked-24"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <span class="ui-text&#45;&#45;medium">Корзина</span>-->
-<!--                <div class="menu-mobile__link-label ui-label-number _red">5</div>-->
-<!--                <svg class="menu-mobile__link-chevron square-16">-->
-<!--                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>-->
-<!--                </svg>-->
-<!--            </div>-->
-<!--            <div class="menu-mobile__link _indent-small" data-menu-link="6">-->
-<!--                <div class="menu-mobile__link-icon square-32">-->
-<!--                    <svg class="square-24">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#wallet-stroked-24"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <span class="ui-text&#45;&#45;medium">Баланс</span>-->
-<!--                <div class="menu-mobile__link-price ui-text&#45;&#45;medium">16 500 ₽</div>-->
-<!--                <svg class="menu-mobile__link-chevron square-16">-->
-<!--                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>-->
-<!--                </svg>-->
-<!--            </div>-->
-<!--            <div class="menu-mobile__link _indent-small" data-menu-link="3">-->
-<!--                <div class="menu-mobile__link-avatar square-32">-->
-<!--                    <img class="square-24" src="./assets/images/author/avatar-placeholder.png" alt="">-->
-<!--                </div>-->
-<!--                <span class="ui-text&#45;&#45;medium">Профиль</span>-->
-<!--                <svg class="menu-mobile__link-chevron square-16">-->
-<!--                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>-->
-<!--                </svg>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
+                    {% partial 'site/notifications-mobile' button = true %}
 
-<!--    &lt;!&ndash; Книги &ndash;&gt;-->
-<!--    <div class="menu-mobile__container " data-menu-item="2">-->
-<!--        <div class="menu-mobile__header" data-menu-link="1">-->
-<!--            <svg class="square-16">-->
-<!--                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>-->
-<!--            </svg>-->
-<!--            <span class="ui-text&#45;&#45;bold">Книги</span>-->
-<!--            <div class="square-16"></div>-->
-<!--        </div>-->
-<!--        <div class="menu-mobile__body">-->
-<!--            <div class="menu-mobile__book-wrapper">-->
-<!--                <a href="/frontend/listing.html" class="book-type__item">-->
-<!--                    <div class="book-type__icon-wrapper">-->
-<!--                        <svg class="square-24">-->
-<!--                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#more-lines-16"></use>-->
-<!--                        </svg>-->
-<!--                    </div>-->
-<!--                    <div class="book-type__text ui-text&#45;&#45;medium">Все книги</div>-->
-<!--                </a>-->
-<!--                <a href="#" class="book-type__item">-->
-<!--                    <div class="book-type__icon-wrapper">-->
-<!--                        <svg class="square-24">-->
-<!--                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#phone-stroked-24"></use>-->
-<!--                        </svg>-->
-<!--                    </div>-->
-<!--                    <div class="book-type__text ui-text&#45;&#45;medium">Электронные</div>-->
-<!--                </a>-->
-<!--                <a href="#" class="book-type__item">-->
-<!--                    <div class="book-type__icon-wrapper">-->
-<!--                        <svg class="square-24">-->
-<!--                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#audio-stroked-24"></use>-->
-<!--                        </svg>-->
-<!--                    </div>-->
-<!--                    <div class="book-type__text ui-text&#45;&#45;medium">Аудио</div>-->
-<!--                </a>-->
-<!--                <a href="#" class="book-type__item">-->
-<!--                    <div class="book-type__icon-wrapper">-->
-<!--                        <svg class="square-24">-->
-<!--                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#book-stroked-24"></use>-->
-<!--                        </svg>-->
-<!--                    </div>-->
-<!--                    <div class="book-type__text ui-text&#45;&#45;medium">Бумажные</div>-->
-<!--                </a>-->
-<!--                <a href="#" class="book-type__item">-->
-<!--                    <div class="book-type__icon-wrapper">-->
-<!--                        <svg class="square-24">-->
-<!--                            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#comics-stroked-24"></use>-->
-<!--                        </svg>-->
-<!--                    </div>-->
-<!--                    <div class="book-type__text ui-text&#45;&#45;medium">Комиксы</div>-->
-<!--                </a>-->
-<!--            </div>-->
+                    <div class="menu-mobile__link _indent-small" data-menu-link="3">
+                        {% if user.profile.avatar %}
+                            <div class="menu-mobile__link-avatar square-32">
+                                <img class="square-24" src="{{user.profile.avatar.getThumb(32,32)}}" alt="Аватар">
+                            </div>
+                        {% else %}
+                            <div class="menu-mobile__link-avatar square-32">
+                                <img class="square-24" src="{{ 'assets/images/author/avatar-placeholder.png' | theme }}" alt="Аватар">
+                            </div>
+                        {% endif %}
+                        <span class="ui-text--medium">Профиль</span>
+                        <svg class="menu-mobile__link-chevron square-16">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
+                        </svg>
+                    </div>
+                </div>
+            {% else %}
+                <div class="menu-mobile__footer">
+                    <a onclick="registerPopup()"
+                       class="ui-button ui-button-view--2 ui-button-size--32 ui-button--full-mobile cursor-pointer">
+                        <span class="ui-text--medium">Зарегистрироваться</span>
+                    </a>
+                    <a onclick="loginPopup()"
+                       class="ui-button ui-button-view--3 ui-button-size--32 ui-button--full-mobile cursor-pointer">
+                        <span class="ui-text--medium">Войти</span>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
-<!--            <div class="menu-mobile__separator"></div>-->
+    <!-- Книги -->
+    <div class="menu-mobile__container " data-menu-item="2">
+        <div class="menu-mobile__header" data-menu-link="1">
+            <svg class="square-16">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+            </svg>
+            <span class="ui-text--bold">Книги</span>
+            <div class="square-16"></div>
+        </div>
+        <div class="menu-mobile__body">
+            <div class="menu-mobile__book-wrapper">
+                <a href="/listing" class="book-type__item">
+                    <div class="book-type__icon-wrapper">
+                        <svg class="square-24">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-lines-16' | theme}}"></use>
+                        </svg>
+                    </div>
+                    <div class="book-type__text ui-text--medium">Все книги</div>
+                </a>
+                <a href="/listing?type=1" class="book-type__item">
+                    <div class="book-type__icon-wrapper">
+                        <svg class="square-24">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#phone-stroked-24' | theme}}"></use>
+                        </svg>
+                    </div>
+                    <div class="book-type__text ui-text--medium">Электронные</div>
+                </a>
+                <a href="/listing?type=2" class="book-type__item">
+                    <div class="book-type__icon-wrapper">
+                        <svg class="square-24">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-stroked-24' | theme}}"></use>
+                        </svg>
+                    </div>
+                    <div class="book-type__text ui-text--medium">Аудио</div>
+                </a>
+                <a href="/listing?type=3" class="book-type__item">
+                    <div class="book-type__icon-wrapper">
+                        <svg class="square-24">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
+                        </svg>
+                    </div>
+                    <div class="book-type__text ui-text--medium">Бумажные</div>
+                </a>
+                <a href="/listing?type=4" class="book-type__item">
+                    <div class="book-type__icon-wrapper">
+                        <svg class="square-24">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#comics-stroked-24' | theme}}"></use>
+                        </svg>
+                    </div>
+                    <div class="book-type__text ui-text--medium">Комиксы</div>
+                </a>
+            </div>
 
-<!--            <div class="menu-mobile__book-listing">-->
-<!--                <div class="menu-book-genres__title ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Жанры</div>-->
-<!--                <ul class="menu-book-genres__list">-->
-<!--                    {% component 'genres_parented' %}-->
+            <div class="menu-mobile__separator"></div>
 
-<!--                <a href="/frontend/all-books.html" class="menu-book-genres__more">-->
-<!--                    <svg class="square-16">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#more-lines-16"></use>-->
-<!--                    </svg>-->
-<!--                    <span class="ui-text&#45;&#45;medium">Полный список жанров</span>-->
-<!--                </a>-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
+            <div class="menu-mobile__book-listing">
+                <div class="menu-book-genres__title ui-text-head--3 ui-text--bold">Жанры</div>
+                <ul class="menu-book-genres__list">
+                    {% component 'genres_parented' %}
+                </ul>
+
+                <a href="/all-genres" class="menu-book-genres__more">
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-lines-16' | theme}}"></use>
+                    </svg>
+                    <span class="ui-text--medium">Полный список жанров</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% if user %}
+        {% partial 'site/notifications-mobile' %}
+
+        <!-- Профиль -->
+        <div class="menu-mobile__container " data-menu-item="3">
+            <div class="menu-mobile__header" data-menu-link="1">
+                <svg class="square-16">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+                </svg>
+                <span class="ui-text--bold">Профиль</span>
+                <div class="square-16"></div>
+            </div>
+            <div class="menu-mobile__body">
+                <div class="menu-mobile__link _indent-large _color-gray" data-menu-link="2">
+                    <span class="ui-text--medium ui-text-body--3">{{user.profile.username~' ID:'~user.profile.id}}</span>
+                </div>
+                <a href="/author-page/{{user.profile.id}}" class="menu-mobile__link _indent-large">
+                    <span class="ui-text--medium">Моя страница</span>
+                </a>
+                <div class="menu-mobile__separator"></div>
+                <div class="menu-mobile__link _indent-large" data-menu-link="7">
+                    <span class="ui-text--medium">Личный кабинет</span>
+                    <svg class="menu-mobile__link-chevron square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
+                    </svg>
+                </div>
+                <a href="/lc-books" class="menu-mobile__link _indent-large">
+                    <span class="ui-text--medium">Книги</span>
+                </a>
+                <a class="menu-mobile__link _indent-large disabled">
+                    <span class="ui-text--medium">Магазин</span>
+                </a>
+                <a href="/lc-subscriptions" class="menu-mobile__link _indent-large">
+                    <span class="ui-text--medium">Подписки</span>
+                </a>
 
 
-<!--    &lt;!&ndash; Профиль &ndash;&gt;-->
-<!--    <div class="menu-mobile__container " data-menu-item="3">-->
-<!--        <div class="menu-mobile__header" data-menu-link="1">-->
-<!--            <svg class="square-16">-->
-<!--                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>-->
-<!--            </svg>-->
-<!--            <span class="ui-text&#45;&#45;bold">Профиль</span>-->
-<!--            <div class="square-16"></div>-->
-<!--        </div>-->
-<!--        <div class="menu-mobile__body">-->
-<!--            <div class="menu-mobile__link _indent-large _color-gray" data-menu-link="2">-->
-<!--                <span class="ui-text&#45;&#45;medium ui-text-body&#45;&#45;3">Андрей Петров</span>-->
-<!--            </div>-->
-<!--            <a href="/frontend/lc-profile.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Моя страница</span>-->
-<!--            </a>-->
+                <a class="menu-mobile__link _indent-large disabled">
+                    <span class="ui-text--medium">Коммерческий кабинет</span>
+                </a>
 
-<!--            <div class="menu-mobile__separator"></div>-->
 
-<!--            <div class="menu-mobile__link _indent-large" data-menu-link="7">-->
-<!--                <span class="ui-text&#45;&#45;medium">Личный кабинет</span>-->
-<!--                <svg class="menu-mobile__link-chevron square-16">-->
-<!--                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>-->
-<!--                </svg>-->
-<!--            </div>-->
-<!--            <a href="#" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Книги</span>-->
-<!--            </a>-->
-<!--            <a href="#" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Магазин</span>-->
-<!--            </a>-->
-<!--            <a href="#" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Подписки</span>-->
-<!--            </a>-->
-<!--            <a href="#" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Коммерческие кабинет</span>-->
-<!--            </a>-->
+                <div class="menu-mobile__separator"></div>
+                <div class="menu-mobile__link _indent-large" data-menu-link="10">
+                    <span class="ui-text--medium">Переключить аккаунт</span>
+                    <svg class="menu-mobile__link-chevron square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
+                    </svg>
+                </div>
+                <div class="menu-mobile__separator"></div>
+                <a href="#" data-request="bookAccount::onLogout"
+                   data-request-data="redirect: '/'" class="menu-mobile__link _indent-large">
+                    <span class="ui-text--medium">Выйти</span>
+                </a>
+            </div>
+        </div>
 
-<!--            <div class="menu-mobile__separator"></div>-->
-<!--            <div class="menu-mobile__link _indent-large" data-menu-link="2">-->
-<!--                <span class="ui-text&#45;&#45;medium">Переключить аккаунт</span>-->
-<!--                <svg class="menu-mobile__link-chevron square-16">-->
-<!--                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-right-16"></use>-->
-<!--                </svg>-->
-<!--            </div>-->
-<!--            <div class="menu-mobile__separator"></div>-->
-<!--            <a href="#" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Выйти</span>-->
-<!--            </a>-->
-<!--        </div>-->
-<!--    </div>-->
+        <!-- Личный кабинет -->
+        <div class="menu-mobile__container " data-menu-item="7">
+            <div class="menu-mobile__header" data-menu-link="3">
+                <svg class="square-16">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+                </svg>
+                <span class="ui-text--bold">Личный кабинет</span>
+                <div class="square-16"></div>
+            </div>
+            {% partial 'profile/sidebarmenu' containerClass='menu-mobile__body' separatorClass='menu-mobile__separator'
+                linkClass='menu-mobile__link _indent-large' %}
 
-<!--    &lt;!&ndash; Сообщения &ndash;&gt;-->
-<!--    <div class="menu-mobile__container " data-menu-item="4">-->
-<!--        <div class="menu-mobile__header" data-menu-link="1">-->
-<!--            <svg class="square-16">-->
-<!--                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>-->
-<!--            </svg>-->
-<!--            <span class="ui-text&#45;&#45;bold">Сообщения</span>-->
-<!--            <div class="square-16"></div>-->
-<!--        </div>-->
-<!--        <div class="menu-mobile__body">-->
-<!--            <div class="menu-chat__item">-->
-<!--                <div class="menu-chat__image-wrapper">-->
-<!--                    <img class="menu-chat__image" src="./assets/images/main/girl.png" alt="">-->
-<!--                </div>-->
-<!--                <div class="menu-chat__info">-->
-<!--                    <div class="menu-chat__info-up">-->
-<!--                        <div class="menu-chat__name">Евгения Жук</div>-->
-<!--                        <div class="menu-chat__time">11:06</div>-->
-<!--                    </div>-->
-<!--                    <div class="menu-chat__info-down">-->
-<!--                        <div class="menu-chat__message">Евгения: Обращайтесь)</div>-->
-<!--                        <div class="ui-label-number _violet">12</div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="menu-chat__item">-->
-<!--                <div class="menu-chat__image-wrapper">-->
-<!--                    <img class="menu-chat__image" src="./assets/images/main/girl.png" alt="">-->
-<!--                </div>-->
-<!--                <div class="menu-chat__info">-->
-<!--                    <div class="menu-chat__info-up">-->
-<!--                        <div class="menu-chat__name">Евгения Жук</div>-->
-<!--                        <div class="menu-chat__time">11:06</div>-->
-<!--                    </div>-->
-<!--                    <div class="menu-chat__info-down">-->
-<!--                        <div class="menu-chat__message">Евгения: Обращайтесь)</div>-->
-<!--                        <div class="ui-label-number _violet">1</div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
+        </div>
+        <div class="menu-mobile__container " data-menu-item="10">
+            <div class="menu-mobile__header" data-menu-link="3">
+                <svg class="square-16">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+                </svg>
+                <span class="ui-text--bold">Переключить аккаунт</span>
+                <div class="square-16"></div>
+            </div>
+            <div class="menu-mobile__body">
+                {% if user.profilesAsOptions.count < user.maxProfilesCount %}
+                    <div class="menu-mobile__link _indent-large" data-modal="open-new-profile-modal2">
+                        <svg class="menu-mobile__link-chevron square-16">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#plus-stroked-16' | theme}}"></use>
+                        </svg>
+                        <span class="ui-text--medium">Создать</span>
+                    </div>
+                    <div class="menu-mobile__separator"></div>
+                {% endif %}
+                {% for profile in user.profilesAsOptions %}
+                    <a class="menu-mobile__link _indent-large"
+                            {{profile.id != user.profile.id ? 'data-request="profile::onSwitchProfile"' : ''}}
+                       data-request-data="profile_id:{{profile.id}}"
+                    >
+                        {% if profile.id == user.profile.id %}
+                            <svg class="menu-mobile__link-chevron square-16">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>
+                            </svg>
+                        {% endif %}
+                        <span class="ui-text--medium">{{profile.username}} <span style="color: var(--color-dark-gray)">ID:{{profile.id}}</span></span>
+                    </a>
+                {% endfor %}
 
-<!--    &lt;!&ndash; Уведомления &ndash;&gt;-->
-<!--    <div class="menu-mobile__container " data-menu-item="5">-->
-<!--        <div class="menu-mobile__header" data-menu-link="1">-->
-<!--            <svg class="square-16">-->
-<!--                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>-->
-<!--            </svg>-->
-<!--            <span class="ui-text&#45;&#45;bold">Уведомления</span>-->
-<!--            <div class="square-16"></div>-->
-<!--        </div>-->
-<!--        <div class="menu-mobile__body">-->
-<!--            <div class="notification-menu__wrapper">-->
-<!--                <div class="notification-menu__detector active"></div>-->
-<!--                <div class="notification-menu__icon-wrapper">-->
-<!--                    <svg class="square-24">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#book-stroked-24"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <div class="notification-menu__content">-->
-<!--                    <div class="notification-menu__text notification-menu__content-wrapper">-->
-<!--                        <a href="#" class="ui-link _violet">Александр Алексон</a> опубликовал новую книгу «<a href="#" class="ui-link _violet">Мужская вакансия, или Женщина на борту – к несчастью</a>»-->
-<!--                    </div>-->
-<!--                    <div class="notification-menu__date">6 часов назад</div>-->
-<!--                </div>-->
-<!--            </div>-->
+            </div>
 
-<!--            <div class="notification-menu__wrapper">-->
-<!--                <div class="notification-menu__detector active"></div>-->
-<!--                <div class="notification-menu__icon-wrapper">-->
-<!--                    <svg class="square-24">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#refresh-stroked-24"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <div class="notification-menu__content">-->
-<!--                    <div class="notification-menu__text notification-menu__content-wrapper">-->
-<!--                        <a href="#" class="ui-link _violet">Александр Алексон</a> обновил книгу «<a href="#" class="ui-link _violet">Мужская вакансия, или Женщина на борту – к несчастью</a>»-->
-<!--                    </div>-->
-<!--                    <div class="notification-menu__content-wrapper">+400 знаков</div>-->
-<!--                    <div class="notification-menu__date">6 часов назад</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="notification-menu__wrapper">-->
-<!--                <div class="notification-menu__detector "></div>-->
-<!--                <div class="notification-menu__icon-wrapper">-->
-<!--                    <svg class="square-24">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#blog-stroked-32"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <div class="notification-menu__content">-->
-<!--                    <div class="notification-menu__text notification-menu__content-wrapper">-->
-<!--                        <a href="#" class="ui-link _violet">Александр Алексон</a> опубликовал новую запись в блоге «<a href="#" class="ui-link _violet">Дизайн обложки</a>»-->
-<!--                    </div>-->
-<!--                    <div class="notification-menu__date">6 часов назад</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="notification-menu__wrapper">-->
-<!--                <div class="notification-menu__detector "></div>-->
-<!--                <div class="notification-menu__icon-wrapper">-->
-<!--                    <svg class="square-24">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#shop-stroked-32"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <div class="notification-menu__content">-->
-<!--                    <div class="notification-menu__text notification-menu__content-wrapper">-->
-<!--                        <a href="#" class="ui-link _violet">Александр Алексон</a> Александр Алексон разместил товар в магазине «<a href="#" class="ui-link _violet">Дизайн обложки</a>»-->
-<!--                    </div>-->
-<!--                    <div class="notification-menu__date">6 часов назад</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="notification-menu__wrapper">-->
-<!--                <div class="notification-menu__detector "></div>-->
-<!--                <div class="notification-menu__icon-wrapper">-->
-<!--                    <svg class="square-24">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#info-stroked-24"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <div class="notification-menu__content">-->
-<!--                    <div class="notification-menu__message notification-menu__content-wrapper">-->
-<!--                        <p class="notification-menu__content-wrapper">-->
-<!--                            Тут будет какой-то текст от администрации. Этот текст будет располагаться максимум на 3 строчки. Не больше не меньше. Далее просто будет обрезаться-->
-<!--                        </p>-->
-<!--                        <a href="#" class="ui-link _violet">Подробнее</a>-->
-<!--                    </div>-->
-<!--                    <div class="notification-menu__date">6 часов назад</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="notification-menu__wrapper">-->
-<!--                <div class="notification-menu__detector active"></div>-->
-<!--                <div class="notification-menu__icon-wrapper">-->
-<!--                    <svg class="square-24">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#sale-stroked-24"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <div class="notification-menu__content">-->
-<!--                    <div class="notification-menu__text notification-menu__content-wrapper">-->
-<!--                        Скидка на книгу <a href="#" class="ui-link _violet">«Мужская вакансия, или Женщина на борту – к несчастью»</a> от <a href="#" class="ui-link _violet">Александр Алексон</a>-->
-<!--                    </div>-->
-<!--                    <div class="notification-menu__price notification-menu__content-wrapper ui-text&#45;&#45;bold">139 ₽ <span class="ui-text&#45;&#45;lt">111 ₽</span></div>-->
-<!--                    <a href="#" class="notification-menu__content-wrapper ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2">Купить</a>-->
-<!--                    <div class="notification-menu__date">12.02.22</div>-->
-<!--                </div>-->
-<!--            </div>-->
 
-<!--            <div class="notification-menu__wrapper">-->
-<!--                <div class="notification-menu__detector active"></div>-->
-<!--                <div class="notification-menu__icon-wrapper">-->
-<!--                    <svg class="square-24">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#pencil-line-stroked-24"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <div class="notification-menu__content">-->
-<!--                    <div class="notification-menu__text notification-menu__content-wrapper">-->
-<!--                        <a href="" class="ui-link _violet">Александр Алексон</a>  , Иван Иванович указал вас соавтором в книге «<a href="" class="ui-link _violet">Контракт с чудовищем</a>». Вам назначен гонорар в размере 30%-->
-<!--                    </div>-->
-<!--                    <div class="notification-menu__price notification-menu__content-wrapper ui-text&#45;&#45;bold">139 ₽ <span class="ui-text&#45;&#45;lt">111 ₽</span></div>-->
-<!--                    <a href="#" class="notification-menu__content-wrapper ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2">Принять соавторство</a>-->
-<!--                    <div class="notification-menu__date">12.02.22</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="notification-menu__wrapper">-->
-<!--                <div class="notification-menu__detector active"></div>-->
-<!--                <div class="notification-menu__icon-wrapper">-->
-<!--                    <svg class="square-24">-->
-<!--                        <use xlink:href="./assets/icon-sprite/svg-sprite.svg#gift-stroked-24"></use>-->
-<!--                    </svg>-->
-<!--                </div>-->
-<!--                <div class="notification-menu__content">-->
-<!--                    <div class="notification-menu__text notification-menu__content-wrapper">-->
-<!--                        <a href="" class="ui-link _violet">Александр Алексон</a>, вам пришел сертификат на сумму 1000 ₽ от <a href="" class="ui-link _violet">Ивана Ивановича</a>-->
-<!--                    </div>-->
+        </div>
+    {% endif %}
+</div>
+{% if not user %}
+    <div id="auth_popup" class="auth" style="display: none">
+        <div id="login_popup" class="auth__container _small">
+            <div class="auth__header _desktop">
+                <svg class="square-24 auth__button-back">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+                </svg>
+                <div class="auth__title ui-text--bold">Вход</div>
+                <svg onclick="closeForm()" class="auth__button-close square-24">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                </svg>
+            </div>
+            <div class="auth__body">
+                <button class="auth-item-sign _indent"
+                        onclick="loginForm()"
+                >
+                    <svg class="square-16 _mail">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#mail-filled-16' | theme}}"></use>
+                    </svg>
+                    <span class="ui-text--medium">Почта</span>
+                </button>
+                {% component 'socialconnect' %}
+                <a class="ui-link _violet cursor-pointer"
+                   onclick="registerForm()"
+                >Регистрация</a>
+            </div>
+        </div>
+        <div id="register_popup" class="auth__container _small">
+            <div class="auth__header _desktop">
+                <svg class="square-24 auth__button-back">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+                </svg>
+                <div class="auth__title ui-text--bold">Регистрация</div>
+                <svg onclick="closeForm()" class="auth__button-close square-24">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                </svg>
+            </div>
+            <div class="auth__body">
+                <button class="auth-item-sign _indent" type="button"
+                        onclick="registerForm()"
+                >
+                    <svg class="square-16 _mail">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#mail-filled-16' | theme}}"></use>
+                    </svg>
+                    <span class="ui-text--medium">Почта</span>
+                </button>
+                {% component 'socialconnect' %}
 
-<!--                    <a href="#" class="notification-menu__content-wrapper ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2">Получить</a>-->
-<!--                    <div class="notification-menu__date">12.02.22</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
 
-<!--    &lt;!&ndash; Баланс &ndash;&gt;-->
-<!--    <div class="menu-mobile__container " data-menu-item="6">-->
-<!--        <div class="menu-mobile__header" data-menu-link="1">-->
-<!--            <svg class="square-16">-->
-<!--                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>-->
-<!--            </svg>-->
-<!--            <span class="ui-text&#45;&#45;bold">Баланс</span>-->
-<!--            <div class="square-16"></div>-->
-<!--        </div>-->
-<!--        <div class="menu-mobile__body">-->
-<!--            <div class="notification-menu__wrapper">-->
-<!--                <div class="notification-menu__content">-->
-<!--                    <div class="notification-menu__text notification-menu__content-wrapper">-->
-<!--                        Баланс пополнен на 1000 ₽-->
-<!--                    </div>-->
-<!--                    <div class="notification-menu__date">6 часов назад</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="notification-menu__wrapper">-->
-<!--                <div class="notification-menu__content">-->
-<!--                    <div class="notification-menu__text _green notification-menu__content-wrapper">-->
-<!--                        Вывод средств: 8 719.6 ₽  из 8 719.6 ₽ доступных вам средств-->
-<!--                    </div>-->
-<!--                    <div class="notification-menu__date">6 часов назад</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="notification-menu__wrapper">-->
-<!--                <div class="notification-menu__content">-->
-<!--                    <div class="notification-menu__text notification-menu__content-wrapper">-->
-<!--                        Куплена книга <a href="" class="ui-link _violet">«Творческое перегорание или затишье перед бурей»</a>-->
-<!--                    </div>-->
-<!--                    <div class="notification-menu__date">6 часов назад</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="notification-menu__wrapper">-->
-<!--                <div class="notification-menu__content">-->
-<!--                    <div class="notification-menu__text notification-menu__content-wrapper">-->
-<!--                        Вы получили 200 ₽ от <a href="#" class="ui-link _violet">Виктор</a>-->
-<!--                    </div>-->
-<!--                    <div class="notification-menu__date">6 часов назад</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
+                <!--            <a href="#" class="auth__button-back-desktop ui-link _violet">-->
+                <!--                <svg class="square-16">-->
+                <!--                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>-->
+                <!--                </svg>-->
+                <!--                <span>Назад</span>-->
+                <!--            </a>-->
 
-<!--    &lt;!&ndash; Личный кабинет &ndash;&gt;-->
-<!--    <div class="menu-mobile__container " data-menu-item="7">-->
-<!--        <div class="menu-mobile__header" data-menu-link="3">-->
-<!--            <svg class="square-16">-->
-<!--                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>-->
-<!--            </svg>-->
-<!--            <span class="ui-text&#45;&#45;bold">Профиль</span>-->
-<!--            <div class="square-16"></div>-->
-<!--        </div>-->
-<!--        <div class="menu-mobile__body">-->
-<!--            <a href="/frontend/lc-profile.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Профиль</span>-->
-<!--            </a>-->
-<!--            <a href="/frontend/lc-privacy.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Приватность</span>-->
-<!--            </a>-->
-<!--            <a href="/frontend/lc-notification.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Уведомления</span>-->
-<!--            </a>-->
-<!--            <a href="/frontend/lc-blacklist.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Черный список</span>-->
-<!--            </a>-->
-<!--            <div class="menu-mobile__separator"></div>-->
+                <div class="auth__addition">
+                    Есть аккаунт? <a class="ui-link _violet cursor-pointer"
+                                     onclick="loginForm()"
+                    >Войти</a>
+                </div>
 
-<!--            <a href="/frontend/author-page.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Книги</span>-->
-<!--            </a>-->
-<!--            <a href="/frontend/author-page.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Магазин</span>-->
-<!--            </a>-->
-<!--            <a href="/frontend/author-page.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Блог</span>-->
-<!--            </a>-->
-<!--            <a href="/frontend/author-page.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Видеоблог</span>-->
-<!--            </a>-->
-<!--            <a href="/frontend/author-page.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Награды</span>-->
-<!--            </a>-->
-<!--            <a href="/frontend/author-page.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Комментарии</span>-->
-<!--            </a>-->
-<!--            <a href="/frontend/author-page.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Репосты</span>-->
-<!--            </a>-->
+                <div class="auth__addition ui-text-body--3 _color-gray">
+                    Регистрируясь, вы соглашаетесь с <a href="#" class="ui-link _violet">пользовательским соглашением</a> и <a
+                            href="#" class="ui-link _violet">политикой конфиденциальности</a>.
+                </div>
+            </div>
+        </div>
+        {% partial 'auth/registerForm' %}
+        <form id="login_form" class="auth__container _small"
+              data-request="bookAccount::onSignin"
+              data-request-validate
+              data-request-data="{ redirect: '/' }"
+        >
+            <div class="auth__header _desktop">
+                <svg onclick="closeForm()" class="square-24 auth__button-back active">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+                </svg>
+                <div class="auth__title ui-text--bold">Вход</div>
+                <svg onclick="closeForm()" class="auth__button-close square-24">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                </svg>
+            </div>
+            <div class="auth__body">
+                <a class="auth__button-back-desktop ui-link _violet cursor-pointer" onclick="loginPopup()"
+                >
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+                    </svg>
+                    <span>Назад</span>
+                </a>
 
-<!--            <div class="menu-mobile__separator"></div>-->
+                <div class="auth__form-container">
+                    <div class="ui-input-wrapper">
+                        <input class="ui-input-item _size-32" type="email" name="email" placeholder="Электронная почта">
+                        <div class="ui-select-hitn"></div>
+                        <div class="ui-select-error" data-validate-for="email"></div>
+                    </div>
+                    <div class="ui-input-wrapper">
+                        <input class="ui-input-item _size-32" type="password" name="password" placeholder="Пароль">
 
-<!--            <a href="#" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Коммерческий кабинет</span>-->
-<!--            </a>-->
-<!--            <a href="#" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Статистика прочтений</span>-->
-<!--            </a>-->
-<!--            <a href="#" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Реклама</span>-->
-<!--            </a>-->
-<!--            <a href="#" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Заказы</span>-->
-<!--            </a>-->
+                        <div class="ui-select-hitn"></div>
+                        <div class="ui-select-error" data-validate-for="password"></div>
+                    </div>
+                </div>
+                <div class="ui-select-error" data-validate-for="auth"></div>
 
-<!--            <div class="menu-mobile__separator"></div>-->
+                <button type="submit" class="auth__action ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                    <span class="ui-text--medium">Войти</span>
+                </button>
 
-<!--            <a href="/lc-security.html" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Безопасность</span>-->
-<!--            </a>-->
-<!--            <a href="#" class="menu-mobile__link _indent-large" >-->
-<!--                <span class="ui-text&#45;&#45;medium">Общее</span>-->
-<!--            </a>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
+                <a href="/forgot-password" target="_blank" class="auth__link ui-link _violet"
 
+                >Забыли пароль?</a>
+                <a class="auth__link ui-link _violet cursor-pointer" onclick="registerForm()"
+
+                >Регистрация</a>
+            </div>
+        </form>
+    </div>
+{% endif %}
+{% partial 'modals/new-profile' %}
 <script>
     initFn();
 </script>

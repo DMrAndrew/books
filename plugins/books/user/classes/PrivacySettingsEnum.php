@@ -22,8 +22,8 @@ enum PrivacySettingsEnum: string
         return collect(static::cases())->map->value->toArray();
     }
 
-    public static function default(): string
+    public static function default(): PrivacySettingsEnum
     {
-        return self::ALL->value;
+        return self::ALL;
     }
 }

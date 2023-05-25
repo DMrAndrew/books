@@ -1,8 +1,11 @@
 <div class="ui-container">
-    <div class="create-book__title ui-text-head--2 ui-text--bold">Добавление текста</div>
+    <div class="create-book__title ui-text-head--2 ui-text--bold">Добавление текста в <a href="/about-book/{{book.id}}#electronic" class="ui-link _violet cursor-pointer">«{{book.title}}»</a></div>
 </div>
 
-<form class="lc-book-text ui-container-fluid wrapper" data-request="{{__SELF__}}::onSave" data-request-validate>
+<form class="lc-book-text ui-container-fluid wrapper"
+      data-request-flash
+      data-request="{{__SELF__}}::onSave"
+      data-request-validate>
     <div class="personal-area__wrap _indent-large ui-input">
         <label class="ui-input-label">Название части</label>
         <input class="ui-input-item _size-32" value="{{chapter.title}}" name="title" type="text">
@@ -10,8 +13,8 @@
         <div class="ui-select-error" data-validate-for="title"></div>
     </div>
 
-    <div class="personal-area__wrap _indent-large">
-        <textarea name="chapter_content">{{chapter.getContent().body}}</textarea>
+    <div class="personal-area__wrap _indent-large typographical-block">
+        <textarea  id="chapter_content" name="chapter_content">{{chapter.getContent().body}}</textarea>
     </div>
     <div class="ui-select-hitn"></div>
     <div class="ui-select-error" data-validate-for="chapter_content"></div>
@@ -22,7 +25,7 @@
     <div class="personal-area__wrap _indent-large">
         <label class="personal-area__wrap _indent-medium ui-radio">
             <input type="radio" name="action" value="publish_now" class="chapter-action-radio"
-                   {{ chapter.status.value == 'published' and not chapter.published_at ? 'checked':'' }}
+                   {{ chapter.status.value == 'published'? 'checked':'' }}
             hidden>
             <div class="ui-radio-checker"></div>
             <span class="ui-radio-text">Опубликовать сейчас</span>
@@ -37,7 +40,7 @@
         </label>
         <label class="personal-area__wrap _indent-medium ui-radio">
             <input type="radio" id="published_at_radio" value="published_at" class="chapter-action-radio"
-                   {{ chapter.status.value == 'published' and chapter.published_at ? 'checked':'' }}
+                   {{ chapter.status.value == 'planned' ? 'checked':'' }}
             name="action" hidden>
             <div class="ui-radio-checker"></div>
             <span class="ui-radio-text">Назначить дату публикации</span>
@@ -47,34 +50,13 @@
 
         </div>
             <label class="ui-input-label">Дата публикации</label>
-<!--            <input class="ui-input-item _size-32"  name="published_at" value="{{chapter.published_at ? carbon(chapter.published_at).format('Y-m-d\TH:i') : ''}}"  type="datetime-local">-->
         <div class="personal-area__datetime">
             <input class="ui-input-item _size-32" type="text" id="datepicker" name="published_at_date" value="{{chapter.published_at ? carbon(chapter.published_at).format('d.m.Y') : ''}}" >
-            <select id="time" name="published_at_time" value="{{chapter.published_at ? carbon(chapter.published_at).format('H:i') : ''}}">
-                <option value="0">00:00</option>
-                <option value="1">01:00</option>
-                <option value="2">02:00</option>
-                <option value="3">03:00</option>
-                <option value="4">04:00</option>
-                <option value="5">05:00</option>
-                <option value="6">06:00</option>
-                <option value="7">07:00</option>
-                <option value="8">08:00</option>
-                <option value="9">09:00</option>
-                <option value="10">10:00</option>
-                <option value="11">11:00</option>
-                <option value="12">12:00</option>
-                <option value="13">13:00</option>
-                <option value="14">14:00</option>
-                <option value="15">15:00</option>
-                <option value="16">16:00</option>
-                <option value="17">17:00</option>
-                <option value="18">18:00</option>
-                <option value="19">19:00</option>
-                <option value="20">20:00</option>
-                <option value="21">21:00</option>
-                <option value="22">22:00</option>
-                <option value="23">23:00</option>
+           {% set time = carbon(chapter.published_at).format('H:i') %}
+            <select id="time" name="published_at_time">
+                {%  for opt in times %}
+                <option value="{{opt}}" {{opt == time ? 'selected': ''}}>{{opt}}</option>
+                {% endfor %}
             </select>
         </div>
         </div>
@@ -88,10 +70,8 @@
 </form>
 
 <script>
-    if (!document.getElementById('cke_chapter_content')) {
-        CKEDITOR.replace('chapter_content');
-    }
 
+    initEditor('chapter_content')
     $(function () {
         if(document.querySelector('input[class = "chapter-action-radio"]:checked').id == 'published_at_radio'){
             $('#published_at_input').show()

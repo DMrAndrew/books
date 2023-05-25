@@ -74,8 +74,7 @@ class FavoriteGenres extends ComponentBase
 
     public function nestedGenres()
     {
-        $roots = $this->queryGenres()
-            ->nestedFavorites()
+        $roots = $this->queryGenres()->with('children')->roots()
             ->get();
 
         $this->mergeWithSelected($roots);
@@ -134,11 +133,7 @@ class FavoriteGenres extends ComponentBase
         $attempts = 15;
         if (! RateLimiter::attempt('toggleFavorite'.request()->ip(), $attempts, fn () => 1)) {
             $ex = new Exception(Lang::get('books.catalog::lang.plugin.too_many_attempt'));
-            if (Request::ajax()) {
-                throw $ex;
-            } else {
-                Flash::error($ex->getMessage());
-            }
+            Flash::error($ex->getMessage());
         }
 
         $recommend = collect(post('recommend'));
@@ -157,7 +152,6 @@ class FavoriteGenres extends ComponentBase
             $partial = ['.recommend_spawn' => $this->renderPartial('personal-area/recommend_section', [
                 'loved_genres' => $this->loved_genres,
                 'unloved_genres' => $this->unloved_genres,
-                'nestedGenres' => $this->nestedGenres(),
             ])];
         } else {
             $partial = ['.index_favorite_widget_spawn' => $this->renderPartial('genres/index_favorite_widget', [
@@ -165,14 +159,13 @@ class FavoriteGenres extends ComponentBase
             ])];
         }
 
-        $response = Response::make($partial);
+        Flash::success('Любимые жанры успешно сохранены');
 
         if (! $this->user) {
-            $response->
-            withCookie(Cookie::forever('loved_genres', json_encode($loved)))->
-            withCookie(Cookie::forever('unloved_genres', json_encode($unloved)));
+            Cookie::queue(Cookie::forever('loved_genres', json_encode($loved)));
+            Cookie::queue(Cookie::forever('unloved_genres', json_encode($unloved)));
         }
 
-        return $response;
+        return $partial;
     }
 }

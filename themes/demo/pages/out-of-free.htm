@@ -1,0 +1,38 @@
+title = "Конец ознакомительной части"
+layout = "default"
+url = "/out-of-free/:book_id/:chapter_id?"
+meta_title = "Конец ознакомительной части"
+[OutOfFree]
+==
+<!-- Тело страницы -->
+<div class="ui-container-fluid common-pages__container">
+    <div class="wrapper">
+        <div class="common-pages__content">
+            <div class="stop-free__container">
+                <div class="">Вы закончили читать бесплатный ознакомительный фрагмент. Купите доступ ко всем главам
+                    книги, выполнив единоразовый платеж.
+                </div>
+                <div class="stop-free__buttons">
+                    <a href="#" class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full">
+              <span>
+                  {% if book.ebook.discount_exists %}
+                                        <span>
+                        <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span
+                            class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
+                        <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
+                      </span>
+                                        {% else %}
+                                       <span> Купить {{book.ebook.price}} ₽</span>
+                                        {% endif %}
+
+              </span>
+                    </a>
+                    <a href="/book-card/{{book.id}}"
+                       class="ui-button ui-button-size--32 ui-button-view--3 ui-button--full ui-button--column">
+                        <span class="ui-text--medium">Вернуться к карточке книги</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

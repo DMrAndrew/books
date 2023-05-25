@@ -11,6 +11,7 @@ let loginPopup = () => toForm('login_popup');
 let registerPopup = () => toForm('register_popup');
 let loginForm = () => toForm('login_form');
 let registerForm = () => toForm('register_form');
+let orderFormPopup = () => toForm('order_form_popup');
 
 let openChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'flex'
 let closeChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'none'
@@ -28,19 +29,30 @@ let openTab = function (default_tab) {
     }
 }
 
+function initAccordion(container, accordionclickableArea) {
+    const nodes = document.querySelectorAll(container);
+    const MOBILE_POINT = 768;
+    if (document.body.offsetWidth > MOBILE_POINT) return
+
+    nodes[0].classList.add('active');
+
+    Array.from(nodes).forEach(item => {
+        item.addEventListener('click', e => {
+            let target = e.target.closest(accordionclickableArea);
+            if (target) {
+                item.classList.toggle('active');
+            }
+        })
+    })
+}
 
 addEventListener('page:before-cache', function () {
-    let annotation = document.getElementById('cke_annotation')
-    let chapter_content = document.getElementById('cke_chapter_content')
-    let editors = [annotation, chapter_content].filter(e => !!e)
-    if (editors[0] || false) {
-        editors.forEach(editor => editor.remove())
-    }
+    $('.ck-editor').remove()
 });
 let initUserStuff = function () {
-    if (['post_register_accepted', 'adult_agreement_accepted']
-        .some(e => !document.cookie.includes(e))) {
-        oc.ajax('bookAccount::onPageLoad')
+    if (Cookies.get('fetch_required')) {
+        Cookies.remove('fetch_required')
+        oc.ajax('bookAccount::onFetch', {flash: true})
     }
 }
 let initSortable = (container, handler) => {
@@ -54,19 +66,18 @@ let initSortable = (container, handler) => {
                 let arr = $(container).find('input').map(function () {
                     return $(this).val();
                 }).get()
-                oc.ajax(handler, {data: {sequence: arr, is_owner: $(`input[name=is_owner]`).val()}})
+                oc.ajax(handler, {flash: true, data: {sequence: arr, is_owner: $(`input[name=is_owner]`).val()}})
             }
         });
     })
 };
-
 
 let tabElemInit = function () {
     const containerWidth = document.querySelector('.js-container')
     const wrapperWidth = document.querySelector('.js-wrapper')
     const tabElem = document.querySelectorAll('.js-wrapper > .ui-tabs-link')
 
-    tabElem.forEach(item => {
+    tabElem.forEach(() => {
         if (wrapperWidth.clientWidth > containerWidth.clientWidth) {
 
             const lastTab = wrapperWidth.lastElementChild;
@@ -74,24 +85,42 @@ let tabElemInit = function () {
         }
     })
 }
-
-addEventListener('page:before-cache', function() {
+addEventListener('page:before-cache', function () {
     // console.log('page:before-cache')
-    $('.popup-menu').hide()
+    $('*[data-header-action]').removeClass('active')
     reInitSelect()
+
 });
 
-// addEventListener('page:render', function() {
-//     console.log('page:render')
-// });
+addEventListener('page:render', function () {
+    // console.log('page:render')
+});
 
 
 addEventListener('page:loaded', function () {
     // console.log('page:loaded')
+    initUserStuff()
     iniSelect()
+
+});
+addEventListener(`DOMContentLoaded`, function () {
+    // console.log(`DOMContentLoaded`)
 });
 
-addEventListener('page:unload', function() {
+addEventListener(`ajax:done`, function () {
+});
+addEventListener(`page:before-render`, function () {
+    // console.log(`page:before-render`)
+});
+
+addEventListener(`page:updated`, function () {
+    // console.log(`page:updated`)
+});
+
+
+addEventListener('page:unload', function () {
     // console.log('page:unload')
+
     window.reader && window.reader.clear()
 })
+

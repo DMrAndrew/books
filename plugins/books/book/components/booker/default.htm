@@ -1,5 +1,7 @@
 {{ form_ajax('booker::onSaveBook',{
+id:'bookerForm',
 'data-request-validate':'true',
+'data-request-flash':'true',
 'data-request-complete':'iniSelect()'
 }) }}
 <div class="create-book__container ui-container-fluid wrapper">
@@ -41,10 +43,10 @@
                         {% endfor %}
 
                     </select>
-                        <svg class="ui-select-item-icon chevron_up">
+                        <svg class="ui-select-item-icon chevron_up _fake">
                             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme }}"></use>
                         </svg>
-                        <svg class="ui-select-item-icon chevron_down" >
+                        <svg class="ui-select-item-icon chevron_down _fake" >
                             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme }}"></use>
                         </svg>
                     </div>
@@ -59,9 +61,9 @@
         <div class="ui-select-error" data-validate-for="comment_allowed"></div>
         <div class="create-book__check">
             <label class="ui-checkbox">
-                <input type="hidden" value="0" name="comment_allowed">
+                <input type="hidden" value="0"  name="comment_allowed">
                 <input type="checkbox" value="1" hidden name="comment_allowed"
-                       {{ book.ebook.comment_allowed ? 'checked' : ''  }}
+                       {{ not book.ebook or book.ebook.comment_allowed ? 'checked' : ''  }}
                 >
                 <div class="ui-checkbox-checker">
                     <svg>
@@ -70,19 +72,19 @@
                 </div>
                 <span class="ui-checkbox-text">Разрешить комментарии</span>
             </label>
-            <label class="ui-checkbox">
-                <input type="hidden" value="0" name="download_allowed">
-                <input type="checkbox" value="1" hidden name="download_allowed"
+<!--            <label class="ui-checkbox">-->
+<!--                <input type="hidden" value="0"  name="download_allowed">-->
+<!--                <input type="checkbox" value="1" hidden name="download_allowed"-->
 
-                       {{ book.ebook.download_allowed ? 'checked' : ''  }}
-                       >
-                <div class="ui-checkbox-checker">
-                    <svg>
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
-                    </svg>
-                </div>
-                <span class="ui-checkbox-text">Разрешить скачивания</span>
-            </label>
+<!--                       {{not book.ebook or  book.ebook.download_allowed ? 'checked' : ''  }}-->
+<!--                       >-->
+<!--                <div class="ui-checkbox-checker">-->
+<!--                    <svg>-->
+<!--                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>-->
+<!--                    </svg>-->
+<!--                </div>-->
+<!--                <span class="ui-checkbox-text">Разрешить скачивания</span>-->
+<!--            </label>-->
 
         </div>
 

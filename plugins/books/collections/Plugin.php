@@ -5,6 +5,7 @@ namespace Books\Collections;
 use Backend;
 use Books\Book\Models\Book;
 use Books\Collections\behaviors\HasLibrary;
+use Books\Collections\classes\CollectionEnum;
 use Books\Collections\Components\Library;
 use Books\Collections\Models\Lib;
 use Illuminate\Foundation\AliasLoader;
@@ -51,6 +52,7 @@ class Plugin extends PluginBase
     public function boot()
     {
         AliasLoader::getInstance()->alias('Lib', Lib::class);
+        AliasLoader::getInstance()->alias('CollectionEnum', CollectionEnum::class);
         User::extend(function (User $user) {
             $user->implementClassWith(HasLibrary::class);
         });

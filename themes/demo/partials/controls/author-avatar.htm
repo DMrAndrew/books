@@ -1,0 +1,5 @@
+{% if author.avatar %}
+<img src="{{author.avatar.getThumb(40,40)}}" alt="">
+{% else %}
+{{author.firstLatter}}
+{% endif %}

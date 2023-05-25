@@ -1,12 +1,17 @@
-<?php namespace Books\Comments\Models;
+<?php
+
+namespace Books\Comments\Models;
 
 use App\traits\ScopeUser;
-use Carbon\Carbon;
+use Books\Book\Models\Book;
+use Books\Profile\Models\Profile;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\SimpleTree;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
+use October\Rain\Support\Facades\Event;
+use WordForm;
 
 /**
  * Comment Model
@@ -26,6 +31,7 @@ class Comment extends Model
     public $table = 'books_comments_comments';
 
     protected $fillable = ['parent_id', 'user_id', 'content'];
+
     /**
      * @var array rules for validation
      */
@@ -36,22 +42,43 @@ class Comment extends Model
     ];
 
     public $morphTo = [
-        'commentable' => []
+        'commentable' => [],
     ];
 
     protected static function booted()
     {
-        static::addGlobalScope('orderByDesc', fn($q) => $q->orderByDesc('id'));
+        static::addGlobalScope('orderByDesc', fn ($q) => $q->orderByDesc('id'));
     }
 
-    protected function beforeDelete()
+    /**
+     * @return void
+     */
+    public function afterCreate(): void
     {
-        $this->children->each->delete();
+        // не ответ на чужой комментарий и комментарий к книге
+        if (empty($this->parent_id) && get_class($this->commentable) === Book::class) {
+            Event::fire('books.comments::comment.created', [$this]);
+        }
+
+        // ответ на комментарий, неважно в профиле или книге
+        if ($this->parent_id) {
+            Event::fire('books.comments::comment.replied', [$this]);
+        }
     }
 
     public function isEdited(): bool
     {
         return $this->created_at->notEqualTo($this->updated_at);
+    }
+
+    public function addition(): string
+    {
+        return $this->isDeleted() ? 'Удалён' : ($this->isEdited() ? 'Редактирован' : '');
+    }
+
+    public function isDeleted(): bool
+    {
+        return (bool) $this->{$this->getDeletedAtColumn()};
     }
 
     public function scopeRoot(Builder $builder): Builder
@@ -64,4 +91,24 @@ class Comment extends Model
         return $this->updated_at->diffForHumans();
     }
 
+    public function replayWordForm(): WordForm
+    {
+        return new WordForm(...['ответ', 'ответа', 'ответов']);
+    }
+
+    public function toShortString(): string
+    {
+        return match (get_class($this->commentable)) {
+            Book::class => 'к книге '.$this->commentable->title,
+            Profile::class => 'в профиле пользователя '.$this->commentable->username,
+        };
+    }
+
+    public function toCommentableLink(): string
+    {
+        return match (get_class($this->commentable)) {
+            Book::class => '/book-card/',
+            Profile::class => '/author-page/',
+        }.$this->commentable->id;
+    }
 }

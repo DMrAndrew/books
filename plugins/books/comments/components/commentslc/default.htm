@@ -2,7 +2,8 @@
     {% for comment in comments %}
     <div class="cb-mini-card _avatar">
         <div class="cb-mini-card__wrapper">
-            <div class="">Вы написали комментарий <a class="ui-link _violet" href="{{comment.link}}">{{comment.label}}</a></div>
+            <div class="">Вы написали комментарий <a class="ui-link _violet" href="{{comment.toCommentableLink}}">{{comment.toShortString}}</a>
+            </div>
             <div class="cb-mini-card__date">{{comment.isEdited() ? 'edited ':''}} {{comment.dateFormated()}}</div>
             <div class="cb-mini-card__text">
                 {{ comment.content | raw }}
@@ -14,12 +15,23 @@
             </svg>
             <div class="personal-area-blacklist-action">
                 <div class="personal-area-blacklist-action__wrapper">
-<!--                    <button class="personal-area-blacklist-action__item">Редактировать</button>-->
+                    <!--                    <button class="personal-area-blacklist-action__item">Редактировать</button>-->
                     <button onclick="oc.ajax('onRemove',{data:{id:'{{comment.id}}'}})"
-                        class="personal-area-blacklist-action__item">Удалить</button>
+                            class="personal-area-blacklist-action__item">Удалить
+                    </button>
                 </div>
             </div>
         </div>
     </div>
     {% endfor %}
+
+    {% if not comments.count() %}
+    <div class="author__placeholder _indent">
+        <svg class="square-32">
+            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#feather-stroked-24"></use>
+        </svg>
+        <div class="ui-text-head--3 ui-text--bold">У вас пока нет ни одного комментария</div>
+        <span>Когда они появятся, вы увидите их здесь</span>
+    </div>
+    {% endif %}
 </div>

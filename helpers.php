@@ -5,20 +5,22 @@
  * и включено расширение mbstring (Multibyte String Functions)
  */
 
+use Books\User\Classes\UserService;
+use Carbon\CarbonInterval;
 use RainLab\User\Facades\Auth;
 
-if (! function_exists('mb_ucfirst') && extension_loaded('mbstring')) {
+if (!function_exists('mb_ucfirst') && extension_loaded('mbstring')) {
     /**
      * mb_ucfirst - преобразует первый символ в верхний регистр
      *
-     * @param  string  $str - строка
-     * @param  string  $encoding - кодировка, по-умолчанию UTF-8
+     * @param string $str - строка
+     * @param string $encoding - кодировка, по-умолчанию UTF-8
      * @return string
      */
     function mb_ucfirst($str, $encoding = 'UTF-8')
     {
         $str = mb_ereg_replace('^[\ ]+', '', $str);
-        $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding).
+        $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding) .
             mb_substr($str, 1, mb_strlen($str), $encoding);
 
         return $str;
@@ -60,7 +62,7 @@ class WordForm
 
 function redirectIfUnauthorized()
 {
-    if (! Auth::getUser()) {
+    if (!Auth::getUser()) {
         return Redirect::to('/');
     }
 
@@ -69,16 +71,32 @@ function redirectIfUnauthorized()
 
 function shouldRestrictAdult(): bool
 {
-    $user = Auth::getUser();
-
-    return ! $user || ! $user->allowedSeeAdult();
+    return !UserService::allowedSeeAdult();
 }
 
 function shouldRestrictContent(): bool
 {
-    $foreign = parse_url(config('app.foreign_url') ?? '');
+    return !isComDomainRequested();
+}
 
-    return request()->host() !== $foreign['host'] ?? $foreign['path'];
+function isComDomainRequested(): bool
+{
+    $com = parse_url(comDomain() ?? '');
+    return request()->host() === ($com['host'] ?? $com['path']);
+}
+
+function comDomain(): ?string
+{
+    return config('app.com_url') ?? null;
+}
+
+function getFreqString(int $count, int $days): string
+{
+    return $count
+        . ' '
+        . (new WordForm(...['раз', 'раза', 'раз']))->getCorrectSuffix($count)
+        . ' в '
+        . str_replace('неделя', 'неделю', CarbonInterval::days($days)->cascade()->forHumans(['parts' => 1, 'aUnit' => true]));
 }
 
 ?>

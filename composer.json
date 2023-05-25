@@ -25,7 +25,12 @@
         "monarobase/country-list": "^3.3",
         "books/collections-plugin": "*",
         "rainlab/location-plugin": "^1.2",
-        "books/comments-plugin": "*"
+        "books/comments-plugin": "*",
+        "staudenmeir/eloquent-has-many-deep": "1.17",
+        "books/notifications-plugin": "*",
+        "kirschbaum-development/eloquent-power-joins": "^3.0",
+        "books/wallet-plugin": "dev-VK-24-4",
+        "books/payment-plugin": "dev-VK-24-4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -57,7 +62,8 @@
     "config": {
         "preferred-install": "dist",
         "allow-plugins": {
-            "composer/installers": true
+            "composer/installers": true,
+            "php-http/discovery": true
         }
     },
     "autoload": {
@@ -100,13 +106,25 @@
             "type": "path",
             "url": "./plugins/books/fileuploader"
         },
-        "book/collections-plugin": {
+        "books/collections-plugin": {
             "type": "path",
             "url": "./plugins/books/collections"
         },
         "books/comments-plugin": {
             "type": "path",
             "url": "./plugins/books/comments"
+        },
+        "books/notifications-plugin": {
+            "type": "path",
+            "url": "./plugins/books/notifications"
+        },
+        "books/wallet-plugin": {
+            "type": "path",
+            "url": "./plugins/books/wallet"
+        },
+        "books/payment-plugin": {
+            "type": "path",
+            "url": "./plugins/books/payment"
         }
     }
 }

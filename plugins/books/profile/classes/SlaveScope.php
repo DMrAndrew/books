@@ -2,7 +2,6 @@
 
 namespace Books\Profile\Classes;
 
-use Books\Book\Models\Chapter;
 use Books\Profile\Models\Profile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -18,15 +17,11 @@ class SlaveScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-
-        if($profile = $this->getQueryProfile($builder) ?? $this->getQueryUser($builder)?->profile){
-            $builder->whereIn('id', $profile->profiler($model)->select('slave_id'))
-                ->orWhereIn('id', $profile->user->profiler($model)->select('slave_id'));
+        $id = (new (get_class($model)))->getTable() . '.id';
+        if ($profile = $this->getQueryProfile($builder) ?? $this->getQueryUser($builder)?->profile) {
+            $builder->whereIn($id, $profile->profiler($model)->select('slave_id'))
+                ->orWhereIn($id, $profile->user->profiler($model)->select('slave_id'));
         }
-//        if ($user = $this->getQueryUser($builder)) {
-//            $builder->whereIn('id', $user->profiler($model)->select('slave_id'))
-//                ->orWhereIn('id', $user->profile->profiler($model)->select('slave_id'));
-//        }
     }
 
     public function extend(Builder $builder)
@@ -44,14 +39,13 @@ class SlaveScope implements Scope
     {
         $profile_id = null;
         foreach ($builder->getQuery()->wheres as $where) {
-            if ($where['type'] === 'Basic' && str_contains($where['column'], 'profile_id')) {
+            if ($where['type'] === 'Basic' && str_contains($where['column'] ?? '', 'profile_id')) {
                 $profile_id = $where['value'];
             }
         }
 
         return Profile::find($profile_id);
     }
-
 
     /**
      * @param Builder $builder
@@ -61,7 +55,7 @@ class SlaveScope implements Scope
     {
         $user_id = null;
         foreach ($builder->getQuery()->wheres as $where) {
-            if ($where['type'] === 'Basic' && str_contains($where['column'], 'user_id')) {
+            if ($where['type'] === 'Basic' && str_contains($where['column'] ?? '', 'user_id')) {
                 $user_id = $where['value'];
             }
         }

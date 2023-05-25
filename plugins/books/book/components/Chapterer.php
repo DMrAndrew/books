@@ -8,13 +8,13 @@ use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
-use Request;
 use ValidationException;
 use Validator;
 
@@ -71,15 +71,17 @@ class Chapterer extends ComponentBase
 
     public function prepareVals()
     {
+        $this->page['book'] = $this->book;
         $this->page['ebook'] = $this->ebook;
         $this->page['chapter'] = $this->chapter;
+        $this->page['times'] = collect(CarbonPeriod::create(today(), '1 hour', today()->copy()->addHours(23))->toArray())->map->format('H:i');
     }
 
     public function onSave()
     {
         try {
-            $data = post();
-            if ($data['chapter_content'] ?? false) {
+            $data = collect(post());
+            if ($data->has('chapter_content')) {
                 $data['content'] = $data['chapter_content'];
             }
 
@@ -87,34 +89,35 @@ class Chapterer extends ComponentBase
                 switch ($status) {
                     case 'published_at':
 
-                        $data['status'] = ChapterStatus::PUBLISHED;
-                        if (!isset($data['published_at_date'])) {
+                        $data['status'] = ChapterStatus::PLANNED;
+                        if (! isset($data['published_at_date'])) {
                             new ValidationException(['published_at' => 'Укажите дату публикации.']);
                         }
-                        if (!isset($data['published_at_time'])) {
+                        if (! isset($data['published_at_time'])) {
                             new ValidationException(['published_at' => 'Укажите время публикации.']);
                         }
-                        if (!Carbon::canBeCreatedFromFormat($data['published_at_date'] ?? '', 'd.m.Y')) {
+                        if (! Carbon::canBeCreatedFromFormat($data['published_at_date'] ?? '', 'd.m.Y')) {
                             throw new ValidationException(['published_at' => 'Не удалось получить дату публикации. Укажите дату в формате d.m.Y']);
                         }
                         $data['published_at'] = Carbon::createFromFormat('d.m.Y', $data['published_at_date'])->setTimeFromTimeString($data['published_at_time']);
+                        if (Carbon::now()->gte($data->get('published_at'))) {
+                            throw new ValidationException(['published_at' => 'Дата и время публикации должны быть больше текущего времени.']);
+                        }
                         break;
 
                     case 'save_as_draft':
 
                         $data['status'] = ChapterStatus::DRAFT;
-                        $data['published_at'] = null;
                         break;
 
                     case 'publish_now':
 
                         $data['status'] = ChapterStatus::PUBLISHED;
-                        $data['published_at'] = null;
                         break;
                 }
             }
             $validator = Validator::make(
-                $data,
+                $data->toArray(),
                 collect((new Chapter())->rules)->only([
                     'title', 'content', 'published_at',
                 ])->toArray()
@@ -123,15 +126,12 @@ class Chapterer extends ComponentBase
                 throw new ValidationException($validator);
             }
 
-            $this->chapter = $this->chapterManager->setEdition($this->ebook)->from($data);
+            $this->chapter = $this->chapterManager->setEdition($this->ebook)->from($data->toArray());
 
-            return Redirect::to('/about-book/' . $this->book->id)->withFragment('#tab-electronic');
+            return Redirect::to('/about-book/'.$this->book->id)->withFragment('#electronic');
         } catch (Exception $ex) {
-            if (Request::ajax()) {
-                throw $ex;
-            } else {
-                Flash::error($ex->getMessage());
-            }
+            Flash::error($ex->getMessage());
+            throw $ex;
         }
     }
 }

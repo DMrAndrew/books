@@ -3,6 +3,7 @@
 namespace Books\Catalog;
 
 use Backend;
+use Books\Book\Models\Stats;
 use Books\Catalog\Classes\ListingFilter;
 use Books\Catalog\Components\FavoriteGenres;
 use Books\Catalog\Components\Genres;
@@ -16,7 +17,7 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User'];
+    public $require = ['RainLab.User', 'RainLab.Location'];
 
     /**
      * Returns information about this plugin.
@@ -51,6 +52,7 @@ class Plugin extends PluginBase
     {
         AliasLoader::getInstance()->alias('Genre', Genre::class);
         AliasLoader::getInstance()->alias('ListingFilter', ListingFilter::class);
+        AliasLoader::getInstance()->alias('Stats', Stats::class);
     }
 
     /**
@@ -93,13 +95,19 @@ class Plugin extends PluginBase
     {
         return [
             'catalog' => [
-                'label' => 'Каталог',
+                'label' => 'Время книг',
                 'url' => Backend::url('books/catalog/catalog'),
                 'icon' => 'icon-leaf',
                 'permissions' => ['books.catalog.*'],
                 'order' => 500,
 
                 'sideMenu' => [
+                    'books' => [
+                        'label' => 'Книги',
+                        'icon' => 'icon-leaf',
+                        'url' => Backend::url('books/book/book'),
+                        'permissions' => ['books.book.*'],
+                    ],
                     'types' => [
                         'label' => 'Типы книг',
                         'icon' => 'icon-leaf',
@@ -111,6 +119,12 @@ class Plugin extends PluginBase
                         'icon' => 'icon-leaf',
                         'url' => Backend::url('books/catalog/genre'),
                         'permissions' => ['books.catalog.*'],
+                    ],
+                    'prohibited' => [
+                        'label' => 'Запрещённый контент',
+                        'icon' => 'icon-leaf',
+                        'url' => Backend::url('books/book/prohibited'),
+                        'permissions' => ['books.book.*'],
                     ],
                 ],
             ],

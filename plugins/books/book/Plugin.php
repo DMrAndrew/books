@@ -2,33 +2,57 @@
 
 namespace Books\Book;
 
-use Backend;
 use Books\Book\Behaviors\Fillable;
+use Books\Book\Behaviors\Prohibitable;
 use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;
+use Books\Book\Classes\ChapterService;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\FB2Manager;
+use Books\Book\Classes\GenreRater;
 use Books\Book\Classes\Rater;
+use Books\Book\Classes\StatisticService;
+use Books\Book\Classes\WidgetService;
 use Books\Book\Components\AboutBook;
+use Books\Book\Components\AdvertBanner;
+use Books\Book\Components\AdvertLC;
+use Books\Book\Components\AwardsLC;
+use Books\Book\Components\BookAwards;
 use Books\Book\Components\BookCard;
 use Books\Book\Components\Booker;
 use Books\Book\Components\BookPage;
 use Books\Book\Components\Chapterer;
+use Books\Book\Components\DiscountLC;
 use Books\Book\Components\EBooker;
 use Books\Book\Components\LCBooker;
+use Books\Book\Components\OutOfFree;
+use Books\Book\Components\Promocode;
 use Books\Book\Components\Reader;
+use Books\Book\Components\ReadStatistic;
+use Books\Book\Components\Widget;
+use Books\Book\Console\DeleteNotActivatedFreePromocodes;
 use Books\Book\Models\Author;
+use Books\Book\Models\Award;
+use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Cycle;
+use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
+use Books\Book\Models\Prohibited;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
+use Books\Catalog\Models\Genre;
+use Books\Profile\Behaviors\Slavable;
+use Books\Reposts\behaviors\Shareable;
+use Books\Reposts\Components\Reposter;
 use Config;
 use Event;
+use Illuminate\Database\Console\PruneCommand;
 use Illuminate\Foundation\AliasLoader;
 use Mobecan\Favorites\Behaviors\Favorable;
+use RainLab\Location\Behaviors\LocationModel;
 use System\Classes\PluginBase;
 
 /**
@@ -36,7 +60,7 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User'];
+    public $require = ['RainLab.User', 'Books.Profile'];
 
     /**
      * Returns information about this plugin.
@@ -58,8 +82,11 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
+        parent::register();
+
+        $this->registerConsoleCommand('model:prune', PruneCommand::class);
     }
 
     /**
@@ -67,7 +94,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         Config::set('book', Config::get('books.book::config'));
 
@@ -83,19 +110,38 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Pagination', Pagination::class);
         AliasLoader::getInstance()->alias('EditionsEnums', EditionsEnums::class);
         AliasLoader::getInstance()->alias('Rater', Rater::class);
+        AliasLoader::getInstance()->alias('StatisticService', StatisticService::class);
+        AliasLoader::getInstance()->alias('WidgetService', WidgetService::class);
+        AliasLoader::getInstance()->alias('Promocode', Models\Promocode::class);
+        AliasLoader::getInstance()->alias('Discount', Discount::class);
+        AliasLoader::getInstance()->alias('Prohibited', Prohibited::class);
 
         Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
-        Event::listen('books.book.updated', fn(Book $book) => $book->updateEventHandler());
+
 
         Book::extend(function (Book $book) {
             $book->implementClassWith(Favorable::class);
+            $book->implementClassWith(Shareable::class);
+        });
+
+        Prohibited::extend(function (Prohibited $prohibited) {
+            $prohibited->implementClassWith(LocationModel::class);
+        });
+        foreach (config('book.prohibited') as $class) {
+            $class::extend(function ($model) {
+                $model->implementClassWith(Prohibitable::class);
+
+            });
+        }
+
+        AwardBook::extend(function (AwardBook $award) {
+            $award->implementClassWith(Slavable::class);
         });
 
         foreach ([Chapter::class, Pagination::class] as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Fillable::class);
             });
-
         }
 
         foreach ([Edition::class, Chapter::class, Pagination::class] as $class) {
@@ -110,7 +156,7 @@ class Plugin extends PluginBase
      *
      * @return array
      */
-    public function registerComponents()
+    public function registerComponents(): array
     {
         return [
             AboutBook::class => 'AboutBook',
@@ -121,43 +167,31 @@ class Plugin extends PluginBase
             BookPage::class => 'BookPage',
             Reader::class => 'reader',
             BookCard::class => 'bookCard',
+            ReadStatistic::class => 'readStatistic',
+            Widget::class => 'widget',
+            OutOfFree::class => 'OutOfFree',
+            Components\Cycle::class => 'cycle',
+            Promocode::class => 'promocode',
+            BookAwards::class => 'bookAwards',
+            AwardsLC::class => 'awardsLC',
+            AdvertLC::class => 'advertLC',
+            AdvertBanner::class => 'advertBanner',
+            DiscountLC::class => 'discountLC',
         ];
     }
 
-    /**
-     * Registers any backend permissions used by this plugin.
-     *
-     * @return array
-     */
-    public function registerPermissions()
+    public function registerSchedule($schedule): void
     {
-        return []; // Remove this line to activate
+        $schedule->call(function () {
+            ChapterService::audit();
+        })->everyMinute();
 
-        return [
-            'books.book.some_permission' => [
-                'tab' => 'Book',
-                'label' => 'Some permission',
-            ],
-        ];
-    }
+        $schedule->call(function () {
+            GenreRater::queue();
+        })->everyTenMinutes();
 
-    /**
-     * Registers backend navigation items for this plugin.
-     *
-     * @return array
-     */
-    public function registerNavigation()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'book' => [
-                'label' => 'Book',
-                'url' => Backend::url('books/book/mycontroller'),
-                'icon' => 'icon-leaf',
-                'permissions' => ['books.book.*'],
-                'order' => 500,
-            ],
-        ];
+        $schedule->command('model:prune', [
+            '--model' => [Models\Promocode::class],
+        ])->dailyAt('03:00');
     }
 }

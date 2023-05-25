@@ -21,7 +21,7 @@ class UserEventHandler
     {
         (new ProfileService(new Profile()))->createProfile(user: $user);
         (new FavoritesManager())->save($user);
-        if ($country = Country::where('code', 'RU')->first()) {
+        if ($country = Country::getDefault()) {
             $user->service()->update([
                 'country_id' => $country->id
             ]);

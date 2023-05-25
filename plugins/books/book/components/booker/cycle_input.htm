@@ -17,10 +17,10 @@
                     {% endfor %}
 
                 </select>
-                <svg class="ui-select-item-icon chevron_up">
+                <svg class="ui-select-item-icon chevron_up _fake">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme }}"></use>
                 </svg>
-                <svg class="ui-select-item-icon chevron_down">
+                <svg class="ui-select-item-icon chevron_down _fake">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme }}"></use>
                 </svg>
             </div>
@@ -28,7 +28,7 @@
             <div class="ui-select-hitn"></div>
             <div class="ui-select-error"></div>
 
-            <a onclick="openCreateCycleForm()"  class=" ui-link _violet cursor-pointer" style="padding: 5px 4px">Создать цикл</a>
+            <a data-modal="open-new-cycle"  class=" ui-link _violet cursor-pointer" style="padding: 5px 4px">Создать цикл</a>
         </div>
     </div>
 </div>

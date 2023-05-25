@@ -3,4 +3,10 @@
     <div class="recommend_spawn">
         {% partial 'personal-area/recommend_section' %}
     </div>
+    <button type="button" class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium"
+
+            data-modal="open-recommend">
+        Изменить
+    </button>
+    {% partial 'modals/recommend' nestedGenres=nestedGenres %}
 </div>

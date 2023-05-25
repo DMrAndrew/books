@@ -23,3 +23,45 @@
 1.0.5:
     - 'Контент частей и страниц отдельной таблицей'
     - create_contents_table.php
+1.0.6:
+    - 'CascadeOnDelete FK для next/prev'
+    - neighbours_fk_constraint.php
+1.0.7:
+    - 'Доп.показатели статистики + история'
+    - stats_table_add_fields.php
+1.0.8:
+    - "Recommend books"
+    - add_books_reccoment_flag.php
+1.0.9:
+    - 'Удаление user_id у жанра'
+    - tags_remove_user_id.php
+1.0.10:
+    - 'Таблица промокодов'
+    - create_promocodes_table.php
+1.0.11:
+    - 'Таблица промокодов - morphs() promoable'
+    - update_promocodes_table.php
+1.0.12:
+    - 'Награды'
+    - create_awards_table.php
+    - create_award_books_table.php
+1.0.13:
+    - 'Seed награды'
+    - seed_awards.php
+1.0.14:
+    - 'Реклама'
+    - create_adverts_table.php
+    - create_advert_visits_table.php
+1.0.15:
+    - 'Скидки'
+    - create_discounts_table.php
+1.0.16:
+    - 'Поддержка автору'
+    - create_donations_table.php
+1.0.17:
+    - 'Книги на аккаунте'
+    - create_user_books_table.php
+1.0.18:
+    - 'Запрещённый контент'
+    - create_prohibiteds_table.php
+    - seed_prohibited.php

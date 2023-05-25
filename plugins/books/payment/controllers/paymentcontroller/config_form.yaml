@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Payment Controller
+
+# Model Form Field configuration
+form: $/books/payment/models/paymentcontroller/fields.yaml
+
+# Model Class name
+modelClass: Books\Payment\Models\PaymentController
+
+# Default redirect location
+defaultRedirect: books/payment/paymentcontroller
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: books/payment/paymentcontroller/update/:id
+    redirectClose: books/payment/paymentcontroller
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/payment/paymentcontroller
+    redirectClose: books/payment/paymentcontroller
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title

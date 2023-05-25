@@ -1,0 +1,125 @@
+<div class="personal-area__wrapper personal-area-discount">
+    <a type="button"
+        class="personal-area__wrap _indent-large ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile"
+        data-modal-button="create_discount">Создать скидку
+    </a>
+
+
+
+    <div class="table __container-shift">
+        <table class="table-static">
+            <thead>
+            <tr>
+                <td class="_half">Книга</td>
+                <td>Дата скидки</td>
+                <td>Скидка</td>
+                <td>Полная цена</td>
+                <td>Цена со скидкой</td>
+                <td></td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for discount in discounts %}
+            <tr>
+                <td class="_half">
+                    <div class="ellipsis">{{discount.edition.book.title}}</div>
+                </td>
+                <td ><span class="{{discount.isActive ? 'personal-area__wrap  _color-green' : ''}}">{{discount.active_at.format('d.m.y')}}</span></td>
+                <td>{{discount.amount}}%</td>
+                <td>{{discount.priceTag.initialPrice}} ₽</td>
+                <td>{{discount.priceTag.price}} ₽</td>
+                <td>
+                    <button data-request="onDelete" data-request-flash="true" data-request-data="id:{{discount.id}}">
+                        <svg class=" square-16">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                        </svg>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="buy-book-modal ui-modal personal-area-discount-modal overlay {{active ? 'active' ? ''}}" data-modal="create_discount">
+    <div class="ui-modal-container">
+        <div class="buy-book-modal__container ui-modal-content">
+            <div class="buy-book-modal__header">
+                <div class="square-16 "></div>
+                <div class="ui-text-head--2 ui-text--bold">Создание скидки</div>
+                <svg class="square-24" data-modal="close">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                </svg>
+            </div>
+
+            <div class="personal-area-discount-modal__content-container">
+                {{ form_ajax('onCreateDiscount',{
+                'data-request-flash':'true',
+                }) }}
+                <div class="personal-area-discount-modal__content">
+                    <div class="read-statistic__select ui-select _indent-large">
+                        <div class="ui-select-container">
+                            <div class="ui-select-item _size-32">
+
+                                <select class="book-select" id="book_id" name="book_id" style="display: none"
+                                        data-request="onChangeEdition"
+                                >
+                                    <option value="">Выберите произведение</option>
+                                    {% for book in books %}
+                                    <option value="{{book.id}}" {{bookItem.id== book.id ?
+                                    'selected' : ''}}>{{book.title}}</option>
+                                    {% endfor %}
+
+                                </select>
+                                <svg class="ui-select-item-icon chevron_up _fake">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme }}"></use>
+                                </svg>
+                                <svg class="ui-select-item-icon chevron_down _fake">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme }}"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-input personal-area__wrap _indent-large">
+                        <label class="ui-input-label">Дата скидки</label>
+                        <input data-request="onSetDiscount"
+                               data-track-input="true"
+                               class="ui-input-item _size-32"
+                               type="text"
+                               id="datepicker"
+                               name="active_at"
+                               value="{{active_at}}"
+                        >
+                    </div>
+                    <div class="ui-input personal-area__wrap _indent-large">
+                        <label class="ui-input-label">Размер скидки</label>
+                        <input data-request-flash="true" data-request="onSetDiscount" class="ui-input-item _size-32" data-track-input="true" type="number" name="amount" value="{{amount}}" min="0" max="40">
+                    </div>
+                    <div id="create_discount_modal_content">
+                        {% partial '@discount_modal_content' priceTag=priceTag %}
+                    </div>
+                </div>
+                <div class="personal-area-discount-modal__actions">
+                    <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">Создать
+                    </button>
+                </div>
+                {{form_close()}}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    openModal('[data-modal="create_discount"]', '[data-modal-button="create_discount"]')
+    initDatepicker("#datepicker")
+    iniSelect()
+
+</script>
+<div>
+    {% if active %}
+    <script>
+        document.querySelector('[data-modal-button="create_discount"]').click();
+    </script>
+    {% endif %}
+</div>

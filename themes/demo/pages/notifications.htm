@@ -1,0 +1,20 @@
+title = "Уведомления"
+layout = "default"
+url = "/notifications"
+meta_title = "Уведомления"
+meta_description = "Уведомления"
+
+[Notifications]
+recordsPerPage = 16
+==
+<div class="ui-container">
+    <div class="library__title ui-text--bold ui-text-head--2">{{ this.page.meta_title | default(this.page.title) }}</div>
+</div>
+
+<div class="notifications-page">
+    <div class="ui-container-fluid">
+        <div class="library__content">
+            {% component 'Notifications' %}
+        </div>
+    </div>
+</div>

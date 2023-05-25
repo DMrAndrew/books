@@ -27,109 +27,30 @@ meta_title = "Изменения"
                 <div class="create-book__container wrapper">
 
                     <div class="create-book__column-right">
-                        <div class="create-book__input ui-multi-select" id="input-genres">
-                            <div class="ui-multi-select-header">
-                                <label class="ui-select-label">Жанр</label>
-                            </div>
-                            <!-- <button href="#" class="ui-button ui-button-size--32 ui-button-view--3">Создать цикл</button> -->
-                            <div class="ui-multi-select-container">
-
-                                <div class="ui-multi-select-item _size-32">
-
-                                    <div class="ui-multi-select-tag-wrapper">
-                                        <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
-                                            <span>Любовные романы</span>
-                                            <svg>
-                                                <use
-                                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                                            </svg>
-                                        </div>
-                                        <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
-                                            <span>Любовная фантастика</span>
-                                            <svg>
-                                                <use
-                                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                                            </svg>
-                                        </div>
-                                        <input class="ui-multi-select-item-input books-autocomplete " type="text">
-                                    </div>
-
-                                    <!-- <div class="ui-select-item-option">18+</div> -->
-                                    <svg class="ui-multi-select-item-icon chevron">
-                                        <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-                                    </svg>
-                                </div>
-                                <div class="ui-select-hitn"></div>
-                                <div class="ui-select-error">Так не пойдёт</div>
-                            </div>
-
-
-                            <button href="#" class="ui-button ui-button-size--32 ui-button-view--2">Сохранить</button>
-                        </div>
-                        <div class="create-book__input ui-multi-select" id="input-genres2">
-                            <div class="ui-multi-select-header">
-                                <label class="ui-select-label">Жанр</label>
-                            </div>
-                            <!-- <button href="#" class="ui-button ui-button-size--32 ui-button-view--3">Создать цикл</button> -->
-                            <div class="ui-multi-select-container">
-
-                                <div class="ui-multi-select-item _size-32">
-
-                                    <div class="ui-multi-select-tag-wrapper">
-                                        <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
-                                            <span>Любовные романы</span>
-                                            <svg>
-                                                <use
-                                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                                            </svg>
-                                        </div>
-                                        <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
-                                            <span>Любовная фантастика</span>
-                                            <svg>
-                                                <use
-                                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                                            </svg>
-                                        </div>
-                                        <input class="ui-multi-select-item-input books-autocomplete" type="text">
-                                    </div>
-
-                                    <!-- <div class="ui-select-item-option">18+</div> -->
-                                    <svg class="ui-multi-select-item-icon chevron">
-                                        <use
-                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-                                    </svg>
-                                </div>
-
-                                <!--                                <div class="ui-dropdown" >-->
-
-                                <!--                                    <div class="ui-dropdown-container">-->
-                                <!--                                        <div class="ui-dropdown-item _placeholder">-->
-                                <!--                                            <span>Тэг «Ян Курпатов» уже добавлен на страницу</span>-->
-                                <!--                                        </div>-->
-                                <!--                                        <div class="ui-dropdown-item">-->
-                                <!--                                            <span>Александр Алексон</span>-->
-                                <!--                                        </div>-->
-                                <!--                                        <div class="ui-dropdown-item ">-->
-                                <!--                                            <span>Александр Александроский</span>-->
-                                <!--                                        </div>-->
-                                <!--                                        <div class="ui-dropdown-separate"></div>-->
-                                <!--                                        <div class="ui-dropdown-item active">-->
-                                <!--                                            <svg>-->
-                                <!--                                                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#plus-stroked-16"></use>-->
-                                <!--                                            </svg>-->
-                                <!--                                            <span>Создать новый тэг «Фантаст»</span>-->
-                                <!--                                        </div>-->
-                                <!--                                    </div>-->
-                                <!--                                </div>-->
-                                <!--                            </div>-->
-                                <div class="ui-select-hitn"></div>
-                                <div class="ui-select-error"></div>
-                            </div>
-
-
-                            <button href="#" class="ui-button ui-button-size--32 ui-button-view--2">Сохранить</button>
-                        </div>
+                        <select id="multiple" data-request="onGG" data-track-input="true" multiple class="someClass">
+                            <option selected value="1">Фэнтези</option>
+                            <option value="2">Попаданцы</option>
+                            <option value="3">Космос</option>
+                            <option value="Проза">Проза</option>
+                            <option value="Мистика">Мистика</option>
+                            <option value="Бояръ-аниме">Бояръ-аниме</option>
+                            <option value="Неформат">Неформат</option>
+                            <option value="Поэзия">Поэзия</option>
+                            <option value="Фантастика">Фантастика</option>
+                            <option value="18+">18+</option>
+                            <option value="Фанфик">Фанфик</option>
+                            <option value="Детское">Детское</option>
+                            <option value="Ужасы">Ужасы</option>
+                            <option value="Сказка">Сказка</option>
+                            <option value="Уся">Уся</option>
+                            <option value="Романы">Романы</option>
+                            <option value="Детективы">Детективы</option>
+                            <option value="РПГ">РПГ</option>
+                            <option value="Триллер">Триллер</option>
+                            <option value="Янг-эдалт">Янг-эдалт</option>
+                            <option value="Драма">Драма</option>
+                            <option value="Магический реализм">Магический реализм</option>
+                        </select>
                     </div>
 
 
@@ -148,8 +69,23 @@ meta_title = "Изменения"
 </style>
 
 <script>
-    initAutocomplete( {
-        container:'#input-genres',
-        onRequestHandler:'Ajaxer::onRequest',
+    initAutocomplete({
+        container: '#input-genres',
+        onRequestHandler: 'Ajaxer::onRequest',
+    })
+    window.genre = new SlimSelect({
+        select: '#multiple',
+        settings: {
+            searchText: 'Ничего не найдено',
+            searchPlaceholder: 'Найти жанр',
+            placeholderText: 'Выберите жанр',
+        },
+        events: {
+            afterChange: (newVal) => {
+                console.log(Array.from(newVal).map(e => {
+                    return {text: e.text, value: e.value}
+                }))
+            }
+        }
     })
 </script>

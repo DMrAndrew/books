@@ -1,0 +1,14 @@
+<div class="ui-tabs-header-wrapper __shifted">
+    {% for code, tab in tabs %}
+        <button
+                class="ui-tabs-link{% if tab.active %} active{% endif %}"
+                data-request="{{ __SELF__ }}::onAjaxLoad"
+                data-request-data="type: '{{ code }}', page: 1"
+                data-attach-loading
+        >{{ tab.label }}
+            {% if tab.count > 0 %}
+                <div class="ui-label-number _red">{{ tab.count }}</div>
+            {% endif %}
+        </button>
+    {% endfor %}
+</div>

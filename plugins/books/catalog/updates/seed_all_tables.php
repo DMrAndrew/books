@@ -81,7 +81,7 @@ class SeedAllTables extends Seeder
             'Эротический фанфик',
             'Гарем женский',
             'Гарем мужской',
-            'Жесктая эротика',
+            'Жесткая эротика',
             'Слеш',
             'Омегаверс',
             'Фемслеш',
@@ -183,7 +183,6 @@ class SeedAllTables extends Seeder
 
     public function run()
     {
-
         $types = $this->mapWith(array_keys(EditionsEnums::toArray()), 'type');
         DB::table('books_catalog_types')->insert($types);
 
@@ -196,8 +195,6 @@ class SeedAllTables extends Seeder
 
     private function mapWith(array $array, $key = 'name'): array
     {
-        return array_map(fn($item) => [$key => $item], $array);
+        return array_map(fn ($item) => [$key => $item], $array);
     }
-
-
 }

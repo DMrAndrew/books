@@ -3,38 +3,47 @@
 namespace Books\Book\Classes;
 
 use Books\Book\Classes\Enums\BookStatus;
-use Books\Book\Classes\Enums\StatsEnum;
+use Books\Book\Jobs\GenreRating;
 use Books\Book\Models\Book;
-use Books\Book\Models\Stats;
-use Illuminate\Database\Eloquent\Builder;
+use Books\Book\Models\BookGenre;
+use Books\Catalog\Models\Genre;
+use Db;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Queue;
 
-class GenreRater
+class GenreRater implements ShouldQueue, ShouldBeUnique
 {
-    protected Stats $stats;
-    protected Book $book;
-    protected Builder $builder;
-
     public function __construct()
     {
-
     }
 
-    public function collectRate(): \October\Rain\Support\Collection|\Illuminate\Support\Collection
+    public function compute()
     {
-        return collect([
-            $this->stats[StatsEnum::RATE->value],
-            min(15, $this->stats[StatsEnum::READ_TIME->value]) * 3,
-            $this->stats[StatsEnum::COMMENTS->value],
-            $this->stats[StatsEnum::READ_INITIAL->value] * 3,
-            $this->stats[StatsEnum::READ->value],
-            $this->stats[StatsEnum::READ_FINAL->value] * 3,
-            $this->book->ebook->status === BookStatus::WORKING ? $this->stats[StatsEnum::UPDATE_FREQUENCY->value] * 3 : 0,
-            $this->stats[StatsEnum::LIBS->value],
-        ]);
+        return Genre::query()
+            ->whereHas('books')
+            ->with(['books' => fn ($books) => $books->onlyPublicStatus(), 'books.ebook', 'books.stats'])
+            ->get()
+            ->map(function ($genre) {
+                $books = $genre->books?->sortByDesc(fn (Book $book) => $book->stats->forGenres($book->status === BookStatus::WORKING));
+
+                Db::transaction(function () use ($books, $genre) {
+                    BookGenre::query()->where('genre_id', $genre->id)->update(['rate_number' => null]);
+//                    $books->map->pivot->each->update(['rate_number' => null]);
+                    if ($books->count()) {
+                        BookGenre::query()->upsert(
+                            $books->values()
+                                ->map(fn ($book, $key) => array_merge($book->pivot->only(['book_id', 'genre_id']), ['rate_number' => $key + 1]))
+                                ->toArray(),
+                            ['book_id', 'genre_id'],
+                            ['rate_number']);
+                    }
+                });
+            });
     }
 
-    public function getRate(): int
+    public static function queue(): void
     {
-        return $this->collectRate()->sum();
+        Queue::push(GenreRating::class);
     }
 }

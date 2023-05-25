@@ -1,12 +1,19 @@
-<?php namespace Books\Catalog\Components;
+<?php
+
+namespace Books\Catalog\Components;
 
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Enums\SortEnum;
+use Books\Book\Classes\Enums\WidgetEnum;
+use Books\Book\Classes\WidgetService;
 use Books\Book\Models\Book;
 use Books\Book\Models\Tag;
 use Books\Catalog\Classes\ListingFilter;
 use Books\Catalog\Models\Genre;
 use Cms\Classes\ComponentBase;
+use Exception;
 use Illuminate\Support\Collection;
+use RainLab\User\Facades\Auth;
 
 /**
  * Listing Component
@@ -16,13 +23,14 @@ use Illuminate\Support\Collection;
 class Listing extends ComponentBase
 {
     protected ListingFilter $filter;
+
     protected int $trackInputTime = 620;
 
     public function componentDetails()
     {
         return [
             'name' => 'Listing Component',
-            'description' => 'No description provided yet...'
+            'description' => 'No description provided yet...',
         ];
     }
 
@@ -48,33 +56,33 @@ class Listing extends ComponentBase
     public function onInitQueryString()
     {
         $this->filter->fromQuery();
+        $this->filter->save();
     }
 
     public function getBind()
     {
-        return $this->filter->toBind() + [
-                'books' => $this->books(),
-                'trackInputTime' => $this->trackInputTime
-            ];
-
+        return array_merge($this->filter->toBind(), [
+            'books' => $this->books(),
+            'trackInputTime' => $this->trackInputTime,
+            'sorts' => SortEnum::cases(),
+            'user' => Auth::getUser(),
+            'genres_list' => $this->filter->query(Genre::class)->whereNotIn('id', $this->filter->byClass(Genre::class)->pluck('id')->toArray())->get()
+        ]);
     }
 
     public function onSearchIncludeGenre()
     {
         return $this->renderOptions($this->byTerm(Genre::class), ['handler' => $this->alias . '::onAddIncludeGenre']);
-
     }
 
     public function onSearchExcludeGenre()
     {
         return $this->renderOptions($this->byTerm(Genre::class), ['handler' => $this->alias . '::onAddExcludeGenre']);
-
     }
 
     public function onSearchIncludeTag()
     {
         return $this->renderOptions($this->byTerm(Tag::class), ['handler' => $this->alias . '::onAddIncludeTag']);
-
     }
 
     public function onSearchExcludeTag()
@@ -85,80 +93,95 @@ class Listing extends ComponentBase
     public function onAddIncludeTag()
     {
         $this->filter->include($this->filter->fromPost(Tag::class));
+
         return $this->onSearch();
     }
 
     public function onAddExcludeTag()
     {
         $this->filter->exclude($this->filter->fromPost(Tag::class));
+
         return $this->onSearch();
     }
 
     public function onAddIncludeGenre()
     {
-        $this->filter->include($this->filter->fromPost(Genre::class));
+        $this->filter->syncFromPost(Genre::class, 'include');
         return $this->onSearch();
     }
 
-
     public function onAddExcludeGenre()
     {
-        $this->filter->exclude($this->filter->fromPost(Genre::class));
+        $this->filter->syncFromPost(Genre::class, 'exclude');
+        return $this->onSearch();
+    }
+
+    public function onAddIncludeGenreOld()
+    {
+        $this->filter->include($this->filter->fromPost(Genre::class));
         return $this->onSearch();
     }
 
     public function onRemoveIncludeGenre()
     {
         $this->filter->removeInclude($this->filter->fromPost(Genre::class));
+
         return $this->onSearch();
     }
 
     public function onRemoveExcludeGenre()
     {
         $this->filter->removeExclude($this->filter->fromPost(Genre::class));
+
         return $this->onSearch();
     }
 
     public function onRemoveIncludeTag()
     {
         $this->filter->removeInclude($this->filter->fromPost(Tag::class));
+
         return $this->onSearch();
     }
 
     public function onRemoveExcludeTag()
     {
         $this->filter->removeExclude($this->filter->fromPost(Tag::class));
+
         return $this->onSearch();
     }
 
     public function onRemoveAllIncludeGenre()
     {
         $this->filter->removeAllInclude(Genre::class);
+
         return $this->onSearch();
     }
 
     public function onRemoveAllExcludeGenre()
     {
         $this->filter->removeAllExclude(Genre::class);
+
         return $this->onSearch();
     }
 
     public function onRemoveAllExcludeTag()
     {
         $this->filter->removeAllExclude(Tag::class);
+
         return $this->onSearch();
     }
 
     public function onRemoveAllIncludeTag()
     {
         $this->filter->removeAllInclude(Tag::class);
+
         return $this->onSearch();
     }
-
 
     public function byTerm(string $class)
     {
         $term = post('term');
+
         return $class::nameLike($term)
             ->public()
             ->asOption()
@@ -171,13 +194,16 @@ class Listing extends ComponentBase
         return [
             '#listing-form' => $this->renderPartial('@listing-form-view', [
                 'bind' => $this->getBind(),
-            ])
+            ]),
         ];
     }
 
+    /**
+     * @throws Exception
+     */
     public function books()
     {
-        return Book::query()
+        $query = Book::query()
             ->hasGenres($this->filter->excludes(Genre::class)->pluck('id')->toArray(), 'exclude')
             ->hasGenres($this->filter->includes(Genre::class)->pluck('id')->toArray())
             ->hasTags($this->filter->excludes(Tag::class)->pluck('id')->toArray(), 'exclude')
@@ -187,8 +213,40 @@ class Listing extends ComponentBase
             ->when(!$this->filter->free && $this->filter->max_price, fn($q) => $q->maxPrice($this->filter->max_price))
             ->when($this->filter->free, fn($q) => $q->free())
             ->when($this->filter->type, fn($q) => $q->type($this->filter->type))
-            ->defaultEager()
-            ->get();
+            ->public()
+            ->defaultEager();
+
+        $books = null;
+        if ($this->filter->widget && in_array($this->filter->widget, [
+                WidgetEnum::recommend,
+                WidgetEnum::todayDiscount,
+                WidgetEnum::hotNew,
+                WidgetEnum::new,
+                WidgetEnum::gainingPopularity])) {
+            $service = new WidgetService($this->filter->widget);
+
+            $books = $service
+                ->setQuery($query)
+                ->setUseSort(!in_array($this->filter->widget, [
+                    WidgetEnum::hotNew,
+                    WidgetEnum::todayDiscount,
+                    WidgetEnum::new,
+                    WidgetEnum::gainingPopularity]))
+                ->collect()
+                ->sort()
+                ->getValues();
+        }
+
+        $books ??= $query->get();
+
+        return match ($this->filter->sort) {
+            SortEnum::popular_day, SortEnum::popular_week, SortEnum::popular_month => $books->sortByDesc(fn($book) => $book->stats->popular()),
+            SortEnum::new => Book::sortCollectionBySalesAt($books),
+            SortEnum::discount => $books->sortBy(fn($book) => $book->ebook->discount?->priceTag()->odds() ?? -1),
+            SortEnum::hotNew, SortEnum::gainingPopularity => $books->sortByDesc(fn($book) => $book->getCollectedRate($this->filter->sort === SortEnum::hotNew ? WidgetEnum::hotNew : WidgetEnum::gainingPopularity)),
+            SortEnum::topRate => $books->sortByDesc(fn($book) => $book->stats->rate),
+            default => $books
+        };
     }
 
     public function renderOptions(Collection $options, array $itemOptions = []): array
@@ -197,7 +255,7 @@ class Listing extends ComponentBase
             return $itemOptions + [
                     'id' => $item['id'],
                     'label' => $item['name'],
-                    'htm' => $this->renderPartial('select/option', ['label' => $item['name']])
+                    'htm' => $this->renderPartial('select/option', ['label' => $item['name']]),
                 ];
         })->toArray();
     }

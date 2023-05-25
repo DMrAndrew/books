@@ -2,26 +2,28 @@
     {% partial 'book/about-header' book=book %}
     <div class="about-book__body ui-container-fluid">
         <div class="ui-tabs">
-            <div class="ui-tabs-header js-container" >
+            <div class="ui-tabs-header js-container">
                 <div class="ui-tabs-line"></div>
                 <div class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
-                    <div class="ui-tabs-link active" data-tab="1" data-tab-name="about">О книге</div>
-                    <div class="ui-tabs-link " data-tab="2" data-tab-name="electronic">Электронная</div>
-                    <div class="ui-tabs-link " data-tab="3" data-tab-name="ecommerce">Продажи электронной книги</div>
+                    <div class="ui-tabs-link active" data-tab="about">О книге</div>
+                    <div class="ui-tabs-link " data-tab="electronic">Электронная</div>
+                    <div class="ui-tabs-link " data-tab="ecommerce">Продажи электронной
+                        книги
+                    </div>
                     <!--                    <div class="ui-tabs-link " data-tab="4">Аудиокнига</div>-->
                     <!--                    <div class="ui-tabs-link " data-tab="5">Продажи аудиокниги</div>-->
                 </div>
             </div>
 
             <div class="ui-tabs-body" data-tabs="1">
-                <div class=" ui-tabs-content active" data-tab-content="1" >
+                <div class=" ui-tabs-content active" data-tab-content="about">
                     {% component 'booker' book=book %}
                 </div>
-                <div class="author-books ui-tabs-content wrapper"  data-tab-content="2" >
+                <div class="author-books ui-tabs-content wrapper" data-tab-content="electronic">
                     {% partial 'ebooker::chapters' authors=book.profiles %}
                 </div>
 
-                <div class="e-book-sale ui-tabs-content wrapper" data-tab-content="3" >
+                <div class="e-book-sale ui-tabs-content wrapper" data-tab-content="ecommerce">
                     {% partial 'ebooker::settings' authors=book.profiles %}
                 </div>
 

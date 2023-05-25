@@ -2,6 +2,8 @@
 
 namespace Books\Profile\Behaviors;
 
+use Books\Comments\Models\Comment;
+use Books\Profile\Models\Profiler;
 use RainLab\User\Models\User;
 use Books\Profile\Models\Profile;
 use October\Rain\Extension\ExtensionBase;
@@ -27,4 +29,6 @@ class HasProfile extends ExtensionBase
 
         return $profile->save();
     }
+
+
 }

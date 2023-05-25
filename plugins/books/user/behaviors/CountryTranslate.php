@@ -2,6 +2,7 @@
 
 namespace Books\User\Behaviors;
 
+use October\Rain\Database\Builder;
 use RainLab\Location\Models\Country;
 use Monarobase\CountryList\CountryList;
 use October\Rain\Extension\ExtensionBase;
@@ -22,5 +23,10 @@ class CountryTranslate extends ExtensionBase
         return $service->has($this->country->code)
             ? $service->getOne($this->country->code, 'ru')
             : $value;
+    }
+
+    public function scopeCode(Builder $builder, string ...$code)
+    {
+        return $builder->whereIn('code', $code);
     }
 }

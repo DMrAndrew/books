@@ -1,0 +1,11 @@
+{% if status == 'complete' %}
+<svg class="square-16">
+    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>
+</svg>
+<span>Завершен</span>
+{% else %}
+<svg class="square-16">
+    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>
+</svg>
+<span>В работе</span>
+{% endif %}

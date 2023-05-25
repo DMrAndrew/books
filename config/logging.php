@@ -88,6 +88,13 @@ return [
             'level' => 'debug',
         ],
 
+        'yookassa_webhook' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/yookassa/webhook.log'),
+            'level' => 'debug',
+            'days' => 14
+        ],
+
     ],
 
 ];

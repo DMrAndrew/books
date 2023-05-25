@@ -8,12 +8,12 @@ use Books\Profile\Behaviors\Masterable;
 use Books\Profile\Behaviors\Slavable;
 use Books\Profile\Classes\ProfileEventHandler;
 use Books\Profile\Components\AuthorSpace;
+use Books\Profile\Components\NotificationLC;
+use Books\Profile\Components\PrivacyLC;
 use Books\Profile\Components\Profile;
 use Books\Profile\Components\ProfileLC;
 use Books\Profile\Components\Subs;
 use Books\Profile\Models\Profile as ProfileModel;
-use Books\Profile\Components\NotificationLC;
-use Books\Profile\Components\PrivacyLC;
 use Books\Profile\Models\Profiler;
 use Config;
 use Event;
@@ -30,7 +30,12 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User'];
+    public $require = [
+        'RainLab.User',
+        'RainLab.Location',
+        'Books.User',
+        'Books.Wallet',
+    ];
 
     /**
      * Returns information about this plugin.
@@ -52,7 +57,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         Event::listen('books.profile.username.modify.requested', fn($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
     }
@@ -62,7 +67,7 @@ class Plugin extends PluginBase
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         AliasLoader::getInstance()->alias('Profile', ProfileModel::class);
         AliasLoader::getInstance()->alias('Profiler', Profiler::class);
@@ -76,14 +81,11 @@ class Plugin extends PluginBase
             $class::extend(function (Model $model) {
                 $model->implementClassWith(Masterable::class);
             });
-
         }
 
         foreach (config('profile.slavable') ?? [] as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Slavable::class);
-                $model->bindEvent('model.afterCreate', fn() => $model->profilerService()->add());
-                $model->bindEvent('model.afterDelete', fn() => $model->profilerService()->remove());
             });
         }
 
@@ -106,23 +108,24 @@ class Plugin extends PluginBase
             $controller->relationConfig = '$/books/user/config/config_relation.yaml';
             $controller->implementClassWith(Backend\Behaviors\RelationController::class);
 
-            $controller->addDynamicMethod('onChangeUsername', function ($recordId) use ($controller) {
+            $controller->addDynamicMethod('onChangeUsername', function ($recordId) {
                 $model = ProfileModel::find(post('manage_id'));
-                if($model){
+                if ($model) {
                     $model->acceptClipboardUsername();
                     Flash::success('Псевдоним пользователя успешно обновлён');
+
                     return Redirect::refresh();
                 }
-                return  Flash::error('Профиль не найден');
 
+                return Flash::error('Профиль не найден');
             });
 
-            $controller->addDynamicMethod('onRejectUsername', function ($recordId) use ($controller) {
-
+            $controller->addDynamicMethod('onRejectUsername', function ($recordId) {
                 $model = ProfileModel::find(post('manage_id'));
-                if($model){
+                if ($model) {
                     $model->rejectClipboardUsername();
                     Flash::success('Изменение псевдонима пользователя отклонено');
+
                     return Redirect::refresh();
                 }
             });
@@ -134,7 +137,7 @@ class Plugin extends PluginBase
      *
      * @return array
      */
-    public function registerComponents()
+    public function registerComponents(): array
     {
         return [
             Profile::class => 'profile',
@@ -143,43 +146,6 @@ class Plugin extends PluginBase
             NotificationLC::class => 'notificationLC',
             AuthorSpace::class => 'author_space',
             Subs::class => 'subs',
-        ];
-    }
-
-    /**
-     * Registers any backend permissions used by this plugin.
-     *
-     * @return array
-     */
-    public function registerPermissions()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'books.profile.some_permission' => [
-                'tab' => 'Profile',
-                'label' => 'Some permission',
-            ],
-        ];
-    }
-
-    /**
-     * Registers backend navigation items for this plugin.
-     *
-     * @return array
-     */
-    public function registerNavigation()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'profile' => [
-                'label' => 'Profile',
-                'url' => Backend::url('books/profile/mycontroller'),
-                'icon' => 'icon-leaf',
-                'permissions' => ['books.profile.*'],
-                'order' => 500,
-            ],
         ];
     }
 }

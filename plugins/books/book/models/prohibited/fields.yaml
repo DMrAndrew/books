@@ -1,0 +1,25 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    prohibitable_type:
+        label: Тип контента
+        type: dropdown
+        default: 'Books\Catalog\Models\Genre'
+
+    prohibitable_id:
+        label: Контент
+        type: dropdown
+        dependsOn: prohibitable_type
+
+    country:
+        label: rainlab.location::lang.country.label
+        type: dropdown
+        span: auto
+        placeholder: rainlab.location::lang.country.select
+
+    is_allowed:
+        label: Действие
+        type: dropdown
+        default: false

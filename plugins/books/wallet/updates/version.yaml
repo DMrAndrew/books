@@ -1,0 +1,7 @@
+1.0.1: First version of Wallet
+1.0.2:
+  - 'Миграции'
+  - create_transactions_table.php
+  - create_transfers_table.php
+  - create_wallets_table.php
+  - update_wallets_uuid_table.php

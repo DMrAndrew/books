@@ -31,7 +31,7 @@ enum UserSettingsEnum: int
         };
     }
 
-    public function defaultValue(): bool|string
+    public function defaultOption(): BoolOptionsEnum|PrivacySettingsEnum
     {
         return match ($this) {
             self::NOTIFY_UPDATE_LIBRARY_ITEMS, self::NOTIFY_BOOK_DISCOUNT, self::NOTIFY_NEW_RECORD_BLOG, self::NOTIFY_NEW_RECORD_VIDEO_BLOG, self::NOTIFY_UPDATE_STORE_ITEMS => BoolOptionsEnum::default(),
@@ -47,6 +47,22 @@ enum UserSettingsEnum: int
         };
     }
 
+    public function optionEnum($value): BoolOptionsEnum|PrivacySettingsEnum|null
+    {
+        return match ($this) {
+            self::NOTIFY_UPDATE_LIBRARY_ITEMS,
+            self::NOTIFY_BOOK_DISCOUNT,
+            self::NOTIFY_NEW_RECORD_BLOG,
+            self::NOTIFY_NEW_RECORD_VIDEO_BLOG,
+            self::NOTIFY_UPDATE_STORE_ITEMS => BoolOptionsEnum::tryFrom($value),
+            self::PRIVACY_ALLOW_FIT_ACCOUNT_INDEX_PAGE,
+            self::PRIVACY_ALLOW_PRIVATE_MESSAGING,
+            self::PRIVACY_ALLOW_VIEW_COMMENT_FEED,
+            self::PRIVACY_ALLOW_VIEW_BLOG,
+            self::PRIVACY_ALLOW_VIEW_VIDEO_BLOG => PrivacySettingsEnum::tryFrom($value),
+        };
+    }
+
     public static function privacy(): array
     {
         return [
@@ -54,7 +70,7 @@ enum UserSettingsEnum: int
             self::PRIVACY_ALLOW_PRIVATE_MESSAGING,
             self::PRIVACY_ALLOW_VIEW_BLOG,
             self::PRIVACY_ALLOW_VIEW_COMMENT_FEED,
-            self::PRIVACY_ALLOW_VIEW_VIDEO_BLOG
+            self::PRIVACY_ALLOW_VIEW_VIDEO_BLOG,
         ];
     }
 
@@ -100,5 +116,4 @@ enum UserSettingsEnum: int
     {
         return in_array($this, self::profilable());
     }
-
 }

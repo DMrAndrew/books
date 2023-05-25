@@ -44,9 +44,12 @@ class LCBooker extends ComponentBase
 
     public function getAuthorships(): Collection
     {
-        return $this->user->profile->authorshipsAs($this->getIsOwner())
+        return $this->user->profile
+            ->authorships()
+            ->owner($this->getIsOwner())
             ->with(['book' => fn ($q) => $q->defaultEager(), 'book.profile'])
-            ->get();
+            ->get()
+            ->sortByDesc('sort_order');
     }
 
     public function onChangeOrder()
@@ -75,6 +78,7 @@ class LCBooker extends ComponentBase
     public function onUploadFile()
     {
         try {
+            set_time_limit((60 * 3));
             $uploadedFile = (new Edition())->fb2()->withDeferred($this->getSessionKey())->get()?->first();
             if (! $uploadedFile) {
                 throw new ValidationException(['fb2' => 'Файл не найден.']);

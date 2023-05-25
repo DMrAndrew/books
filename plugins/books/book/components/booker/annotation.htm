@@ -1,13 +1,16 @@
-<textarea class="ui-input-textarea"
-          name="annotation"
-          cols="30"
-          rows="7"
-          placeholder="Пожалуйста, напишите о чем ваше произведение, но не сам текст. Текст произведения вы добавите следующим шагом."
->{{book.annotation}}</textarea>
-<div class="ui-select-hitn"></div>
-<div class="ui-select-error" data-validate-for="annotation"></div>
-<script>
-    if(!document.getElementById('cke_annotation')){
-        CKEDITOR.replace( 'annotation' );
-    }
-</script>
+<div class="create-book__input typographical-block">
+    <label class="ui-input-label">Аннотация</label>
+    <textarea class="ui-input-textarea"
+              id="annotation"
+              name="annotation"
+              cols="30"
+              rows="7"
+              placeholder="Пожалуйста, напишите о чем ваше произведение, но не сам текст. Текст произведения вы добавите следующим шагом."
+    >{{book.annotation}}</textarea>
+    <div class="ui-select-hitn"></div>
+    <div class="ui-select-error" data-validate-for="annotation"></div>
+    <script>
+
+        initEditor('annotation')
+    </script>
+</div>

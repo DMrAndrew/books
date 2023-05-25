@@ -1,0 +1,30 @@
+title = "Личный кабинет - Промокоды"
+layout = "default"
+url = "/lc-promocodes/:book_id?"
+title = "Личный кабинет - Промокоды"
+description = "Личный кабинет - Промокоды"
+
+[session]
+security = "user"
+redirect = "/"
+[promocode]
+==
+{% partial 'profile/personal_area_header' %}
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
+            {% partial "profile/sidebarmenu" %}
+            <div class="ui-col-sm-9">
+                <div class="personal-area__subtitle">
+                    <span class="ui-text-head--3 ui-text--bold">Промокоды</span>
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                    </svg>
+                </div>
+                {% component 'promocode' %}
+            </div>
+        </div>
+    </div>
+</div>
+

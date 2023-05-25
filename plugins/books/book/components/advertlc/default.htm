@@ -1,0 +1,83 @@
+<div class="personal-area__wrapper personal-area-advert">
+    {{ form_ajax('onChangeBook') }}
+    <div class="read-statistic__select ui-select _indent-large">
+        <div class="ui-select-container">
+            <div class="ui-select-item _size-32">
+
+                <select class="book-select" id="book_id" name="book_id" style="display: none"
+                        data-request="onChangeBook"
+                >
+                    <option value="">Выберите произведение</option>
+                    {% for bookItem in books %}
+                    <option value="{{bookItem.id}}" {{bookItem.id == book.id ? 'selected' : ''}}>{{bookItem.title}}</option>
+                    {% endfor %}
+
+                </select>
+                <svg class="ui-select-item-icon chevron_up _fake">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme }}"></use>
+                </svg>
+                <svg class="ui-select-item-icon chevron_down _fake">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme }}"></use>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div class="personal-area__wrap _separator"></div>
+    {% if book %}
+    <div class="personal-area__wrap _indent-small">Баннер</div>
+    <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">Размер 280x150</div>
+    {% component 'bannerUploader' %}
+    <div class="personal-area__wrap _separator"></div>
+    <div class="personal-area__wrap _indent-medium">Всего продаж: {{book.ebook.sold_count}}</div>
+    <div class="personal-area__wrap _indent-medium">Дней в продаже: {{days_on_sale}}</div>
+    <div class="personal-area__wrap _indent-medium">Доступно рекламных переходов: {{book.advert.allowed_visit_count}} шт.</div>
+    <div class="personal-area__wrap _indent-large">Использовано рекламных переходов: {{ book.advert.visits.count?:0 }} шт.</div>
+    {% if not book.advert.enabled %}
+    <button data-request="onToggleState" data-request-data="book_id:{{book.id}}" type="button"
+        class="personal-area__wrap _indent-large ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">
+        Рекламировать
+    </button>
+    {% else %}
+    <button data-request="onToggleState"  data-request-data="book_id:{{book.id}}" type="button"
+        class="personal-area__wrap _indent-large ui-button ui-button-size--32 ui-button-view--3 ui-button--full-mobile ui-button--medium">
+        Остановить рекламу
+    </button>
+    {% endif %}
+
+    {% if visits_total %}
+    <div class="table __container-shift">
+        <table class="table-static">
+            <thead>
+            <tr>
+                <td>Дата</td>
+                <td>Кликов</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for date,count in visits_table%}
+            <tr>
+                <td>{{date}}</td>
+                <td>{{count}}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td class="_bold _right">Итого:</td>
+                <td class="_bold">{{visits_total}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="personal-area-table">
+        <div class="personal-area-table__placeholder personal-area__wrap _color-gray" colspan="2">
+            Ничего не найдено
+        </div>
+    </div>
+
+    {% endif %}
+    <script>
+        iniSelect()
+    </script>
+    {{ form_close() }}
+</div>

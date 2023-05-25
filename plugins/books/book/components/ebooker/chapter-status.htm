@@ -1,19 +1,18 @@
-{% if chapter.status.value == 'published' %}
-{% if chapter.isWillPublished %}
+{% if chapter.status.value == 'planned' %}
 <div class="chapter-book__status _waiting">
     <svg class="square-16">
         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#clock-stroked-24' | theme}}"></use>
     </svg>
     <span>Опубликуется {{ carbon(chapter.published_at).format('d.m.y') }} в {{ carbon(chapter.published_at).format('H:i') }}</span>
 </div>
-{% else %}
+{% endif %}
+{% if chapter.status.value == 'published' %}
 <div class="chapter-book__status _success">
     <svg class="square-16">
         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>
     </svg>
-    <span>Опубликовано</span>
+    <span>Опубликовано </span>
 </div>
-{% endif %}
 {% endif %}
 
 {% if chapter.status.value == 'draft' %}

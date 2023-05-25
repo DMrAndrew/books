@@ -33,12 +33,15 @@ const iniSelect = function (){
                 'ui-selectmenu-button':'ui-select-item-option',
             },
             select: function (event, ui) {
-                if($(item).data('request')){
-                    oc.ajax($(item).data('request'),{
-                        data: {...ui.item}
-                    })
+                if ($( event.currentTarget ).hasClass( "ui-menu-item" )) {
+                    if ($(item).data('request')) {
+                        oc.ajax($(item).data('request'), {
+                            data: {...ui.item}
+                        })
+                    }
                 }
-            }
+            },
+            open: function (event, ui) {},
         }).bookSelect( "menuWidget" );
     });
 };

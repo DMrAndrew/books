@@ -1,0 +1,9 @@
+{
+    "name": "books/wallet-plugin",
+    "type": "october-plugin",
+    "description": "Easy work with virtual wallet",
+    "require": {
+        "composer/installers": "~1.0",
+        "bavix/laravel-wallet": "9.*"
+    }
+}

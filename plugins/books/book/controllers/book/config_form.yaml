@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Book
+
+# Model Form Field configuration
+form: $/books/book/models/book/fields.yaml
+
+# Model Class name
+modelClass: Books\Book\Models\Book
+
+# Default redirect location
+defaultRedirect: books/book/book
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: books/book/book/update/:id
+    redirectClose: books/book/book
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/book/book
+    redirectClose: books/book/book
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title

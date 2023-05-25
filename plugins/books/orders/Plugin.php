@@ -1,13 +1,26 @@
-<?php namespace Books\Orders;
+<?php
+
+namespace Books\Orders;
 
 use Backend;
+use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
+use Books\Orders\Classes\Services\OrderService;
+use Books\Orders\Components\BalanceDeposit;
+use Books\Orders\Components\Order;
+use Books\Orders\Models\BalanceDeposit as DepositModel;
+use Books\Orders\Models\OrderProduct;
+use Books\Orders\Models\OrderPromocode;
+use Illuminate\Foundation\AliasLoader;
 use System\Classes\PluginBase;
+use Books\Orders\Models\Order as OrderModel;
 
 /**
  * Plugin Information File
  */
 class Plugin extends PluginBase
 {
+    public $require = ['RainLab.User', 'Books.Book'];
+
     /**
      * Returns information about this plugin.
      *
@@ -16,10 +29,10 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'Orders',
+            'name' => 'Orders',
             'description' => 'No description provided yet...',
-            'author'      => 'Books',
-            'icon'        => 'icon-leaf'
+            'author' => 'Books',
+            'icon' => 'icon-leaf'
         ];
     }
 
@@ -30,7 +43,7 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-
+        $this->app->bind(OrderServiceContract::class, OrderService::class);
     }
 
     /**
@@ -40,7 +53,10 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+        AliasLoader::getInstance()->alias('Order', OrderModel::class);
+        AliasLoader::getInstance()->alias('OrderProduct', OrderProduct::class);
+        AliasLoader::getInstance()->alias('OrderPromocode', OrderPromocode::class);
+        AliasLoader::getInstance()->alias('Deposit', DepositModel::class);
     }
 
     /**
@@ -50,10 +66,9 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
         return [
-            'Books\Orders\Components\MyComponent' => 'myComponent',
+            Order::class => 'Order',
+            BalanceDeposit::class => 'BalanceDeposit',
         ];
     }
 
@@ -85,11 +100,11 @@ class Plugin extends PluginBase
 
         return [
             'orders' => [
-                'label'       => 'Orders',
-                'url'         => Backend::url('books/orders/mycontroller'),
-                'icon'        => 'icon-leaf',
+                'label' => 'Orders',
+                'url' => Backend::url('books/orders/mycontroller'),
+                'icon' => 'icon-leaf',
                 'permissions' => ['books.orders.*'],
-                'order'       => 500,
+                'order' => 500,
             ],
         ];
     }
