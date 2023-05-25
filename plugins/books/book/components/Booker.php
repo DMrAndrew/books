@@ -69,7 +69,7 @@ class Booker extends ComponentBase
             return $redirect;
         }
         $this->user = User::find($this->property('user_id')) ?? Auth::getUser();
-        if (! $this->user) {
+        if (!$this->user) {
             throw new ApplicationException('User required');
         }
         $this->book = $this->user->profile->books()->find($this->property('book_id')) ?? new Book();
@@ -81,7 +81,7 @@ class Booker extends ComponentBase
             'coverUploader',
             [
                 'modelClass' => Book::class,
-                'deferredBinding' => ! (bool) $this->book->id,
+                'deferredBinding' => !(bool)$this->book->id,
                 'imageWidth' => 168,
                 'imageHeight' => 243,
             ]
@@ -90,6 +90,7 @@ class Booker extends ComponentBase
         $this->page['ebook'] = $this->book->ebook;
         $this->page['age_restrictions'] = AgeRestrictionsEnum::cases();
         $this->page['cycles'] = $this->getCycles();
+        $this->page['genres_list'] = Genre::public()->get()->diff($this->service->getGenres());
     }
 
     public function onRefreshFiles()
@@ -106,7 +107,7 @@ class Booker extends ComponentBase
             $validator = Validator::make(
                 $data,
                 $book->rules,
-                (array) $book->customMessages
+                (array)$book->customMessages
             );
             if ($this->service->getGenres()->count() === 0) {
                 throw  new ValidationException(['genres' => 'Укажите хотя бы один жанр.']);
@@ -115,9 +116,9 @@ class Booker extends ComponentBase
                 throw new ValidationException($validator);
             }
             $book = $this->service->from($data);
-            $redirect = (bool) $this->book->id;
+            $redirect = (bool)$this->book->id;
 
-            return ! $redirect ?
+            return !$redirect ?
                 ['#about-header' => $this->renderPartial('book/about-header', ['book' => $book])]
                 : Redirect::to("/about-book/$book->id");
         } catch (Exception $ex) {
@@ -138,7 +139,7 @@ class Booker extends ComponentBase
             collect(post('authors'))
                 ->whereNotNull('profile_id')
                 ->whereBetween('percent_value', [0, 100])
-                ->map(fn ($i) => [
+                ->map(fn($i) => [
                     'profile' => Profile::find($i['profile_id']),
                     'value' => $i['percent_value'],
                 ])
@@ -184,22 +185,22 @@ class Booker extends ComponentBase
     public function onSearchTag()
     {
         $term = post('term');
-        if (! $term || strlen($term) < 3) {
+        if (!$term || strlen($term) < 3) {
             return [];
         }
 
         $like = Tag::query()->nameLike($term)->get();
         $exists = $this->service->getTags();
         $array = $like->diff($exists);
-        $already_has = (bool) $exists->first(fn ($i) => mb_strtolower($i->name) === mb_strtolower($term));
-        $can_create = ! $already_has && ! (bool) $like->first(fn ($i) => mb_strtolower($i->name) === mb_strtolower($term));
+        $already_has = (bool)$exists->first(fn($i) => mb_strtolower($i->name) === mb_strtolower($term));
+        $can_create = !$already_has && !(bool)$like->first(fn($i) => mb_strtolower($i->name) === mb_strtolower($term));
 
         $res = [];
 
         if ($already_has) {
             $res[] = [
                 'disabled' => true,
-                'htm' => $this->renderPartial('select/option', ['placeholder' => 'Тэг «'.$term.'» уже добавлен на страницу']),
+                'htm' => $this->renderPartial('select/option', ['placeholder' => 'Тэг «' . $term . '» уже добавлен на страницу']),
             ];
         }
         $res = array_merge($res, collect($array)->map(function ($item) {
@@ -207,17 +208,17 @@ class Booker extends ComponentBase
                 'id' => $item->id,
                 'label' => $item->name,
                 'htm' => $this->renderPartial('select/option', ['label' => $item->name]),
-                'handler' => $this->alias.'::onAddTag',
+                'handler' => $this->alias . '::onAddTag',
             ];
         })->toArray());
 
         if ($can_create) {
             $res[] = [
                 'label' => $term,
-                'handler' => $this->alias.'::onAddTag',
+                'handler' => $this->alias . '::onAddTag',
                 'htm' => $this->renderPartial('select/option', [
                     'prepend_icon' => '#plus-stroked-16',
-                    'text' => 'Создать новый тэг «'.$term.'»',
+                    'text' => 'Создать новый тэг «' . $term . '»',
                     'active' => true,
                     'prepend_separator' => $array[0] ?? false,
                 ]),
@@ -227,33 +228,33 @@ class Booker extends ComponentBase
         return $res;
     }
 
-    public function onSearchGenre()
-    {
-        $term = post('term');
-        if (! $term && strlen($term) < 3) {
-            return [];
-        }
-
-        $array = Genre::public()
-            ->name($term)
-            ->get()
-            ->diff($this->service->getGenres());
-
-        return collect($array)->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'label' => $item->name,
-                'htm' => $this->renderPartial('select/option', ['label' => $item->name]),
-                'handler' => $this->alias.'::onAddGenre',
-            ];
-        })->toArray();
-    }
+//    public function onSearchGenre()
+//    {
+//        $term = post('term');
+//        if (!$term && strlen($term) < 3) {
+//            return [];
+//        }
+//
+//        $array = Genre::public()
+//            ->name($term)
+//            ->get()
+//            ->diff($this->service->getGenres());
+//
+//        return collect($array)->map(function ($item) {
+//            return [
+//                'id' => $item->id,
+//                'label' => $item->name,
+//                'htm' => $this->renderPartial('select/option', ['label' => $item->name]),
+//                'handler' => $this->alias . '::onAddGenre',
+//            ];
+//        })->toArray();
+//    }
 
     public function onSearchAuthor()
     {
         try {
             $name = post('term');
-            if (! $name && strlen($name) < 1) {
+            if (!$name && strlen($name) < 1) {
                 return [];
             }
 
@@ -265,8 +266,8 @@ class Booker extends ComponentBase
                 return [
                     'id' => $item->id,
                     'label' => $item->username,
-                    'htm' => $this->renderPartial('select/option', ['label' => $item->username." (id: $item->id)"]),
-                    'handler' => $this->alias.'::onAddAuthor',
+                    'htm' => $this->renderPartial('select/option', ['label' => $item->username . " (id: $item->id)"]),
+                    'handler' => $this->alias . '::onAddAuthor',
                 ];
             })->toArray();
         } catch (Exception $ex) {
@@ -310,21 +311,19 @@ class Booker extends ComponentBase
 
     public function onAddGenre()
     {
+
         try {
-            if ($this->service->getGenres()->count() > 3) {
-                throw new ValidationException(['genres' => 'Вы можете добавить до 4 жанров.']);
-            }
-            if ($genre = Genre::find(post('item')['id'] ?? null)) {
-                $this->service->addGenre($genre);
+            if ($genres = Genre::query()->public()->find(collect(post('items'))->pluck('value')->toArray())) {
+                if ($genres->count() > 4) {
+                    throw new ValidationException(['genres' => 'Вы можете добавить до 4 жанров.']);
+                }
+                $this->service->syncGenres($genres);
             }
 
-            return $this->generateGenresInput(['autofocus' => true]);
+            return $this->generateGenresInput();
         } catch (Exception $ex) {
-            if (Request::ajax()) {
-                throw $ex;
-            } else {
-                Flash::error($ex->getMessage());
-            }
+            Flash::error($ex->getMessage());
+            return $this->generateGenresInput();
         }
     }
 
@@ -343,14 +342,14 @@ class Booker extends ComponentBase
         }
     }
 
-    public function onDeleteGenre(): array
-    {
-        if ($genre = Genre::find(post('id'))) {
-            $this->service->removeGenre($genre);
-        }
-
-        return $this->generateGenresInput();
-    }
+//    public function onDeleteGenre(): array
+//    {
+//        if ($genre = Genre::find(post('id'))) {
+//            $this->service->removeGenre($genre);
+//        }
+//
+//        return $this->generateGenresInput();
+//    }
 
     /**
      * @throws ValidationException
@@ -377,7 +376,11 @@ class Booker extends ComponentBase
 
     protected function generateGenresInput(array $options = []): array
     {
-        return ['#input-genres' => $this->renderPartial('@input-genres', ['genres' => $this->service->getGenres(), ...$options])];
+        return ['#input-genres' => $this->renderPartial('@input-genres', [
+            'genres' => $this->service->getGenres(),
+            'genres_list' => Genre::public()->get()->diff($this->service->getGenres()),
+            ...$options,
+        ])];
     }
 
     /**

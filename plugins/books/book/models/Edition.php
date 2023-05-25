@@ -5,6 +5,7 @@ namespace Books\Book\Models;
 use Books\Book\Classes\EditionService;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterSalesType;
+use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\PriceTag;
 use Books\Orders\Models\OrderProduct;
@@ -212,7 +213,7 @@ class Edition extends Model
 
         $edition = $this;
         $isSold = UserBook
-            ::whereHasMorph('ownable', [Edition::class], function($q) use ($edition){
+            ::whereHasMorph('ownable', [Edition::class], function ($q) use ($edition) {
                 $q->where('id', $edition->id);
             })
             ->whereHas('user', function ($query) use ($user) {
@@ -220,7 +221,7 @@ class Edition extends Model
             })
             ->first();
 
-        return (bool) $isSold?->exists;
+        return (bool)$isSold?->exists;
     }
 
     public function getSoldCountAttribute(): int
@@ -405,7 +406,7 @@ class Edition extends Model
     public function setFreeParts()
     {
         Db::transaction(function () {
-            $builder = fn() => $this->chapters()->published();
+            $builder = fn() => $this->chapters()->type(ChapterStatus::PLANNED, ChapterStatus::PUBLISHED);
             if ($this->isFree() || $this->status === BookStatus::FROZEN) {
                 $builder()->update(['sales_type' => ChapterSalesType::FREE]);
             } else {
@@ -413,7 +414,7 @@ class Edition extends Model
 //            $this->chapters()->offset($this->free_parts); ошибка
                 $builder()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
             }
-            $builder()->get()->each->setNeighbours();
+            $this->chapters()->planned()->get()->each->setNeighbours();
         });
     }
 

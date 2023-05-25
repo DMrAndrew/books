@@ -207,6 +207,11 @@ class Chapter extends Model
         return $query->where('status', ChapterStatus::PUBLISHED);
     }
 
+    public function scopeType(Builder $builder, ChapterStatus ...$status): Builder
+    {
+        return $builder->whereIn('status', collect($status)->pluck('values'));
+    }
+
     public function lengthRecount()
     {
         $this->length = (int)$this->pagination()->sum('length') ?? 0;
@@ -237,7 +242,6 @@ class Chapter extends Model
 
     protected function afterCreate()
     {
-        $this->edition->chapters()->get()->each->setNeighbours();
         $this->edition->setFreeParts();
     }
 

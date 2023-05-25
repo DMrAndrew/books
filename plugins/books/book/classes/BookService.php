@@ -261,6 +261,16 @@ class BookService
         $this->proxy()->genres()->add($genre, $this->getSessionKey());
     }
 
+    public function syncGenres(Collection $list): void
+    {
+        foreach ($this->getGenres() as $genre) {
+            $this->removeGenre($genre);
+        }
+        foreach ($list as $item) {
+            $this->addGenre($item);
+        }
+    }
+
     /**
      * @param Profile $profile
      * @return void

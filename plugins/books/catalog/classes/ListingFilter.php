@@ -101,11 +101,24 @@ class ListingFilter
         if (!$model) {
             return;
         }
-        $model['class'] = get_class($model);
+        $class = get_class($model);
+        if ($this->byClass($class)->whereIn('id', [$model->id])->count() > 0) {
+            return;
+        }
+        $model['class'] = $class;
         $model['flag'] = $type;
         $this->filters->push($model);
         $this->save();
     }
+
+    public function sync(Collection $models, string $class, string $type)
+    {
+        $this->removeAll($class, $type);
+        foreach ($models as $model) {
+            $this->push($model, $type);
+        }
+    }
+
 
     public function removeInclude(Model $model): void
     {
@@ -163,9 +176,19 @@ class ListingFilter
         $this->push($model, 'exclude');
     }
 
-    public function fromPost(string $class, ?int $id = null)
+    public function fromPost(string $class, int|array|null $id = null)
     {
-        return $class::query()->public()->asOption()->find($id ?? post('item')['id'] ?? post('remove_id'));
+        return $this->query($class)->find($id ?? post('item')['id'] ?? post('remove_id'));
+    }
+
+    public function query(string $class)
+    {
+        return $class::query()->public()->asOption();
+    }
+
+    public function syncFromPost(string $class, string $flag)
+    {
+        $this->sync($this->fromPost($class, collect(post('items'))->pluck('value')->toArray()), $class, $flag);
     }
 
     public function getSessionKey()

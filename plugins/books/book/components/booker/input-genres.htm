@@ -1,39 +1,11 @@
 <div id="input-genres">
-    <div class="create-book__input ui-multi-select">
-        <div class="ui-multi-select-header">
-            <label class="ui-select-label">Жанр</label>
-        </div>
-        <div class="ui-multi-select-container">
-            <div class="ui-multi-select-item _size-32">
-                <div class="ui-multi-select-tag-wrapper">
-                    {% for item in genres %}
-                    <input type="hidden" name="genres[{{item.id}}][id]" value="{{item.id}}"/>
-                    <div class="ui-multi-select-tag ui-tag _size-24 _color-gray">
-                        <span>{{item.name}}</span>
-                        <svg
-                            onclick="oc.request(this,'booker::onDeleteGenre')"
-                            data-request-data="id:{{item.id}}">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                        </svg>
-                    </div>
-                    {% endfor %}
-
-                    <input class="ui-multi-select-item-input books-autocomplete {{ autofocus ? 'should-focus' : ''}}"
-                           type="text"
-                           value="{{ term }}"
-                    >
-
-                </div>
-            </div>
-            <div class="ui-select-hitn"></div>
-            <div class="ui-select-error" data-validate-for="genres"></div>
-        </div>
-    </div>
+    {% partial
+    'controls/slim_select'
+    label='Жанры'
+    id='genres'
+    list=genres_list
+    selected=genres
+    formID='bookerForm'
+    onRequest='booker::onAddGenre'
+    %}
 </div>
-
-<script>
-    initAutocomplete({
-        container: '#input-genres',
-        onRequestHandler: 'booker::onSearchGenre',
-    })
-</script>
