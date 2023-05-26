@@ -253,7 +253,7 @@ class Edition extends Model
 
     public function isFree(): bool
     {
-        return (int)$this->getOriginal('price') == 0;
+        return !!!(int)$this->getOriginal('price');
     }
 
     public function hadCompleted()
@@ -414,7 +414,7 @@ class Edition extends Model
 //            $this->chapters()->offset($this->free_parts); ошибка
                 $builder()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
             }
-            $this->chapters()->planned()->get()->each->setNeighbours();
+            $this->chapters()->published()->get()->each->setNeighbours();
         });
     }
 
