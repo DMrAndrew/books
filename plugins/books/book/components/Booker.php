@@ -68,7 +68,7 @@ class Booker extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
-        $this->user = User::find($this->property('user_id')) ?? Auth::getUser();
+        $this->user = Auth::getUser();
         if (!$this->user) {
             throw new ApplicationException('User required');
         }
@@ -122,11 +122,8 @@ class Booker extends ComponentBase
                 ['#about-header' => $this->renderPartial('book/about-header', ['book' => $book])]
                 : Redirect::to("/about-book/$book->id");
         } catch (Exception $ex) {
-            if (Request::ajax()) {
-                throw $ex;
-            } else {
-                Flash::error($ex->getMessage());
-            }
+            Flash::error($ex->getMessage());
+            return [];
         }
     }
 
@@ -155,25 +152,23 @@ class Booker extends ComponentBase
         }
     }
 
-    public function onCreateCycle(): array
+    public function onCreateCycle()
     {
         try {
+
             if ($this->user->profile->cycles()->name(post('name'))->exists()) {
                 throw new ValidationException(['name' => 'Цикл уже существует.']);
             }
-            $this->user->profile->cycles()->add(new Cycle(post()));
-            $this->book->cycle = $this->user->profile->cycles()->latest()->first();
+            $cycle = $this->user->profile->cycles()->create(array_merge(['user_id' => $this->user->id], post()));
+
 
             return [
-                '#cycle_input' => $this->renderPartial('@cycle_input', ['cycles' => $this->getCycles(), 'cycle_id' => $this->book->cycle->id]),
+                '#cycle_input' => $this->renderPartial('@cycle_input', ['cycles' => $this->getCycles(), 'cycle_id' => $cycle->id]),
                 '#create_cycle_form_partial' => $this->renderPartial('@cycle_create_modal'),
             ];
         } catch (Exception $ex) {
-            if (Request::ajax()) {
-                throw $ex;
-            } else {
-                Flash::error($ex->getMessage());
-            }
+            Flash::error($ex->getMessage());
+            return [];
         }
     }
 
