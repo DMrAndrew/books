@@ -22,18 +22,18 @@ class ChapterService
 {
     public function __construct(protected Chapter $chapter, protected ?Edition $edition = null)
     {
-        if (! $this->isNew() && ! $this->edition?->exists) {
+        if (!$this->isNew() && !$this->edition?->exists) {
             $this->edition = $this->chapter->edition;
         }
     }
 
     public function isNew(): bool
     {
-        return ! $this->chapter->exists;
+        return !$this->chapter->exists;
     }
 
     /**
-     * @param  Edition  $edition
+     * @param Edition $edition
      * @return ChapterService
      */
     public function setEdition(Edition $edition): static
@@ -72,7 +72,7 @@ class ChapterService
      */
     protected function create(array $data): Chapter
     {
-        if (! $this->edition->id) {
+        if (!$this->edition->id) {
             throw new Exception('Edition required.');
         }
         $this->chapter->fill($this->dataPrepare($data));
@@ -100,7 +100,7 @@ class ChapterService
 
     public function delete(): void
     {
-        if (! $this->chapter->edition->editAllowed()) {
+        if (!$this->chapter->edition->editAllowed()) {
             throw new ValidationException(['chapter' => 'В данный момент Вы не можете удалять главы книг.']);
         }
         $this->chapter->delete();
@@ -108,7 +108,7 @@ class ChapterService
 
     public function dataPrepare(array|Collection $data): array
     {
-        if (! $this->edition->editAllowed()) {
+        if (!$this->edition->editAllowed()) {
             throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование глав.']);
         }
         $data = collect($data);
@@ -124,7 +124,7 @@ class ChapterService
                         break;
 
                     case ChapterStatus::PLANNED:
-                        if (! ($data->get('published_at') instanceof Carbon)) {
+                        if (!($data->get('published_at') instanceof Carbon)) {
                             throw new ValidationException(['published_at' => 'Не верный формат даты публикации.']);
                         }
                         $data['published_at'] = $data['published_at']->copy()->setMinutes(0)->setSeconds(0);
@@ -149,7 +149,7 @@ class ChapterService
 
     public function getPaginationLinks(int $page = 1)
     {
-        if (! $this->isNew()) {
+        if (!$this->isNew()) {
             $pagination = $this->chapter->pagination;
             $links = $pagination->map(function ($item) use ($pagination, $page) {
                 if (in_array($item->page, [
@@ -166,7 +166,7 @@ class ChapterService
             });
 
             return $links->filter(function ($value, $key) use ($links) {
-                return $value || ((bool) $links[$key + 1] ?? false);
+                return $value || ((bool)$links[$key + 1] ?? false);
             })->values();
         }
 
@@ -204,7 +204,7 @@ class ChapterService
         libxml_use_internal_errors(true);
         $dom->loadHTML(mb_convert_encoding($this->chapter->getContent()->body, 'HTML-ENTITIES', 'UTF-8'));
         $root = $dom->getElementsByTagName('body')[0];
-        $perhapses = collect($root->childNodes)->map(fn ($node) => [
+        $perhapses = collect($root->childNodes)->map(fn($node) => [
             'html' => $dom->saveHTML($node),
             'length' => self::countContentLength($node->textContent),
         ]);
@@ -228,7 +228,7 @@ class ChapterService
             ]);
             $this->chapter->save();
 
-            return fn () => Event::fire('books.chapter.published', [$this->chapter]);
+            return fn() => Event::fire('books.chapter.published', [$this->chapter]);
         });
         if ($forceFireEvent) {
             $event();
@@ -248,6 +248,6 @@ class ChapterService
                 ->map(function ($chapter) {
                     return $chapter->service()->publish(forceFireEvent: false);
                 });
-        })->map(fn ($callback) => is_callable($callback) ? $callback() : $callback);
+        })->map(fn($callback) => is_callable($callback) ? $callback() : $callback);
     }
 }
