@@ -62,7 +62,7 @@ class BookPage extends ComponentBase
                 abort(Redirect::to(comDomain() . '/book-card/' . $this->book->id));
             }
 
-            if ($this->book->isAdult() && UserService::canBeAskedAdultPermission()) {
+            if ($this->book->isAdult() && (UserService::canBeAskedAdultPermission() ?: abort(404))) {
                 $this->page['ask_adult'] = 1;
             }
         }

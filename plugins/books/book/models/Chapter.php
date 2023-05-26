@@ -209,7 +209,7 @@ class Chapter extends Model
 
     public function scopeType(Builder $builder, ChapterStatus ...$status): Builder
     {
-        return $builder->whereIn('status', collect($status)->pluck('values'));
+        return $builder->whereIn('status', collect($status)->pluck('value')->toArray());
     }
 
     public function lengthRecount()

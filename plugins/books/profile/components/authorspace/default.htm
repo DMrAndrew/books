@@ -49,8 +49,8 @@
                 <div class="ui-tabs-header js-container">
                     <div class="ui-tabs-line"></div>
                     <div class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
-                        <div class="ui-tabs-link active" data-tab="1">Профиль</div>
-                        <div class="ui-tabs-link " data-tab="2">Книги
+                        <div class="ui-tabs-link " data-tab="1">Профиль</div>
+                        <div class="ui-tabs-link {{ books.count ? 'active' : ''}} " data-tab="2">Книги
                             {% if books.count %}
                             <span>{{books.count?:''}}</span>
                             {% endif %}
@@ -100,10 +100,10 @@
 </div>
 <div class="ui-container-fluid">
     <div class="" data-tabs="1">
-        <div class="ui-tabs-content active" data-tab-content="1">
+        <div class="ui-tabs-content" data-tab-content="1">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Профиль</div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="2">
+        <div class="ui-tabs-content {{ books.count ? 'active' : ''}} " data-tab-content="2">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Книги <span
                 class="ui-text-body--2"> {{ books.count }}</span></div>
         </div>
@@ -137,7 +137,7 @@
         <div class="ui-col-sm-9">
             <div class="ui-tabs-body" data-tabs="1">
                 <!-- Профиль -->
-                <div class="author-profile ui-tabs-content active" data-tab-content="1">
+                <div class="author-profile ui-tabs-content" data-tab-content="1">
 
                     {% if should_call_fit_profile %}
                     <div class="author__placeholder _indent">
@@ -204,7 +204,7 @@
                     {% component 'comments' %}
                 </div>
                 <!-- Книги -->
-                <div class="author-books ui-tabs-content" data-tab-content="2">
+                <div class="author-books ui-tabs-content {{ books.count ? 'active' : ''}} " data-tab-content="2">
                     {% if books.count %}
                     {% for book in books %}
                     {% ajaxPartial "bookCard::standard-card" book=book %}

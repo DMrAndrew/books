@@ -16,7 +16,6 @@ use Staudenmeir\EloquentHasManyDeep\HasTableAlias;
 class Cycle extends Model
 {
     use Validation;
-    use HasTableAlias;
 
     /**
      * @var string table associated with the model
@@ -38,7 +37,6 @@ class Cycle extends Model
      */
     public $rules = [
         'name' => 'required|string|max:64',
-        'user_id' => 'required|exists:users,id',
     ];
 
     /**
@@ -103,7 +101,7 @@ class Cycle extends Model
 
     public function scopeBooksEager(Builder $builder): Builder
     {
-        return $builder->with(['books' => fn ($books) => $books->public()->defaultEager()]);
+        return $builder->with(['books' => fn($books) => $books->public()->defaultEager()]);
     }
 
     public function getLastUpdatedAtAttribute()
