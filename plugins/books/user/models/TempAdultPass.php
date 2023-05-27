@@ -3,7 +3,6 @@
 use Books\User\Classes\CookieEnum;
 use Carbon\Carbon;
 use Cookie;
-use Log;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;

@@ -46,9 +46,9 @@ class Discount extends Model
             throw new ValidationException(['discount' => 'Укажите дату скидки.']);
         }
         $date = Carbon::parse($date)->startOfDay();
-        //        if (!$date->gt(today()->endOfDay())) {
-        //            throw new ValidationException(['discount' => 'Скидку можно установить только с завтрашнего дня.']);
-        //        }
+        if (!$date->gt(today()->endOfDay())) {
+            throw new ValidationException(['discount' => 'Скидку можно установить только с завтрашнего дня.']);
+        }
         $this->attributes['active_at'] = $date;
 
     }
