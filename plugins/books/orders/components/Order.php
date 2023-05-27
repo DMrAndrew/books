@@ -22,7 +22,7 @@ use RainLab\User\Models\User;
  */
 class Order extends ComponentBase
 {
-    protected Book $book;
+    protected ?Book $book;
     private OrderService $orderService;
     private PaymentService $paymentService;
 
