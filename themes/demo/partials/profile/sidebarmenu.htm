@@ -1,39 +1,41 @@
 {% set aClass = linkClass?:'personal-area__sidebar-link' %}
 <div class="{{containerClass ?:'personal-area__sidebar ui-col-sm-3'}}">
+    {% set currentPagePath = this.page.url|split('/:')[0] %}
     {% for link in collect([
-    {name:'Профиль',href:'/lc-profile',turbo:'false'},
-    {name:'Приватность',href:'/lc-privacy'},
-    {name:'Уведомления',href:'/lc-notification'},
-    {name:'Черный список',href:''},
-    {separator:1},
-    {name:'Книги',href:'/lc-books',turbo:'false'},
-    {name:'Магазин',href:''},
-    {name:'Блог',href:''},
-    {name:'Видеоблог',href:''},
-    {name:'Подписки',href:'/lc-subscriptions'},
-    {name:'Подписчики',href:'/lc-subscribers'},
-    {name:'Награды',href:'lc-awards'},
-    {name:'Комментарии',href:'/lc-comments'},
-    {name:'Репосты',href:'/lc-reposts'},
-    {separator:1},
-    {name:'Коммерческий кабинет',href:''},
-    {name:'Статистика прочтений',href:'/lc-read-statistic',turbo:'false'},
-    {name:'Реклама',href:'/lc-advert',turbo:'false'},
-    {name:'Промокоды',href:'/lc-promocodes'},
-    {name:'Скидки',href:'/lc-discounts'},
-    {separator:1},
-    {name:'Настройки',href:'/lc-settings'},
-    ]) %}
-    {% if link.separator %}
-    <div class="{{separatorClass ?:'personal-area__sidebar-separator'}}"></div>
-    {% else %}
-    {% if link.href %}
-    <a class="{{aClass}} {{this.page.url == link.href ? 'active' : '' }} "
-       data-turbo="{{link.turbo|default('true')}}" href="{{link.href}}">{{link.name}}</a>
-    {% else %}
-    <a class="{{aClass}} disabled">{{link.name}}</a>
-    {% endif %}
+        {name:'Профиль',href:'/lc-profile',turbo:'false'},
+        {name:'Приватность',href:'/lc-privacy'},
+        {name:'Уведомления',href:'/lc-notification'},
+        {name:'Черный список',href:''},
+        {separator:1},
+        {name:'Книги',href:'/lc-books',turbo:'false'},
+        {name:'Магазин',href:''},
+        {name:'Блог',href:''},
+        {name:'Видеоблог',href:''},
+        {name:'Подписки',href:'/lc-subscriptions'},
+        {name:'Подписчики',href:'/lc-subscribers'},
+        {name:'Награды',href:'lc-awards'},
+        {name:'Комментарии',href:'/lc-comments'},
+        {name:'Репосты',href:'/lc-reposts'},
+        {separator:1},
+        {name:'Коммерческий кабинет',href:''},
+        {name:'Статистика прочтений',href:'/lc-read-statistic',turbo:'false'},
+        {name:'Реклама',href:'/lc-advert',turbo:'false'},
+        {name:'Промокоды',href:'/lc-promocodes'},
+        {name:'Скидки',href:'/lc-discounts'},
+        {separator:1},
+        {name:'Настройки',href:'/lc-settings'},
+        ]) %}
+        {% if link.separator %}
+            <div class="{{separatorClass ?:'personal-area__sidebar-separator'}}"></div>
+        {% else %}
 
-    {% endif %}
+        {% if link.href %}
+            <a class="{{aClass}} {{currentPagePath == link.href ? 'active' : '' }}"
+               data-turbo="{{link.turbo|default('true')}}" href="{{link.href}}">{{link.name}}</a>
+        {% else %}
+            <a class="{{aClass}} disabled">{{link.name}}</a>
+        {% endif %}
+
+        {% endif %}
     {% endfor %}
 </div>
