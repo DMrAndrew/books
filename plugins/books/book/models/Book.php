@@ -534,10 +534,20 @@ class Book extends Model
         $this->setSortOrder();
     }
 
-    public function afterUpdate()
+
+    protected function beforeUpdate()
     {
         $this->setAdultIfHasOne();
     }
+
+
+    public function setAdultIfHasOne()
+    {
+        if ($this->genres()->adult()->exists()) {
+            $this->age_restriction = AgeRestrictionsEnum::A18;
+        }
+    }
+
 
     /**
      * Try set default book cover if not exists one.
@@ -575,12 +585,6 @@ class Book extends Model
         });
     }
 
-    public function setAdultIfHasOne()
-    {
-        if ($this->genres()->adult()->exists()) {
-            $this->update(['age_restriction' => AgeRestrictionsEnum::A18]);
-        }
-    }
 
     public static function wordForm(): WordForm
     {
