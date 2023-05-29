@@ -127,4 +127,21 @@ class NotificationService implements NotificationServiceContract
                     );
             });
     }
+
+    /**
+     * @param Profile $profile
+     * @param Collection $notifications
+     *
+     * @return void
+     */
+    public function markNotificationsAsRead(Profile $profile, Collection $notifications): void
+    {
+        if ($notifications->count() > 0) {
+            $this
+                ->getBuilder($profile)
+                ->applyUnread()
+                ->whereIn('id', $notifications->pluck('id'))
+                ->update(['read_at' => Carbon::now()]);
+        }
+    }
 }
