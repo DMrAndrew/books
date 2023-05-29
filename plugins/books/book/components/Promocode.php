@@ -58,7 +58,7 @@ class Promocode extends ComponentBase
     public function vals()
     {
         return [
-            'books' => $this->user->profile->books()->free()->get(),
+            'books' => $this->user->profile->books()->notFree()->get(),
             'bookItem' => $this->getBook(),
             'promocodes' => $this->getBooksPromocodes()
         ];
@@ -73,7 +73,6 @@ class Promocode extends ComponentBase
 
     public function onGetBookPromocodes()
     {
-
         return [
             '#promocodesList' => $this->renderPartial('promocode/list', ['promocodes' => $this->getBooksPromocodes()])
         ];
