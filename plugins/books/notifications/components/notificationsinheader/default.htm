@@ -1,12 +1,15 @@
 <div class="header__actions-wrapper">
-    <div class="header__actions-item" data-header-action="notifications">
+    <button
+        class="header__actions-item" data-header-action="notifications"
+        data-request="{{ __SELF__ }}::onMarkHeaderNotificationsAsRead"
+    >
         <svg class="square-24">
             <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme }}"></use>
         </svg>
         {% if unreadNotifications > 0 %}
             <div class="ui-label-number _red">{{ unreadNotifications }}</div>
         {% endif %}
-    </div>
+    </button>
     <div class="popup-menu _notifications" data-header-content="notifications">
         <div class="popup-menu__content">
             <div class="popup-menu__header popup-menu__wrapper">

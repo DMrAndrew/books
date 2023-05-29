@@ -21,6 +21,14 @@ interface NotificationService
     public function markAllNotificationsAsRead(Profile $profile): void;
 
     /**
+     * @param Profile $profile
+     * @param Collection $notifications
+     *
+     * @return void
+     */
+    public function markNotificationsAsRead(Profile $profile, Collection $notifications): void;
+
+    /**
      * @param  Profile  $profile
      * @param  int  $limit
      * @return Collection
