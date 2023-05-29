@@ -29,8 +29,8 @@
         "staudenmeir/eloquent-has-many-deep": "1.17",
         "books/notifications-plugin": "*",
         "kirschbaum-development/eloquent-power-joins": "^3.0",
-        "books/wallet-plugin": "dev-VK-24-4",
-        "books/payment-plugin": "dev-VK-24-4"
+        "books/wallet-plugin": "*",
+        "books/payment-plugin": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
