@@ -108,4 +108,9 @@ class Cycle extends Model
     {
         return $this->books->map->ebook->pluck('last_updated_at')->sortDesc()?->first();
     }
+
+    protected function beforeCreate()
+    {
+        $this->name = mb_ucfirst($this->name);
+    }
 }

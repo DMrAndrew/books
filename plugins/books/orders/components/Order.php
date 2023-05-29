@@ -22,7 +22,7 @@ use RainLab\User\Models\User;
  */
 class Order extends ComponentBase
 {
-    protected Book $book;
+    protected ?Book $book;
     private OrderService $orderService;
     private PaymentService $paymentService;
 
@@ -50,7 +50,7 @@ class Order extends ComponentBase
         $this->user = Auth::getUser();
         $book_id = $this->param('book_id');
         $this->book = Book::query()->public()->find($book_id) ?? $this->user?->profile->books()->find($book_id)
-            ?? abort(404);
+            ?? null;
     }
 
     public function onRender()
@@ -131,7 +131,7 @@ class Order extends ComponentBase
 
                 return Redirect::to($this->currentPageUrl());
 
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 return [
                     '#orderPayFromBalanceSpawn' => $e->getMessage(),
                 ];
@@ -161,7 +161,7 @@ class Order extends ComponentBase
     public function onOrderAddDonation(): array
     {
         $order = $this->getOrder($this->getUser(), $this->book);
-        $this->orderService->applyAuthorSupport($order, (int) post('donate'));
+        $this->orderService->applyAuthorSupport($order, (int)post('donate'));
 
         return [
             '#order_form' => $this->renderPartial('@order_create', [
@@ -172,13 +172,14 @@ class Order extends ComponentBase
             '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
         ];
     }
+
     public function onOrderAddPromocode(): array
     {
         $order = $this->getOrder($this->getUser(), $this->book);
-        $promocodeIsApplied = $this->orderService->applyPromocode($order, (string) post('promocode'));
+        $promocodeIsApplied = $this->orderService->applyPromocode($order, (string)post('promocode'));
 
         return [
-            '#orderPromocodeApplied' => (string) post('promocode'),
+            '#orderPromocodeApplied' => (string)post('promocode'),
             '#orderPromocodeAppliedResult' => $promocodeIsApplied ? 'Применен' : 'Не действителен',
             '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
         ];
@@ -209,8 +210,8 @@ class Order extends ComponentBase
         $order = OrderModel
             ::where('user_id', $user->id)
             ->whereStatus(OrderStatusEnum::CREATED)
-            ->whereHas('products', function($query) use ($book){
-                $query->whereHasMorph('orderable', [Edition::class], function($q) use ($book){
+            ->whereHas('products', function ($query) use ($book) {
+                $query->whereHasMorph('orderable', [Edition::class], function ($q) use ($book) {
                     $q->where('id', $book->ebook->id);
                 });
             })

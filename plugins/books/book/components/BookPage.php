@@ -6,13 +6,9 @@ use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Models\Book;
 use Books\Comments\Components\Comments;
 use Books\Reposts\Components\Reposter;
-use Books\User\Classes\CookieEnum;
 use Books\User\Classes\UserService;
 use Cms\Classes\ComponentBase;
-use Cookie;
-use Log;
 use RainLab\User\Facades\Auth;
-use RainLab\User\Models\Settings;
 use RainLab\User\Models\User;
 use Redirect;
 
@@ -50,11 +46,12 @@ class BookPage extends ComponentBase
         return [];
     }
 
-    public function init()
+    public function init(): void
     {
         $this->user = Auth::getUser();
         $this->book_id = $this->param('book_id');
         $this->book = Book::query()->public()->find($this->book_id) ?? $this->user?->profile->books()->find($this->book_id);
+
 
         if (!$this->book && $this->book_id && ($this->book = Book::find($this->book_id) ?? abort(404))) {
 
@@ -62,7 +59,7 @@ class BookPage extends ComponentBase
                 abort(Redirect::to(comDomain() . '/book-card/' . $this->book->id));
             }
 
-            if ($this->book->isAdult() && (UserService::canBeAskedAdultPermission() ?: abort(404))) {
+            if (($this->book->isAdult() && UserService::canBeAskedAdultPermission()) || abort(404)) {
                 $this->page['ask_adult'] = 1;
             }
         }
