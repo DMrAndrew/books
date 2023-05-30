@@ -406,7 +406,7 @@ class OrderService implements OrderServiceContract
             /**
              * Разделить поровну вознаграждение между авторами
              */
-            $authorsRewardPartRounded = $this->getRewardPartRounded($authorRewardAmount, $users->count()); //dd($authorsRewardPartRounded);
+            $authorsRewardPartRounded = $this->getRewardPartRounded($authorRewardAmount, $users->count());
 
             $users->each(function ($user) use ($authorsRewardPartRounded){
                 $user->proxyWallet()->deposit($authorsRewardPartRounded);
