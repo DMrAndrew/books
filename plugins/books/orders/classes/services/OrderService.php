@@ -385,35 +385,47 @@ class OrderService implements OrderServiceContract
         $authorRewardAmount = $this->calculateAuthorsOrderReward($order);
 
         if ($authorRewardAmount > 0) {
-            $user = $this->resolveBalanceReceiverForOrder($order);
+            $users = $this->resolveBalanceReceiversForOrder($order);
 
-            if (!$user) {
-                throw new Exception("Unable to resolve Author for order #{$order->id}");
+            if ($users->isEmpty()) {
+                throw new Exception("Unable to resolve Author(s) for order #{$order->id}");
             }
 
-            $user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
+            /**
+             * Разделить поровну вознаграждение между авторами
+             */
+            $authorsCount = $users->count();
+            //$user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
         }
     }
 
     /**
+     * Разделение вознаграждения - между аккаунтами (не профилями)
+     *
      * @param Order $order
      *
-     * @return User|null
+     * @return Collection
      */
-    private function resolveBalanceReceiverForOrder(Order $order): ?User
+    private function resolveBalanceReceiversForOrder(Order $order): Collection
     {
+        $receivers = new Collection();
+
         /**
          * Get author of the Book
          */
-        $bookAuthor = $order->products()
+        $book = $order->products()
             ->where('orderable_type', [Edition::class])
             ->first()
             ?->orderable
-            ?->book
-            ?->author;
+            ?->book;
 
-        if ($bookAuthor) {
-            return $bookAuthor->profile->user;
+        if ($book) {
+            $receivers->push($book->author->profule->user);
+            $book->coauthors->each(function ($coauthor) use ($receivers) {
+                $receivers->push($coauthor->profule->user);
+            });
+
+            return $receivers;
         }
 
         /**
@@ -429,7 +441,7 @@ class OrderService implements OrderServiceContract
             return Profile::find($profileId)?->user;
         }
 
-        return null;
+        return $receivers;
     }
 
 
