@@ -643,6 +643,6 @@ class Book extends Model
      */
     public function getAnnotationShortAttribute(): string
     {
-        return Html::limit($this->annotation ?? '', config('books.book::config.annotation_length'), '...');
+        return Html::limit($this->annotation ?? '', config('books.book::config.annotation_length', 300), '...');
     }
 }
