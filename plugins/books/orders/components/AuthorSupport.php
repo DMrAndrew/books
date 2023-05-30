@@ -72,7 +72,6 @@ class AuthorSupport extends ComponentBase
             $book = Book::findOrFail($bookId);
 
             $profiles = new Collection();
-            $profiles->push($book->author->profile);
             $book->authors->each(function ($author) use ($profiles) {
                 $profiles->push($author->profile);
             });

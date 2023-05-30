@@ -435,7 +435,6 @@ class OrderService implements OrderServiceContract
             ?->book;
 
         if (!is_null($book)) {
-            $receivers->push($book->author->profile->user);
             $book->authors->each(function ($author) use ($receivers) {
                 $receivers->push($author->profile->user);
             });
