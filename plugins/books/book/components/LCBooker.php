@@ -9,6 +9,7 @@ use Exception;
 use October\Rain\Database\Collection;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Redirect;
 use ValidationException;
 
 /**
@@ -47,7 +48,7 @@ class LCBooker extends ComponentBase
         return $this->user->profile
             ->authorships()
             ->owner($this->getIsOwner())
-            ->with(['book' => fn ($q) => $q->defaultEager(), 'book.profile'])
+            ->with(['book' => fn($q) => $q->defaultEager(), 'book.profile'])
             ->get()
             ->sortByDesc('sort_order');
     }
@@ -78,18 +79,20 @@ class LCBooker extends ComponentBase
     public function onUploadFile()
     {
         try {
+        
             set_time_limit((60 * 3));
             $uploadedFile = (new Edition())->fb2()->withDeferred($this->getSessionKey())->get()?->first();
-            if (! $uploadedFile) {
+            if (!$uploadedFile) {
                 throw new ValidationException(['fb2' => 'Файл не найден.']);
             }
 
             (new BookService(user: $this->user, session_key: $this->getSessionKey()))->from($uploadedFile);
-            (new Edition())->cancelDeferred($this->getSessionKey());
+//            (new Edition())->cancelDeferred($this->getSessionKey());
 
-            return [
-                '#lc-books' => $this->renderPartial('@default', ['authorships' => $this->getAuthorships()]),
-            ];
+            return Redirect::refresh();
+//            return [
+//                '#lc-books' => $this->renderPartial('@default', ['authorships' => $this->getAuthorships()]),
+//            ];
         } catch (Exception $ex) {
             throw new ValidationException(['fb2' => $ex->getMessage()]);
         }

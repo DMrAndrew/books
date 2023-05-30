@@ -100,7 +100,7 @@ class BookPage extends ComponentBase
         $this->addComponent(BookAwards::class, 'bookAwards');
         $this->addComponent(AdvertBanner::class, 'advertBanner');
         $this->page->meta_title = '«' . $this->book->title . '»';
-        $this->page->meta_preview = $this->book->cover->path;
+        $this->page->meta_preview = $this->book->cover?->path;
         $this->page->meta_description = strip_tags($this->book->annotation);
     }
 
