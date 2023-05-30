@@ -63,7 +63,7 @@ class BookAccount extends Account
         try {
             return parent::onSignin();
         } catch (AuthException $authException) {
-            throw new ValidationException(['auth' => $authException->getMessage()]);
+            throw new ValidationException(['auth' => trans('rainlab.user::lang.account.invalid_user')]);
         }
     }
 

@@ -330,6 +330,11 @@ class Book extends Model
         return $builder->whereHas('editions', fn($e) => $e->free());
     }
 
+    public function scopeNotFree(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('editions', fn($e) => $e->free(false));
+    }
+
     public function scopeComplete(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
         return $builder->whereHas('editions', fn($e) => $e->status(BookStatus::COMPLETE));
