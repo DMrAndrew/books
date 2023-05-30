@@ -10,7 +10,7 @@ class BookCreated extends BaseEvent
 {
     public string $eventName = 'Публикация книги';
 
-    public string $eventDescription = 'Автор, на которого подписан пользователь опубликовал новую книгу.';
+    public string $eventDescription = 'Автор, на которого подписан пользователь опубликовал(а) новую книгу.';
 
     /**
      * @return array

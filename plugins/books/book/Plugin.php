@@ -54,6 +54,7 @@ use Illuminate\Foundation\AliasLoader;
 use Mobecan\Favorites\Behaviors\Favorable;
 use RainLab\Location\Behaviors\LocationModel;
 use System\Classes\PluginBase;
+use Tizis\FB2\FB2Controller;
 
 /**
  * Plugin Information File
@@ -115,6 +116,8 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Promocode', Models\Promocode::class);
         AliasLoader::getInstance()->alias('Discount', Discount::class);
         AliasLoader::getInstance()->alias('Prohibited', Prohibited::class);
+        AliasLoader::getInstance()->alias('FB2Controller', FB2Controller::class);
+
 
         Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
 

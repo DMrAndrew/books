@@ -8,6 +8,7 @@ use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\PriceTag;
+use Books\Book\Jobs\ParseFBChapters;
 use Books\Orders\Models\OrderProduct;
 use Cache;
 use Carbon\Carbon;
@@ -22,6 +23,7 @@ use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
+use Queue;
 use RainLab\User\Models\User;
 use System\Models\File;
 use System\Models\Revision;
@@ -237,12 +239,6 @@ class Edition extends Model
         $this->book->refreshAllowedVisits();
     }
 
-    public function frozen()
-    {
-        $this->fill(['status' => BookStatus::FROZEN]);
-        $this->save();
-    }
-
     public function editAllowed(): bool
     {
         return !$this->isPublished()
@@ -422,4 +418,29 @@ class Edition extends Model
     {
         $this->chapters()->get()->each->paginateContent();
     }
+
+    public function parseFBChaptersQueue(File $fb2)
+    {
+        Queue::push(ParseFBChapters::class, ['edition_id' => $this->id, 'file_id' => $fb2->id]);
+    }
+
+    public function setParsingFailed(): void
+    {
+        $this->fill(['status' => BookStatus::PARSING_FAILED]);
+        $this->save();
+    }
+
+    public function setHiddenStatus(): void
+    {
+        $this->fill(['status' => BookStatus::HIDDEN]);
+        $this->save();
+    }
+
+    public function froze()
+    {
+        $this->fill(['status' => BookStatus::FROZEN]);
+        $this->save();
+    }
+
+
 }
