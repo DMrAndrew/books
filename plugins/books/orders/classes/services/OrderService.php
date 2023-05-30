@@ -14,6 +14,7 @@ use Books\Orders\Models\BalanceDeposit as DepositModel;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
+use Books\Profile\Models\Profile;
 use Carbon\Carbon;
 use Db;
 use Exception;
@@ -253,10 +254,11 @@ class OrderService implements OrderServiceContract
     /**
      * @param Order $order
      * @param int $donateAmount
+     * @param Profile|null $profile
      *
      * @return void
      */
-    public function applyAuthorSupport(Order $order, int $donateAmount): void
+    public function applyAuthorSupport(Order $order, int $donateAmount, Profile $profile = null): void
     {
         $appliedDonations = $order->donations()->get();
         $appliedDonations->each(function($appliedDonation) {
@@ -264,7 +266,10 @@ class OrderService implements OrderServiceContract
         });
 
         if ($donateAmount > 0) {
-            $donation = Donation::create(['amount' => $donateAmount]);
+            $donation = Donation::create([
+                'amount' => $donateAmount,
+                'profile_id' => $profile?->id,
+            ]);
 
             $orderProduct = new OrderProduct();
             $orderProduct->orderable()->associate($donation);
@@ -380,20 +385,53 @@ class OrderService implements OrderServiceContract
         $authorRewardAmount = $this->calculateAuthorsOrderReward($order);
 
         if ($authorRewardAmount > 0) {
-            $author = $order->products()
-                ->where('orderable_type', [Edition::class])
-                ->first()
-                ?->orderable
-                ?->book
-                ?->author;
+            $user = $this->resolveBalanceReceiverForOrder($order);
 
-            if (!$author) {
-                throw new Exception("Unable to resolve product Author for order #{$order->id}");
+            if (!$user) {
+                throw new Exception("Unable to resolve Author for order #{$order->id}");
             }
 
-            $author->profile->user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
+            $user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
         }
     }
+
+    /**
+     * @param Order $order
+     *
+     * @return User|null
+     */
+    private function resolveBalanceReceiverForOrder(Order $order): ?User
+    {
+        /**
+         * Get author of the Book
+         */
+        $bookAuthor = $order->products()
+            ->where('orderable_type', [Edition::class])
+            ->first()
+            ?->orderable
+            ?->book
+            ?->author;
+
+        if ($bookAuthor) {
+            return $bookAuthor->profile->user;
+        }
+
+        /**
+         * Get target profile for Donation (Author Support)
+         */
+        $profileId = $order->products()
+            ->where('orderable_type', [Donation::class])
+            ->first()
+            ?->orderable
+            ?->profile_id;
+
+        if ($profileId) {
+            return Profile::find($profileId)?->user;
+        }
+
+        return null;
+    }
+
 
     /**
      * @param Order $order

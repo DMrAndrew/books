@@ -29,6 +29,7 @@ class Donation extends Model
      */
     protected $fillable = [
         'amount',
+        'profile_id',
     ];
 
     public $morphMany = [

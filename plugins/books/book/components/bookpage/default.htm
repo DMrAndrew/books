@@ -9,17 +9,14 @@
                     <a href="/author-page/{{profile.id}}" class="book-card-full__author ui-link _violet">{{profile.username}}</a>
                     {% endfor %}
                 </div>
-<!--                                <a href="" class="ui-link _violet _icon book-card-full__author-support">-->
-<!--                                    <script type="text/javascript">-->
-<!--                                        document.write(VK.Share.button({-->
-<!--                                            url: document.location.href,-->
-<!--                                            title: '{{book.title}}',-->
-<!--                                            image_url: '{{book.cover.getThumb(168,244)}}',-->
-<!--                                            image: '{{book.cover.getThumb(168,244)}}',-->
-<!--                                            noparse: true-->
-<!--                                        }));-->
-<!--                                    </script>-->
-<!--                                </a>-->
+                <a href="" class="ui-link _violet _icon book-card-full__author-support"
+                    data-request="AuthorSupport::onAuthorSupportCreate"
+                    data-request-data="profile_id:{{profile.id}}">
+                    <svg>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#coins-stroked-16' | theme}}"></use>
+                    </svg>
+                    <span>Поддержать автора</span>
+                </a>
             </div>
             <div class="book-card-full__type">
                 <div class="ui-tabs">
