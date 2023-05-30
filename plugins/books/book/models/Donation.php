@@ -1,6 +1,7 @@
 <?php namespace Books\Book\Models;
 
 use Books\Orders\Models\OrderProduct;
+use Books\Profile\Models\Profile;
 use Model;
 
 /**
@@ -30,6 +31,10 @@ class Donation extends Model
     protected $fillable = [
         'amount',
         'profile_id',
+    ];
+
+    public $belongsTo = [
+        'profile' => [Profile::class, 'key' => 'profile_id', 'otherKey' => 'id'],
     ];
 
     public $morphMany = [

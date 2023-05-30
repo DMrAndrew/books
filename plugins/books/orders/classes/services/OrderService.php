@@ -122,6 +122,9 @@ class OrderService implements OrderServiceContract
         // зачислить пополнение баланса пользователю
         $this->transferDepositToUserBalance($order);
 
+        // заказ оплачен
+        $this->updateOrderstatus($order, OrderStatusEnum::PAID);
+
         // добавить историю операций
         // todo
 
@@ -260,10 +263,19 @@ class OrderService implements OrderServiceContract
      */
     public function applyAuthorSupport(Order $order, int $donateAmount, Profile $profile = null): void
     {
-        $appliedDonations = $order->donations()->get();
-        $appliedDonations->each(function($appliedDonation) {
-            $appliedDonation->delete();
-        });
+        if (is_null($profile)) {
+            $appliedDonations = $order->donations()->get();
+            $appliedDonations->each(function($appliedDonation) {
+                $appliedDonation->delete();
+            });
+        } else {
+            $appliedDonations = $order->donations()->get();
+            $appliedDonations->each(function($appliedDonation) use ($profile) {
+                $appliedDonation->whereHasMorph('orderable', [Donation::class], function($query) use ($profile) {
+                    $query->where('profile_id', $profile->id);
+                })->delete();
+            });
+        }
 
         if ($donateAmount > 0) {
             $donation = Donation::create([
@@ -385,7 +397,7 @@ class OrderService implements OrderServiceContract
         $authorRewardAmount = $this->calculateAuthorsOrderReward($order);
 
         if ($authorRewardAmount > 0) {
-            $users = $this->resolveBalanceReceiversForOrder($order);
+            $users = $this->resolveOrderRewardReceivers($order);
 
             if ($users->isEmpty()) {
                 throw new Exception("Unable to resolve Author(s) for order #{$order->id}");
@@ -394,8 +406,11 @@ class OrderService implements OrderServiceContract
             /**
              * Разделить поровну вознаграждение между авторами
              */
-            $authorsCount = $users->count();
-            //$user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
+            $authorsRewardPartRounded = $this->getRewardPartRounded($authorRewardAmount, $users->count()); //dd($authorsRewardPartRounded);
+
+            $users->each(function ($user) use ($authorsRewardPartRounded){
+                $user->proxyWallet()->deposit($authorsRewardPartRounded);
+            });
         }
     }
 
@@ -406,7 +421,7 @@ class OrderService implements OrderServiceContract
      *
      * @return Collection
      */
-    private function resolveBalanceReceiversForOrder(Order $order): Collection
+    private function resolveOrderRewardReceivers(Order $order): Collection
     {
         $receivers = new Collection();
 
@@ -419,27 +434,22 @@ class OrderService implements OrderServiceContract
             ?->orderable
             ?->book;
 
-        if ($book) {
-            $receivers->push($book->author->profule->user);
-            $book->coauthors->each(function ($coauthor) use ($receivers) {
-                $receivers->push($coauthor->profule->user);
+        if (!is_null($book)) {
+            $receivers->push($book->author->profile->user);
+            $book->authors->each(function ($author) use ($receivers) {
+                $receivers->push($author->profile->user);
             });
 
             return $receivers;
         }
 
         /**
-         * Get target profile for Donation (Author Support)
+         * Get target profiles from Donations (Author Support)
          */
-        $profileId = $order->products()
-            ->where('orderable_type', [Donation::class])
-            ->first()
-            ?->orderable
-            ?->profile_id;
-
-        if ($profileId) {
-            return Profile::find($profileId)?->user;
-        }
+        $donations = $order->donations;
+        $donations->each(function ($donation) use ($receivers) {
+            $receivers->push($donation->orderable->profile->user);
+        });
 
         return $receivers;
     }
@@ -482,5 +492,16 @@ class OrderService implements OrderServiceContract
 
             return true;
         });
+    }
+
+    /**
+     * @param int $amount
+     * @param int $partsCount
+     *
+     * @return int
+     */
+    public function getRewardPartRounded(int $amount, int $partsCount): int
+    {
+        return intdiv( $amount, $partsCount);
     }
 }

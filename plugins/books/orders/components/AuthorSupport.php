@@ -1,5 +1,7 @@
 <?php namespace Books\Orders\Components;
 
+use Books\Book\Models\Award;
+use Books\Book\Models\Book;
 use Books\Book\Models\Donation;
 use Books\Book\Models\Edition;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
@@ -11,6 +13,7 @@ use Exception;
 use Flash;
 use Illuminate\Support\Facades\Redirect;
 use Log;
+use October\Rain\Support\Collection;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -46,33 +49,69 @@ class AuthorSupport extends ComponentBase
 
     public function onAuthorSupportCreate(): array
     {
-        $profileId = (int) $this->param('profile_id') ?? post('profile_id');
+        /**
+         * From /author-page
+         */
+        $profileId = (int) $this->param('profile_id');
+        if ($profileId) {
+            return [
+                '#authors_support_form' => $this->renderPartial('@support_create', [
+                    'profile_ids' => [
+                        (int) $this->param('profile_id')
+                    ],
+                ]),
+            ];
+        }
 
-        dd($profileId);
+        /**
+         * From /book-card
+         */
+        $bookId = (int) $this->param('book_id');
 
-        return [
-            '#authors_support_form' => $this->renderPartial('@support_create', [
-                'profile_id' => (int) $this->param('profile_id'),
-            ]),
-        ];
+        if ($bookId) {
+            $book = Book::findOrFail($bookId);
+
+            $profiles = new Collection();
+            $profiles->push($book->author->profile);
+            $book->authors->each(function ($author) use ($profiles) {
+                $profiles->push($author->profile);
+            });
+
+            $profileIds = $profiles->pluck('id')->unique()->toArray();
+
+            return [
+                '#authors_support_form' => $this->renderPartial('@support_create', [
+                    'profile_ids' => $profileIds,
+                ]),
+            ];
+        }
     }
 
     public function onAuthorSupportSubmit(): array
     {
         $donateAmount = (int) post('donate');
-        $profileId = (int) post('profile_id');
-
         if ($donateAmount <= 0) {
             Flash::error('Необходимо ввести сумму');
 
             return [];
         }
 
-        try {
-            $targetProfile = Profile::findOrFail($profileId);
+        $profileIds = explode(',', post('profile_ids'));
+        if (count($profileIds) == 0) {
+            Flash::error('Необходимо указать автора, которого вы хотите поддержать');
 
+            return [];
+        }
+
+        try {
             $order = $this->getOrder($this->getUser());
-            $this->orderService->applyAuthorSupport($order, $donateAmount, $targetProfile);
+
+            $authorsRewardPartRounded = $this->orderService->getRewardPartRounded($donateAmount, count($profileIds));
+
+            foreach($profileIds as $profileId) {
+                $targetProfile = Profile::findOrFail($profileId);
+                $this->orderService->applyAuthorSupport($order, $authorsRewardPartRounded, $targetProfile);
+            }
 
             return [
                 '#authors_support_form' => $this->renderPartial('@support_submit'),
@@ -132,7 +171,7 @@ class AuthorSupport extends ComponentBase
              * на случай, если есть оставленный заказ с книгой
              */
             ->whereDoesntHave('products', function ($query){
-                $query->whereHasMorph('orderable', [Edition::class]);
+                $query->whereHasMorph('orderable', [Edition::class, Award::class]);
             })
             ->first();
 
