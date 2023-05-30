@@ -221,7 +221,7 @@ class Profile extends Model
     {
         $id_column = (new Cycle())->getTable() . '.id';
 
-        return $this->cycles()->whereIn('id', $this->cycles()->pluck('id')->concat($this->existsInBookCycles()->pluck($id_column))->unique()->values()->toArray())->get();
+        return Cycle::query()->whereIn('id', $this->cycles()->pluck('id')->concat($this->existsInBookCycles()->pluck($id_column))->unique()->values()->toArray())->get();
     }
 
     public function isCommentAllowed(?Profile $profile = null)
