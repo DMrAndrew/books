@@ -15,12 +15,12 @@
     <span>В работе</span>
 </div>
 {% endif %}
-{% if status.value == 'hidden' %}
+{% if status.value == 'hidden' or status.value == 'parsing' or status.value == 'parsing_failed' %}
 <div class="book-card__info-wrap _color-gray">
     <svg class="book-card__favorit-active">
         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-off-stroked-16' | theme}}"></use>
     </svg>
-    <span>Скрыто</span>
+    <span>{{status.getLabel}}</span>
 </div>
 {% endif %}
 {% if status.value == 'frozen' %}

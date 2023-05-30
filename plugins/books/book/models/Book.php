@@ -24,6 +24,7 @@ use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Relations\HasOne;
 use October\Rain\Database\Relations\HasOneThrough;
 use October\Rain\Database\Traits\Validation;
+use October\Rain\Support\Facades\Html;
 use RainLab\Notify\Models\Notification;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -635,5 +636,13 @@ class Book extends Model
             'user_id' => $user->id,
             'award_id' => $award->id
         ]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAnnotationShortAttribute(): string
+    {
+        return Html::limit($this->annotation ?? '', config('books.book::config.annotation_length', 300), '...');
     }
 }

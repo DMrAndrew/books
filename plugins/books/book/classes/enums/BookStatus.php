@@ -9,6 +9,8 @@ enum BookStatus: string
     case FROZEN = 'frozen';
     case HIDDEN = 'hidden';
     case PENDING = 'pending';
+    case PARSING = 'parsing';
+    case PARSING_FAILED = 'parsing_failed';
 
     /**
      * @return string
@@ -20,7 +22,8 @@ enum BookStatus: string
             self::COMPLETE => 'Завершена',
             self::FROZEN => 'Заморожена',
             self::HIDDEN => 'Скрыта',
-            self::PENDING => 'Загружается',
+            self::PENDING, self::PARSING => 'Выполняется загрузка',
+            self::PARSING_FAILED => 'Не удалось загрузить контент',
         };
     }
 
