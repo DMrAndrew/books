@@ -55,8 +55,12 @@ class BookPage extends ComponentBase
 
         if (!$this->book && $this->book_id && ($this->book = Book::find($this->book_id) ?? abort(404))) {
 
-            if (!isComDomainRequested() && (comDomain() ?? false) && $this->book->isProhibited()) {
-                abort(Redirect::to(comDomain() . '/book-card/' . $this->book->id));
+//            if (!isComDomainRequested() && (comDomain() ?? false) && $this->book->isProhibited()) {
+//                abort(Redirect::to(comDomain() . '/book-card/' . $this->book->id));
+//            }
+
+            if (isComDomainRequested() && $this->book->isProhibited()) {
+                abort(404);
             }
 
             if (($this->book->isAdult() && UserService::canBeAskedAdultPermission()) || abort(404)) {

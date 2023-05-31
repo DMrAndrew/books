@@ -1,5 +1,6 @@
 <?php namespace Books\Book\Components;
 
+use Books\Profile\Models\Profile;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -11,7 +12,7 @@ use RainLab\User\Models\User;
  */
 class AwardsLC extends ComponentBase
 {
-    protected User $user;
+    protected ?Profile $profile;
 
     public function componentDetails()
     {
@@ -31,11 +32,18 @@ class AwardsLC extends ComponentBase
 
     public function init()
     {
-        if ($r = redirectIfUnauthorized()) {
-            return $r;
-        }
-        $this->user = Auth::getUser();
-        $this->page['left'] = $this->user->profile->leftAwards()->with('book')->orderByDesc('id')->get();
-        $this->page['received'] = $this->user->profile->receivedAwards()->with('book', 'profile')->orderByDesc('id')->get();
+        $this->profile = Auth::getUser()?->profile;
+
+    }
+
+    public function onRender()
+    {
+        $this->page['left'] = $this->profile?->leftAwards()->with('book')->orderByDesc('id')->get();
+        $this->page['received'] = $this->profile?->receivedAwards()->with('book', 'profile')->orderByDesc('id')->get();
+    }
+
+    public function bindProfile(Profile $profile)
+    {
+        $this->profile = $profile;
     }
 }
