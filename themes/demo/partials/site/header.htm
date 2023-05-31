@@ -2,6 +2,8 @@
 
 [NotificationsInHeader]
 recordsPerView = 11
+[OperationHistoryInHeader]
+operationsPerView = 11
 ==
 {% component 'BalanceDeposit' %}
 <div class="ui-container">
@@ -159,6 +161,7 @@ recordsPerView = 11
                     <div class="menu-mobile__separator"></div>
 
                     {% partial 'site/notifications-mobile' button = true %}
+                    {% partial 'site/operation-history-mobile' button = true %}
 
                     <div class="menu-mobile__link _indent-small" data-menu-link="3">
                         {% if user.profile.avatar %}
@@ -263,6 +266,7 @@ recordsPerView = 11
     </div>
     {% if user %}
         {% partial 'site/notifications-mobile' %}
+        {% partial 'site/operation-history-mobile' %}
 
         <!-- Профиль -->
         <div class="menu-mobile__container " data-menu-item="3">
