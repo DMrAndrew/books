@@ -4,7 +4,6 @@ use Books\Book\Models\Award;
 use Books\Book\Models\Book;
 use Books\Book\Models\Donation;
 use Books\Book\Models\Edition;
-use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Classes\Services\OrderService;
 use Books\Orders\Models\Order as OrderModel;
 use Books\Profile\Models\Profile;
@@ -52,12 +51,12 @@ class AuthorSupport extends ComponentBase
         /**
          * From /author-page
          */
-        $profileId = (int) $this->param('profile_id');
+        $profileId = (int)$this->param('profile_id');
         if ($profileId) {
             return [
                 '#authors_support_form' => $this->renderPartial('@support_create', [
                     'profile_ids' => [
-                        (int) $this->param('profile_id')
+                        (int)$this->param('profile_id')
                     ],
                 ]),
             ];
@@ -66,17 +65,19 @@ class AuthorSupport extends ComponentBase
         /**
          * From /book-card
          */
-        $bookId = (int) $this->param('book_id');
 
-        if ($bookId) {
-            $book = Book::findOrFail($bookId);
+        if ($book = Book::query()->with('authors.profile')->findOrFail((int)$this->param('book_id'))) {
 
-            $profiles = new Collection();
-            $book->authors->each(function ($author) use ($profiles) {
-                $profiles->push($author->profile);
-            });
-
-            $profileIds = $profiles->pluck('id')->unique()->toArray();
+            $profileIds = $book->authors
+                ->map->profile
+                ->pluck('id')
+                ->unique()->values()
+                ->toArray();
+//            $book->authors->each(function ($author) use ($profiles) {
+//                $profiles->push($author->profile);
+//            });
+//
+//            $profileIds = $profiles->pluck('id')->unique()->toArray();
 
             return [
                 '#authors_support_form' => $this->renderPartial('@support_create', [
@@ -88,7 +89,7 @@ class AuthorSupport extends ComponentBase
 
     public function onAuthorSupportSubmit(): array
     {
-        $donateAmount = (int) post('donate');
+        $donateAmount = (int)post('donate');
         if ($donateAmount <= 0) {
             Flash::error('Необходимо ввести сумму');
 
@@ -107,9 +108,8 @@ class AuthorSupport extends ComponentBase
 
             $authorsRewardPartRounded = $this->orderService->getRewardPartRounded($donateAmount, count($profileIds));
 
-            foreach($profileIds as $profileId) {
-                $targetProfile = Profile::findOrFail($profileId);
-                $this->orderService->applyAuthorSupport($order, $authorsRewardPartRounded, $targetProfile);
+            foreach (Profile::find($profileIds) as $profile) {
+                $this->orderService->applyAuthorSupport($order, $authorsRewardPartRounded, $profile);
             }
 
             return [
@@ -159,17 +159,17 @@ class AuthorSupport extends ComponentBase
         /**
          * Если пользователь оставил неоплаченный заказ - возвращаемся к нему
          */
-        $order = OrderModel
-            ::where('user_id', $user->id)
-            ->whereStatus(OrderStatusEnum::CREATED)
-            ->whereHas('products', function ($query){
+        $order = OrderModel::query()
+            ->user($user)
+            ->created()
+            ->whereHas('products', function ($query) {
                 $query->whereHasMorph('orderable', [Donation::class]);
             })
             /**
              * Заказ, который содержит только Поддержку (исключаем книги)
              * на случай, если есть оставленный заказ с книгой
              */
-            ->whereDoesntHave('products', function ($query){
+            ->whereDoesntHave('products', function ($query) {
                 $query->whereHasMorph('orderable', [Edition::class, Award::class]);
             })
             ->first();

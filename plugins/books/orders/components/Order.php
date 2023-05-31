@@ -207,9 +207,9 @@ class Order extends ComponentBase
         /**
          * Если пользователь оставил неоплаченный заказ - возвращаемся к нему
          */
-        $order = OrderModel
-            ::where('user_id', $user->id)
-            ->whereStatus(OrderStatusEnum::CREATED)
+        $order = OrderModel::query()
+            ->user()
+            ->created()
             ->whereHas('products', function ($query) use ($book) {
                 $query->whereHasMorph('orderable', [Edition::class], function ($q) use ($book) {
                     $q->where('id', $book->ebook->id);
