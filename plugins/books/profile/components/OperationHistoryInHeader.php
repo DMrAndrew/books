@@ -47,6 +47,10 @@ class OperationHistoryInHeader extends ComponentBase
 
     private function getOperations()
     {
+        if (!Auth::getUser()) {
+            return null;
+        }
+
         return Auth::getUser()
             ->operations()
             ->limit((int) $this->property('operationsPerView', 2))

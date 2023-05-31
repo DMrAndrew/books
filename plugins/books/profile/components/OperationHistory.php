@@ -46,6 +46,10 @@ class OperationHistory extends ComponentBase
      */
     private function getOperations()
     {
+        if (!Auth::getUser()) {
+            return null;
+        }
+
         return Auth::getUser()
             ->operations()
             ->paginate((int) $this->property('recordsPerPage', 16));
