@@ -5,6 +5,7 @@ namespace Books\User\Behaviors;
 use Books\Book\Models\Edition;
 use Books\Book\Models\UserBook;
 use Books\Comments\Models\Comment;
+use Books\Profile\Models\OperationHistory;
 use Books\Profile\Models\Profile;
 use Books\User\Classes\UserService;
 use Books\User\Models\Settings;
@@ -21,6 +22,12 @@ class BookUser extends ExtensionBase
     {
         $this->parent->hasMany['comments'] = [Comment::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['settings'] = [Settings::class, 'key' => 'user_id', 'otherKey' => 'id'];
+        $this->parent->hasMany['operations'] = [
+            OperationHistory::class,
+            'key' => 'user_id',
+            'otherKey' => 'id',
+            'order' => 'id desc',
+        ];
         $this->parent->addValidationRule('birthday', 'nullable');
         $this->parent->addValidationRule('birthday', 'date');
         $this->parent->addValidationRule('show_birthday', 'boolean');

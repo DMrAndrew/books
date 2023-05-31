@@ -1,8 +1,12 @@
 title = "История операций"
 layout = "default"
-url = "/all-operations"
+url = "/all-operations/:page?"
+
 meta_title = "История операций"
 meta_description = "История операций"
+
+[OperationHistory]
+recordsPerPage = 16
 ==
 
 <!-- Тело страницы -->
@@ -10,56 +14,4 @@ meta_description = "История операций"
     <div class="library__title ui-text--bold ui-text-head--2">История операций</div>
 </div>
 
-<div class="notifications-page">
-    <div class="ui-container-fluid">
-        <div class="library__content _wrapper">
-            <div class="notification-menu__wrapper">
-                <div class="notification-menu__content">
-                    <div class="notification-menu__text notification-menu__content-wrapper">
-                        Баланс пополнен на 1000 ₽
-                    </div>
-                    <div class="notification-menu__date">6 часов назад</div>
-                </div>
-            </div>
-            <div class="notification-menu__wrapper">
-                <div class="notification-menu__content">
-                    <div class="notification-menu__text _green notification-menu__content-wrapper">
-                        Вывод средств: 8 719.6 ₽ из 8 719.6 ₽ доступных вам средств
-                    </div>
-                    <div class="notification-menu__date">6 часов назад</div>
-                </div>
-            </div>
-            <div class="notification-menu__wrapper">
-                <div class="notification-menu__content">
-                    <div class="notification-menu__text notification-menu__content-wrapper">
-                        Куплена книга <a href="" class="ui-link _violet">«Творческое перегорание или затишье перед
-                        бурей»</a>
-                    </div>
-                    <div class="notification-menu__date">6 часов назад</div>
-                </div>
-            </div>
-            <div class="notification-menu__wrapper">
-                <div class="notification-menu__content">
-                    <div class="notification-menu__text notification-menu__content-wrapper">
-                        Вы получили 200 ₽ от <a href="#" class="ui-link _violet">Виктор</a>
-                    </div>
-                    <div class="notification-menu__date">6 часов назад</div>
-                </div>
-            </div>
-
-        </div>
-        <nav class="notifications-page__pagination ui-pagination">
-            <ul class="ui-pagination-list">
-                <li><a class="ui-pagination-item" href="">Назад</a></li>
-                <li><a class="ui-pagination-item" href="">1</a></li>
-                <li><a class="ui-pagination-item" href="">2</a></li>
-                <li><a class="ui-pagination-item" href="">...</a></li>
-                <li><a class="ui-pagination-item" href="">33</a></li>
-                <li><a class="ui-pagination-item" href="">Вперед</a></li>
-            </ul>
-        </nav>
-
-
-    </div>
-</div>
-
+{% component 'OperationHistory' %}

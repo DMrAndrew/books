@@ -9,12 +9,16 @@ use Books\Profile\Behaviors\Slavable;
 use Books\Profile\Classes\ProfileEventHandler;
 use Books\Profile\Components\AuthorSpace;
 use Books\Profile\Components\NotificationLC;
+use Books\Profile\Components\OperationHistory;
+use Books\Profile\Components\OperationHistoryInHeader;
 use Books\Profile\Components\PrivacyLC;
 use Books\Profile\Components\Profile;
 use Books\Profile\Components\ProfileLC;
 use Books\Profile\Components\Subs;
+use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceContract;
 use Books\Profile\Models\Profile as ProfileModel;
 use Books\Profile\Models\Profiler;
+use Books\Profile\Services\OperationHistoryService;
 use Config;
 use Event;
 use Flash;
@@ -59,6 +63,8 @@ class Plugin extends PluginBase
      */
     public function register(): void
     {
+        $this->app->bind(OperationHistoryServiceContract::class, OperationHistoryService::class);
+
         Event::listen('books.profile.username.modify.requested', fn($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
     }
 
@@ -146,6 +152,8 @@ class Plugin extends PluginBase
             NotificationLC::class => 'notificationLC',
             AuthorSpace::class => 'author_space',
             Subs::class => 'subs',
+            OperationHistory::class => 'OperationHistory',
+            OperationHistoryInHeader::class => 'OperationHistoryInHeader',
         ];
     }
 }
