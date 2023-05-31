@@ -1,0 +1,31 @@
+{% if operations | length > 0 %}
+<div class="notifications-page">
+    <div class="ui-container-fluid">
+
+        {% for operation in operations %}
+        <div class="notification-menu__wrapper">
+            <div class="notification-menu__content">
+                <div class="notification-menu__text notification-menu__content-wrapper">
+                    {{ operation.message | raw }}
+                </div>
+                <div class="notification-menu__date">{{ operation.created_at.diffForHumans() }}</div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+{% else %}
+<div class="notifications-page">
+    <div class="ui-container-fluid">
+        <div class="library__content _wrapper">
+            <div class="popup-menu__placeholder">
+                <svg class="square-32">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme}}"></use>
+                </svg>
+                <span>Здесь пока ничего нет</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

@@ -15,15 +15,24 @@ use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
 use Books\Profile\Models\Profile;
+use Books\Profile\Services\OperationHistoryService;
 use Carbon\Carbon;
 use Db;
 use Exception;
 use October\Rain\Support\Collection;
 use October\Rain\Database\Model;
 use RainLab\User\Models\User;
+use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceContract;
 
 class OrderService implements OrderServiceContract
 {
+    private OperationHistoryServiceContract $operationHistoryService;
+
+    public function __construct()
+    {
+        $this->operationHistoryService = app(OperationHistoryService::class);
+    }
+
     /**
      * @param User $user
      *
@@ -102,6 +111,18 @@ class OrderService implements OrderServiceContract
         $donationsAmount = $order->donations->sum('amount');
 
         return max(($donationsAmount), 0);
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return int
+     */
+    public function calculateAuthorsOrderSupport(Order $order): int
+    {
+        $supportAmount = $order->donations->sum('amount');
+
+        return max($supportAmount, 0);
     }
 
     /**
@@ -354,6 +375,7 @@ class OrderService implements OrderServiceContract
      * @param Order $order
      *
      * @return void
+     * @throws \ApplicationException
      */
     private function giveCustomerProducts(Order $order): void
     {
@@ -367,6 +389,8 @@ class OrderService implements OrderServiceContract
                 $newUserOwning->user_id = $user->id;
                 $newUserOwning->ownable()->associate($product);
                 $newUserOwning->save();
+
+                $this->operationHistoryService->addReceivingPurchase($order, $orderProduct);
             }
         }
     }
@@ -375,6 +399,7 @@ class OrderService implements OrderServiceContract
      * @param Order $order
      *
      * @return void
+     * @throws \ApplicationException
      */
     private function addAwardsToEditions(Order $order): void
     {
@@ -389,11 +414,13 @@ class OrderService implements OrderServiceContract
                 $product = $orderProduct->orderable;
 
                 if (isset($product->book)) {
-                    AwardBook::create([
+                    $awardBook = AwardBook::create([
                         'user_id' => $user->id,
                         'award_id' => $award->id,
                         'book_id' => $product->book->id,
                     ]);
+
+                    $this->operationHistoryService->addMakingAuthorReward($order, $awardBook);
                 }
             }
         }
@@ -411,9 +438,9 @@ class OrderService implements OrderServiceContract
         $authorRewardFromSupportAmount = $this->calculateAuthorsOrderRewardFromSupport($order);
 
         if ($authorRewardFromEditionAmount > 0 || $authorRewardFromSupportAmount > 0) {
-            $users = $this->resolveOrderRewardReceivers($order);
+            $profiles = $this->resolveOrderRewardReceivers($order);
 
-            if ($users->isEmpty()) {
+            if ($profiles->isEmpty()) {
                 throw new Exception("Unable to resolve Author(s) for order #{$order->id}");
             }
         }
@@ -438,10 +465,13 @@ class OrderService implements OrderServiceContract
          * Разделить вознаграждение поровну
          */
         if ($authorRewardFromSupportAmount > 0) {
-            $authorsRewardPartRounded = $this->getRewardPartRounded($authorRewardFromSupportAmount, $users->count());
+            $authorsRewardPartRounded = $this->getRewardPartRounded($authorRewardFromSupportAmount, $profiles->count());
 
-            $users->each(function ($user) use ($authorsRewardPartRounded){
-                $user->proxyWallet()->deposit($authorsRewardPartRounded);
+            $profiles->each(function ($profile) use ($order, $authorsRewardPartRounded){
+                $profile->user->proxyWallet()->deposit($authorsRewardPartRounded);
+
+                $this->operationHistoryService->addMakingAuthorSupport($order, $profile, $authorsRewardPartRounded);
+                $this->operationHistoryService->addReceivingAuthorSupport($order, $profile, $authorsRewardPartRounded);
             });
         }
     }
@@ -468,7 +498,7 @@ class OrderService implements OrderServiceContract
 
         if (!is_null($book)) {
             $book->authors->each(function ($author) use ($receivers) {
-                $receivers->push($author->profile->user);
+                $receivers->push($author->profile);
             });
 
             return $receivers;
@@ -479,7 +509,7 @@ class OrderService implements OrderServiceContract
          */
         $donations = $order->donations;
         $donations->each(function ($donation) use ($receivers) {
-            $receivers->push($donation->orderable->profile->user);
+            $receivers->push($donation->orderable->profile);
         });
 
         return $receivers;
@@ -490,6 +520,7 @@ class OrderService implements OrderServiceContract
      * @param Order $order
      *
      * @return void
+     * @throws \ApplicationException
      */
     private function transferDepositToUserBalance(Order $order): void
     {
@@ -497,6 +528,8 @@ class OrderService implements OrderServiceContract
 
         if ($depositAmount > 0) {
             $order->user->proxyWallet()->deposit($depositAmount);
+
+            $this->operationHistoryService->addBalanceDeposit($order);
         }
     }
 
