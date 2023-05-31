@@ -82,13 +82,26 @@ class OrderService implements OrderServiceContract
      *
      * @return int
      */
-    public function calculateAuthorsOrderReward(Order $order): int
+    public function calculateAuthorsOrderRewardFromEdition(Order $order): int
     {
         $orderAmount = $this->calculateAmount($order);
         $awardsAmount = $order->awards->sum('amount');
         $depositAmount = $order->deposits->sum('amount');
+        $donationsAmount = $order->donations->sum('amount');
 
-        return max(($orderAmount - $awardsAmount - $depositAmount), 0);
+        return max(($orderAmount - $awardsAmount - $depositAmount - $donationsAmount), 0);
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return int
+     */
+    public function calculateAuthorsOrderRewardFromSupport(Order $order): int
+    {
+        $donationsAmount = $order->donations->sum('amount');
+
+        return max(($donationsAmount), 0);
     }
 
     /**
@@ -394,19 +407,38 @@ class OrderService implements OrderServiceContract
      */
     private function updateAuthorsBalance(Order $order): void
     {
-        $authorRewardAmount = $this->calculateAuthorsOrderReward($order);
+        $authorRewardFromEditionAmount = $this->calculateAuthorsOrderRewardFromEdition($order);
+        $authorRewardFromSupportAmount = $this->calculateAuthorsOrderRewardFromSupport($order);
 
-        if ($authorRewardAmount > 0) {
+        if ($authorRewardFromEditionAmount > 0 || $authorRewardFromSupportAmount > 0) {
             $users = $this->resolveOrderRewardReceivers($order);
 
             if ($users->isEmpty()) {
                 throw new Exception("Unable to resolve Author(s) for order #{$order->id}");
             }
+        }
 
-            /**
-             * Разделить поровну вознаграждение между авторами
-             */
-            $authorsRewardPartRounded = $this->getRewardPartRounded($authorRewardAmount, $users->count());
+        /**
+         * Разделить гонорар с продажи книги с учетом процентов
+         */
+        if ($authorRewardFromEditionAmount > 0) {
+            $book = $order->products()
+                ->where('orderable_type', [Edition::class])
+                ->first()
+                ?->orderable
+                ?->book;
+
+            $book->profiles->each(function ($profile) use ($authorRewardFromEditionAmount) {
+                $authorRewardPartRounded = intdiv(($authorRewardFromEditionAmount * $profile->percent), 100 );
+                $profile->user->proxyWallet()->deposit($authorRewardPartRounded);
+            });
+        }
+
+        /**
+         * Разделить вознаграждение поровну
+         */
+        if ($authorRewardFromSupportAmount > 0) {
+            $authorsRewardPartRounded = $this->getRewardPartRounded($authorRewardFromSupportAmount, $users->count());
 
             $users->each(function ($user) use ($authorsRewardPartRounded){
                 $user->proxyWallet()->deposit($authorsRewardPartRounded);
@@ -501,6 +533,6 @@ class OrderService implements OrderServiceContract
      */
     public function getRewardPartRounded(int $amount, int $partsCount): int
     {
-        return intdiv( $amount, $partsCount);
+        return intdiv($amount, $partsCount);
     }
 }
