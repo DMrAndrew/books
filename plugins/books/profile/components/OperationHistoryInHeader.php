@@ -43,6 +43,7 @@ class OperationHistoryInHeader extends ComponentBase
     public function onRun(): void
     {
         $this->page['operations'] = $this->getOperations();
+        $this->page['unreadOperations'] = $this->getOperations()->count();
     }
 
     private function getOperations()

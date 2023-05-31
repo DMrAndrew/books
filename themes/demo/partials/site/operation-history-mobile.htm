@@ -9,7 +9,9 @@ operationsPerView = 11
             </svg>
         </div>
         <span class="ui-text--medium">История операций</span>
-
+        {% if unreadOperations > 0 %}
+            <div class="menu-mobile__link-label ui-label-number _red">{{ unreadOperations }}</div>
+        {% endif %}
         <svg class="menu-mobile__link-chevron square-16">
             <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme }}"></use>
         </svg>
