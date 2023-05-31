@@ -5,8 +5,10 @@ namespace Books\Book\Models;
 use Books\Book\Classes\EditionService;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterSalesType;
+use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\PriceTag;
+use Books\Book\Jobs\ParseFBChapters;
 use Books\Orders\Models\OrderProduct;
 use Cache;
 use Carbon\Carbon;
@@ -21,6 +23,7 @@ use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
+use Queue;
 use RainLab\User\Models\User;
 use System\Models\File;
 use System\Models\Revision;
@@ -212,7 +215,7 @@ class Edition extends Model
 
         $edition = $this;
         $isSold = UserBook
-            ::whereHasMorph('ownable', [Edition::class], function($q) use ($edition){
+            ::whereHasMorph('ownable', [Edition::class], function ($q) use ($edition) {
                 $q->where('id', $edition->id);
             })
             ->whereHas('user', function ($query) use ($user) {
@@ -220,7 +223,7 @@ class Edition extends Model
             })
             ->first();
 
-        return (bool) $isSold?->exists;
+        return (bool)$isSold?->exists;
     }
 
     public function getSoldCountAttribute(): int
@@ -236,12 +239,6 @@ class Edition extends Model
         $this->book->refreshAllowedVisits();
     }
 
-    public function frozen()
-    {
-        $this->fill(['status' => BookStatus::FROZEN]);
-        $this->save();
-    }
-
     public function editAllowed(): bool
     {
         return !$this->isPublished()
@@ -252,7 +249,7 @@ class Edition extends Model
 
     public function isFree(): bool
     {
-        return (int)$this->getOriginal('price') == 0;
+        return !!!(int)$this->getOriginal('price');
     }
 
     public function hadCompleted()
@@ -405,7 +402,7 @@ class Edition extends Model
     public function setFreeParts()
     {
         Db::transaction(function () {
-            $builder = fn() => $this->chapters()->published();
+            $builder = fn() => $this->chapters()->type(ChapterStatus::PLANNED, ChapterStatus::PUBLISHED);
             if ($this->isFree() || $this->status === BookStatus::FROZEN) {
                 $builder()->update(['sales_type' => ChapterSalesType::FREE]);
             } else {
@@ -413,7 +410,7 @@ class Edition extends Model
 //            $this->chapters()->offset($this->free_parts); ошибка
                 $builder()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
             }
-            $builder()->get()->each->setNeighbours();
+            $this->chapters()->published()->get()->each->setNeighbours();
         });
     }
 
@@ -421,4 +418,29 @@ class Edition extends Model
     {
         $this->chapters()->get()->each->paginateContent();
     }
+
+    public function parseFBChaptersQueue(File $fb2)
+    {
+        Queue::push(ParseFBChapters::class, ['edition_id' => $this->id, 'file_id' => $fb2->id]);
+    }
+
+    public function setParsingFailed(): void
+    {
+        $this->fill(['status' => BookStatus::PARSING_FAILED]);
+        $this->save();
+    }
+
+    public function setHiddenStatus(): void
+    {
+        $this->fill(['status' => BookStatus::HIDDEN]);
+        $this->save();
+    }
+
+    public function froze()
+    {
+        $this->fill(['status' => BookStatus::FROZEN]);
+        $this->save();
+    }
+
+
 }

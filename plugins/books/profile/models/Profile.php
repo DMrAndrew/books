@@ -219,7 +219,9 @@ class Profile extends Model
 
     public function cyclesWithAvailableCoAuthorsCycles()
     {
-        return $this->cycles()->get()->concat($this->existsInBookCycles()->get())->unique();
+        $id_column = (new Cycle())->getTable() . '.id';
+
+        return Cycle::query()->whereIn('id', $this->cycles()->pluck('id')->concat($this->existsInBookCycles()->pluck($id_column))->unique()->values()->toArray())->get();
     }
 
     public function isCommentAllowed(?Profile $profile = null)

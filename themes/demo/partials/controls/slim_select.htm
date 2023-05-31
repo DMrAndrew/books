@@ -1,0 +1,51 @@
+<div class="create-book__input">
+    <div class="ui-multi-select">
+        <div class="ui-multi-select-header">
+            <label class="ui-select-label ui-text--bold">{{label}}</label>
+            {% if onRemoveAll%}
+            <div class="ui-select-addition cursor-pointer"
+                 onclick="oc.request(this,'{{onRemoveAll}}')"
+            >Очистить
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="ui-multi-select-container">
+            <select id="{{id}}" multiple class="someClass">
+                {% for item in selected %}
+                <option selected value="{{item.id}}">{{item.name}}</option>
+                {% endfor %}
+                {% for item in list %}
+                <option value="{{item.id}}">{{item.name}}</option>
+                {% endfor %}
+            </select>
+            <div class="ui-select-hitn"></div>
+            <div class="ui-select-error" data-validate-for="{{name}}"></div>
+        </div>
+    </div>
+    <script>
+        new SlimSelect({
+            select: '#{{id}}',
+            settings: {
+                searchText: 'Ничего не найдено',
+                searchPlaceholder: 'Найти жанр',
+                placeholderText: 'Выберите жанр',
+            },
+            events: {
+                afterChange: (newVal) => {
+                    oc.request('#{{formID}}', '{{onRequest}}', {
+                        flash: true,
+                        data: {
+                            items: Array.from(newVal).map(e => {
+                                return {value: e.value}
+                            })
+                        }
+                    })
+
+                }
+            }
+        })
+    </script>
+</div>
+
+

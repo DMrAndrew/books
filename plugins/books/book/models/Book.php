@@ -11,7 +11,6 @@ use Books\Book\Classes\ScopeToday;
 use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
-use Cache;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Kirschbaum\PowerJoins\PowerJoins;
@@ -25,6 +24,7 @@ use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Relations\HasOne;
 use October\Rain\Database\Relations\HasOneThrough;
 use October\Rain\Database\Traits\Validation;
+use October\Rain\Support\Facades\Html;
 use RainLab\Notify\Models\Notification;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -331,6 +331,11 @@ class Book extends Model
         return $builder->whereHas('editions', fn($e) => $e->free());
     }
 
+    public function scopeNotFree(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->whereHas('editions', fn($e) => $e->free(false));
+    }
+
     public function scopeComplete(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
         return $builder->whereHas('editions', fn($e) => $e->status(BookStatus::COMPLETE));
@@ -392,7 +397,22 @@ class Book extends Model
 
     public function scopePublic(Builder $q)
     {
-        return $q->notEmptyEdition()->onlyPublicStatus()->adult();
+
+        return $q->withoutProhibited()
+            ->hasProhibitedGenres(has: false)
+            ->notEmptyEdition()
+            ->onlyPublicStatus()
+            ->adult();
+    }
+
+    public function isProhibited(): bool
+    {
+        return !!static::query()->prohibitedOnly()->orWhere(fn($b) => $b->hasProhibitedGenres(true))->find($this->id);
+    }
+
+    public function scopeHasProhibitedGenres(Builder $builder, bool $has = false)
+    {
+        return $builder->{$has ? 'whereHas' : 'whereDoesntHave'}('genres', fn($genres) => $genres->prohibitedOnly());
     }
 
     public function scopeOnlyPublicStatus(Builder $q): Builder|\Illuminate\Database\Eloquent\Builder
@@ -520,10 +540,20 @@ class Book extends Model
         $this->setSortOrder();
     }
 
-    public function afterUpdate()
+
+    protected function beforeUpdate()
     {
         $this->setAdultIfHasOne();
     }
+
+
+    public function setAdultIfHasOne()
+    {
+        if ($this->genres()->adult()->exists()) {
+            $this->age_restriction = AgeRestrictionsEnum::A18;
+        }
+    }
+
 
     /**
      * Try set default book cover if not exists one.
@@ -561,12 +591,6 @@ class Book extends Model
         });
     }
 
-    public function setAdultIfHasOne()
-    {
-        if ($this->genres()->adult()->exists()) {
-            $this->update(['age_restriction' => AgeRestrictionsEnum::A18]);
-        }
-    }
 
     public static function wordForm(): WordForm
     {
@@ -612,5 +636,13 @@ class Book extends Model
             'user_id' => $user->id,
             'award_id' => $award->id
         ]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAnnotationShortAttribute(): string
+    {
+        return Html::limit($this->annotation ?? '', config('books.book::config.annotation_length', 300), '...');
     }
 }

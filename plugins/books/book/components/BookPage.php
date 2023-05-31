@@ -6,13 +6,9 @@ use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Models\Book;
 use Books\Comments\Components\Comments;
 use Books\Reposts\Components\Reposter;
-use Books\User\Classes\CookieEnum;
 use Books\User\Classes\UserService;
 use Cms\Classes\ComponentBase;
-use Cookie;
-use Log;
 use RainLab\User\Facades\Auth;
-use RainLab\User\Models\Settings;
 use RainLab\User\Models\User;
 use Redirect;
 
@@ -26,6 +22,8 @@ class BookPage extends ComponentBase
     protected ?Book $book;
 
     protected ?User $user;
+
+    protected ?int $book_id;
 
     /**
      * componentDetails
@@ -48,19 +46,24 @@ class BookPage extends ComponentBase
         return [];
     }
 
-    public function init()
+    public function init(): void
     {
         $this->user = Auth::getUser();
-        $book_id = $this->param('book_id');
-        $this->book = Book::query()->public()->find($book_id) ?? $this->user?->profile->books()->find($book_id);
+        $this->book_id = $this->param('book_id');
+        $this->book = Book::query()->public()->find($this->book_id) ?? $this->user?->profile->books()->find($this->book_id);
 
-        if (!$this->book && $book_id && Book::find($book_id)?->isAdult()) {
-            $this->book = Book::find($book_id);
-            UserService::canBeAskedAdultPermission() ? ($this->page['ask_adult'] = 1) : abort(404);
+
+        if (!$this->book && $this->book_id && ($this->book = Book::find($this->book_id) ?? abort(404))) {
+
+            if (!isComDomainRequested() && (comDomain() ?? false) && $this->book->isProhibited()) {
+                abort(Redirect::to(comDomain() . '/book-card/' . $this->book->id));
+            }
+
+            if (($this->book->isAdult() && UserService::canBeAskedAdultPermission()) || abort(404)) {
+                $this->page['ask_adult'] = 1;
+            }
         }
-        if (!$this->book) {
-            abort(404);
-        }
+
         $this->user?->library($this->book)->get(); //Добавить в библиотеку
         $this->book = Book::query()
             ->withChapters()
@@ -97,7 +100,7 @@ class BookPage extends ComponentBase
         $this->addComponent(BookAwards::class, 'bookAwards');
         $this->addComponent(AdvertBanner::class, 'advertBanner');
         $this->page->meta_title = '«' . $this->book->title . '»';
-        $this->page->meta_preview = $this->book->cover->path;
+        $this->page->meta_preview = $this->book->cover?->path;
         $this->page->meta_description = strip_tags($this->book->annotation);
     }
 

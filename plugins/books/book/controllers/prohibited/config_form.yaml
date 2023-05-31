@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Prohibited
+
+# Model Form Field configuration
+form: $/books/book/models/prohibited/fields.yaml
+
+# Model Class name
+modelClass: Books\Book\Models\Prohibited
+
+# Default redirect location
+defaultRedirect: books/book/prohibited
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: books/book/prohibited/update/:id
+    redirectClose: books/book/prohibited
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/book/prohibited
+    redirectClose: books/book/prohibited
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title

@@ -58,4 +58,21 @@ class NotificationsInHeader extends ComponentBase
             (int) $this->property('recordsPerView', 11)
         );
     }
+
+    /**
+     * @return void
+     */
+    public function onMarkHeaderNotificationsAsRead(): void
+    {
+        if (! Auth::getUser()) {
+            return;
+        }
+
+        $headerNotifications = $this->service->getUnreadNotifications(
+            Auth::getUser()->profile,
+            (int) $this->property('recordsPerView', 11)
+        );
+
+        $this->service->markNotificationsAsRead(Auth::getUser()->profile, $headerNotifications);
+    }
 }

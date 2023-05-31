@@ -112,4 +112,9 @@ class Tag extends Model
     {
         return $builder->select(['id', 'name']);
     }
+
+    protected function beforeCreate()
+    {
+        $this->name = mb_ucfirst($this->name);
+    }
 }

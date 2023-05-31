@@ -36,6 +36,7 @@ class Plugin extends PluginBase
 {
     public $require = [
         'RainLab.User',
+        'RainLab.Location',
         'Books.User',
         'Books.Wallet',
     ];

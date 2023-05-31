@@ -32,7 +32,7 @@ class ListingFilter
     public function __construct(protected ?string $session_key = null)
     {
         $this->filters = collect();
-        if (! $this->getSessionKey()) {
+        if (!$this->getSessionKey()) {
             $this->fromQuery();
         } else {
             $this->type = post('type') ? EditionsEnums::tryFrom(post('type')) : null;
@@ -40,8 +40,8 @@ class ListingFilter
             $this->sort = SortEnum::tryFrom(post('sort')) ?? SortEnum::default();
             $this->complete = post('complete_only') == 'on';
             $this->free = post('free') == 'on';
-            $this->max_price = (int) post('max_price') ?: null;
-            $this->min_price = (int) post('min_price') ?: null;
+            $this->max_price = (int)post('max_price') ?: null;
+            $this->min_price = (int)post('min_price') ?: null;
             $this->filters = collect(Cache::get($this->getSessionKey()) ?? []);
         }
     }
@@ -78,7 +78,7 @@ class ListingFilter
 
     public function toBind(): array
     {
-        return array_merge((array) $this, [
+        return array_merge((array)$this, [
             'include_genres' => $this->includes(Genre::class),
             'exclude_genres' => $this->excludes(Genre::class),
             'include_tags' => $this->includes(Tag::class),
@@ -98,14 +98,27 @@ class ListingFilter
 
     public function push(?Model $model, string $type): void
     {
-        if (! $model) {
+        if (!$model) {
             return;
         }
-        $model['class'] = get_class($model);
+        $class = get_class($model);
+        if ($this->byClass($class)->whereIn('id', [$model->id])->count() > 0) {
+            return;
+        }
+        $model['class'] = $class;
         $model['flag'] = $type;
         $this->filters->push($model);
         $this->save();
     }
+
+    public function sync(Collection $models, string $class, string $type)
+    {
+        $this->removeAll($class, $type);
+        foreach ($models as $model) {
+            $this->push($model, $type);
+        }
+    }
+
 
     public function removeInclude(Model $model): void
     {
@@ -163,9 +176,19 @@ class ListingFilter
         $this->push($model, 'exclude');
     }
 
-    public function fromPost(string $class, ?int $id = null)
+    public function fromPost(string $class, int|array|null $id = null)
     {
-        return $class::query()->asOption()->find($id ?? post('item')['id'] ?? post('remove_id'));
+        return $this->query($class)->find($id ?? post('item')['id'] ?? post('remove_id'));
+    }
+
+    public function query(string $class)
+    {
+        return $class::query()->public()->asOption();
+    }
+
+    public function syncFromPost(string $class, string $flag)
+    {
+        $this->sync($this->fromPost($class, collect(post('items'))->pluck('value')->toArray()), $class, $flag);
     }
 
     public function getSessionKey()

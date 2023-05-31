@@ -204,19 +204,19 @@ class Genre extends Model
 
     public function scopePublic(Builder $builder): Builder
     {
-        $builder->active();
         if (shouldRestrictAdult()) {
             $builder->adult(false);
         }
 
-        return $builder;
+        return $builder->withoutProhibited();
     }
+
 
     public function scopeNestedFavorites(Builder $builder): Builder
     {
         return $builder
-            ->where(fn ($q) => $q->roots()->whereHas('children', fn ($q) => $q->favorite()))
-            ->orWhere(fn ($q) => $q->roots()->favorite())
-            ->with('children', fn ($q) => $q->favorite());
+            ->where(fn($q) => $q->roots()->whereHas('children', fn($q) => $q->favorite()))
+            ->orWhere(fn($q) => $q->roots()->favorite())
+            ->with('children', fn($q) => $q->favorite());
     }
 }

@@ -76,9 +76,18 @@ function shouldRestrictAdult(): bool
 
 function shouldRestrictContent(): bool
 {
-    $foreign = parse_url(config('app.foreign_url') ?? '');
+    return !isComDomainRequested();
+}
 
-    return request()->host() !== ($foreign['host'] ?? $foreign['path']);
+function isComDomainRequested(): bool
+{
+    $com = parse_url(comDomain() ?? '');
+    return request()->host() === ($com['host'] ?? $com['path']);
+}
+
+function comDomain(): ?string
+{
+    return config('app.com_url') ?? null;
 }
 
 function getFreqString(int $count, int $days): string

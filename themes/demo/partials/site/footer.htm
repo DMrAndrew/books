@@ -6,17 +6,17 @@
         </div>
         <nav class="footer__nav ui-grid-container ui-grid-gap">
             <div class=" ui-col-md-4 ui-col-sm-6">
-                <a href="#" class="footer__link">Новости</a>
-                <a href="#" class="footer__link">Правообладателям</a>
-                <a href="#" class="footer__link">Справка авторам и читателям</a>
-                <a href="#" class="footer__link">Оплата</a>
-                <a href="#" class="footer__link">О сайте</a>
-                <a href="#" class="footer__link">Контакты</a>
+                <a href="https://litnet.com/ru/news" target="_blank" class="footer__link">Новости</a>
+                <a href="/copyright-holders" target="_blank" class="footer__link">Правообладателям</a>
+                <a href="#" target="_blank" class="footer__link">Справка авторам и читателям</a>
+                <!--                <a href="#" target="_blank" class="footer__link">Оплата</a>-->
+                <a href="/about" target="_blank" class="footer__link">О сайте</a>
+                <a href="/contacts" target="_blank" class="footer__link">Контакты</a>
             </div>
             <div class="ui-col-md-4 ui-col-sm-6">
-                <a href="#" class="footer__link">Пользовательское соглашение</a>
-                <a href="#" class="footer__link">Соглашение о конфеденциальности</a>
-                <a href="#" class="footer__link">Правила размещения авторского контента</a>
+                <a href="/terms-of-use" target="_blank" class="footer__link">Пользовательское соглашение</a>
+                <a href="/privacy-agreement" target="_blank" class="footer__link">Соглашение о конфиденциальности</a>
+                <a href="#" target="_blank" class="footer__link">Электронный документооборот</a>
             </div>
             <div class="footer-social ui-col-md-4 ui-col-sm-6">
                 <span>Мы в социальных сетях</span>
@@ -25,13 +25,13 @@
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-vk-28' | theme}}"></use>
                     </svg>
                 </a>
-                <a href="#" target="_blank">
+                <a href="https://t.me/+bnniJiUjLmZmNGI6" target="_blank">
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#logo-telegram-28' | theme}}"></use>
                     </svg>
                 </a>
             </div>
         </nav>
-        <div class="footer__footer">© 2022, Время книг</div>
+        <div class="footer__footer">© {{carbon('now').format('Y')}}, Время книг</div>
     </div>
 </footer>

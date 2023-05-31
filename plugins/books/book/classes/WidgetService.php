@@ -334,10 +334,10 @@ class WidgetService
     public function readingWithThisOne()
     {
         $readingWithIds = Lib::query()
-            ->where('type', '=', CollectionEnum::READ)
+            ->type(CollectionEnum::READ)
             ->with('favorites')
             ->get()
-            ->each(fn($i) => $i['user'] = $i->favorites->first()->user_id)->groupBy('user')
+            ->each(fn($i) => $i['user'] = $i->favorites?->first()->user_id)->groupBy('user')
             ->map->pluck('book_id')
             ->filter(fn($i) => !is_bool($i->search($this->book->id)))
             ->flatten(1)

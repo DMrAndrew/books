@@ -2,6 +2,7 @@
 
 namespace Books\Book\Classes;
 
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Exceptions\FBParserException;
 use Books\Book\Classes\Exceptions\UnknownFormatException;
 use Books\Book\Models\Author;
@@ -99,7 +100,9 @@ class BookService
             $tizisBook = (new FB2Manager($payload))->apply();
             $this->fromTizis($tizisBook);
             $payload->save();
-            $this->book->ebook()->first()->fb2()->add($payload, $this->session_key);
+            $ebook = $this->book->ebook()->first();
+            $ebook->fb2()->add($payload);
+            $ebook->parseFBChaptersQueue($payload);
             Event::fire('books.book.parsed', [$this->book]);
 
             return $this->book;
@@ -114,6 +117,7 @@ class BookService
             $data = [
                 'title' => strip_tags($info->getTitle()) ?: 'Без названия',
                 'annotation' => $info->getAnnotation(),
+                'status' => BookStatus::PARSING
             ];
 
             $this->book->removeValidationRule('cover', 'max:3072');
@@ -133,12 +137,9 @@ class BookService
             }
             $this->save($data);
 
-            collect($book->getChapters())->map(function ($chapter) {
-                return (new Chapter())
-                    ->service()
-                    ->setEdition($this->book->ebook)
-                    ->from($chapter);
-            });
+//            collect($book->getChapters())->map(function ($chapter) {
+//                return (new Chapter())->service()->setEdition($this->book->ebook)->from($chapter);
+//            });
 
             return $this->book;
         });
@@ -164,13 +165,13 @@ class BookService
             $bookData = $data->only($this->proxy->getFillable());
 
             if ($bookData->has('cycle_id')) {
-                $bookData['cycle_id'] = $this->user->profile->cycles()->find($bookData['cycle_id'])?->id ?? null;
+                $bookData['cycle_id'] = $this->user->profile->cycles()->find($bookData->get('cycle_id'))?->id ?? null;
             }
 
             $this->{($this->isNew() ? 'create' : 'update')}($bookData->toArray());
             $this->book->fresh();
             $ebook = $this->book->ebook()->first();
-            $ebook?->fill($data->only(['comment_allowed', 'download_allowed'])->toArray());
+            $ebook?->fill($data->only(['comment_allowed', 'download_allowed', 'status'])->toArray());
             $ebook?->save();
 
             $this->clean();
@@ -259,6 +260,16 @@ class BookService
     public function addGenre(Genre $genre): void
     {
         $this->proxy()->genres()->add($genre, $this->getSessionKey());
+    }
+
+    public function syncGenres(Collection $list): void
+    {
+        foreach ($this->getGenres() as $genre) {
+            $this->removeGenre($genre);
+        }
+        foreach ($list as $item) {
+            $this->addGenre($item);
+        }
     }
 
     /**

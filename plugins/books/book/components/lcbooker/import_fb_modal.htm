@@ -19,8 +19,10 @@
                     'data-request-validate':'true',
                     files:'true',
                     'data-request-loading':'#loading-modal-container',
+                    'data-request-success':'closeModalFn(document.querySelector(`#modal-container`))'
                     }) }}
-                    <div class="buy-book-modal__text personal-area__wrap _indent-large ui-text-body--2">
+                    <div data-request-success=""
+                         class="buy-book-modal__text personal-area__wrap _indent-large ui-text-body--2">
                         <p>В данный момент поддерживается импорт из файлов с расширением fb2.</p>
                         <p>Загружая текст произведения, Вы подтверждаете, что у Вас есть необходимые для его обработки
                             права.</p>

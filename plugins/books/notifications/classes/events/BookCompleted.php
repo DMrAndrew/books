@@ -27,7 +27,7 @@ class BookCompleted extends BaseEvent
     }
 
     /**
-     * @param  array  $args
+     * @param array $args
      * @param $eventName
      * @return array
      */
@@ -43,7 +43,7 @@ class BookCompleted extends BaseEvent
     }
 
     /**
-     * @param  array  $args
+     * @param array $args
      * @return Collection|null
      */
     public static function getRecipients(array $args): ?Collection
@@ -59,7 +59,7 @@ class BookCompleted extends BaseEvent
             ->with('favorites.user')
             ->get()
             ->transform(static function (Lib $lib) {
-                return $lib?->favorites->first()?->user;
+                return $lib?->favorites?->first()?->user;
             });
     }
 }
