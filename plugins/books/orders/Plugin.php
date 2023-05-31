@@ -5,6 +5,7 @@ namespace Books\Orders;
 use Backend;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Classes\Services\OrderService;
+use Books\Orders\Components\AuthorSupport;
 use Books\Orders\Components\BalanceDeposit;
 use Books\Orders\Components\Order;
 use Books\Orders\Models\BalanceDeposit as DepositModel;
@@ -69,6 +70,7 @@ class Plugin extends PluginBase
         return [
             Order::class => 'Order',
             BalanceDeposit::class => 'BalanceDeposit',
+            AuthorSupport::class => 'AuthorSupport',
         ];
     }
 

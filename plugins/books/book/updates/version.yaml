@@ -65,3 +65,6 @@
     - 'Запрещённый контент'
     - create_prohibiteds_table.php
     - seed_prohibited.php
+1.0.19:
+    - 'Поле author_id в Donation'
+    - update_donations_table.php

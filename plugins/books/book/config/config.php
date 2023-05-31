@@ -5,5 +5,6 @@ use Books\Catalog\Models\Genre;
 
 return [
     'book_cover_blank_dir' => '/themes/demo/assets/images/book-cover-blank/',
-    'prohibited' => ['Жанр' => Genre::class, 'Книга' => Book::class]
+    'prohibited' => ['Жанр' => Genre::class, 'Книга' => Book::class],
+    'annotation_length' => env('BOOKS_ANNOTATION_LENGTH', 300),
 ];

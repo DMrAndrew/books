@@ -14,6 +14,7 @@ use Books\Orders\Models\BalanceDeposit as DepositModel;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
+use Books\Profile\Models\Profile;
 use Carbon\Carbon;
 use Db;
 use Exception;
@@ -81,13 +82,26 @@ class OrderService implements OrderServiceContract
      *
      * @return int
      */
-    public function calculateAuthorsOrderReward(Order $order): int
+    public function calculateAuthorsOrderRewardFromEdition(Order $order): int
     {
         $orderAmount = $this->calculateAmount($order);
         $awardsAmount = $order->awards->sum('amount');
         $depositAmount = $order->deposits->sum('amount');
+        $donationsAmount = $order->donations->sum('amount');
 
-        return max(($orderAmount - $awardsAmount - $depositAmount), 0);
+        return max(($orderAmount - $awardsAmount - $depositAmount - $donationsAmount), 0);
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return int
+     */
+    public function calculateAuthorsOrderRewardFromSupport(Order $order): int
+    {
+        $donationsAmount = $order->donations->sum('amount');
+
+        return max(($donationsAmount), 0);
     }
 
     /**
@@ -120,6 +134,9 @@ class OrderService implements OrderServiceContract
 
         // зачислить пополнение баланса пользователю
         $this->transferDepositToUserBalance($order);
+
+        // заказ оплачен
+        $this->updateOrderstatus($order, OrderStatusEnum::PAID);
 
         // добавить историю операций
         // todo
@@ -253,18 +270,31 @@ class OrderService implements OrderServiceContract
     /**
      * @param Order $order
      * @param int $donateAmount
+     * @param Profile|null $profile
      *
      * @return void
      */
-    public function applyAuthorSupport(Order $order, int $donateAmount): void
+    public function applyAuthorSupport(Order $order, int $donateAmount, Profile $profile = null): void
     {
-        $appliedDonations = $order->donations()->get();
-        $appliedDonations->each(function($appliedDonation) {
-            $appliedDonation->delete();
-        });
+        if (is_null($profile)) {
+            $appliedDonations = $order->donations()->get();
+            $appliedDonations->each(function($appliedDonation) {
+                $appliedDonation->delete();
+            });
+        } else {
+            $appliedDonations = $order->donations()->get();
+            $appliedDonations->each(function($appliedDonation) use ($profile) {
+                $appliedDonation->whereHasMorph('orderable', [Donation::class], function($query) use ($profile) {
+                    $query->where('profile_id', $profile->id);
+                })->delete();
+            });
+        }
 
         if ($donateAmount > 0) {
-            $donation = Donation::create(['amount' => $donateAmount]);
+            $donation = Donation::create([
+                'amount' => $donateAmount,
+                'profile_id' => $profile?->id,
+            ]);
 
             $orderProduct = new OrderProduct();
             $orderProduct->orderable()->associate($donation);
@@ -377,23 +407,84 @@ class OrderService implements OrderServiceContract
      */
     private function updateAuthorsBalance(Order $order): void
     {
-        $authorRewardAmount = $this->calculateAuthorsOrderReward($order);
+        $authorRewardFromEditionAmount = $this->calculateAuthorsOrderRewardFromEdition($order);
+        $authorRewardFromSupportAmount = $this->calculateAuthorsOrderRewardFromSupport($order);
 
-        if ($authorRewardAmount > 0) {
-            $author = $order->products()
+        if ($authorRewardFromEditionAmount > 0 || $authorRewardFromSupportAmount > 0) {
+            $users = $this->resolveOrderRewardReceivers($order);
+
+            if ($users->isEmpty()) {
+                throw new Exception("Unable to resolve Author(s) for order #{$order->id}");
+            }
+        }
+
+        /**
+         * Разделить гонорар с продажи книги с учетом процентов
+         */
+        if ($authorRewardFromEditionAmount > 0) {
+            $book = $order->products()
                 ->where('orderable_type', [Edition::class])
                 ->first()
                 ?->orderable
-                ?->book
-                ?->author;
+                ?->book;
 
-            if (!$author) {
-                throw new Exception("Unable to resolve product Author for order #{$order->id}");
-            }
+            $book->profiles->each(function ($profile) use ($authorRewardFromEditionAmount) {
+                $authorRewardPartRounded = intdiv(($authorRewardFromEditionAmount * $profile->percent), 100 );
+                $profile->user->proxyWallet()->deposit($authorRewardPartRounded);
+            });
+        }
 
-            $author->profile->user->proxyWallet()->deposit($this->calculateAuthorsOrderReward($order));
+        /**
+         * Разделить вознаграждение поровну
+         */
+        if ($authorRewardFromSupportAmount > 0) {
+            $authorsRewardPartRounded = $this->getRewardPartRounded($authorRewardFromSupportAmount, $users->count());
+
+            $users->each(function ($user) use ($authorsRewardPartRounded){
+                $user->proxyWallet()->deposit($authorsRewardPartRounded);
+            });
         }
     }
+
+    /**
+     * Разделение вознаграждения - между аккаунтами (не профилями)
+     *
+     * @param Order $order
+     *
+     * @return Collection
+     */
+    private function resolveOrderRewardReceivers(Order $order): Collection
+    {
+        $receivers = new Collection();
+
+        /**
+         * Get author of the Book
+         */
+        $book = $order->products()
+            ->where('orderable_type', [Edition::class])
+            ->first()
+            ?->orderable
+            ?->book;
+
+        if (!is_null($book)) {
+            $book->authors->each(function ($author) use ($receivers) {
+                $receivers->push($author->profile->user);
+            });
+
+            return $receivers;
+        }
+
+        /**
+         * Get target profiles from Donations (Author Support)
+         */
+        $donations = $order->donations;
+        $donations->each(function ($donation) use ($receivers) {
+            $receivers->push($donation->orderable->profile->user);
+        });
+
+        return $receivers;
+    }
+
 
     /**
      * @param Order $order
@@ -432,5 +523,16 @@ class OrderService implements OrderServiceContract
 
             return true;
         });
+    }
+
+    /**
+     * @param int $amount
+     * @param int $partsCount
+     *
+     * @return int
+     */
+    public function getRewardPartRounded(int $amount, int $partsCount): int
+    {
+        return intdiv($amount, $partsCount);
     }
 }

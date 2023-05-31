@@ -2,12 +2,14 @@ title = "Профиль"
 layout = "default"
 url = "/author-page/:profile_id?"
 [author_space]
+[AuthorSupport]
+
 ==
 <!-- Промо часть страницы -->
 
 <div style="margin-bottom: 16px"></div>
 {% component 'author_space' %}
-
+{% component 'AuthorSupport' %}
 <script>
     initTabs('[data-tabs="1"]');
     initTabs('[data-tabs="2"]');
