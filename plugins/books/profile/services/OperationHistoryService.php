@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Books\Profile\Services;
 
 use ApplicationException;
-use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
 use Books\Orders\Models\Order;
 use Books\Profile\Classes\Enums\OperationType;
 use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceContract;
 use Books\Profile\Models\OperationHistory;
+use Books\Profile\Models\Profile;
 use Cms\Classes\Controller;
 use Exception;
 use October\Rain\Support\Facades\Twig;
@@ -119,19 +119,19 @@ class OperationHistoryService implements OperationHistoryServiceContract
 
     /**
      * @param Order $order
-     * @param Author $author
+     * @param Profile $profile
+     * @param int $donationAmount
      *
      * @return void
      * @throws ApplicationException
      */
-    public function addMakingAuthorSupport(Order $order, Author $author): void
+    public function addMakingAuthorSupport(Order $order, Profile $profile, int $donationAmount): void
     {
         $user = $order->user;
-        $donationAmount = $order->donations->sum('amount');
 
         $params = [
-            'url' => url('author-page', ['profile_id' => $author->id]),
-            'name' => $author->profile->user->username,
+            'url' => url('author-page', ['profile_id' => $profile->id]),
+            'name' => $profile->username,
             'amount' => $donationAmount,
         ];
 
@@ -144,15 +144,15 @@ class OperationHistoryService implements OperationHistoryServiceContract
 
     /**
      * @param Order $order
-     * @param Author $author
+     * @param Profile $profile
+     * @param int $donationAmount
      *
      * @return void
      * @throws ApplicationException
      */
-    public function addReceivingAuthorSupport(Order $order, Author $author): void
+    public function addReceivingAuthorSupport(Order $order, Profile $profile, int $donationAmount): void
     {
         $user = $order->user;
-        $donationAmount = $order->donations->sum('amount');
 
         $params = [
             'url' => url('author-page', ['profile_id' => $user->id]),
@@ -161,7 +161,7 @@ class OperationHistoryService implements OperationHistoryServiceContract
         ];
 
         OperationHistory::create([
-            'user_id' => $author->profile->user->id,
+            'user_id' => $profile->user->id,
             'type' => OperationType::SupportReceive,
             'message' => $this->prepareBody(OperationType::SupportReceive, $params),
         ]);

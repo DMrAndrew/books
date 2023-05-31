@@ -4,6 +4,7 @@ namespace Books\Orders\Classes\Contracts;
 
 use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Models\Order;
+use Books\Profile\Models\Profile;
 use October\Rain\Support\Collection;
 use RainLab\User\Models\User;
 
@@ -14,7 +15,7 @@ interface OrderService
 
     public function applyPromocode(Order $order, string $promocode): bool;
     public function applyAwards(Order $order, Collection $awards): void;
-    public function applyAuthorSupport(Order $order, int $donate): void;
+    public function applyAuthorSupport(Order $order, int $donate, Profile $profile): void;
     public function addDeposit(Order $order, int $depositAmount): void;
 
     public function calculateAmount(Order $order): int;

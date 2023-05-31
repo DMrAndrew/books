@@ -165,7 +165,7 @@ class BookService
             $bookData = $data->only($this->proxy->getFillable());
 
             if ($bookData->has('cycle_id')) {
-                $bookData['cycle_id'] = $this->user->profile->cycles()->find($bookData->get('cycle_id'))?->id ?? null;
+                $bookData['cycle_id'] = $bookData->get('cycle_id') ?? null;
             }
 
             $this->{($this->isNew() ? 'create' : 'update')}($bookData->toArray());

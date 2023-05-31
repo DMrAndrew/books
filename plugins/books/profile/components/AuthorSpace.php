@@ -56,6 +56,7 @@ class AuthorSpace extends ComponentBase
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
         $awards = $this->addComponent(AwardsLC::class, 'awardsLC');
+        $awards->bindProfile($this->profile);
     }
 
     public function onRender()

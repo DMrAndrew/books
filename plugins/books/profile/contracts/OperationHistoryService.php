@@ -2,10 +2,10 @@
 
 namespace Books\Profile\Contracts;
 
-use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Edition;
 use Books\Orders\Models\Order;
+use Books\Profile\Models\Profile;
 
 interface OperationHistoryService
 {
@@ -25,10 +25,10 @@ interface OperationHistoryService
     public function addReceivingSubscription(Order $order, Edition $edition): void;
 
     /** Поддержка автора (оплата) */
-    public function addMakingAuthorSupport(Order $order, Author $author): void;
+    public function addMakingAuthorSupport(Order $order, Profile $profile, int $donationAmount): void;
 
     /** Поддержка автора (получение) */
-    public function addReceivingAuthorSupport(Order $order, Author $author): void;
+    public function addReceivingAuthorSupport(Order $order, Profile $profile, int $donationAmount): void;
 
     /** Получение сертификата не анонимно */
     public function addReceivingCertificatePublic(Order $order): void;
