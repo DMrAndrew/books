@@ -1,12 +1,8 @@
 <?php namespace Books\Book\Components;
 
-
 use Books\Book\Models\Award;
 use Books\Book\Models\Book;
-use Books\Orders\Classes\Services\OrderService;
 use Cms\Classes\ComponentBase;
-use Exception;
-use Illuminate\Support\Facades\Redirect;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -19,7 +15,6 @@ class BookAwards extends ComponentBase
 {
     protected ?Book $book;
     protected ?User $user;
-    private OrderService $orderService;
 
     public function componentDetails()
     {
@@ -39,7 +34,6 @@ class BookAwards extends ComponentBase
 
     public function init()
     {
-        $this->orderService = app(OrderService::class);
         $this->book = Book::query()->public()->find($this->param('book_id'));
         $this->user = Auth::getUser();
     }
@@ -67,37 +61,6 @@ class BookAwards extends ComponentBase
     public function buyAwardsIsAllowed(): bool
     {
         return $this->book?->exists ?? false;
-    }
-
-    public function onBuyAward()
-    {
-        $payType = post('payType');
-        if (!in_array($payType, ['balance', 'card'])) {
-            return [];
-        }
-
-        $order = $this->orderService->createOrder($this->user);
-        $awards = Award::find($this->getAwardsIds());
-        $this->orderService->applyAwards($order, $awards, $this->book);
-
-        if ($payType === 'card') {
-            return Redirect::to(route('payment.charge', ['order' => $order->id]));
-        }
-
-        if ($payType === 'balance') {
-            try {
-                $this->orderService->payFromDeposit($order);
-
-                return Redirect::to($this->currentPageUrl());
-
-            } catch (Exception $e) {
-                return [
-                    '#orderPayFromBalanceSpawn' => $e->getMessage(),
-                ];
-            }
-        }
-
-        return $this->render();
     }
 
     public function onChangeAwardBag(): array
