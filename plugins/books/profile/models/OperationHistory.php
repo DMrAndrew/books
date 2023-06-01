@@ -2,6 +2,8 @@
 
 use Books\Profile\Classes\Enums\OperationType;
 use Model;
+use October\Rain\Database\Builder;
+use RainLab\User\Models\User;
 
 /**
  * OperationHistory Model
