@@ -1,6 +1,5 @@
 <?php namespace Books\Book\Components;
 
-
 use Books\Book\Models\Award;
 use Books\Book\Models\Book;
 use Cms\Classes\ComponentBase;
@@ -62,16 +61,6 @@ class BookAwards extends ComponentBase
     public function buyAwardsIsAllowed(): bool
     {
         return $this->book?->exists ?? false;
-    }
-
-    public function onBuyAward()
-    {
-        if ($this->book && $this->user) {
-            Award::find($this->getAwardsIds())->each(fn($i) => $this->book->buyAward($i, $this->user));
-        }
-
-        return $this->render();
-
     }
 
     public function onChangeAwardBag(): array
