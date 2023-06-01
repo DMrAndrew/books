@@ -73,11 +73,6 @@ class AuthorSupport extends ComponentBase
                 ->pluck('id')
                 ->unique()->values()
                 ->toArray();
-//            $book->authors->each(function ($author) use ($profiles) {
-//                $profiles->push($author->profile);
-//            });
-//
-//            $profileIds = $profiles->pluck('id')->unique()->toArray();
 
             return [
                 '#authors_support_form' => $this->renderPartial('@support_create', [
@@ -114,7 +109,7 @@ class AuthorSupport extends ComponentBase
 
             return [
                 '#authors_support_form' => $this->renderPartial('@support_submit'),
-                '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
+                '#supportTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
             ];
 
         } catch (Exception $e) {

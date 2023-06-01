@@ -208,7 +208,7 @@ class Order extends ComponentBase
          * Если пользователь оставил неоплаченный заказ - возвращаемся к нему
          */
         $order = OrderModel::query()
-            ->user()
+            ->user($user)
             ->created()
             ->whereHas('products', function ($query) use ($book) {
                 $query->whereHasMorph('orderable', [Edition::class], function ($q) use ($book) {
