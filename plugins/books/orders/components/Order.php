@@ -146,7 +146,7 @@ class Order extends ComponentBase
         $order = $this->getOrder($this->getUser(), $this->book);
         $awards = Award::find($this->getAwardsIds());
 
-        $this->orderService->applyAwards($order, $awards);
+        $this->orderService->applyAwards($order, $awards, $this->book);
 
         return [
             '#order_form' => $this->renderPartial('@order_create', [

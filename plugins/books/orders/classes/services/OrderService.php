@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Books\Orders\Classes\Services;
 
 use Books\Book\Models\AwardBook;
+use Books\Book\Models\Book;
 use Books\Book\Models\Donation;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Promocode;
@@ -267,10 +268,11 @@ class OrderService implements OrderServiceContract
     /**
      * @param Order $order
      * @param Collection $awards
+     * @param Book|null $book
      *
      * @return void
      */
-    public function applyAwards(Order $order, mixed $awards): void
+    public function applyAwards(Order $order, mixed $awards, ?Book $book = null): void
     {
         $appliedAwards = $order->awards()->get();
 
@@ -282,6 +284,7 @@ class OrderService implements OrderServiceContract
             $orderProduct = new OrderProduct();
             $orderProduct->orderable()->associate($award);
             $orderProduct->order_id = $order->id;
+            $orderProduct->book_id = $book?->id;
             $orderProduct->initial_price = $award->price;
             $orderProduct->amount = $award->price;
             $orderProduct->save();
@@ -406,22 +409,17 @@ class OrderService implements OrderServiceContract
         $user = $order->user;
 
         $orderAwards = $order->awards;
-        foreach ($orderAwards as $orderAward) {
-            $award = $orderAward->orderable;
+        foreach ($orderAwards as $orderAwardProduct) {
+            $award = $orderAwardProduct->orderable;
 
-            // награду на каждый товар заказа (в перспективе)
-            foreach ($order->products as $orderProduct) {
-                $product = $orderProduct->orderable;
+            if ($orderAwardProduct->book_id) {
+                $awardBook = AwardBook::create([
+                    'user_id' => $user->id,
+                    'award_id' => $award->id,
+                    'book_id' => $orderAwardProduct->book_id,
+                ]);
 
-                if (isset($product->book)) {
-                    $awardBook = AwardBook::create([
-                        'user_id' => $user->id,
-                        'award_id' => $award->id,
-                        'book_id' => $product->book->id,
-                    ]);
-
-                    $this->operationHistoryService->addMakingAuthorReward($order, $awardBook);
-                }
+                $this->operationHistoryService->addMakingAuthorReward($order, $awardBook);
             }
         }
     }
