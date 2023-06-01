@@ -9,9 +9,6 @@ operationsPerView = 11
             </svg>
         </div>
         <span class="ui-text--medium">История операций</span>
-        {% if unreadOperations > 0 %}
-            <div class="menu-mobile__link-label ui-label-number _red">{{ unreadOperations }}</div>
-        {% endif %}
         <svg class="menu-mobile__link-chevron square-16">
             <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme }}"></use>
         </svg>
@@ -29,16 +26,6 @@ operationsPerView = 11
         {% if operations | length > 0 %}
         {% for operation in operations %}
         <div class="notification-menu__wrapper">
-            {% if not operation.read_at %}
-            <div class="notification-menu__detector active"></div>
-            {% endif %}
-            <div class="notification-menu__icon-wrapper">
-                <svg class="square-24">
-                    {% set icon = 'assets/icon-sprite/svg-sprite.svg#' ~ notification.icon %}
-
-                    <use xlink:href="{{ icon | theme }}"></use>
-                </svg>
-            </div>
             <div class="notification-menu__content">
                 {{ operation.message | raw }}
                 <div class="notification-menu__date">{{ operation.created_at.diffForHumans() }}</div>
