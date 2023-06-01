@@ -1,5 +1,5 @@
 <button data-modal="open_buy_donate" class="hidden"></button>
-<div data-modal="buy_donate" class="buy-book-modal ui-modal">
+<div data-modal="buy_donate" class="buy-donate-modal ui-modal">
 
     <div class="ui-modal-container">
         <!-- Форма пополнения баланса -->
@@ -23,14 +23,14 @@
                     <span class="ui-checkbox-text">Сумма, ₽</span>
                 </div>
                 <div class="buy-book-modal__wrapper-item">
-                    <input class="ui-input-item _size-32" type="text" id="donate" name="donate" value="" placeholder="200">
+                    <input class="ui-input-item _size-32" type="text" id="support" name="donate" value="" placeholder="200">
                 </div>
                 <div class="buy-book-modal__wrapper-item"></div>
 
                 <!-- продолжить -->
                 <div class="buy-book-modal__wrapper-item">
                     <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full"
-                            data-request="onAuthorSupportSubmit"
+                            data-request="AuthorSupport::onAuthorSupportSubmit"
                             data-request-data="profile_ids:'{{ profile_ids|join(',')}}'"
                             data-request-flash="true">
                         <span class="ui-text--medium">Продолжить</span>
@@ -50,7 +50,7 @@
     document.querySelector('[data-modal="open_buy_donate"]').click();
     document.body.style.overflow = 'initial';
 
-    $(document).on('keyup', '#donate', function(e) {
+    $(document).on('keyup', '#support', function(e) {
         e.preventDefault();
         this.value = this.value.replace(/[^\d.]/g, '');
     });

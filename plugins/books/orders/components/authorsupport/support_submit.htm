@@ -1,5 +1,5 @@
 <button data-modal="open_buy_donate" class="hidden"></button>
-<div data-modal="buy_donate" class="buy-book-modal ui-modal">
+<div data-modal="buy_donate" class="buy-donate-modal ui-modal">
 
     <div class="ui-modal-container">
         <!-- Форма заказа -->
@@ -18,7 +18,7 @@
             <div class="buy-book-modal__wrap">
 
                 <div class="buy-book-modal__wrapper-item">
-                    <a href="" data-request="onAuthorSupportCreate">&lt; Назад</a>
+                    <a href="" data-request="AuthorSupport::onAuthorSupportCreate">&lt; Назад</a>
                 </div>
 
                 <div class="buy-book-modal__wrapper">
@@ -26,7 +26,7 @@
                     <!-- итого -->
                     <div class="buy-book-modal__wrapper-item ui-text-body--1 ui-text--bold">
                         <div class="buy-book-modal__text _green">Итого к оплате</div>
-                        <div class="buy-book-modal__text _green" id="orderTotalAmountSpawn">0 ₽</div>
+                        <div class="buy-book-modal__text _green" id="supportTotalAmountSpawn">0 ₽</div>
                     </div>
                 </div>
 
