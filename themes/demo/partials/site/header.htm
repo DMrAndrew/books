@@ -124,12 +124,12 @@ operationsPerView = 11
                     </div>
                 </div>
             </li>
-            <li class="nav__list-item disabled"><a class="ui-text--medium nav__link" style="color:#ffffff">Конкурсы</a></li>
+<!--            <li class="nav__list-item disabled"><a class="ui-text&#45;&#45;medium nav__link" style="color:#ffffff">Конкурсы</a></li>-->
             <li class="nav__list-item "><a class="ui-text--medium nav__link" href="/library">Моя
                     библиотека</a></li>
-            <li class="nav__list-item disabled"><a class="ui-text--medium nav__link" style="color:#ffffff">Магазин</a></li>
-            <li class="nav__list-item disabled"><a class="ui-text--medium nav__link" style="color:#ffffff">Чат</a></li>
-            <li class="nav__list-item disabled"><a class="ui-text--medium nav__link" style="color:#ffffff">Реклама</a></li>
+<!--            <li class="nav__list-item disabled"><a class="ui-text&#45;&#45;medium nav__link" style="color:#ffffff">Магазин</a></li>-->
+<!--            <li class="nav__list-item disabled"><a class="ui-text&#45;&#45;medium nav__link" style="color:#ffffff">Чат</a></li>-->
+<!--            <li class="nav__list-item disabled"><a class="ui-text&#45;&#45;medium nav__link" style="color:#ffffff">Реклама</a></li>-->
         </ul>
     </nav>
 </div>
@@ -143,18 +143,18 @@ operationsPerView = 11
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
                 </svg>
             </div>
-            <a class="menu-mobile__link _indent-large disabled">
-                <span class="ui-text--medium">Конкурсы</span>
-            </a>
+<!--            <a class="menu-mobile__link _indent-large disabled">-->
+<!--                <span class="ui-text&#45;&#45;medium">Конкурсы</span>-->
+<!--            </a>-->
             <a href="/library" class="menu-mobile__link _indent-large">
                 <span class="ui-text--medium">Моя библиотека</span>
             </a>
-            <a class="menu-mobile__link _indent-large disabled">
-                <span class="ui-text--medium">Чат</span>
-            </a>
-            <a class="menu-mobile__link _indent-large disabled">
-                <span class="ui-text--medium">Реклама</span>
-            </a>
+<!--            <a class="menu-mobile__link _indent-large disabled">-->
+<!--                <span class="ui-text&#45;&#45;medium">Чат</span>-->
+<!--            </a>-->
+<!--            <a class="menu-mobile__link _indent-large disabled">-->
+<!--                <span class="ui-text&#45;&#45;medium">Реклама</span>-->
+<!--            </a>-->
 
             {% if user %}
                 <div class="menu-mobile__footer">
@@ -315,8 +315,8 @@ operationsPerView = 11
                     </svg>
                 </div>
                 <div class="menu-mobile__separator"></div>
-                <a href="#" data-request="bookAccount::onLogout"
-                   data-request-data="redirect: '/'" class="menu-mobile__link _indent-large">
+                <a  data-request="bookAccount::onLogout"
+                    class="menu-mobile__link _indent-large cursor-pointer">
                     <span class="ui-text--medium">Выйти</span>
                 </a>
             </div>
@@ -445,7 +445,6 @@ operationsPerView = 11
         <form id="login_form" class="auth__container _small"
               data-request="bookAccount::onSignin"
               data-request-validate
-              data-request-data="{ redirect: '/' }"
         >
             <div class="auth__header _desktop">
                 <svg onclick="closeForm()" class="square-24 auth__button-back active">

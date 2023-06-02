@@ -103,9 +103,9 @@ class BookPage extends ComponentBase
 
         $this->addComponent(BookAwards::class, 'bookAwards');
         $this->addComponent(AdvertBanner::class, 'advertBanner');
-        $this->page->meta_title = '«' . $this->book->title . '»';
-        $this->page->meta_preview = $this->book->cover?->path;
-        $this->page->meta_description = strip_tags($this->book->annotation);
+        $this->page->meta_title = '«' . $this->book?->title . '»';
+        $this->page->meta_preview = $this->book?->cover?->path;
+        $this->page->meta_description = strip_tags($this->book?->annotation);
     }
 
     public function onRender()
@@ -127,7 +127,7 @@ class BookPage extends ComponentBase
 
     public function buyBtn()
     {
-        return $this->user && !$this->book->ebook->isSold($this->user) && !$this->book->ebook->isFree();
+        return (($this->user && !$this->book->ebook->isSold($this->user)) || !$this->user) && !$this->book->ebook->isFree();
     }
 
     public function readBtn()
