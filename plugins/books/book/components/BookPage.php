@@ -149,6 +149,6 @@ class BookPage extends ComponentBase
      */
     private function supportBtn(): bool
     {
-        return $this->user && !$this->book->authors->whereIn('profile_id', [$this->user->id])->count();
+        return $this->user && !!!$this->book->authors->map->profile->whereIn('user_id', [$this->user->id])->count();
     }
 }
