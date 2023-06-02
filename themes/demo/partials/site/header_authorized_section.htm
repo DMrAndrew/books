@@ -4,6 +4,8 @@ redirect = "/"
 
 [NotificationsInHeader]
 recordsPerView = 11
+[OperationHistoryInHeader]
+operationsPerView = 7
 ==
 <div class="header__actions">
     <!--    <div class="header__actions-wrapper">-->
@@ -89,14 +91,7 @@ recordsPerView = 11
                     <div class="ui-text-head--3 ui-text--bold">История операций</div>
                 </div>
                 <div class="popup-menu__body popup-menu__wrapper">
-                    <div class="popup-menu__placeholder">
-                        <svg class="square-32">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme}}"></use>
-                        </svg>
-                        <span>Здесь пока ничего нет</span>
-                    </div>
-
-
+                    {% component 'OperationHistoryInHeader' %}
                 </div>
                 <div class="popup-menu__footer popup-menu__wrapper">
                     <a href="#" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full"
@@ -167,8 +162,8 @@ recordsPerView = 11
                     </li>
                     <li class="dropwdown-profile__separator"></li>
                     <li>
-                        <a href="#" data-request="bookAccount::onLogout"
-                           data-request-data="redirect: '/'"
+                        <a class="cursor-pointer" data-request="bookAccount::onLogout"
+
                         >
                             Выйти
                         </a>

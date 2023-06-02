@@ -2,8 +2,11 @@
 
 namespace Books\Orders\Models;
 
+use App\traits\ScopeUser;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Model;
+use October\Rain\Database\Builder;
+use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 
 /**
@@ -13,7 +16,8 @@ use RainLab\User\Models\User;
  */
 class Order extends Model
 {
-    use \October\Rain\Database\Traits\Validation;
+    use Validation;
+    use ScopeUser;
 
     /**
      * @var string table name
@@ -94,5 +98,10 @@ class Order extends Model
     public function scopeWhereStatus($query, OrderStatusEnum $status): void
     {
         $query->where('status', $status->value);
+    }
+
+    public function scopeCreated(Builder $builder)
+    {
+        return $builder->whereStatus(OrderStatusEnum::CREATED);
     }
 }

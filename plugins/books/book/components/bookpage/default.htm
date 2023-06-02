@@ -9,17 +9,15 @@
                     <a href="/author-page/{{profile.id}}" class="book-card-full__author ui-link _violet">{{profile.username}}</a>
                     {% endfor %}
                 </div>
-<!--                                <a href="" class="ui-link _violet _icon book-card-full__author-support">-->
-<!--                                    <script type="text/javascript">-->
-<!--                                        document.write(VK.Share.button({-->
-<!--                                            url: document.location.href,-->
-<!--                                            title: '{{book.title}}',-->
-<!--                                            image_url: '{{book.cover.getThumb(168,244)}}',-->
-<!--                                            image: '{{book.cover.getThumb(168,244)}}',-->
-<!--                                            noparse: true-->
-<!--                                        }));-->
-<!--                                    </script>-->
-<!--                                </a>-->
+                {% if supportBtn %}
+                <a  class="ui-link _violet _icon book-card-full__author-support cursor-pointer"
+                   data-request="AuthorSupport::onAuthorSupportCreate">
+                    <svg>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#coins-stroked-16' | theme}}"></use>
+                    </svg>
+                    <span>Поддержать автора</span>
+                </a>
+                {% endif %}
             </div>
             <div class="book-card-full__type">
                 <div class="ui-tabs">
@@ -56,7 +54,7 @@
                                     {% if buyBtn %}
 
                                     {% if not book.ebook.isBought %}
-                                    <a data-request="Order::onCreateOrder"
+                                    <a {{user ? 'data-request="Order::onCreateOrder"' : 'onclick="loginForm()"'}}
                                        class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
                                         {% if book.ebook.discount_exists %}
                                         <span>

@@ -55,8 +55,12 @@ class BookPage extends ComponentBase
 
         if (!$this->book && $this->book_id && ($this->book = Book::find($this->book_id) ?? abort(404))) {
 
-            if (!isComDomainRequested() && (comDomain() ?? false) && $this->book->isProhibited()) {
-                abort(Redirect::to(comDomain() . '/book-card/' . $this->book->id));
+//            if (!isComDomainRequested() && (comDomain() ?? false) && $this->book->isProhibited()) {
+//                abort(Redirect::to(comDomain() . '/book-card/' . $this->book->id));
+//            }
+
+            if (isComDomainRequested() && $this->book->isProhibited()) {
+                abort(404);
             }
 
             if (($this->book->isAdult() && UserService::canBeAskedAdultPermission()) || abort(404)) {
@@ -99,9 +103,9 @@ class BookPage extends ComponentBase
 
         $this->addComponent(BookAwards::class, 'bookAwards');
         $this->addComponent(AdvertBanner::class, 'advertBanner');
-        $this->page->meta_title = '«' . $this->book->title . '»';
-        $this->page->meta_preview = $this->book->cover?->path;
-        $this->page->meta_description = strip_tags($this->book->annotation);
+        $this->page->meta_title = '«' . $this->book?->title . '»';
+        $this->page->meta_preview = $this->book?->cover?->path;
+        $this->page->meta_description = strip_tags($this->book?->annotation);
     }
 
     public function onRender()
@@ -116,6 +120,7 @@ class BookPage extends ComponentBase
         return [
             'buyBtn' => $this->buyBtn(),
             'readBtn' => $this->readBtn(),
+            'supportBtn' => $this->supportBtn(),
             'book' => $this->book,
             'cycle' => $this->book->cycle
         ];
@@ -123,7 +128,7 @@ class BookPage extends ComponentBase
 
     public function buyBtn()
     {
-        return $this->user && !$this->book->ebook->isSold($this->user) && !$this->book->ebook->isFree();
+        return (($this->user && !$this->book->ebook->isSold($this->user)) || !$this->user) && !$this->book->ebook->isFree();
     }
 
     public function readBtn()
@@ -136,5 +141,14 @@ class BookPage extends ComponentBase
         return $this->book->ebook->isSold($this->user)
             || $this->book->ebook->isFree()
             || $this->book->ebook->chapters->some(fn($i) => $i->isFree());
+    }
+
+    /**
+     * Запретить поддерживать автора книги где он сам является автором
+     * @return bool
+     */
+    private function supportBtn(): bool
+    {
+        return $this->user && !$this->book->authors->whereIn('profile_id', [$this->user->id])->count();
     }
 }

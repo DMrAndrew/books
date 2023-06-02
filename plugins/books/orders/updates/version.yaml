@@ -9,3 +9,6 @@
 1.0.4:
     - "Модель Пополнение баланса"
     - create_balance_deposits_table.php
+1.0.5:
+    - "Привязка товара в заказе к Книге"
+    - update_products_table.php

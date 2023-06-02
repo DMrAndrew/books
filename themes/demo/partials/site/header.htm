@@ -2,6 +2,8 @@
 
 [NotificationsInHeader]
 recordsPerView = 11
+[OperationHistoryInHeader]
+operationsPerView = 11
 ==
 {% component 'BalanceDeposit' %}
 <div class="ui-container">
@@ -122,12 +124,12 @@ recordsPerView = 11
                     </div>
                 </div>
             </li>
-            <li class="nav__list-item disabled"><a class="ui-text--medium nav__link">Конкурсы</a></li>
+<!--            <li class="nav__list-item disabled"><a class="ui-text&#45;&#45;medium nav__link" style="color:#ffffff">Конкурсы</a></li>-->
             <li class="nav__list-item "><a class="ui-text--medium nav__link" href="/library">Моя
                     библиотека</a></li>
-            <li class="nav__list-item disabled"><a class="ui-text--medium nav__link">Магазин</a></li>
-            <li class="nav__list-item disabled"><a class="ui-text--medium nav__link">Чат</a></li>
-            <li class="nav__list-item disabled"><a class="ui-text--medium nav__link">Реклама</a></li>
+<!--            <li class="nav__list-item disabled"><a class="ui-text&#45;&#45;medium nav__link" style="color:#ffffff">Магазин</a></li>-->
+<!--            <li class="nav__list-item disabled"><a class="ui-text&#45;&#45;medium nav__link" style="color:#ffffff">Чат</a></li>-->
+<!--            <li class="nav__list-item disabled"><a class="ui-text&#45;&#45;medium nav__link" style="color:#ffffff">Реклама</a></li>-->
         </ul>
     </nav>
 </div>
@@ -141,24 +143,25 @@ recordsPerView = 11
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
                 </svg>
             </div>
-            <a class="menu-mobile__link _indent-large disabled">
-                <span class="ui-text--medium">Конкурсы</span>
-            </a>
+<!--            <a class="menu-mobile__link _indent-large disabled">-->
+<!--                <span class="ui-text&#45;&#45;medium">Конкурсы</span>-->
+<!--            </a>-->
             <a href="/library" class="menu-mobile__link _indent-large">
                 <span class="ui-text--medium">Моя библиотека</span>
             </a>
-            <a class="menu-mobile__link _indent-large disabled">
-                <span class="ui-text--medium">Чат</span>
-            </a>
-            <a class="menu-mobile__link _indent-large disabled">
-                <span class="ui-text--medium">Реклама</span>
-            </a>
+<!--            <a class="menu-mobile__link _indent-large disabled">-->
+<!--                <span class="ui-text&#45;&#45;medium">Чат</span>-->
+<!--            </a>-->
+<!--            <a class="menu-mobile__link _indent-large disabled">-->
+<!--                <span class="ui-text&#45;&#45;medium">Реклама</span>-->
+<!--            </a>-->
 
             {% if user %}
                 <div class="menu-mobile__footer">
                     <div class="menu-mobile__separator"></div>
 
                     {% partial 'site/notifications-mobile' button = true %}
+                    {% partial 'site/operation-history-mobile' button = true %}
 
                     <div class="menu-mobile__link _indent-small" data-menu-link="3">
                         {% if user.profile.avatar %}
@@ -166,9 +169,10 @@ recordsPerView = 11
                                 <img class="square-24" src="{{user.profile.avatar.getThumb(32,32)}}" alt="Аватар">
                             </div>
                         {% else %}
-                            <div class="menu-mobile__link-avatar square-32">
-                                <img class="square-24" src="{{ 'assets/images/author/avatar-placeholder.png' | theme }}" alt="Аватар">
-                            </div>
+                            <div class="menu-mobile__link-icon square-32">
+                                <svg class="square-24">
+                                    <use xlink:href=" {{'assets/icon-sprite/svg-sprite.svg#user-stroked-24' | theme}}"></use>
+                                </svg>                            </div>
                         {% endif %}
                         <span class="ui-text--medium">Профиль</span>
                         <svg class="menu-mobile__link-chevron square-16">
@@ -263,6 +267,7 @@ recordsPerView = 11
     </div>
     {% if user %}
         {% partial 'site/notifications-mobile' %}
+        {% partial 'site/operation-history-mobile' %}
 
         <!-- Профиль -->
         <div class="menu-mobile__container " data-menu-item="3">
@@ -311,8 +316,8 @@ recordsPerView = 11
                     </svg>
                 </div>
                 <div class="menu-mobile__separator"></div>
-                <a href="#" data-request="bookAccount::onLogout"
-                   data-request-data="redirect: '/'" class="menu-mobile__link _indent-large">
+                <a  data-request="bookAccount::onLogout"
+                    class="menu-mobile__link _indent-large cursor-pointer">
                     <span class="ui-text--medium">Выйти</span>
                 </a>
             </div>
@@ -441,7 +446,6 @@ recordsPerView = 11
         <form id="login_form" class="auth__container _small"
               data-request="bookAccount::onSignin"
               data-request-validate
-              data-request-data="{ redirect: '/' }"
         >
             <div class="auth__header _desktop">
                 <svg onclick="closeForm()" class="square-24 auth__button-back active">

@@ -7,4 +7,8 @@
     - 'Подписки'
     - create_subscribers_table.php
 1.0.3:
+    - 'Настройка стран'
     - set_up_countries.php
+1.0.4:
+    - 'История операций'
+    - create_operation_histories_table.php

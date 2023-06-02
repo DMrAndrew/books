@@ -3,7 +3,9 @@ layout = "default"
 url = "/out-of-free/:book_id/:chapter_id?"
 meta_title = "Конец ознакомительной части"
 [OutOfFree]
+[Order]
 ==
+{% component 'Order' %}
 <!-- Тело страницы -->
 <div class="ui-container-fluid common-pages__container">
     <div class="wrapper">
@@ -13,10 +15,10 @@ meta_title = "Конец ознакомительной части"
                     книги, выполнив единоразовый платеж.
                 </div>
                 <div class="stop-free__buttons">
-                    <a href="#" class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full">
+                    <a  class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer" {{user ? 'data-request="Order::onCreateOrder"' : 'onclick="loginForm()"'}}>
               <span>
                   {% if book.ebook.discount_exists %}
-                                        <span>
+                                        <span >
                         <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span
                             class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
                         <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>

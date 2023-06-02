@@ -1,0 +1,48 @@
+[OperationHistoryInHeader]
+operationsPerView = 11
+==
+{% if button %}
+    <div class="menu-mobile__link _indent-small" data-menu-link="6">
+        <div class="menu-mobile__link-icon square-32">
+            <svg class="square-24">
+                <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme }}"></use>
+            </svg>
+        </div>
+        <span class="ui-text--medium">История операций</span>
+        <svg class="menu-mobile__link-chevron square-16">
+            <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme }}"></use>
+        </svg>
+    </div>
+{% else %}
+<div class="menu-mobile__container " data-menu-item="6">
+    <div class="menu-mobile__header" data-menu-link="1">
+        <svg class="square-16">
+            <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme }}"></use>
+        </svg>
+        <span class="ui-text--bold">История операций</span>
+        <div class="square-16"></div>
+    </div>
+    <div class="menu-mobile__body">
+        {% if operations | length > 0 %}
+        {% for operation in operations %}
+        <div class="notification-menu__wrapper">
+            <div class="notification-menu__content">
+                {{ operation.message | raw }}
+                <div class="notification-menu__date">{{ operation.created_at.diffForHumans() }}</div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="popup-menu__placeholder">
+            <svg class="square-32">
+                <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme }}"></use>
+            </svg>
+            <span>Здесь пока ничего нет</span>
+        </div>
+        {% endif %}
+    </div>
+    <div class="popup-menu__footer popup-menu__wrapper">
+        <a href="{{ 'all-operations' | page }}" class="popup-menu__link ui-link _violet">Все операции</a>
+    </div>
+</div>
+{% endif %}

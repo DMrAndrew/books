@@ -40,7 +40,7 @@
     <div data-modal="buy_award" class="buy-book-modal ui-modal">
         <div class="ui-modal-container">
             <!-- Поддержка автора -->
-            {{ form_ajax('onBuyAward') }}
+            {{ form_ajax('BuyAwards::onBuyAward') }}
             <!-- Итого к оплате -->
             <div class="buy-book-modal__container ui-modal-content">
                 <div class="buy-book-modal__header">
@@ -81,11 +81,40 @@
                             <div class="buy-book-modal__text _green" id="awardPriceSpawn">0 ₽</div>
                         </div>
                     </div>
+
+                    <div class="buy-book-modal__payment">
+                        <div class="buy-book-modal__subtitle ui-text-body--1 ui-text--bold">Способ оплаты</div>
+                        <div class="buy-book-modal__pay-container">
+                            <label class="payTypeLabel" for="payTypeBalance">
+                                <input type="radio" style="display: none" name="payType" id="payTypeBalance" value="balance">
+                                <div class="buy-book-modal__pay">
+                                    <svg class="square-32">
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme}}"></use>
+                                    </svg>
+                                    <span>Снять с баланса</span>
+                                </div>
+                            </label>
+                            <label class="payTypeLabel" for="payTypeCard">
+                                <div class="buy-book-modal__pay">
+                                    <input type="radio" style="display: none" name="payType" id="payTypeCard" value="card">
+                                    <svg class="square-32">
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#credit-card-stroked-32' | theme}}"></use>
+                                    </svg>
+                                    <span>Оплатить картой</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
                     <span class="ui-text--medium">Купить</span>
                 </button>
+
+                <!-- Ошибка оплаты списанием с баланса -->
+                <div class="buy-book-modal__wrapper-item listing-book-info__block">
+                    <div class="buy-book-modal__text" id="orderPayFromBalanceSpawn"></div>
+                </div>
             </div>
             {{ form_close()}}
         </div>
@@ -101,9 +130,13 @@
                 if (e.target.closest('[data-accodrion="header"]')) {
                     item.classList.toggle('active');
                 }
-
             })
         })
+
+        $(document).on('click', '.payTypeLabel', function(e) {
+            $('.buy-book-modal__pay').removeClass('active');
+            $(this).find('.buy-book-modal__pay').addClass('active');
+        });
     </script>
 </div>
 {% endif %}
