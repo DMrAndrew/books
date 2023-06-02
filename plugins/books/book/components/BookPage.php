@@ -120,6 +120,7 @@ class BookPage extends ComponentBase
         return [
             'buyBtn' => $this->buyBtn(),
             'readBtn' => $this->readBtn(),
+            'supportBtn' => $this->supportBtn(),
             'book' => $this->book,
             'cycle' => $this->book->cycle
         ];
@@ -140,5 +141,20 @@ class BookPage extends ComponentBase
         return $this->book->ebook->isSold($this->user)
             || $this->book->ebook->isFree()
             || $this->book->ebook->chapters->some(fn($i) => $i->isFree());
+    }
+
+    /**
+     * Запретить поддерживать автора книги где он сам является атором
+     * @return bool
+     */
+    private function supportBtn(): bool
+    {
+        foreach($this->book->authors->map->profile as $profile) {
+            if ($profile->user_id == $this->user->id) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

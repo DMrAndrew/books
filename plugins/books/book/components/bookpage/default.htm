@@ -9,13 +9,15 @@
                     <a href="/author-page/{{profile.id}}" class="book-card-full__author ui-link _violet">{{profile.username}}</a>
                     {% endfor %}
                 </div>
-                <a  class="ui-link _violet _icon book-card-full__author-support cursor-pointer"
-                    {{user ? 'data-request="AuthorSupport::onAuthorSupportCreate"' : 'onclick="loginForm()"'}}
+                {% if supportBtn %}
+                <a href="" class="ui-link _violet _icon book-card-full__author-support"
+                    {{user ? 'data-request="AuthorSupport::onAuthorSupportCreate"' : 'onclick="loginForm()"'}}>
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#coins-stroked-16' | theme}}"></use>
                     </svg>
                     <span>Поддержать автора</span>
                 </a>
+                {% endif %}
             </div>
             <div class="book-card-full__type">
                 <div class="ui-tabs">

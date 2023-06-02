@@ -34,6 +34,7 @@ class OrderProduct extends Model
         'order_id',
         'initial_price',
         'amount',
+        'book_id',
     ];
 
     /**
@@ -57,7 +58,7 @@ class OrderProduct extends Model
      * @var array
      */
     public $morphTo = [
-        'orderable' => []
+        'orderable' => [],
     ];
 
     public function scopeAwards(Builder $builder)
