@@ -5,6 +5,7 @@ use Books\Book\Models\Book;
 use Books\Orders\Classes\Services\OrderService;
 use Cms\Classes\ComponentBase;
 use Exception;
+use Flash;
 use Illuminate\Support\Facades\Redirect;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -45,6 +46,12 @@ class BuyAwards extends ComponentBase
 
     public function onBuyAward()
     {
+        if (empty($this->getAwardsIds())) {
+            Flash::error('Необходимо выбрать награду');
+
+            return [];
+        }
+
         $payType = post('payType');
         if (!in_array($payType, ['balance', 'card'])) {
             return [];

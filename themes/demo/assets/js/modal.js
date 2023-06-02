@@ -38,4 +38,6 @@ $(document).on('click', '.payTypeLabel', function(e) {
     e.preventDefault();
     $('.buy-book-modal__pay').removeClass('active');
     $(this).find('.buy-book-modal__pay').addClass('active');
+    //$(this).find('input[type="radio"]').checked = true;
+    $(this).find('input[type="radio"]').prop('checked', true);
 });
