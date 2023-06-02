@@ -10,8 +10,8 @@
                     {% endfor %}
                 </div>
                 {% if supportBtn %}
-                <a href="" class="ui-link _violet _icon book-card-full__author-support"
-                    {{user ? 'data-request="AuthorSupport::onAuthorSupportCreate"' : 'onclick="loginForm()"'}}>
+                <a  class="ui-link _violet _icon book-card-full__author-support cursor-pointer"
+                   data-request="AuthorSupport::onAuthorSupportCreate">
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#coins-stroked-16' | theme}}"></use>
                     </svg>
