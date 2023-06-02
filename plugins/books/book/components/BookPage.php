@@ -150,7 +150,7 @@ class BookPage extends ComponentBase
     private function supportBtn(): bool
     {
         foreach($this->book->authors->map->profile as $profile) {
-            if ($profile->userid == $this->user->id) {
+            if ($profile->user_id == $this->user->id) {
                 return false;
             }
         }
