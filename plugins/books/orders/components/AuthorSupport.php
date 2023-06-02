@@ -169,7 +169,7 @@ class AuthorSupport extends ComponentBase
             ->orderBy('id', 'desc')
             ->first();
 
-        if ($donateAmount && $order->donations->sum('amount') != $donateAmount) {
+        if ($donateAmount && $order?->donations->sum('amount') != $donateAmount) {
             $order = null;
         }
 
