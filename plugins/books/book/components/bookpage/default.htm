@@ -10,8 +10,8 @@
                     {% endfor %}
                 </div>
                 {% if supportBtn %}
-                <a href="" class="ui-link _violet _icon book-card-full__author-support"
-                    data-request="AuthorSupport::onAuthorSupportCreate">
+                <a  class="ui-link _violet _icon book-card-full__author-support cursor-pointer"
+                   data-request="AuthorSupport::onAuthorSupportCreate">
                     <svg>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#coins-stroked-16' | theme}}"></use>
                     </svg>
@@ -54,7 +54,7 @@
                                     {% if buyBtn %}
 
                                     {% if not book.ebook.isBought %}
-                                    <a data-request="Order::onCreateOrder"
+                                    <a {{user ? 'data-request="Order::onCreateOrder"' : 'onclick="loginForm()"'}}
                                        class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
                                         {% if book.ebook.discount_exists %}
                                         <span>
