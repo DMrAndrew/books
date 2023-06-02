@@ -1,0 +1,97 @@
+<button data-modal="open_buy_award" class="hidden"></button>
+<div data-modal="buy_award" class="buy-book-modal ui-modal">
+    <div class="ui-modal-container">
+        <!-- Поддержка автора -->
+        {{ form_ajax('BuyAwards::onBuyAward', { flash: true }) }}
+        <!-- Итого к оплате -->
+        <div class="buy-book-modal__container ui-modal-content">
+            <div class="buy-book-modal__header">
+                <div class="ui-text-head--2 ui-text--bold">Покупка награды</div>
+                <svg class="square-24" data-modal="close">
+                    <use
+                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                </svg>
+            </div>
+
+            <div class="buy-book-modal__wrap">
+
+                <div class="buy-book-modal__wrapper">
+
+                    {% for award in stockAward %}
+                    <div class="buy-book-modal__wrapper-item">
+                        <label class="ui-checkbox">
+                            <input type="hidden" name="awards[{{award.id}}]" value="0">
+                            <input name="awards[{{award.id}}]" type="checkbox" hidden data-track-input="200"
+                                   data-request="onChangeAwardBag">
+                            <div class="ui-checkbox-checker">
+                                <svg>
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                </svg>
+                            </div>
+                            <span class="ui-checkbox-text">{{award.name}}</span>
+                        </label>
+                        <div class="buy-book-modal__text">{{award.price}} ₽</div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item ui-text-body--1 ui-text--bold">
+                        <div class="buy-book-modal__text _green">Итого к оплате</div>
+                        <div class="buy-book-modal__text _green" id="awardPriceSpawn">0 ₽</div>
+                    </div>
+                </div>
+
+                <div class="buy-book-modal__payment">
+                    <div class="buy-book-modal__subtitle ui-text-body--1 ui-text--bold">Способ оплаты</div>
+                    <div class="buy-book-modal__pay-container">
+                        <label class="payTypeLabel" for="payTypeBalance">
+                            <input type="radio" style="display: none" name="payType" id="payTypeBalance" value="balance">
+                            <div class="buy-book-modal__pay">
+                                <svg class="square-32">
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme}}"></use>
+                                </svg>
+                                <span>Снять с баланса</span>
+                            </div>
+                        </label>
+                        <label class="payTypeLabel" for="payTypeCard">
+                            <div class="buy-book-modal__pay">
+                                <input type="radio" style="display: none" name="payType" id="payTypeCard" value="card">
+                                <svg class="square-32">
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#credit-card-stroked-32' | theme}}"></use>
+                                </svg>
+                                <span>Оплатить картой</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full ">
+                <span class="ui-text--medium">Купить</span>
+            </button>
+
+            <!-- Ошибка оплаты списанием с баланса -->
+            <div class="buy-book-modal__wrapper-item listing-book-info__block">
+                <div class="buy-book-modal__text" id="orderPayFromBalanceSpawn"></div>
+            </div>
+        </div>
+        {{ form_close()}}
+    </div>
+</div>
+<script>
+    openModal('[data-modal="buy_award"]', '[data-modal="open_buy_award"]');
+    document.querySelector('[data-modal="open_buy_award"]').click();
+    document.body.style.overflow = 'initial';
+
+    document.querySelectorAll('[data-accodrion="wrapper"]').forEach(item => {
+        item.addEventListener('click', e => {
+            e.preventDefault();
+            if (e.target.closest('[data-accodrion="header"]')) {
+                item.classList.toggle('active');
+            }
+        })
+    })
+</script>

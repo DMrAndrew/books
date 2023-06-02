@@ -3,6 +3,9 @@
 use Books\Book\Models\Award;
 use Books\Book\Models\Book;
 use Cms\Classes\ComponentBase;
+use Exception;
+use Flash;
+use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -55,6 +58,15 @@ class BookAwards extends ComponentBase
                 ->groupBy(fn($i) => $i->award->type->value)->sortBy(fn($i) => $i->first()->award->type->value),
             'user' => $this->user,
             'buyAwardsIsAllowed' => $this->buyAwardsIsAllowed()
+        ];
+    }
+
+    public function onOpenForm(): array
+    {
+        return [
+            '#awards_form' => $this->renderPartial('@awards_form', [
+                'stockAward' => Award::all(),
+            ]),
         ];
     }
 

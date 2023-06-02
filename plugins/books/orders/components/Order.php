@@ -215,6 +215,7 @@ class Order extends ComponentBase
                     $q->where('id', $book->ebook->id);
                 });
             })
+            ->orderBy('id', 'desc')
             ->first();
 
         /**

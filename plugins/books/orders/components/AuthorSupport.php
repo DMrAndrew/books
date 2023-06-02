@@ -99,10 +99,9 @@ class AuthorSupport extends ComponentBase
         }
 
         try {
-            $order = $this->getOrder($this->getUser());
+            $order = $this->getOrder($this->getUser(), $donateAmount);
 
             $authorsRewardPartRounded = $this->orderService->getRewardPartRounded($donateAmount, count($profileIds));
-
             foreach (Profile::find($profileIds) as $profile) {
                 $this->orderService->applyAuthorSupport($order, $authorsRewardPartRounded, $profile);
             }
@@ -149,7 +148,7 @@ class AuthorSupport extends ComponentBase
         return [];
     }
 
-    private function getOrder(User $user): OrderModel
+    private function getOrder(User $user, int $donateAmount = null): OrderModel
     {
         /**
          * Если пользователь оставил неоплаченный заказ - возвращаемся к нему
@@ -167,7 +166,12 @@ class AuthorSupport extends ComponentBase
             ->whereDoesntHave('products', function ($query) {
                 $query->whereHasMorph('orderable', [Edition::class, Award::class]);
             })
+            ->orderBy('id', 'desc')
             ->first();
+
+        if ($donateAmount && $order?->donations->sum('amount') != $donateAmount) {
+            $order = null;
+        }
 
         /**
          * Иначе - новый заказ

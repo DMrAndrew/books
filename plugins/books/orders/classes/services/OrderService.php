@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Books\Orders\Classes\Services;
 
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
 use Books\Book\Models\Donation;
@@ -393,7 +394,11 @@ class OrderService implements OrderServiceContract
                 $newUserOwning->ownable()->associate($product);
                 $newUserOwning->save();
 
-                $this->operationHistoryService->addReceivingPurchase($order, $orderProduct);
+                if ($product->status == BookStatus::COMPLETE) {
+                    $this->operationHistoryService->addReceivingPurchase($order, $orderProduct);
+                } else {
+                    $this->operationHistoryService->addReceivingSubscription($order, $orderProduct);
+                }
             }
         }
     }
