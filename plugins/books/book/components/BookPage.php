@@ -145,10 +145,20 @@ class BookPage extends ComponentBase
 
     /**
      * Запретить поддерживать автора книги где он сам является автором
+     * свои профили поддерживать нельзя
+     *
      * @return bool
      */
     private function supportBtn(): bool
     {
-        return $this->user && !$this->book->authors->whereIn('profile_id', [$this->user->profile->id])->count();
+        $bookAuthorsProfiles = $this->book->authors()->with('profile')->get();
+
+        foreach($bookAuthorsProfiles->map->profile as $profile) {
+            if ($profile->user->id == $this->user->id) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
