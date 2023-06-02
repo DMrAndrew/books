@@ -115,9 +115,4 @@
     openModal('[data-modal="buy_book"]', '[data-modal="open_buy_book"]');
     document.querySelector('[data-modal="open_buy_book"]').click();
     document.body.style.overflow = 'initial';
-
-    $(document).on('click', '.payTypeLabel', function(e) {
-        $('.buy-book-modal__pay').removeClass('active');
-        $(this).find('.buy-book-modal__pay').addClass('active');
-    });
 </script>
