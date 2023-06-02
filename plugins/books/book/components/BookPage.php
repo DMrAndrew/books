@@ -10,7 +10,6 @@ use Books\User\Classes\UserService;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
-use Redirect;
 
 /**
  * BookPage Component
