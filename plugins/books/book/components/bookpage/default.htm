@@ -9,6 +9,7 @@
                     <a href="/author-page/{{profile.id}}" class="book-card-full__author ui-link _violet">{{profile.username}}</a>
                     {% endfor %}
                 </div>
+                {% if supportBtn %}
                 <a href="" class="ui-link _violet _icon book-card-full__author-support"
                     data-request="AuthorSupport::onAuthorSupportCreate">
                     <svg>
@@ -16,6 +17,7 @@
                     </svg>
                     <span>Поддержать автора</span>
                 </a>
+                {% endif %}
             </div>
             <div class="book-card-full__type">
                 <div class="ui-tabs">
