@@ -8,6 +8,7 @@ use Books\Book\Classes\Exceptions\UnknownFormatException;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
+use Books\Book\Models\Cycle;
 use Books\Book\Models\Tag;
 use Books\Catalog\Models\Genre;
 use Books\Profile\Models\Profile;
@@ -165,7 +166,7 @@ class BookService
             $bookData = $data->only($this->proxy->getFillable());
 
             if ($bookData->has('cycle_id')) {
-                $bookData['cycle_id'] = $bookData->get('cycle_id') ?? null;
+                $bookData['cycle_id'] = Cycle::find($bookData->get('cycle_id'))?->id ?? null;
             }
 
             $this->{($this->isNew() ? 'create' : 'update')}($bookData->toArray());
