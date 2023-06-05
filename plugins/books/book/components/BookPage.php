@@ -150,9 +150,12 @@ class BookPage extends ComponentBase
      */
     private function supportBtn(): bool
     {
+        if (!$this->user) {
+            return false;
+        }
         $bookAuthorsProfiles = $this->book->authors()->with('profile')->get();
 
-        foreach($bookAuthorsProfiles->map->profile as $profile) {
+        foreach ($bookAuthorsProfiles->map->profile as $profile) {
             if ($profile->user->id == $this->user->id) {
                 return false;
             }
