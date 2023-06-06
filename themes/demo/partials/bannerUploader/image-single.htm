@@ -18,7 +18,7 @@
     <!-- Add New Image -->
     <a
         href="javascript:"
-        style="width: 100%"
+        style="{{ __SELF__.getCssBlockDimensions}}"
         class="upload-button author-promo__background">
         <span class="upload-button-icon"></span>
     </a>
@@ -27,9 +27,9 @@
     <div class="upload-files-container">
         {% if file %}
         <div class="upload-object is-success" data-id="{{ file.id }}" data-path="{{ file.pathUrl }}"
-             style="width: 100%">
-            <div class="author-promo__background">
-                <img class="author__background-image" src="{{ file.path }}" alt="banner"
+             style="{{ __SELF__.getCssBlockDimensions}}">
+            <div class="advert">
+                <img src="{{ file.path }}" alt="banner"
                 >
             </div>
 
@@ -55,9 +55,9 @@
 
 <!-- Template for new file -->
 <script type="text/template" id="uploaderTemplate{{ __SELF__ }}">
-    <div class="upload-object dz-preview dz-file-preview" style="width: 100%">
-        <div class="author-promo__background">
-            <img data-dz-thumbnail class="author__background-image" alt="banner"
+    <div class="upload-object dz-preview dz-file-preview" style="{{ __SELF__.getCssBlockDimensions}}">
+        <div class="advert">
+            <img data-dz-thumbnail alt="banner"
             >
         </div>
 
