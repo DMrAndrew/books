@@ -467,13 +467,13 @@ class OrderService implements OrderServiceContract
             ?->book;
 
         if (!is_null($book)) {
-            return $book->profiles;
+            return Collection::make($book->profiles);
         }
 
         /**
          * Get target profiles from Donations (Author Support)
          */
-        return $order->donations->map->orderable->map->profile->filter(); // на тестовом есть с profile_id = null
+        return Collection::make($order->donations->map->orderable->map->profile->filter()); // на тестовом есть с profile_id = null
     }
 
 
