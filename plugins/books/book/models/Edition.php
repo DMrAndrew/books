@@ -9,12 +9,11 @@ use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\PriceTag;
 use Books\Book\Jobs\ParseFBChapters;
+use Books\Orders\Classes\Contracts\ProductInterface;
 use Books\Orders\Models\OrderProduct;
-use Cache;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Db;
-use Illuminate\Support\Collection;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
@@ -37,11 +36,12 @@ use System\Models\Revision;
  * * @method AttachOne fb2
  * * @method BelongsTo book
  * * @method MorphMany customers
+ * * @method MorphMany products
  *
  * * @property  Book book
  * * @property  BookStatus status
  */
-class Edition extends Model
+class Edition extends Model implements ProductInterface
 {
     use Validation;
     use SoftDelete;

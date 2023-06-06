@@ -6,11 +6,21 @@ use App\traits\HasUserScope;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Model;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Relations\BelongsTo;
+use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 
 /**
  * Order Model
+ *
+ * @method HasMany products
+ * @method HasMany promocodes
+ * @method HasMany editions
+ * @method HasMany awards
+ * @method HasMany donations
+ * @method HasMany deposites
+ * @method BelongsTo user
  *
  * @link https://docs.octobercms.com/3.x/extend/system/models.html
  */

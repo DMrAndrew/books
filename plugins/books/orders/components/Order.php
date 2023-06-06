@@ -223,7 +223,7 @@ class Order extends ComponentBase
          */
         if (!$order) {
             $order = $this->orderService->createOrder($user);
-            $this->orderService->addProducts($order, collect([$book->ebook]));
+            $this->orderService->addProducts($order, $book->ebook);
         }
 
         return $order;

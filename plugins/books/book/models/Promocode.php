@@ -2,6 +2,7 @@
 
 namespace Books\Book\Models;
 
+use App\traits\HasProfileScope;
 use Books\Book\Classes\CodeGenerator;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
@@ -29,6 +30,7 @@ class Promocode extends Model
 {
     use Validation;
     use Prunable;
+    use HasProfileScope;
 
     const CODE_LENGTH = 8;
 

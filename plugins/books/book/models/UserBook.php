@@ -50,7 +50,7 @@ class UserBook extends Model
     protected function afterCreate()
     {
         if ($this->ownable instanceof Edition) {
-            $this->ownable->refreshAllowedVisits();
+            $this->ownable->book->refreshAllowedVisits();
         }
     }
 }
