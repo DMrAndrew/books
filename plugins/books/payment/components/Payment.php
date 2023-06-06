@@ -17,7 +17,7 @@ class Payment extends ComponentBase
 {
     private ?OrderModel $order;
     private OrderService $orderService;
-    private User $user;
+    private ?User $user;
 
     public function componentDetails()
     {
@@ -37,9 +37,12 @@ class Payment extends ComponentBase
 
     public function init()
     {
-        $this->orderService = app(OrderService::class);
         $this->user = Auth::getUser();
+        if (!$this->user) {
+            abort(404);
+        }
 
+        $this->orderService = app(OrderService::class);
         $this->order = $this->getOrder($this->param('order_id'));
 
         $this->prepareVals();

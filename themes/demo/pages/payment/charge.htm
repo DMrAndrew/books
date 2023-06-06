@@ -12,6 +12,7 @@ redirect = "/"
 </head>
 <body>
 
+{% if paymentData %}
 <script>
     let amount = {{ paymentData.amount }};
 
@@ -40,6 +41,7 @@ redirect = "/"
         console.log('error', error);
     });
 </script>
+{% endif %}
 </body>
 </html>
 
