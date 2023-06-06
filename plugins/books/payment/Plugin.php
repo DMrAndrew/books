@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace Books\Payment;
 
-use Albakov\LaravelCloudPayments\Facade as CloudPaymentsFacade;
-use Albakov\LaravelCloudPayments\ServiceProvider as CloudPaymentsProvider;
-use Illuminate\Foundation\AliasLoader;
+use Books\Payment\Components\Payment;
 use App;
 use System\Classes\PluginBase;
 
@@ -41,12 +39,8 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return [];
-    }
-
-    public function boot() {
-        App::register(CloudPaymentsProvider::class);
-
-        AliasLoader::getInstance()->alias('CloudPayments', CloudPaymentsFacade::class);
+        return [
+            Payment::class => 'Payment',
+        ];
     }
 }

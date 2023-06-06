@@ -1,7 +1,6 @@
 <?php namespace Books\Orders\Components;
 
 use Books\Orders\Classes\Services\OrderService;
-use Books\Payment\Classes\PaymentService;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
@@ -38,7 +37,6 @@ class BalanceDeposit extends ComponentBase
     public function init(): void
     {
         $this->orderService = app(OrderService::class);
-        $this->paymentService = app(PaymentService::class);
     }
 
     public function onCreateDeposit(): array
@@ -60,7 +58,7 @@ class BalanceDeposit extends ComponentBase
             $order = $this->orderService->createOrder($this->getUser());
             $this->orderService->addDeposit($order, $depositAmount);
 
-            return Redirect::to(route('payment.charge', ['order' => $order->id]));
+            return Redirect::to(url('/payment/charge', ['order' => $order->id]));
 
         } catch (Exception $e) {
             Log::error($e->getMessage());

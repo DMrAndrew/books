@@ -8,85 +8,32 @@ use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Classes\Services\OrderService;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\Order as OrderModel;
-use Books\Payment\Classes\PaymentService;
 use Books\Payment\Models\Payment as PaymentModel;
 use Db;
 use Exception;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 /**
- * YooKassa - https://yookassa.ru/docs
+ * CloudPayments - https://developers.cloudpayments.ru
  *
  * тестовые карты с разным статусом ответа:
- * https://yookassa.ru/developers/payment-acceptance/testing-and-going-live/testing?ysclid=lgwcau6d1r312270278#test-bank-card-success
- * Успешная оплата: 5555555555554477
+ * https://developers.cloudpayments.ru/#testirovanie
  */
 class PaymentController extends Controller
 {
     private OrderService $orderService;
-    private PaymentService $paymentService;
 
     public function __construct()
     {
         parent::__construct();
 
         $this->orderService = app(OrderService::class);
-        $this->paymentService = app(PaymentService::class);
     }
 
     public function index()
     {
         return 'payment controller index()';
-    }
-
-    /**
-     * Initiate a payment
-     *
-     * @param Request $request
-     * @param int $order
-     *
-     * @return Application|ResponseFactory|Response|string|null
-     */
-    public function charge(Request $request, int $order): Response|string|Application|ResponseFactory|null
-    {
-        try {
-            $order = $this->getOrder($order);
-            $this->orderService->updateOrderstatus($order, OrderStatusEnum::PENDING);
-
-            // create payment
-            $payment = $this->getPayment($order);
-
-            // run yookassa payment
-            $response = $this->paymentService->gateway->purchase([
-                'amount' => $payment->amount,
-                'currency' => $payment->currency,
-                'description' => "Заказ №{$order->id}",
-
-                'capture' => true,
-                'recipient' => $payment->payer_email,
-                'transactionId' => $payment->payment_id,
-
-                'returnUrl' => $this->orderService->getOrderSuccessRedirectPage($order),
-                'cancelUrl' => $this->orderService->getOrderErrorRedirectPage($order),
-            ])->send();
-
-            if ($response->isRedirect()) {
-                $response->redirect(); // this will automatically forward the customer
-            } else {
-                // not successful
-                return $response->getMessage();
-            }
-        } catch(Exception $e) {
-            Log::error($e->getMessage());
-
-            return $e->getMessage();
-        }
-
-        return response('', 200);
     }
 
     /**
@@ -96,8 +43,8 @@ class PaymentController extends Controller
      */
     public function webhook(Request $request)
     {
-        if (config('app.log_yookassa_webhook')) {
-            Log::channel('yookassa_webhook')->info($request);
+        if (config('app.log_payment_gateway_webhook')) {
+            Log::channel('log_payment_gateway_webhook')->info($request);
         }
 
         try {
@@ -169,9 +116,6 @@ class PaymentController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            /**
-             * Yookassa webhook needs response 200
-             */
             abort(300, $e->getMessage());
         }
     }

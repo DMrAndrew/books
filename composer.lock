@@ -7,57 +7,6 @@
     "content-hash": "6a79b4eacb22c54582c99a88eec6086c",
     "packages": [
         {
-            "name": "albakov/laravelcloudpayments",
-            "version": "v0.1.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/albakov/LaravelCloudPayments.git",
-                "reference": "2c7bb3b87e5d17857105dfe19992e10ea9c48f43"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/albakov/LaravelCloudPayments/zipball/2c7bb3b87e5d17857105dfe19992e10ea9c48f43",
-                "reference": "2c7bb3b87e5d17857105dfe19992e10ea9c48f43",
-                "shasum": ""
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.1-dev"
-                },
-                "laravel": {
-                    "providers": [
-                        "Albakov\\LaravelCloudPayments\\ServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Albakov\\LaravelCloudPayments\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ismail",
-                    "email": "ismail.albakov@gmail.com"
-                }
-            ],
-            "description": "CloudPayments module for Laravel",
-            "keywords": [
-                "cloudpayments",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/albakov/LaravelCloudPayments/issues",
-                "source": "https://github.com/albakov/LaravelCloudPayments/tree/master"
-            },
-            "time": "2019-03-14T08:34:04+00:00"
-        },
-        {
             "name": "bavix/laravel-wallet",
             "version": "9.6.2",
             "source": {
@@ -250,10 +199,9 @@
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/payment",
-                "reference": "47f6af2db48dcea2cfee48bcd5a7278a9ed498fe"
+                "reference": "076cee8fe1ac4bc80ced4c2a3b91a28b0aa740e9"
             },
             "require": {
-                "albakov/laravelcloudpayments": "*",
                 "composer/installers": "~1.0"
             },
             "type": "october-plugin",

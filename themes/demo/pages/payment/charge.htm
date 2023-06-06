@@ -1,4 +1,46 @@
 url = "/payment/charge/:order_id?"
+[session]
+security = "user"
+redirect = "/"
 [Payment]
 ==
-charge order payment
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Оплата заказа #{{ order_id }}</title>
+    <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
+</head>
+<body>
+
+<script>
+    let amount = {{ paymentData.amount }};
+
+    var payments = new cp.CloudPayments({
+        language: "ru-RU",
+        email: "{{ paymentData.email }}",
+        applePaySupport: false,
+        googlePaySupport: false,
+        yandexPaySupport: true,
+        tinkoffInstallmentSupport: false,
+    });
+
+    payments.pay("charge", {
+        publicId: "pk_921ac135b2bf46d6847d105d9ae06",
+        description: "{{ paymentData.description }}",
+        amount: amount,
+        currency: "RUB",
+        invoiceId: "{{ paymentData.invoiceId }}",
+        accountId: "{{ paymentData.accountId }}",
+        email: "",
+        skin: "classic",
+        requireEmail: true,
+    }).then(function(widgetResult) {
+        console.log('result', widgetResult);
+    }).catch(function(error) {
+        console.log('error', error);
+    });
+</script>
+</body>
+</html>
+
+
