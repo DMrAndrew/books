@@ -407,39 +407,40 @@ class OrderService implements OrderServiceContract
      */
     private function updateAuthorsBalance(Order $order): void
     {
-        $authorRewardFromEditionAmount = $this->calculateAuthorsOrderRewardFromEdition($order);
-        $authorRewardFromSupportAmount = $this->calculateAuthorsOrderRewardFromSupport($order);
+        $byEdition = $this->calculateAuthorsOrderRewardFromEdition($order);
+        $bySupport = $this->calculateAuthorsOrderRewardFromSupport($order);
 
-        if ($authorRewardFromEditionAmount > 0 || $authorRewardFromSupportAmount > 0) {
-            $profiles = $this->resolveOrderRewardReceivers($order);
-
-            if ($profiles->isEmpty()) {
-                throw new Exception("Unable to resolve Author(s) for order #{$order->id}");
-            }
+        if ($byEdition <= 0 && $bySupport <= 0) {
+            return;
         }
+
+        $profiles = $this->resolveOrderRewardReceivers($order);
+
+        if ($profiles->isEmpty()) {
+            throw new Exception("Unable to resolve Author(s) for order #{$order->id}");
+        }
+
 
         /**
          * Разделить гонорар с продажи книги с учетом процентов
          */
-        if ($authorRewardFromEditionAmount > 0) {
+        if ($byEdition) {
             $book = $order->editions()
                 ->first()
                 ?->orderable
                 ?->book;
 
-            $book->profiles->each(function ($profile) use ($authorRewardFromEditionAmount) {
-                $authorRewardPartRounded = intdiv(($authorRewardFromEditionAmount * $profile->percent), 100);
+            $book->profiles->each(function ($profile) use ($byEdition) {
+                $authorRewardPartRounded = intdiv(($byEdition * $profile->pivot->percent), 100);
                 $profile->user->proxyWallet()->deposit($authorRewardPartRounded);
             });
-        }
-
-        /**
+        } /**
          * Разделить вознаграждение поровну
          */
-        if ($authorRewardFromSupportAmount > 0) {
-            $authorsRewardPartRounded = $this->getRewardPartRounded($authorRewardFromSupportAmount, $book->profiles->count());
+        else {
+            $authorsRewardPartRounded = $this->getRewardPartRounded($bySupport, $profiles->count());
 
-            $book->profiles->each(function ($profile) use ($order, $authorsRewardPartRounded) {
+            $profiles->each(function ($profile) use ($order, $authorsRewardPartRounded) {
                 $profile->user->proxyWallet()->deposit($authorsRewardPartRounded);
 
                 $this->operationHistoryService->addMakingAuthorSupport($order, $profile, $authorsRewardPartRounded);
@@ -503,7 +504,9 @@ class OrderService implements OrderServiceContract
         $orderAmount = $this->calculateAmount($order);
 
         // check user balance
-        $orderAmount < (int)$order->user->proxyWallet()->balance ?: throw new Exception('Недостаточно средств на балансе');
+        if ((int)$order->user->proxyWallet()->balance < $orderAmount) {
+            throw new Exception('Недостаточно средств на балансе');
+        }
 
         return DB::transaction(function () use ($order, $orderAmount) {
             // approve order
