@@ -27,6 +27,7 @@ use Queue;
 use RainLab\User\Models\User;
 use System\Models\File;
 use System\Models\Revision;
+use Attribute;
 
 /**
  * Edition Model
@@ -36,7 +37,6 @@ use System\Models\Revision;
  * * @method AttachOne fb2
  * * @method BelongsTo book
  * * @method MorphMany customers
- * * @method MorphMany products
  *
  * * @property  Book book
  * * @property  BookStatus status
@@ -123,12 +123,13 @@ class Edition extends Model implements ProductInterface
         'products' => [
             OrderProduct::class,
             'name' => 'orderable',
-        ],
-        'customers' => [
-            UserBook::class,
-            'name' => 'ownable',
-        ],
+        ]
     ];
+
+    public function products(): MorphMany
+    {
+        return $this->morphMany(UserBook::class, 'ownable');
+    }
 
     public function discount()
     {
