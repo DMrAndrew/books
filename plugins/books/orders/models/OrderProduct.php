@@ -4,8 +4,10 @@ namespace Books\Orders\Models;
 
 use Books\Book\Models\Award;
 use Books\Book\Models\Donation;
+use Books\Book\Models\Edition;
 use Model;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Traits\Validation;
 
 /**
  * OrderProduct Model
@@ -14,7 +16,7 @@ use October\Rain\Database\Builder;
  */
 class OrderProduct extends Model
 {
-    use \October\Rain\Database\Traits\Validation;
+    use Validation;
 
     /**
      * @var string table name
@@ -63,16 +65,26 @@ class OrderProduct extends Model
 
     public function scopeAwards(Builder $builder)
     {
-        return $builder->where('orderable_type', Award::class);
+        return $builder->type(Award::class);
     }
 
     public function scopeDonations(Builder $builder)
     {
-        return $builder->where('orderable_type', Donation::class);
+        return $builder->type(Donation::class);
     }
 
     public function scopeDeposits(Builder $builder)
     {
-        return $builder->where('orderable_type', BalanceDeposit::class);
+        return $builder->type(BalanceDeposit::class);
+    }
+
+    public function scopeEditions(Builder $builder)
+    {
+        return $builder->type(Edition::class);
+    }
+
+    public function scopeType(Builder $builder, string $class): Builder
+    {
+        return $builder->where('orderable_type', $class);
     }
 }

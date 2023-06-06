@@ -97,7 +97,8 @@ class AdvertLC extends ComponentBase
         return [
             'book' => $this->book,
             'books' => $this->user->profile->books()->get(),
-            'days_on_sale' => '/параметр появится после реализации продаж в полной мере/',
+            'sold_count' => $this->book?->ebook->getSoldCountAttribute(),
+            'days_on_sale' => $this->book?->ebook->customers()->latest()->first()?->created_at->format('d.m.y') ?? '-',
             'visited_by_advert' => $this->book?->advert->visits->count(),
             'visits_table' => $visit_table,
             'visits_total' => $visit_table?->sum()

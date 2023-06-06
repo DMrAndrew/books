@@ -20,6 +20,7 @@ use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
 use October\Rain\Database\Relations\BelongsTo;
 use October\Rain\Database\Relations\HasMany;
+use October\Rain\Database\Relations\MorphMany;
 use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
@@ -35,6 +36,7 @@ use System\Models\Revision;
  * * @method HasMany discounts
  * * @method AttachOne fb2
  * * @method BelongsTo book
+ * * @method MorphMany customers
  *
  * * @property  Book book
  * * @property  BookStatus status
@@ -84,8 +86,6 @@ class Edition extends Model
 
     protected $dates = ['sales_at'];
 
-    protected $appends = ['sold_count'];
-
     /**
      * @var array rules for validation
      */
@@ -127,7 +127,7 @@ class Edition extends Model
         'customers' => [
             UserBook::class,
             'name' => 'ownable',
-        ]
+        ],
     ];
 
     public function discount()
@@ -202,41 +202,14 @@ class Edition extends Model
         return $builder->status(BookStatus::COMPLETE, BookStatus::WORKING)->free(false);
     }
 
-    public function sells(): \October\Rain\Support\Collection|Collection
-    {
-        return collect(Cache::get('sells' . $this->id) ?? []);
-    }
-
     public function isSold(?User $user): bool
     {
-        if (!$user) {
-            return false;
-        }
-
-        $edition = $this;
-        $isSold = UserBook
-            ::whereHasMorph('ownable', [Edition::class], function ($q) use ($edition) {
-                $q->where('id', $edition->id);
-            })
-            ->whereHas('user', function ($query) use ($user) {
-                $query->where('id', $user->id);
-            })
-            ->first();
-
-        return (bool)$isSold?->exists;
+        return $user && $this->customers()->user($user)->exists();
     }
 
     public function getSoldCountAttribute(): int
     {
-        return $this->sells()->count();
-    }
-
-    public function sell(User $user): void
-    {
-        Cache::forever('sells' . $this->id, $this->sells()->merge([
-            $user->id
-        ])->unique());
-        $this->book->refreshAllowedVisits();
+        return $this->customers()->count();
     }
 
     public function editAllowed(): bool

@@ -5,7 +5,7 @@ namespace App\traits;
 use October\Rain\Database\Builder;
 use RainLab\User\Models\User;
 
-trait ScopeUser
+trait HasUserScope
 {
     public function scopeUser(Builder $builder, User $user): Builder
     {

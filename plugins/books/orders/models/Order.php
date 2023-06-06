@@ -2,7 +2,7 @@
 
 namespace Books\Orders\Models;
 
-use App\traits\ScopeUser;
+use App\traits\HasUserScope;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Model;
 use October\Rain\Database\Builder;
@@ -17,7 +17,7 @@ use RainLab\User\Models\User;
 class Order extends Model
 {
     use Validation;
-    use ScopeUser;
+    use HasUserScope;
 
     /**
      * @var string table name
@@ -86,6 +86,10 @@ class Order extends Model
         'deposits' => [
             OrderProduct::class,
             'scope' => 'deposits',
+        ],
+        'editions' => [
+            OrderProduct::class,
+            'scope' => 'editions',
         ],
         'promocodes' => [OrderPromocode::class],
     ];
