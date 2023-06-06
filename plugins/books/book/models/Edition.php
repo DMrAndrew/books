@@ -10,7 +10,6 @@ use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\PriceTag;
 use Books\Book\Jobs\ParseFBChapters;
 use Books\Orders\Classes\Contracts\ProductInterface;
-use Books\Orders\Models\OrderProduct;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Db;
@@ -27,7 +26,6 @@ use Queue;
 use RainLab\User\Models\User;
 use System\Models\File;
 use System\Models\Revision;
-use Attribute;
 
 /**
  * Edition Model
@@ -120,10 +118,10 @@ class Edition extends Model implements ProductInterface
             Promocode::class,
             'name' => 'promoable',
         ],
-        'products' => [
-            OrderProduct::class,
-            'name' => 'orderable',
-        ]
+        'customers' => [
+            UserBook::class,
+            'name' => 'ownable',
+        ],
     ];
 
     public function products(): MorphMany
