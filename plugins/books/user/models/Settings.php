@@ -2,6 +2,7 @@
 
 namespace Books\User\Models;
 
+use App\traits\HasUserScope;
 use Books\User\Classes\BoolOptionsEnum;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
@@ -18,6 +19,7 @@ use RainLab\User\Models\User;
 class Settings extends Model
 {
     use Validation;
+    use HasUserScope;
 
     /**
      * @var string table name
@@ -40,7 +42,7 @@ class Settings extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope(fn ($q) => $q->orderBy('type'));
+        static::addGlobalScope(fn($q) => $q->orderBy('type'));
     }
 
     public function scopePrivacy(Builder $builder)
@@ -61,11 +63,6 @@ class Settings extends Model
     public function scopeValue(Builder $builder, BoolOptionsEnum|PrivacySettingsEnum ...$types): Builder
     {
         return $builder->whereIn('value', collect($types)->pluck('value')->toArray());
-    }
-
-    public function scopeUser(Builder $builder, User $user): Builder
-    {
-        return $builder->where('user_id', '=', $user->id);
     }
 
     public function isAccountable(): bool

@@ -2,7 +2,7 @@
 
 namespace Books\Comments\Models;
 
-use App\traits\ScopeUser;
+use App\traits\HasUserScope;
 use Books\Book\Models\Book;
 use Books\Profile\Models\Profile;
 use Model;
@@ -23,7 +23,7 @@ class Comment extends Model
     use Validation;
     use SimpleTree;
     use SoftDelete;
-    use ScopeUser;
+    use HasUserScope;
 
     /**
      * @var string table name
@@ -47,7 +47,7 @@ class Comment extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope('orderByDesc', fn ($q) => $q->orderByDesc('id'));
+        static::addGlobalScope('orderByDesc', fn($q) => $q->orderByDesc('id'));
     }
 
     /**
@@ -78,7 +78,7 @@ class Comment extends Model
 
     public function isDeleted(): bool
     {
-        return (bool) $this->{$this->getDeletedAtColumn()};
+        return (bool)$this->{$this->getDeletedAtColumn()};
     }
 
     public function scopeRoot(Builder $builder): Builder
@@ -99,16 +99,16 @@ class Comment extends Model
     public function toShortString(): string
     {
         return match (get_class($this->commentable)) {
-            Book::class => 'к книге '.$this->commentable->title,
-            Profile::class => 'в профиле пользователя '.$this->commentable->username,
+            Book::class => 'к книге ' . $this->commentable->title,
+            Profile::class => 'в профиле пользователя ' . $this->commentable->username,
         };
     }
 
     public function toCommentableLink(): string
     {
         return match (get_class($this->commentable)) {
-            Book::class => '/book-card/',
-            Profile::class => '/author-page/',
-        }.$this->commentable->id;
+                Book::class => '/book-card/',
+                Profile::class => '/author-page/',
+            } . $this->commentable->id;
     }
 }

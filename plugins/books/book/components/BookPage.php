@@ -132,14 +132,15 @@ class BookPage extends ComponentBase
 
     public function readBtn()
     {
+        $hasFreeChapters = fn() => $this->book->ebook->chapters->some->isFree();
+
         if (!$this->user) {
-            return $this->book->ebook->isFree()
-                || $this->book->ebook->chapters->some(fn($i) => $i->isFree());
+            return $this->book->ebook->isFree() || $hasFreeChapters();
         }
 
-        return $this->book->ebook->isSold($this->user)
-            || $this->book->ebook->isFree()
-            || $this->book->ebook->chapters->some(fn($i) => $i->isFree());
+        return $this->book->ebook->isFree()
+            || $this->book->ebook->isSold($this->user)
+            || $hasFreeChapters();
     }
 
     /**
@@ -150,17 +151,6 @@ class BookPage extends ComponentBase
      */
     private function supportBtn(): bool
     {
-        if (!$this->user) {
-            return false;
-        }
-        $bookAuthorsProfiles = $this->book->authors()->with('profile')->get();
-
-        foreach ($bookAuthorsProfiles->map->profile as $profile) {
-            if ($profile->user->id == $this->user->id) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->user && !$this->book->profiles()->user($this->user)->exists();
     }
 }
