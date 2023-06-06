@@ -60,6 +60,8 @@ class AdvertLC extends ComponentBase
                 'modelClass' => Advert::class,
                 'modelKeyColumn' => 'banner',
                 'deferredBinding' => false,
+                'imageWidth' => 552,
+                'imageHeight' => 224,
             ]);
             $banner->bindModel('banner', $this->book->advert);
         }

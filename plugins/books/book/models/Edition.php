@@ -177,11 +177,6 @@ class Edition extends Model
         ];
     }
 
-    public function sells(): \October\Rain\Support\Collection|Collection
-    {
-        return collect(Cache::get('sells' . $this->id) ?? []);
-    }
-
     public function priceTag(): PriceTag
     {
         return new PriceTag($this, $this->discount);
@@ -205,6 +200,11 @@ class Edition extends Model
     public function scopeAllowedForDiscount(Builder $builder)
     {
         return $builder->status(BookStatus::COMPLETE, BookStatus::WORKING)->free(false);
+    }
+
+    public function sells(): \October\Rain\Support\Collection|Collection
+    {
+        return collect(Cache::get('sells' . $this->id) ?? []);
     }
 
     public function isSold(?User $user): bool
