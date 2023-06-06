@@ -42,7 +42,7 @@ class OrderService implements OrderServiceContract
      */
     public function createOrder(User $user): Order
     {
-        return $user->orders()->make();
+        return $user->orders()->create();
     }
 
     /**

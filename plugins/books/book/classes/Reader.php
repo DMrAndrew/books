@@ -84,7 +84,7 @@ class Reader
         return !$this->nextPage()
             && !$this->nextChapter()
             && $this->book->ebook->status === BookStatus::COMPLETE
-            && !$this->user->library($this->book)->is(CollectionEnum::READ);
+            && ($this->user && !$this->user->library($this->book)->is(CollectionEnum::READ));
     }
 
     /**
