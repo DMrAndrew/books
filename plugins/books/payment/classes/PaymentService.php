@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Books\Payment\Classes;
 
-use Omnipay\Omnipay;
+//use Omnipay\Omnipay;
 
 /**
  * YooKassa - https://yookassa.ru/docs
@@ -16,10 +16,15 @@ class PaymentService
 {
     public $gateway;
 
-    public function __construct()
-    {
-        $this->gateway = Omnipay::create('YooKassa');
-        $this->gateway->setShopId(env('YOOKASSA_SHOP_ID'));
-        $this->gateway->setSecret(env('YOOKASSA_SECRET'));
-    }
+    /**
+     * @deprecated
+     *
+     * Yookassa подключение и использование
+     */
+//    public function __construct()
+//    {
+//        $this->gateway = Omnipay::create('YooKassa');
+//        $this->gateway->setShopId(env('YOOKASSA_SHOP_ID'));
+//        $this->gateway->setSecret(env('YOOKASSA_SECRET'));
+//    }
 }
