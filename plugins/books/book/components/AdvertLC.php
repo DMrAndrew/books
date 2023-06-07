@@ -56,10 +56,12 @@ class AdvertLC extends ComponentBase
     public function setUpImageUploder()
     {
         if ($this->book) {
-            $banner = $this->addComponent(ImageUploader::class, 'bannerUploader', [
+            $banner = $this->addComponent(ImageUploader::class, 'advertUploader', [
                 'modelClass' => Advert::class,
                 'modelKeyColumn' => 'banner',
                 'deferredBinding' => false,
+                'imageWidth' => 552,
+                'imageHeight' => 224,
             ]);
             $banner->bindModel('banner', $this->book->advert);
         }
