@@ -192,36 +192,6 @@ class PaymentController extends Controller
     }
 
     /**
-     * @param int $orderId
-     *
-     * @return OrderModel
-     */
-    private function getOrder(int $orderId): Order
-    {
-        return OrderModel::findOrFail($orderId);
-    }
-
-    /**
-     * @param OrderModel $order
-     *
-     * @return PaymentModel
-     */
-    private function getPayment(Order $order): PaymentModel
-    {
-        return PaymentModel::firstOrCreate(
-            [
-                'order_id' => $order->id,
-            ],[
-                'payer_id' => $order->user->id,
-                'payer_email' => $order->user->email,
-                'amount' => $this->orderService->calculateAmount($order),
-                'currency' => PaymentModel::CURRENCY,
-                'payment_status' => 'created',
-            ]
-        );
-    }
-
-    /**
      * @param string $name
      * @param mixed $data
      *

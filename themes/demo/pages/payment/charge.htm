@@ -15,45 +15,47 @@ redirect = "/"
 <body>
 {% if paymentData %}
 <script>
-    let amount = {{ paymentData.amount }};
+    setTimeout(function() {
+        let amount = {{ paymentData.amount }};
 
-    var payments = new cp.CloudPayments({
-        language: "ru-RU",
-        email: "{{ paymentData.email }}",
-        applePaySupport: true,
-        googlePaySupport: true,
-        yandexPaySupport: true,
-        tinkoffInstallmentSupport: true,
-    });
+        var payments = new cp.CloudPayments({
+            language: "ru-RU",
+            email: "{{ paymentData.email }}",
+            applePaySupport: true,
+            googlePaySupport: true,
+            yandexPaySupport: true,
+            tinkoffInstallmentSupport: true,
+        });
 
-    payments.pay("charge", {
-        publicId: "pk_921ac135b2bf46d6847d105d9ae06",
-        description: "{{ paymentData.description }}",
-        amount: amount,
-        currency: "RUB",
-        invoiceId: "{{ paymentData.invoiceId }}",
-        accountId: "{{ paymentData.accountId }}",
-        email: "",
-        skin: "classic",
-        requireEmail: true,
-        data: {
-            paymentId: "{{ paymentData.data.paymentId}}",
-            userId: "{{ paymentData.data.userId}}",
-            userName: "{{ paymentData.data.userName}}",
-        }
-    },
-    {
-        onSuccess: function (options) { // success
-            window.location.replace("{{ successUrl }}");
-        },
-        onFail: function (reason, options) { // fail
-            window.location.replace("{{ errorUrl }}");
-        },
-    }).then(function(widgetResult) {
-        console.log('result', widgetResult);
-    }).catch(function(error) {
-        console.log('error', error);
-    });
+        payments.pay("charge", {
+                publicId: "pk_921ac135b2bf46d6847d105d9ae06",
+                description: "{{ paymentData.description }}",
+                amount: amount,
+                currency: "RUB",
+                invoiceId: "{{ paymentData.invoiceId }}",
+                accountId: "{{ paymentData.accountId }}",
+                email: "",
+                skin: "classic",
+                requireEmail: true,
+                data: {
+                    paymentId: "{{ paymentData.data.paymentId}}",
+                    userId: "{{ paymentData.data.userId}}",
+                    userName: "{{ paymentData.data.userName}}",
+                }
+            },
+            {
+                onSuccess: function (options) { // success
+                    window.location.replace("{{ successUrl }}");
+                },
+                onFail: function (reason, options) { // fail
+                    window.location.replace("{{ errorUrl }}");
+                },
+            }).then(function (widgetResult) {
+            console.log('result', widgetResult);
+        }).catch(function (error) {
+            console.log('error', error);
+        });
+    }, 200);
 </script>
 {% endif %}
 </body>
