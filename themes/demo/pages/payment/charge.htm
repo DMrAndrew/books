@@ -8,7 +8,9 @@ redirect = "/"
 <html>
 <head>
     <title>Оплата заказа #{{ order_id }}</title>
+    {% if paymentData %}
     <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
+    {% endif %}
 </head>
 <body>
 {% if paymentData %}
@@ -39,6 +41,14 @@ redirect = "/"
             userId: "{{ paymentData.data.userId}}",
             userName: "{{ paymentData.data.userName}}",
         }
+    },
+    {
+        onSuccess: function (options) { // success
+            window.location.replace("{{ successUrl }}");
+        },
+        onFail: function (reason, options) { // fail
+            window.location.replace("{{ errorUrl }}");
+        },
     }).then(function(widgetResult) {
         console.log('result', widgetResult);
     }).catch(function(error) {

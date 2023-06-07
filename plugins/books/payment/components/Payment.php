@@ -7,6 +7,7 @@ use Books\Payment\Models\Payment as PaymentModel;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Redirect;
 
 /**
  * Payment Component
@@ -48,10 +49,31 @@ class Payment extends ComponentBase
         $this->prepareVals();
     }
 
+    public function onRun()
+    {
+        if ($this->isOrderPaid()) {
+            $orderSuccessPage = $this->orderService->getOrderSuccessRedirectPage($this->order);
+
+            return Redirect::to($orderSuccessPage);
+        }
+
+        $this->orderService->updateOrderstatus($this->order, OrderStatusEnum::PENDING);
+    }
+
+    /**
+     * @return void
+     */
     public function prepareVals()
     {
         $this->page['order_id'] = $this->param('order_id');
         $this->page['paymentData'] = $this->getPaymentData();
+        $this->page['successUrl'] = $this->orderService->getOrderSuccessRedirectPage($this->order);
+        $this->page['errorUrl'] = $this->orderService->getOrderErrorRedirectPage($this->order);
+    }
+
+    public function isOrderPaid()
+    {
+        return $this->order->status === OrderStatusEnum::PAID->value;
     }
 
     /**
@@ -86,15 +108,12 @@ class Payment extends ComponentBase
 
     private function getPaymentData(): array
     {
-        //$order = $this->getOrder($this->param('order_id'));
-        //$this->orderService->updateOrderstatus($this->order, OrderStatusEnum::PENDING);
-
-        // create payment
         $payment = $this->getPayment($this->order);
 
         return [
             'orderStatus' => $this->order->status,
             'paymentStatus' => $payment->payment_status,
+
             'publicId' => config('cloudpayments.publicId'), // Required
             'amount' => $payment->amount, // Required
             'Currency' => $payment->currency, // Required
