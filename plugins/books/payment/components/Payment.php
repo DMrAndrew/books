@@ -65,7 +65,7 @@ class Payment extends ComponentBase
      */
     public function prepareVals()
     {
-        $this->page['order_id'] = $this->param('order_id');
+        $this->page['order'] = $this->order;
         $this->page['paymentData'] = $this->getPaymentData();
         $this->page['successUrl'] = $this->orderService->getOrderSuccessRedirectPage($this->order);
         $this->page['errorUrl'] = $this->orderService->getOrderErrorRedirectPage($this->order);

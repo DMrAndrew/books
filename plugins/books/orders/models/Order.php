@@ -62,13 +62,9 @@ class Order extends Model
         'type' => OrderStatusEnum::class,
     ];
 
-    public static function boot(): void
+    protected function beforeCreate()
     {
-        parent::boot();
-
-        static::creating(function ($order) {
-            $order->status = OrderStatusEnum::CREATED->value;
-        });
+        $this->status = OrderStatusEnum::CREATED->value;
     }
 
     /**

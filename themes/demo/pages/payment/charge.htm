@@ -7,7 +7,7 @@ redirect = "/"
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Оплата заказа #{{ order_id }}</title>
+    <title>Оплата заказа #{{ order.id }}</title>
     {% if paymentData %}
     <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
     {% endif %}
@@ -15,7 +15,15 @@ redirect = "/"
 <body>
 {% if paymentData %}
 <script>
-    setTimeout(function() {
+
+    let timerId = setInterval(function () {
+        if (typeof cp !== 'undefined') {
+            clearTimeout(timerId);
+            runPaymentWidget();
+        }
+    }, 200);
+
+    function runPaymentWidget() {
         let amount = {{ paymentData.amount }};
 
         var payments = new cp.CloudPayments({
@@ -55,7 +63,7 @@ redirect = "/"
         }).catch(function (error) {
             console.log('error', error);
         });
-    }, 200);
+    }
 </script>
 {% endif %}
 </body>

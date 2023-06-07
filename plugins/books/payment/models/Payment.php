@@ -47,13 +47,9 @@ class Payment extends Model
         'transaction_id',
     ];
 
-    public static function boot(): void
+    protected function beforeCreate()
     {
-        parent::boot();
-
-        static::creating(function ($payment) {
-            $payment->payment_id = Str::uuid();
-        });
+        $this->payment_id = Str::uuid();
     }
 
     /**
