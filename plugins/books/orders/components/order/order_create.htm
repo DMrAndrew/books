@@ -135,29 +135,36 @@
 
 
 <script>
-    // modal
-    openModal('[data-modal="buy_book"]', '[data-modal="open_buy_book"]');
-    document.querySelector('[data-modal="open_buy_book"]').click();
-    document.body.style.overflow = 'initial';
+    var loadedOnce = false;
 
-    // donation
-    if (typeof updateDonateTimeout === 'undefined' || updateDonateTimeout == null) {
-        var updateDonateTimeout;
+    if (!loadedOnce) {
+        // modal
+        openModal('[data-modal="buy_book"]', '[data-modal="open_buy_book"]');
+        document.querySelector('[data-modal="open_buy_book"]').click();
+        document.body.style.overflow = 'initial';
+
+        // donation
+        if (typeof updateDonateTimeout === 'undefined' || updateDonateTimeout == null) {
+            var updateDonateTimeout;
+        }
+        $(document).on('keyup', '#donate', function(e) {
+            console.log('#donate updated')
+            e.preventDefault();
+            this.value = this.value.replace(/[^\d.]/g, '');
+
+            clearTimeout(updateDonateTimeout);
+            updateDonateTimeout = setTimeout(function() {
+                oc.request('#orderForm', 'onOrderAddDonation', {})
+                clearTimeout(updateDonateTimeout);
+            }, 100);
+        });
+
+        // promocode
+        $(document).on('click', '#promocodeSubmit', function(e) {
+            e.preventDefault();
+            this.value = this.value.replace(/[^\d.]/g, '');
+            oc.request('#orderForm', 'onOrderAddPromocode', {})
+        });
+        loadedOnce = true;
     }
-    $(document).on('keyup', '#donate', function(e) {
-        e.preventDefault();
-        this.value = this.value.replace(/[^\d.]/g, '');
-
-        clearTimeout(updateDonateTimeout);
-        updateDonateTimeout = setTimeout(function() {
-            oc.request('#orderForm', 'onOrderAddDonation', {})
-        }, 1000);
-    });
-
-    // promocode
-    $(document).on('click', '#promocodeSubmit', function(e) {
-        e.preventDefault();
-        this.value = this.value.replace(/[^\d.]/g, '');
-        oc.request('#orderForm', 'onOrderAddPromocode', {})
-    });
 </script>

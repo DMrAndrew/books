@@ -35,12 +35,12 @@
                     {% for award in availableAwards %}
                         {% set awardOrdered = false %}
                         {% if award.id in order.awards.pluck('orderable_id').toArray %}
-                            {% set awardOrdered = true %}
+                            <div class="buy-book-modal__wrapper-item">
+                                <span class="buy-book-modal__text">{{award.name}}</span>
+                                <div class="buy-book-modal__text">{{award.price}} ₽</div>
+                            </div>
                         {% endif %}
-                        <div class="buy-book-modal__wrapper-item">
-                            <span class="buy-book-modal__text">{{award.name}}</span>
-                            <div class="buy-book-modal__text">{{award.price}} ₽</div>
-                        </div>
+
                     {% endfor %}
 
                     <!-- поддержка автора -->
