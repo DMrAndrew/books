@@ -201,7 +201,7 @@ class OrderService implements OrderServiceContract
     {
         return DB::transaction(function () use ($order, $code) {
             // get promocode
-            $promocode = Promocode::query()->code($code)->notActivated()->first();
+            $promocode = Promocode::query()->code($code)->alive()->first();
 
             if (!$promocode) {
                 return false;
