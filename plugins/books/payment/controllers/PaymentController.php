@@ -13,7 +13,6 @@ use Db;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -38,11 +37,10 @@ class PaymentController extends Controller
      *
      * @param Request $request
      *
-     * @return JsonResponse|void
+     * @return JsonResponse
      */
     public function webhook(Request $request)
     {
-        $responseCode = 0;
         $this->logWebhookProcessing('Request data', $request);
 
         try {
@@ -68,6 +66,7 @@ class PaymentController extends Controller
                     if (!$payment) {
                         throw new Exception("Cant resolve payment from request data");
                     }
+                    $payment->update(['transaction_id' => $transactionId]);
 
                     /**
                      * Verify payment
