@@ -11,32 +11,18 @@ class PromocodeGenerationLimiter
 {
     const UNLIMITED_GENERATION_FREE_MONTHS = 3;
     const PROMOCODES_COUNT_LIMIT_FOR_BOOK_PER_MONTH = 5;
+    private string $reason = '';
+    const unlimited_period_expired_reason = 'Период бесконечной генерации промокодов в течении первых ' . self::UNLIMITED_GENERATION_FREE_MONTHS . ' месяцев после регистрации истек';
+    const book_limit_expired_reason = "В этом месяце вы уже сгенерировали " . self::PROMOCODES_COUNT_LIMIT_FOR_BOOK_PER_MONTH . " промокодов для выбранной книги";
+    private ?Carbon $expireIn = null;
 
-    public Profile $profile;
-    public Book $book;
-    private string $reason;
-    private ?Carbon $expireIn;
-
-    public function __construct(Profile $profile, Book $book)
+    public function __construct(public Profile $profile, public Book $book)
     {
-        $this->reason = '';
-        $this->expireIn = null;
-
-        $this->profile = $profile;
-        $this->book = $book;
     }
 
     public function checkCanGenerate(): bool
     {
-        if ($this->allowGenerateByProfileRegistrationDate()) {
-            return true;
-        }
-
-        if ( $this->allowGenerateByBookLimits()) {
-            return true;
-        }
-
-        return false;
+        return $this->allowGenerateByProfileRegistrationDate() || $this->allowGenerateByBookLimits();
     }
 
     /**
@@ -44,18 +30,19 @@ class PromocodeGenerationLimiter
      */
     private function allowGenerateByProfileRegistrationDate(): bool
     {
-        $now = Carbon::now()->endOfDay();
-        $userFreePromocodesPeriodEnd = $this->getUserFreePromocodesPeriodEnd();
+        $unlimited_expire_in_date = $this->profile
+            ->user
+            ->created_at
+            ->copy()
+            ->addMonths(self::UNLIMITED_GENERATION_FREE_MONTHS); //Конец периода бесконечной генерации промокодов для аккаунта
 
-        if (
-            $now->greaterThan($userFreePromocodesPeriodEnd)
-        ) {
-            $this->reason = 'Период бесконечной генерации промокодов в течении первых 3 месяцев после регистрации истек';
+        if (Carbon::now()->endOfDay()->greaterThan($unlimited_expire_in_date)) {
+            $this->reason = self::unlimited_period_expired_reason;
 
             return false;
         }
 
-        $this->expireIn = $userFreePromocodesPeriodEnd;
+        $this->expireIn = $unlimited_expire_in_date;
 
         return true;
     }
@@ -67,32 +54,18 @@ class PromocodeGenerationLimiter
      */
     private function allowGenerateByBookLimits(): bool
     {
-        $currentMonth = Carbon::now()->startOfMonth();
-
-        $currentMonthAlreadyGeneratedBookPromocodesCount = $this->book->promocodes
-            ->where('created_at', '>', $currentMonth)
+        $exists = $this->book->ebook
+            ->promocodes()
+            ->currentMonthCreated()
             ->count();
 
-        if ($currentMonthAlreadyGeneratedBookPromocodesCount >= self::PROMOCODES_COUNT_LIMIT_FOR_BOOK_PER_MONTH) {
-            $this->reason = "В этом месяце вы уже сгенерировали " . self::PROMOCODES_COUNT_LIMIT_FOR_BOOK_PER_MONTH . " промокодов для выбранной книги";
+        if ($exists >= self::PROMOCODES_COUNT_LIMIT_FOR_BOOK_PER_MONTH) {
+            $this->reason = self::book_limit_expired_reason;
 
             return false;
         }
 
         return true;
-    }
-
-
-    /**
-     * Конец периода бесконечной генерации промокодов для аккаунта
-     *
-     * @return Carbon
-     */
-    private function getUserFreePromocodesPeriodEnd(): Carbon
-    {
-        $profileCreatedAt = $this->profile->user->created_at;
-
-        return $profileCreatedAt->addMonths(self::UNLIMITED_GENERATION_FREE_MONTHS);
     }
 
     /**
