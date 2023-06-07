@@ -1,4 +1,72 @@
 url = "/payment/charge/:order_id?"
+[session]
+security = "user"
+redirect = "/"
 [Payment]
 ==
-charge order payment
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Оплата заказа #{{ order.id }}</title>
+    {% if paymentData %}
+    <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
+    {% endif %}
+</head>
+<body>
+{% if paymentData %}
+<script>
+
+    let timerId = setInterval(function () {
+        if (typeof cp !== 'undefined') {
+            clearTimeout(timerId);
+            runPaymentWidget();
+        }
+    }, 200);
+
+    function runPaymentWidget() {
+        let amount = {{ paymentData.amount }};
+
+        var payments = new cp.CloudPayments({
+            language: "ru-RU",
+            email: "{{ paymentData.email }}",
+            applePaySupport: true,
+            googlePaySupport: true,
+            yandexPaySupport: true,
+            tinkoffInstallmentSupport: true,
+        });
+
+        payments.pay("charge", {
+                publicId: "{{ paymentData.publicId }}",
+                description: "{{ paymentData.description }}",
+                amount: amount,
+                currency: "RUB",
+                invoiceId: "{{ paymentData.invoiceId }}",
+                accountId: "{{ paymentData.accountId }}",
+                email: "",
+                skin: "classic",
+                requireEmail: true,
+                data: {
+                    paymentId: "{{ paymentData.data.paymentId}}",
+                    userId: "{{ paymentData.data.userId}}",
+                    userName: "{{ paymentData.data.userName}}",
+                }
+            },
+            {
+                onSuccess: function (options) { // success
+                    window.location.replace("{{ successUrl }}");
+                },
+                onFail: function (reason, options) { // fail
+                    window.location.replace("{{ errorUrl }}");
+                },
+            }).then(function (widgetResult) {
+            console.log('result', widgetResult);
+        }).catch(function (error) {
+            console.log('error', error);
+        });
+    }
+</script>
+{% endif %}
+</body>
+</html>
+
+

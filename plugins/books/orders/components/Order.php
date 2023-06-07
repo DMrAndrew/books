@@ -4,9 +4,7 @@ use Books\Book\Models\Award;
 use Books\Book\Models\Book;
 use Books\Book\Models\Edition;
 use Books\Orders\Models\Order as OrderModel;
-use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Classes\Services\OrderService;
-use Books\Payment\Classes\PaymentService;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
@@ -24,7 +22,6 @@ class Order extends ComponentBase
 {
     protected ?Book $book;
     private OrderService $orderService;
-    private PaymentService $paymentService;
 
     public function componentDetails()
     {
@@ -45,7 +42,6 @@ class Order extends ComponentBase
     public function init(): void
     {
         $this->orderService = app(OrderService::class);
-        $this->paymentService = app(PaymentService::class);
 
         $this->user = Auth::getUser();
         $book_id = $this->param('book_id');
@@ -122,7 +118,7 @@ class Order extends ComponentBase
         $order = $this->getOrder($this->getUser(), $this->book);
 
         if ($payType === 'card') {
-            return Redirect::to(route('payment.charge', ['order' => $order->id]));
+            return Redirect::to(url('/payment/charge', ['order' => $order->id]));
         }
 
         if ($payType === 'balance') {
@@ -223,7 +219,7 @@ class Order extends ComponentBase
          */
         if (!$order) {
             $order = $this->orderService->createOrder($user);
-            $this->orderService->addProducts($order, collect([$book->ebook]));
+            $this->orderService->addProducts($order, $book->ebook);
         }
 
         return $order;

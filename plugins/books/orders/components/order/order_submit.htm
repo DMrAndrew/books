@@ -33,29 +33,31 @@
 
                     <!-- награды -->
                     {% for award in availableAwards %}
-                        {% set awardOrdered = false %}
                         {% if award.id in order.awards.pluck('orderable_id').toArray %}
                             <div class="buy-book-modal__wrapper-item">
                                 <span class="buy-book-modal__text">{{award.name}}</span>
                                 <div class="buy-book-modal__text">{{award.price}} ₽</div>
                             </div>
                         {% endif %}
-
                     {% endfor %}
 
                     <!-- поддержка автора -->
                     <div class="buy-book-modal__wrapper-item">
                         <span class="buy-book-modal__text">Поддержка автора</span>
-                        <div class="buy-book-modal__text" id="orderDonationAmountSpawn">{{order.donations.sum('amount')}} ₽</div>
+                        <div class="buy-book-modal__text" id="orderDonationAmountSpawn">
+                            {{order.donations.sum('amount')}} ₽
+                        </div>
                     </div>
 
                     <!-- промокоды -->
                     {% if order.promocodes|length %}
                     {% for orderpromocode in order.promocodes %}
-                        <div class="buy-book-modal__wrapper-item">
-                            <div class="buy-book-modal__text">Скидка по промокоду</div>
-                            <div class="buy-book-modal__text">{{orderpromocode.promocode.promoable.priceTag.price}} ₽</div>
+                    <div class="buy-book-modal__wrapper-item">
+                        <div class="buy-book-modal__text">Скидка по промокоду</div>
+                        <div class="buy-book-modal__text">
+                            {{orderpromocode.promocode.promoable.priceTag.price}} ₽
                         </div>
+                    </div>
                     {% endfor %}
                     {% endif %}
 
@@ -70,10 +72,12 @@
                     <div class="buy-book-modal__subtitle ui-text-body--1 ui-text--bold">Способ оплаты</div>
                     <div class="buy-book-modal__pay-container">
                         <label class="payTypeLabel" for="payTypeBalance">
-                            <input type="radio" style="display: none" name="payType" id="payTypeBalance" value="balance">
+                            <input type="radio" style="display: none" name="payType" id="payTypeBalance"
+                                   value="balance">
                             <div class="buy-book-modal__pay">
                                 <svg class="square-32">
-                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme}}"></use>
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme}}"></use>
                                 </svg>
                                 <span>Снять с баланса</span>
                             </div>
@@ -82,7 +86,8 @@
                             <div class="buy-book-modal__pay">
                                 <input type="radio" style="display: none" name="payType" id="payTypeCard" value="card">
                                 <svg class="square-32">
-                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#credit-card-stroked-32' | theme}}"></use>
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#credit-card-stroked-32' | theme}}"></use>
                                 </svg>
                                 <span>Оплатить картой</span>
                             </div>

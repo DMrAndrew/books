@@ -5,6 +5,7 @@ namespace Books\User\Behaviors;
 use Books\Book\Models\Edition;
 use Books\Book\Models\UserBook;
 use Books\Comments\Models\Comment;
+use Books\Orders\Models\Order;
 use Books\Profile\Models\OperationHistory;
 use Books\Profile\Models\Profile;
 use Books\User\Classes\UserService;
@@ -28,6 +29,8 @@ class BookUser extends ExtensionBase
             'otherKey' => 'id',
             'order' => 'id desc',
         ];
+        $this->parent->hasMany['ownedBooks'] = [UserBook::class];
+        $this->parent->hasMany['orders'] = [Order::class];
         $this->parent->addValidationRule('birthday', 'nullable');
         $this->parent->addValidationRule('birthday', 'date');
         $this->parent->addValidationRule('show_birthday', 'boolean');
@@ -69,18 +72,20 @@ class BookUser extends ExtensionBase
         return Profile::MAX_USER_PROFILES_COUNT;
     }
 
-    public function setBirthdayAttribute($value)
+    public function setBirthdayAttribute($value): void
     {
-        if ($value) {
-            if (! $this->parent->birthday) {
-                $date = Carbon::parse($value);
-                $date->lessThan(today()) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть больше текущего дня']);
-                $date->gte(Carbon::parse(self::MIN_BIRTHDAY)) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть меньше '.self::MIN_BIRTHDAY]);
-                $this->parent->attributes['birthday'] = $date;
-            }
-        } else {
+        if (!$value) {
             $this->parent->attributes['birthday'] = null;
+            return;
         }
+        if ($this->parent->birthday) {
+            return;
+        }
+
+        $date = Carbon::parse($value);
+        $date->lessThan(today()) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть больше текущего дня']);
+        $date->gte(Carbon::parse(self::MIN_BIRTHDAY)) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть меньше ' . self::MIN_BIRTHDAY]);
+        $this->parent->attributes['birthday'] = $date;
     }
 
     public function canSetAdult(): bool
@@ -115,27 +120,16 @@ class BookUser extends ExtensionBase
 
     public function scopeUsernameLike($q, $name)
     {
-        return $q->whereHas('profiles', fn ($profile) => $profile->usernameLike($name));
+        return $q->whereHas('profiles', fn($profile) => $profile->usernameLike($name));
     }
 
     public function scopeUsername($q, $name)
     {
-        return $q->whereHas('profiles', fn ($profile) => $profile->username($name));
+        return $q->whereHas('profiles', fn($profile) => $profile->username($name));
     }
 
     public function bookIsBought(Edition $edition): bool
     {
-        $user = $this->parent;
-
-        $userHasBook = UserBook
-            ::whereHasMorph('ownable', [Edition::class], function($q) use ($edition){
-                $q->where('id', $edition->id);
-            })
-            ->whereHas('user', function ($query) use ($user) {
-                $query->where('id', $user->id);
-            })
-            ->first();
-
-        return (bool) $userHasBook?->exists;
+        return $edition->isSold($this->parent);
     }
 }

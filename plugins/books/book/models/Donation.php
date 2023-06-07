@@ -1,8 +1,10 @@
 <?php namespace Books\Book\Models;
 
+use App\traits\HasProfileScope;
 use Books\Orders\Models\OrderProduct;
 use Books\Profile\Models\Profile;
 use Model;
+use October\Rain\Database\Traits\Validation;
 
 /**
  * Donation Model
@@ -11,7 +13,8 @@ use Model;
  */
 class Donation extends Model
 {
-    use \October\Rain\Database\Traits\Validation;
+    use Validation;
+    use HasProfileScope;
 
     /**
      * @var string table name

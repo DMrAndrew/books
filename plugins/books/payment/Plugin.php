@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Books\Payment;
 
+use Books\Payment\Components\Payment;
+use App;
 use System\Classes\PluginBase;
 
 /**
@@ -37,6 +39,8 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return [];
+        return [
+            Payment::class => 'Payment',
+        ];
     }
 }

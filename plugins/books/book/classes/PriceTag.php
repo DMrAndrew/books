@@ -17,8 +17,9 @@ class PriceTag
         $this->discount ??= $this->edition->discounts()->active()->first();
         $this->promocode = $this->promocode ? $this->edition
             ->promocodes()
-            ->notActivated()
-            ->code($this->promocode->code)->first() : null;
+            ->code($this->promocode->code)
+            ->alive()
+            ->first() : null;
     }
 
     public function price(): int

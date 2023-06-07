@@ -88,9 +88,9 @@ return [
             'level' => 'debug',
         ],
 
-        'yookassa_webhook' => [
+        'log_payment_gateway_webhook' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/yookassa/webhook.log'),
+            'path' => storage_path('logs/payment/webhook.log'),
             'level' => 'debug',
             'days' => 14
         ],

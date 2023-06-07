@@ -2,6 +2,7 @@
 
 namespace Books\Book\Models;
 
+use App\traits\HasProfileScope;
 use Books\Book\Classes\CodeGenerator;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
@@ -29,6 +30,7 @@ class Promocode extends Model
 {
     use Validation;
     use Prunable;
+    use HasProfileScope;
 
     const CODE_LENGTH = 8;
 
@@ -96,10 +98,22 @@ class Promocode extends Model
         return strtoupper(hash('xxh32', Carbon::now()->toISOString()));
     }
 
+    public function scopeAlive(Builder $builder)
+    {
+        return $builder->notActivated()->notExpired();
+    }
+
     public function scopeNotActivated(Builder $builder)
     {
-        return $builder->where('is_activated', false)
-            ->whereDate('expire_in', '>', today());
+        return $builder->where('is_activated', false);
+//            ->whereDate('expire_in', '>', today()); не выберет с expire_in = null; и сломает prunable()
+    }
+
+    public function scopeNotExpired(Builder $builder): Builder
+    {
+        return $builder->where(
+            fn($q) => $q->whereDate('expire_in', '>', today())->orWhereNull('expire_in')
+        );
     }
 
     public function scopeBook(Builder $builder, Book $book): Builder
