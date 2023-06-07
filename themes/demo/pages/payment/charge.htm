@@ -36,7 +36,7 @@ redirect = "/"
         });
 
         payments.pay("charge", {
-                publicId: "pk_921ac135b2bf46d6847d105d9ae06",
+                publicId: "{{ paymentData.publicId }}",
                 description: "{{ paymentData.description }}",
                 amount: amount,
                 currency: "RUB",
