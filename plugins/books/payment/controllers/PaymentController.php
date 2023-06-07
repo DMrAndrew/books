@@ -11,7 +11,9 @@ use Books\Orders\Models\Order as OrderModel;
 use Books\Payment\Models\Payment as PaymentModel;
 use Db;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -31,76 +33,108 @@ class PaymentController extends Controller
         $this->orderService = app(OrderService::class);
     }
 
-    public function index()
-    {
-        return 'payment controller index()';
-    }
-
     /**
      * Webhook from payment gateway for updating status
      *
      * @param Request $request
+     *
+     * @return JsonResponse|void
      */
     public function webhook(Request $request)
     {
-        if (config('app.log_payment_gateway_webhook')) {
-            Log::channel('log_payment_gateway_webhook')->info($request);
-        }
+        $responseCode = 0;
+        $this->logWebhookProcessing('Request data', $request);
 
         try {
             // Once the transaction has been approved, we need to complete it
-            $object = $request->object ?? null;
+            $paymentWebhookData = $request ?? null;
 
-            if ($object) {
-                DB::transaction( function() use ($object) {
+            if ($paymentWebhookData != null || is_array($paymentWebhookData)) {
+                DB::transaction( function() use ($paymentWebhookData) {
 
-                    $transactionId = $object['metadata']['transactionId'];
-                    $paymentStatus = $object['status'];
+                    $transactionId = $paymentWebhookData['TransactionId'];
+                    $paymentData = json_decode($paymentWebhookData['Data'], true);
 
-                    $payment = PaymentModel::where('payment_id', $transactionId)->firstOrFail();
+                    $this->logWebhookProcessing('paymentData', $paymentData);
+
+                    /**
+                     * Get payment model
+                     */
+                    if (!isset($paymentData['paymentId'])) {
+                        throw new Exception("Field paymentId is required in Data array");
+                    }
+
+                    $payment = PaymentModel::where('payment_id', $paymentData['paymentId'])->first();
+                    if (!$payment) {
+                        throw new Exception("Cant resolve payment from request data");
+                    }
+
+                    /**
+                     * Verify payment
+                     */
                     $order = $payment->order;
 
-                    /** update payment status */
+                    // Номер заказа
+                    $paymentOrderId = (int)$paymentWebhookData['InvoiceId'];
+                    if ($order->id != $paymentOrderId) {
+                        $this->logWebhookProcessing('Verification failed', "Invalid order {$paymentWebhookData['InvoiceId']} for transaction {$transactionId}");
+
+                        return response()->json(['code' => '10']);
+                    }
+
+                    // Пользователь
+                    $paymentUserId = (int)$paymentWebhookData['AccountId'];
+                    if ($order->user_id != $paymentUserId) {
+                        $this->logWebhookProcessing('Verification failed', "Invalid AccountId {$paymentWebhookData['AccountId']} for transaction {$transactionId}");
+
+                        return response()->json(['code' => '11']);
+                    }
+
+                    // Сумма
+                    $paymentAmount = (int)$paymentWebhookData['Amount'];
+                    $orderAmount = $this->orderService->calculateAmount($order);
+                    if ($paymentAmount !== $orderAmount) {
+                        $this->logWebhookProcessing('Verification failed', "Payment amount does not match the order amount for transaction {$transactionId}");
+
+                        return response()->json(['code' => '12']);
+                    }
+
+                    /**
+                     * Update payment status
+                     */
+                    $paymentStatus = $paymentWebhookData['Status'];
                     $payment->update(['payment_status' => $paymentStatus]);
 
                     /**
-                     * update order status
-                     * available YooKassa payment statuses - https://yookassa.ru/developers/using-api/webhooks#events-basics
+                     * update order status ( https://developers.cloudpayments.ru/#statusy-operatsiy )
                      */
                     $orderStatus = match ($paymentStatus) {
-                        'waiting_for_capture' => OrderStatusEnum::PENDING,
-                        'succeeded' => OrderStatusEnum::PAID,
-                        'canceled' => OrderStatusEnum::CANCELED,
+                        'AwaitingAuthentication', 'Authorized' => OrderStatusEnum::PENDING,
+                        'Completed' => OrderStatusEnum::PAID,
+                        'Cancelled' => OrderStatusEnum::CANCELED,
                     };
 
                     switch ($paymentStatus) {
                         // ожидает подтверждения
-                        case 'waiting_for_capture':
+                        case 'AwaitingAuthentication':
+                        case 'Authorized':
                             $this->orderService->updateOrderstatus($order, $orderStatus);
                             break;
 
                         // успешно
-                        case 'succeeded':
+                        case 'Completed':
                             if ($order->status != OrderStatusEnum::PAID->value) {
-
-                                $paymentAmount = (int) $object['amount']['value'];
-                                $orderAmount = $this->orderService->calculateAmount($order);
-
-                                if ($paymentAmount !== $orderAmount) {
-                                    throw new Exception("Payment amount does not match the order amount. Order #{$order->id}");
-                                }
-
                                 $this->orderService->updateOrderstatus($order, $orderStatus);
                                 $isApproved = $this->orderService->approveOrder($order);
 
                                 if (!$isApproved) {
-                                    throw new Exception("Something went wrong with updating order #{$order->id}");
+                                    throw new Exception("Something went wrong with completing order #{$order->id}");
                                 }
                             }
                             break;
 
                         // отменен
-                        case 'canceled':
+                        case 'Cancelled':
                             if ($order->status != OrderStatusEnum::CANCELED->value) {
                                 $this->orderService->updateOrderstatus($order, $orderStatus);
                                 $isCancelled = $this->orderService->cancelOrder($order);
@@ -111,12 +145,23 @@ class PaymentController extends Controller
                             }
                             break;
                     }
+
+                    return true;
                 });
+
+                /**
+                 * Response OK
+                 */
+                return response()->json(['code' => '0']);
+
+            } else {
+                throw new Exception("Cant get payment data from request");
             }
         } catch (Exception $e) {
-            Log::error($e->getMessage());
+            $this->logWebhookProcessing($e->getMessage());
 
-            abort(300, $e->getMessage());
+            /** response codes - https://developers.cloudpayments.ru/#check */
+            return response()->json(['code' => '13']);
         }
     }
 
@@ -175,5 +220,21 @@ class PaymentController extends Controller
                 'payment_status' => 'created',
             ]
         );
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $data
+     *
+     * @return void
+     */
+    private function logWebhookProcessing(string $name, mixed $data = null): void
+    {
+        if (config('app.log_payment_gateway_webhook')) {
+            Log::channel('log_payment_gateway_webhook')->info($name);
+            if ($data != null) {
+                Log::channel('log_payment_gateway_webhook')->info($data);
+            }
+        }
     }
 }

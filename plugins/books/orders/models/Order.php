@@ -4,6 +4,7 @@ namespace Books\Orders\Models;
 
 use App\traits\ScopeUser;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
+use Illuminate\Support\Str;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
@@ -60,6 +61,15 @@ class Order extends Model
     protected $casts = [
         'type' => OrderStatusEnum::class,
     ];
+
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function ($order) {
+            $order->status = OrderStatusEnum::CREATED->value;
+        });
+    }
 
     /**
      * @var array

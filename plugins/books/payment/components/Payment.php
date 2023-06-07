@@ -87,12 +87,14 @@ class Payment extends ComponentBase
     private function getPaymentData(): array
     {
         //$order = $this->getOrder($this->param('order_id'));
-        $this->orderService->updateOrderstatus($this->order, OrderStatusEnum::PENDING);
+        //$this->orderService->updateOrderstatus($this->order, OrderStatusEnum::PENDING);
 
         // create payment
         $payment = $this->getPayment($this->order);
 
         return [
+            'orderStatus' => $this->order->status,
+            'paymentStatus' => $payment->payment_status,
             'publicId' => config('cloudpayments.publicId'), // Required
             'amount' => $payment->amount, // Required
             'Currency' => $payment->currency, // Required
@@ -100,16 +102,16 @@ class Payment extends ComponentBase
             'Name' => "Заказ №{$this->order->id}", // Required
             'ipAddress' => getHostByName(getHostName()), // Required
 
-            //'CardCryptogramPacket' => null, //$CardCryptogramPacket, // Required
             'invoiceId' => $this->order->id,
             'description' => "Заказ №{$this->order->id}",
             'accountId' => $this->order->user->id,
             'email' => $this->order->user->email,
-            'data' => json_encode([
+            'data' => [
+                'paymentId' => $payment->payment_id,
                 'userId' => $this->order->user->id,
                 'userName' => $this->order->user->username,
                 'email' => $this->order->user->email,
-            ]),
+            ],
         ];
     }
 }
