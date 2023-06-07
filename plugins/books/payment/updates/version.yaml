@@ -1,3 +1,6 @@
 1.0.0:
     - 'Оплаты'
     - create_payment_table.php
+1.0.1:
+    - 'Колонка transaction_id в Оплатах'
+    - update_payment_table.php

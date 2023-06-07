@@ -30,7 +30,8 @@ class Payment extends Model
         'payer_email' => 'required|email',
         'amount' => 'required|integer|min:1',
         'currency' => 'required|string',
-        'payment_status' => 'string', // from yookassa
+        'payment_status' => 'string', // from payment service
+        'transaction_id' => 'string', // from payment service
     ];
 
     /**
@@ -43,15 +44,12 @@ class Payment extends Model
         'amount',
         'currency',
         'payment_status',
+        'transaction_id',
     ];
 
-    public static function boot(): void
+    protected function beforeCreate()
     {
-        parent::boot();
-
-        static::creating(function ($payment) {
-            $payment->payment_id = Str::uuid();
-        });
+        $this->payment_id = Str::uuid();
     }
 
     /**
