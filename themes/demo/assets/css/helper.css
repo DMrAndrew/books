@@ -139,6 +139,12 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
     color: darkred;
 }
 
+.attention {
+    color: #cf7a7afc;
+    text-decoration: underline;
+    text-decoration-color: #e17e7eb3
+}
+
 .menu-mobile__footer {
     margin: 0;
 }

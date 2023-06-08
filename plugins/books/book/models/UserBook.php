@@ -1,6 +1,8 @@
 <?php namespace Books\Book\Models;
 
+use App\traits\HasUserScope;
 use Model;
+use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 
 /**
@@ -10,7 +12,8 @@ use RainLab\User\Models\User;
  */
 class UserBook extends Model
 {
-    use \October\Rain\Database\Traits\Validation;
+    use Validation;
+    use HasUserScope;
 
     /**
      * @var string table name
@@ -43,4 +46,11 @@ class UserBook extends Model
     public $morphTo = [
         'ownable' => []
     ];
+
+    protected function afterCreate()
+    {
+        if ($this->ownable instanceof Edition) {
+            $this->ownable->book->refreshAllowedVisits();
+        }
+    }
 }

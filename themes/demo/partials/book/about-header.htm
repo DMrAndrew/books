@@ -4,7 +4,8 @@
             <div class="book-card__column-left">
                 <a href="/book-card/{{book.id}}">
                     <img class="book-card__image"
-                         src="{{ book.cover.getThumb(166,240) }}"
+                         src="{{ book.cover.path }}"
+                         style="object-fit: fill"
                          alt=""
                          loading="lazy"/>
                 </a>

@@ -162,6 +162,6 @@ return [
 
     'com_url' => env('APP_COM_URL'),
 
-    'log_yookassa_webhook' => env('LOG_YOOKASSA_WEBHOOK', false),
+    'log_payment_gateway_webhook' => env('LOG_PAYMENT_GATEWAY_WEBHOOK', false),
 
 ];

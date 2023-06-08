@@ -25,11 +25,20 @@
     <div class="personal-area__wrap _separator"></div>
     {% if book %}
     <div class="personal-area__wrap _indent-small">Баннер</div>
-    <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">Размер 552x224</div>
+    <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">
+        Загружайте изображение с соотношением сторон
+        <span class="attention">5:2</span>
+        c разрешением
+        <span class="attention"> не менее 272x112</span>
+        в формате
+        <span class="attention">JPG, PNG или GIF </span>
+        и размером
+        <span class="attention">не более 4МБ.</span>
+    </div>
     {% component 'advertUploader' %}
     <div class="personal-area__wrap _separator"></div>
-    <div class="personal-area__wrap _indent-medium">Всего продаж: {{book.ebook.sold_count}}</div>
-<!--    <div class="personal-area__wrap _indent-medium">Дней в продаже: {{days_on_sale}}</div>-->
+    <div class="personal-area__wrap _indent-medium">Всего продаж: {{sold_count}}</div>
+    <div class="personal-area__wrap _indent-medium">Дней в продаже: {{days_on_sale}}</div>
     <div class="personal-area__wrap _indent-medium">Доступно рекламных переходов: {{book.advert.allowed_visit_count}} шт.</div>
     <div class="personal-area__wrap _indent-large">Использовано рекламных переходов: {{ book.advert.visits.count?:0 }} шт.</div>
     {% if not book.advert.enabled %}

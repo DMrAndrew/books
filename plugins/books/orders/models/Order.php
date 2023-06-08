@@ -2,22 +2,33 @@
 
 namespace Books\Orders\Models;
 
-use App\traits\ScopeUser;
+use App\traits\HasUserScope;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
+use Illuminate\Support\Str;
 use Model;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Relations\BelongsTo;
+use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 
 /**
  * Order Model
  *
+ * @method HasMany products
+ * @method HasMany promocodes
+ * @method HasMany editions
+ * @method HasMany awards
+ * @method HasMany donations
+ * @method HasMany deposites
+ * @method BelongsTo user
+ *
  * @link https://docs.octobercms.com/3.x/extend/system/models.html
  */
 class Order extends Model
 {
     use Validation;
-    use ScopeUser;
+    use HasUserScope;
 
     /**
      * @var string table name
@@ -61,6 +72,11 @@ class Order extends Model
         'type' => OrderStatusEnum::class,
     ];
 
+    protected function beforeCreate()
+    {
+        $this->status = OrderStatusEnum::CREATED->value;
+    }
+
     /**
      * @var array
      */
@@ -86,6 +102,10 @@ class Order extends Model
         'deposits' => [
             OrderProduct::class,
             'scope' => 'deposits',
+        ],
+        'editions' => [
+            OrderProduct::class,
+            'scope' => 'editions',
         ],
         'promocodes' => [OrderPromocode::class],
     ];

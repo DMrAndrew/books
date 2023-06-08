@@ -2,6 +2,7 @@
 
 namespace Books\Profile\Models;
 
+use App\traits\HasUserScope;
 use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
@@ -52,6 +53,7 @@ class Profile extends Model
     use Subscribable;
     use HasFactory;
     use HasRelationships;
+    use HasUserScope;
 
     const MAX_USER_PROFILES_COUNT = 5;
 
@@ -319,11 +321,6 @@ class Profile extends Model
     public function scopeUsernameClipboard(Builder $builder, string $string): Builder
     {
         return $builder->where('username_clipboard', '=', $string);
-    }
-
-    public function scopeUser(Builder $builder, User $user): Builder
-    {
-        return $builder->where('user_id', '=', $user->id);
     }
 
     public function isEmpty(): bool

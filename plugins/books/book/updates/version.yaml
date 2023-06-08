@@ -68,3 +68,6 @@
 1.0.19:
     - 'Поле author_id в Donation'
     - update_donations_table.php
+1.0.20:
+    - 'Обновить цены на награды'
+    - seed_awards_update_price.php
