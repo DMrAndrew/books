@@ -6,8 +6,11 @@ use Books\User\Classes\SearchManager;
 use Cache;
 use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
+use Exception;
 use Flash;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\RateLimiter;
+use Log;
 use RainLab\User\Facades\Auth;
 use Redirect;
 use Request;
@@ -22,7 +25,10 @@ class Searcher extends ComponentBase
 {
     protected $query;
 
-    protected bool $useCache = false;
+    protected bool $useCache = true;
+    protected Carbon $cacheTTL;
+
+    protected int $delay_seconds = 20;
 
     /**
      * componentDetails
@@ -49,6 +55,7 @@ class Searcher extends ComponentBase
     {
         $this->query = trim($this->param('query'));
         $this->page['search_query'] = $this->query;
+        $this->cacheTTL = Carbon::now()->addMinutes(2);
     }
 
     public function onRender()
@@ -68,48 +75,53 @@ class Searcher extends ComponentBase
         return !starts_with($this->page->url, '/search');
     }
 
+    /**
+     * @throws ValidationException
+     */
     protected function find()
     {
         $attempts = Auth::getUser() ? 20 : 10;
-        if (!RateLimiter::attempt('search' . request()->ip(), $attempts, fn() => 1, 20)) {
-            $ex = new ValidationException(['rateLimiter' => 'Превышен лимит запросов. Подождите 20 сек.']);
-            if (Request::ajax()) {
-                throw $ex;
-            } else {
-                Flash::error($ex->getMessage());
-            }
+        if (!RateLimiter::attempt('search' . request()->ip(), $attempts, fn() => 1, $this->delay_seconds)) {
+            throw new ValidationException(['rateLimiter' => 'Превышен лимит запросов. Подождите 20 сек.']);
         }
 
         return (new SearchManager())->apply($this->query);
     }
 
+    /**
+     * @throws ValidationException
+     */
     protected function cached()
     {
-        if ($this->useCache) {
-            if (Cache::has($this->hash())) {
-                return Cache::get($this->hash());
-            }
+        if ($this->useCache && Cache::has($this->hash())) {
+            return Cache::get($this->hash());
         }
 
         $partial = $this->renderPartial('@default', ['results' => $this->find()]);
         if ($this->useCache) {
-            Cache::put($this->hash(), $partial, Carbon::now()->addMinute());
+            Cache::put($this->hash(), $partial, $this->cacheTTL);
         }
 
         return $partial;
     }
 
-    public function onSearch()
+    public function onSearch(): array|RedirectResponse
     {
-        $q = trim(post('query'));
-        if ($this->isRedirectRequire()) {
-            return Redirect::to('/search/' . $q);
-        }
-        $this->query = $q;
-        $this->page['search_query'] = $this->query;
+        try {
+            $q = trim(post('query'));
+            if ($this->isRedirectRequire()) {
+                return Redirect::to('/search/' . $q);
+            }
+            $this->query = $q;
+            $this->page['search_query'] = $this->query;
 
-        return [
-            '#search_result' => $this->cached(),
-        ];
+            return [
+                '#search_result' => $this->cached(),
+            ];
+        } catch (Exception $exception) {
+            Flash::error($exception->getMessage());
+            Log::error($exception->getMessage());
+            return [];
+        }
     }
 }
