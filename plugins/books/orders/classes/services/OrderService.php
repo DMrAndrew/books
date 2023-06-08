@@ -420,7 +420,6 @@ class OrderService implements OrderServiceContract
             throw new Exception("Unable to resolve Author(s) for order #{$order->id}");
         }
 
-
         /**
          * Разделить гонорар с продажи книги с учетом процентов
          */
@@ -434,10 +433,12 @@ class OrderService implements OrderServiceContract
                 $authorRewardPartRounded = intdiv(($byEdition * $profile->pivot->percent), 100);
                 $profile->user->proxyWallet()->deposit($authorRewardPartRounded);
             });
-        } /**
+        }
+
+        /**
          * Разделить вознаграждение поровну
          */
-        else {
+        if ($bySupport) {
             $authorsRewardPartRounded = $this->getRewardPartRounded($bySupport, $profiles->count());
 
             $profiles->each(function ($profile) use ($order, $authorsRewardPartRounded) {
@@ -458,7 +459,6 @@ class OrderService implements OrderServiceContract
      */
     private function resolveOrderRewardReceivers(Order $order): Collection
     {
-
         /**
          * Get author of the Book
          */
@@ -476,7 +476,6 @@ class OrderService implements OrderServiceContract
          */
         return Collection::make($order->donations->map->orderable->map->profile->filter()); // на тестовом есть с profile_id = null
     }
-
 
     /**
      * @param Order $order

@@ -18,6 +18,7 @@
             </div>
 
             <div class="buy-book-modal__wrap">
+
                 <div class="buy-book-modal__wrapper-item">
                     <a href="" data-request="onCreateOrder">&lt; Назад</a>
                 </div>
@@ -27,25 +28,23 @@
                     <!-- книга -->
                     <div class="buy-book-modal__wrapper-item">
                         <span class="buy-book-modal__text">{{book.title}}</span>
-                        <div class="buy-book-modal__text">{{book.ebook.priceTag.price}} ₽</div>
+                        <div class="buy-book-modal__price">{{book.ebook.priceTag.price}} ₽</div>
                     </div>
 
                     <!-- награды -->
                     {% for award in availableAwards %}
-                    {% set awardOrdered = false %}
-                    {% if award.id in order.awards.pluck('orderable_id').toArray %}
-                    {% set awardOrdered = true %}
-                    {% endif %}
-                    <div class="buy-book-modal__wrapper-item">
-                        <span class="buy-book-modal__text">{{award.name}}</span>
-                        <div class="buy-book-modal__text">{{award.price}} ₽</div>
-                    </div>
+                        {% if award.id in order.awards.pluck('orderable_id').toArray %}
+                            <div class="buy-book-modal__wrapper-item">
+                                <span class="buy-book-modal__text">{{award.name}}</span>
+                                <div class="buy-book-modal__price">{{award.price}} ₽</div>
+                            </div>
+                        {% endif %}
                     {% endfor %}
 
                     <!-- поддержка автора -->
                     <div class="buy-book-modal__wrapper-item">
                         <span class="buy-book-modal__text">Поддержка автора</span>
-                        <div class="buy-book-modal__text" id="orderDonationAmountSpawn">
+                        <div class="buy-book-modal__price" id="orderDonationAmountSpawn">
                             {{order.donations.sum('amount')}} ₽
                         </div>
                     </div>
@@ -55,7 +54,9 @@
                     {% for orderpromocode in order.promocodes %}
                     <div class="buy-book-modal__wrapper-item">
                         <div class="buy-book-modal__text">Скидка по промокоду</div>
-                        <div class="buy-book-modal__text">{{orderpromocode.promocode.promoable.priceTag.price}} ₽</div>
+                        <div class="buy-book-modal__price">
+                            {{orderpromocode.promocode.promoable.priceTag.price}} ₽
+                        </div>
                     </div>
                     {% endfor %}
                     {% endif %}
@@ -63,7 +64,7 @@
                     <!-- итого -->
                     <div class="buy-book-modal__wrapper-item ui-text-body--1 ui-text--bold">
                         <div class="buy-book-modal__text _green">Итого к оплате</div>
-                        <div class="buy-book-modal__text _green" id="orderTotalAmountSpawn">0 ₽</div>
+                        <div class="buy-book-modal__price _green" id="orderTotalAmountSpawn">0 ₽</div>
                     </div>
                 </div>
 

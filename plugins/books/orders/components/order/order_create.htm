@@ -25,7 +25,7 @@
                         <label class="ui-checkbox">
                             <span class="ui-checkbox-text">{{book.title}}</span>
                         </label>
-                        <div class="buy-book-modal__text">{{book.ebook.priceTag.price}} ₽</div>
+                        <div class="buy-book-modal__price">{{book.ebook.priceTag.price}} ₽</div>
                     </div>
                     <div class="buy-book-modal__wrapper-item"></div>
                 </div>
@@ -53,7 +53,7 @@
                                 </div>
                                 <span class="ui-checkbox-text">{{award.name}}</span>
                             </label>
-                            <div class="buy-book-modal__text">{{award.price}} ₽</div>
+                            <div class="buy-book-modal__price">{{award.price}} ₽</div>
                         </div>
                     {% endfor %}
                 </div>
@@ -68,7 +68,7 @@
                             <input class="ui-input-item _size-32" type="text" id="donate" name="donate" value="{{order.donations.sum('amount')}}" placeholder="200"
                                    data-request="onOrderAddDonation">
                         </label>
-                        <div class="buy-book-modal__text" id="orderDonationAmountSpawn">{{order.donations.sum('amount')}} ₽</div>
+                        <div class="buy-book-modal__price" id="orderDonationAmountSpawn">{{order.donations.sum('amount')}} ₽</div>
                     </div>
                     <div class="buy-book-modal__wrapper-item"></div>
                 </div>
@@ -78,7 +78,7 @@
                     {% for orderpromocode in order.promocodes %}
                         <div class="buy-book-modal__wrapper-item">
                             <div class="buy-book-modal__text">Скидка по промокоду</div>
-                            <div class="buy-book-modal__text">{{orderpromocode.promocode.promoable.priceTag.price}} ₽</div>
+                            <div class="buy-book-modal__price">{{orderpromocode.promocode.promoable.priceTag.price}} ₽</div>
                         </div>
                     {% endfor %}
                     </div>
@@ -88,7 +88,7 @@
                 <div class="buy-book-modal__wrapper">
                     <div class="buy-book-modal__wrapper-item ui-text-body--1 ui-text--bold">
                         <div class="buy-book-modal__text _green">Итого к оплате</div>
-                        <div class="buy-book-modal__text _green" id="orderTotalAmountSpawn">0 ₽</div>
+                        <div class="buy-book-modal__price _green" id="orderTotalAmountSpawn">0 ₽</div>
                     </div>
                 </div>
 
@@ -140,24 +140,31 @@
     document.querySelector('[data-modal="open_buy_book"]').click();
     document.body.style.overflow = 'initial';
 
-    // donation
-    if (typeof updateDonateTimeout === 'undefined' || updateDonateTimeout == null) {
-        var updateDonateTimeout;
+    if (typeof addOrderFormEvents !== "function") {
+        function addOrderFormEvents() {
+            // donation
+            if (typeof updateDonateTimeout === 'undefined' || updateDonateTimeout == null) {
+                var updateDonateTimeout;
+            }
+            $(document).on('keyup', '#donate', function(e) {
+                console.log('#donate updated')
+                e.preventDefault();
+                this.value = this.value.replace(/[^\d.]/g, '');
+
+                clearTimeout(updateDonateTimeout);
+                updateDonateTimeout = setTimeout(function() {
+                    clearTimeout(updateDonateTimeout);
+                    oc.request('#orderForm', 'onOrderAddDonation', {})
+                }, 1000);
+            });
+
+            // promocode
+            $(document).on('click', '#promocodeSubmit', function(e) {
+                e.preventDefault();
+                this.value = this.value.replace(/[^\d.]/g, '');
+                oc.request('#orderForm', 'onOrderAddPromocode', {})
+            });
+        }
+        addOrderFormEvents();
     }
-    $(document).on('keyup', '#donate', function(e) {
-        e.preventDefault();
-        this.value = this.value.replace(/[^\d.]/g, '');
-
-        clearTimeout(updateDonateTimeout);
-        updateDonateTimeout = setTimeout(function() {
-            oc.request('#orderForm', 'onOrderAddDonation', {})
-        }, 1000);
-    });
-
-    // promocode
-    $(document).on('click', '#promocodeSubmit', function(e) {
-        e.preventDefault();
-        this.value = this.value.replace(/[^\d.]/g, '');
-        oc.request('#orderForm', 'onOrderAddPromocode', {})
-    });
 </script>
