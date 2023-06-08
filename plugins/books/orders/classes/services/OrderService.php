@@ -14,7 +14,6 @@ use Books\Orders\Classes\Contracts\ProductInterface;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Models\BalanceDeposit as DepositModel;
 use Books\Orders\Models\Order;
-use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
 use Books\Profile\Models\Profile;
 use Books\Profile\Services\OperationHistoryService;
@@ -227,7 +226,7 @@ class OrderService implements OrderServiceContract
      */
     public function isPromoableProductInOrderProductsList(Order $order, Promocode $promocode): bool
     {
-        /** @var Promocode $promocodeProduct */
+        /** @var Model $promocodeProduct */
         $promocodeProduct = $promocode->promoable;
 
         $promoableProductInOrder = $order->products
@@ -337,6 +336,12 @@ class OrderService implements OrderServiceContract
         return $this->getOrderSuccessRedirectPage($order);
     }
 
+    /**
+     * @param Order $order
+     * @param int $depositAmount
+     *
+     * @return void
+     */
     public function addDeposit(Order $order, int $depositAmount): void
     {
         if ($depositAmount > 0) {
