@@ -133,7 +133,6 @@
     </div>
 </div>
 
-
 <script>
     // modal
     openModal('[data-modal="buy_book"]', '[data-modal="open_buy_book"]');
@@ -147,7 +146,6 @@
                 var updateDonateTimeout;
             }
             $(document).on('keyup', '#donate', function(e) {
-                console.log('#donate updated')
                 e.preventDefault();
                 this.value = this.value.replace(/[^\d.]/g, '');
 
