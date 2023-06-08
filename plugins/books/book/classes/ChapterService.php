@@ -50,10 +50,10 @@ class ChapterService
     public function from(mixed $payload): ?Chapter
     {
         if ($payload instanceof \Tizis\FB2\Model\Chapter) {
-            if ($content = $payload->getContent()) {
+            if ((int)$this->parseContentToCollection($payload->getContent())->sum('length')) {
                 return $this->create([
                     'title' => $payload->getTitle(),
-                    'content' => $content,
+                    'content' => $payload->getContent(),
                     'status' => ChapterStatus::PUBLISHED,
                 ]);
             }
@@ -198,20 +198,31 @@ class ChapterService
         Event::fire('books.chapter.paginated');
     }
 
-    public function chunkContent()
+    public function chunkContent(): Collection
     {
+        return $this->parseContentToCollection($this->chapter->getContent()->body)->chunkWhile(function ($value, $key, $chunk) {
+            return $chunk->sum('length') + $value['length'] <= Pagination::RECOMMEND_MAX_LENGTH;
+        });
+    }
+
+    public function parseContentToCollection(string $content): Collection
+    {
+        $content = trim($content);
+        if (!$content) {
+            return collect([
+                'html' => '',
+                'length' => 0
+            ]);
+        }
         $dom = (new DOMDocument());
         libxml_use_internal_errors(true);
-        $dom->loadHTML(mb_convert_encoding($this->chapter->getContent()->body, 'HTML-ENTITIES', 'UTF-8'));
+        $dom->loadHTML(mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8'));
         $root = $dom->getElementsByTagName('body')[0];
-        $perhapses = collect($root->childNodes)->map(fn($node) => [
+
+        return collect($root->childNodes)->map(fn($node) => [
             'html' => $dom->saveHTML($node),
             'length' => self::countContentLength($node->textContent),
         ]);
-
-        return $perhapses->chunkWhile(function ($value, $key, $chunk) {
-            return $chunk->sum('length') + $value['length'] <= Pagination::RECOMMEND_MAX_LENGTH;
-        });
     }
 
     public static function countContentLength(string $str): bool|int

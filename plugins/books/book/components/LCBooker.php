@@ -6,6 +6,8 @@ use Books\Book\Classes\BookService;
 use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use Exception;
+use Flash;
+use Log;
 use October\Rain\Database\Collection;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -79,7 +81,6 @@ class LCBooker extends ComponentBase
     public function onUploadFile()
     {
         try {
-        
             set_time_limit((60 * 3));
             $uploadedFile = (new Edition())->fb2()->withDeferred($this->getSessionKey())->get()?->first();
             if (!$uploadedFile) {
@@ -87,14 +88,12 @@ class LCBooker extends ComponentBase
             }
 
             (new BookService(user: $this->user, session_key: $this->getSessionKey()))->from($uploadedFile);
-//            (new Edition())->cancelDeferred($this->getSessionKey());
 
             return Redirect::refresh();
-//            return [
-//                '#lc-books' => $this->renderPartial('@default', ['authorships' => $this->getAuthorships()]),
-//            ];
         } catch (Exception $ex) {
-            throw new ValidationException(['fb2' => $ex->getMessage()]);
+            Flash::error($ex->getMessage());
+            Log::error($ex->getMessage());
+            return [];
         }
     }
 
