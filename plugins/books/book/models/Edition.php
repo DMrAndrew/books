@@ -7,6 +7,7 @@ use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Enums\ElectronicFormats;
 use Books\Book\Classes\PriceTag;
 use Books\Book\Jobs\ParseFBChapters;
 use Books\Orders\Classes\Contracts\ProductInterface;
@@ -38,6 +39,8 @@ use System\Models\Revision;
  *
  * * @property  Book book
  * * @property  BookStatus status
+ * * @property  EditionsEnums type
+ * * @property  bool download_allowed
  */
 class Edition extends Model implements ProductInterface
 {
@@ -96,9 +99,6 @@ class Edition extends Model implements ProductInterface
         'fb2' => ['nullable', 'file', 'mimes:xml', 'max:30720'],
     ];
 
-//    public $hasOne = [
-//        'discount' => [Discount::class, 'key' => 'edition_id', 'otherKey' => 'id', 'scope' => 'active'],
-//    ];
     public $hasMany = [
         'chapters' => [Chapter::class, 'key' => 'edition_id', 'otherKey' => 'id'],
         'discounts' => [Discount::class, 'key' => 'edition_id', 'otherKey' => 'id'],
@@ -106,6 +106,8 @@ class Edition extends Model implements ProductInterface
 
     public $attachOne = [
         'fb2' => File::class,
+        'epub' => File::class,
+        'mobi' => File::class,
     ];
 
     public $belongsTo = [
@@ -137,6 +139,13 @@ class Edition extends Model implements ProductInterface
     public function service(): EditionService
     {
         return new EditionService($this);
+    }
+
+    public function allowedDownload(ElectronicFormats $format = ElectronicFormats::FB2): bool
+    {
+        return $this->download_allowed
+            && $this->hasRelation($format->value)
+            && $this->{$format->value};
     }
 
     public function getLastUpdatedAtAttribute()
@@ -184,6 +193,11 @@ class Edition extends Model implements ProductInterface
     public function scopeWithActiveDiscountExist(Builder $builder): Builder
     {
         return $builder->withExists('discount');
+    }
+
+    public function scopeWithFiles(Builder $builder): Builder
+    {
+        return $builder->with(ElectronicFormats::FB2->value);
     }
 
     public function scopeActiveDiscountExist(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
