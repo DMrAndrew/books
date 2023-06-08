@@ -253,7 +253,6 @@ class PaymentController extends Controller
      */
     private function validPaymentAmount(PaymentModel $payment, Request $paymentWebhookData): bool
     {
-        //dd($this->orderService->calculateAmount($payment->order), (int)$paymentWebhookData['Amount']);
         $orderAmount = $this->orderService->calculateAmount($payment->order);
 
         return $orderAmount === (int)$paymentWebhookData['Amount'];
