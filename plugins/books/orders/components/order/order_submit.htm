@@ -28,7 +28,7 @@
                     <!-- книга -->
                     <div class="buy-book-modal__wrapper-item">
                         <span class="buy-book-modal__text">{{book.title}}</span>
-                        <div class="buy-book-modal__text">{{book.ebook.priceTag.price}} ₽</div>
+                        <div class="buy-book-modal__price">{{book.ebook.priceTag.price}} ₽</div>
                     </div>
 
                     <!-- награды -->
@@ -36,7 +36,7 @@
                         {% if award.id in order.awards.pluck('orderable_id').toArray %}
                             <div class="buy-book-modal__wrapper-item">
                                 <span class="buy-book-modal__text">{{award.name}}</span>
-                                <div class="buy-book-modal__text">{{award.price}} ₽</div>
+                                <div class="buy-book-modal__price">{{award.price}} ₽</div>
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -44,7 +44,7 @@
                     <!-- поддержка автора -->
                     <div class="buy-book-modal__wrapper-item">
                         <span class="buy-book-modal__text">Поддержка автора</span>
-                        <div class="buy-book-modal__text" id="orderDonationAmountSpawn">
+                        <div class="buy-book-modal__price" id="orderDonationAmountSpawn">
                             {{order.donations.sum('amount')}} ₽
                         </div>
                     </div>
@@ -54,7 +54,7 @@
                     {% for orderpromocode in order.promocodes %}
                     <div class="buy-book-modal__wrapper-item">
                         <div class="buy-book-modal__text">Скидка по промокоду</div>
-                        <div class="buy-book-modal__text">
+                        <div class="buy-book-modal__price">
                             {{orderpromocode.promocode.promoable.priceTag.price}} ₽
                         </div>
                     </div>
@@ -64,7 +64,7 @@
                     <!-- итого -->
                     <div class="buy-book-modal__wrapper-item ui-text-body--1 ui-text--bold">
                         <div class="buy-book-modal__text _green">Итого к оплате</div>
-                        <div class="buy-book-modal__text _green" id="orderTotalAmountSpawn">0 ₽</div>
+                        <div class="buy-book-modal__price _green" id="orderTotalAmountSpawn">0 ₽</div>
                     </div>
                 </div>
 
