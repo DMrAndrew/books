@@ -117,17 +117,44 @@ class BookPage extends ComponentBase
     public function vals()
     {
         return [
+            'isOwner' => false,
             'buyBtn' => $this->buyBtn(),
             'readBtn' => $this->readBtn(),
             'supportBtn' => $this->supportBtn(),
             'book' => $this->book,
-            'cycle' => $this->book->cycle
+            'cycle' => $this->book->cycle,
         ];
     }
 
     public function buyBtn()
     {
-        return (($this->user && !$this->book->ebook->isSold($this->user)) || !$this->user) && !$this->book->ebook->isFree();
+        /**
+         * Авторизованным пользователям
+         */
+        if ($this->user) {
+            /**
+             * Автор не может купить
+             */
+            if ($this->book->profiles()->user($this->user)->exists()) {
+                return false;
+            }
+
+            /**
+             * Уже куплена
+             */
+            if ($this->book->ebook->isSold($this->user)) {
+                return false;
+            }
+        }
+
+        /**
+         * Книга бесплатная
+         */
+        if ($this->book->ebook->isFree()) {
+            return false;
+        }
+
+        return true;
     }
 
     public function readBtn()
