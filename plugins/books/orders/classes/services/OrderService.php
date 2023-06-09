@@ -27,6 +27,8 @@ use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceCo
 
 class OrderService implements OrderServiceContract
 {
+    const AUTHOR_REWARD_PERCENTAGE = 80;
+
     private OperationHistoryServiceContract $operationHistoryService;
 
     public function __construct()
@@ -99,7 +101,10 @@ class OrderService implements OrderServiceContract
         $depositAmount = $order->deposits->sum('amount');
         $donationsAmount = $order->donations->sum('amount');
 
-        return max(($orderAmount - $awardsAmount - $depositAmount - $donationsAmount), 0);
+        $rewardKoefficient = $this->getAuthorRewardKoefficient();
+        $rewardAmount = max(($orderAmount - $awardsAmount - $depositAmount - $donationsAmount), 0);
+
+        return intval($rewardKoefficient * $rewardAmount);
     }
 
     /**
@@ -111,7 +116,10 @@ class OrderService implements OrderServiceContract
     {
         $donationsAmount = $order->donations->sum('amount');
 
-        return max(($donationsAmount), 0);
+        $rewardKoefficient = $this->getAuthorRewardKoefficient();
+        $rewardAmount = max(($donationsAmount), 0);
+
+        return intval($rewardKoefficient * $rewardAmount);;
     }
 
     /**
@@ -535,5 +543,13 @@ class OrderService implements OrderServiceContract
     public function getRewardPartRounded(int $amount, int $partsCount): int
     {
         return intdiv($amount, $partsCount);
+    }
+
+    /**
+     * @return float
+     */
+    public function getAuthorRewardKoefficient(): float
+    {
+        return self::AUTHOR_REWARD_PERCENTAGE / 100;
     }
 }
