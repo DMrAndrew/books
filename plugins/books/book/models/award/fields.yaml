@@ -6,3 +6,21 @@ fields:
     id:
         label: ID
         disabled: true
+
+    name:
+        label: Название
+        type: text
+        span: left
+        searchable: true
+
+    rate:
+        label: Рейтинг
+        type: number
+        span: left
+        searchable: true
+
+    price:
+        label: Цена
+        type: number
+        span: left
+        searchable: true

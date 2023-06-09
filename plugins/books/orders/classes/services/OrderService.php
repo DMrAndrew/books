@@ -160,9 +160,6 @@ class OrderService implements OrderServiceContract
         // заказ оплачен
         $this->updateOrderstatus($order, OrderStatusEnum::PAID);
 
-        // добавить историю операций
-        // todo
-
         return true;
     }
 
@@ -237,6 +234,12 @@ class OrderService implements OrderServiceContract
         return $promoableProductInOrder->exists;
     }
 
+    /**
+     * @param Order $order
+     * @param Promocode $promocode
+     *
+     * @return void
+     */
     public function activatePromocode(Order $order, Promocode $promocode): void
     {
         OrderPromocode::create([
