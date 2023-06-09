@@ -94,12 +94,13 @@ class OrderService implements OrderServiceContract
      */
     public function calculateAuthorsOrderRewardFromEdition(Order $order): int
     {
-        $orderAmount = $this->calculateAmount($order);
-        $awardsAmount = $order->awards->sum('amount');
-        $depositAmount = $order->deposits->sum('amount');
-        $donationsAmount = $order->donations->sum('amount');
+        $orderTotalAmount = $this->calculateAmount($order);
 
-        return max(($orderAmount - $awardsAmount - $depositAmount - $donationsAmount), 0);
+        $awardsPartAmount = $order->awards->sum('amount');
+        $depositsPartAmount = $order->deposits->sum('amount');
+        $donationsPartAmount = $order->donations->sum('amount');
+
+        return max(($orderTotalAmount - $awardsPartAmount - $depositsPartAmount - $donationsPartAmount), 0);
     }
 
     /**
@@ -159,9 +160,6 @@ class OrderService implements OrderServiceContract
 
         // заказ оплачен
         $this->updateOrderstatus($order, OrderStatusEnum::PAID);
-
-        // добавить историю операций
-        // todo
 
         return true;
     }
@@ -237,6 +235,12 @@ class OrderService implements OrderServiceContract
         return $promoableProductInOrder->exists;
     }
 
+    /**
+     * @param Order $order
+     * @param Promocode $promocode
+     *
+     * @return void
+     */
     public function activatePromocode(Order $order, Promocode $promocode): void
     {
         OrderPromocode::create([
@@ -425,6 +429,8 @@ class OrderService implements OrderServiceContract
             throw new Exception("Unable to resolve Author(s) for order #{$order->id}");
         }
 
+        $rewardTaxedCoefficient = $this->getAuthorRewardCoefficient();
+
         /**
          * Разделить гонорар с продажи книги с учетом процентов
          */
@@ -434,9 +440,10 @@ class OrderService implements OrderServiceContract
                 ?->orderable
                 ?->book;
 
-            $book->profiles->each(function ($profile) use ($byEdition) {
+            $book->profiles->each(function ($profile) use ($byEdition, $rewardTaxedCoefficient) {
                 $authorRewardPartRounded = intdiv(($byEdition * $profile->pivot->percent), 100);
-                $profile->user->proxyWallet()->deposit($authorRewardPartRounded);
+                $authorRewardPartTaxed = intval($rewardTaxedCoefficient * $authorRewardPartRounded);
+                $profile->user->proxyWallet()->deposit($authorRewardPartTaxed);
             });
         }
 
@@ -446,11 +453,19 @@ class OrderService implements OrderServiceContract
         if ($bySupport) {
             $authorsRewardPartRounded = $this->getRewardPartRounded($bySupport, $profiles->count());
 
-            $profiles->each(function ($profile) use ($order, $authorsRewardPartRounded) {
-                $profile->user->proxyWallet()->deposit($authorsRewardPartRounded);
+            $profiles->each(function ($profile) use ($order, $authorsRewardPartRounded, $rewardTaxedCoefficient) {
 
+                $authorRewardPartTaxed = intval($rewardTaxedCoefficient * $authorsRewardPartRounded);
+                $profile->user->proxyWallet()->deposit($authorRewardPartTaxed);
+
+                /**
+                 * Вы наградили автора <вся сумма>
+                 */
                 $this->operationHistoryService->addMakingAuthorSupport($order, $profile, $authorsRewardPartRounded);
-                $this->operationHistoryService->addReceivingAuthorSupport($order, $profile, $authorsRewardPartRounded);
+                /**
+                 * Вы получили <сумма с учетом комиссии> от
+                 */
+                $this->operationHistoryService->addReceivingAuthorSupport($order, $profile, $authorRewardPartTaxed);
             });
         }
     }
@@ -532,5 +547,13 @@ class OrderService implements OrderServiceContract
     public function getRewardPartRounded(int $amount, int $partsCount): int
     {
         return intdiv($amount, $partsCount);
+    }
+
+    /**
+     * @return float
+     */
+    public function getAuthorRewardCoefficient(): float
+    {
+        return (int)config('orders.author_reward_percentage') / 100;
     }
 }
