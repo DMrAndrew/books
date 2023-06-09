@@ -117,7 +117,6 @@ class BookPage extends ComponentBase
     public function vals()
     {
         return [
-            'isOwner' => false,
             'buyBtn' => $this->buyBtn(),
             'readBtn' => $this->readBtn(),
             'supportBtn' => $this->supportBtn(),

@@ -9,7 +9,7 @@ list: $/books/book/models/award/columns.yaml
 modelClass: Books\Book\Models\Award
 
 # List Title
-title: Manage Awards
+title: Управление наградами
 
 # Link URL for each record
 recordUrl: books/book/awards/update/:id

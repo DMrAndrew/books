@@ -1,6 +1,6 @@
 <?php Block::put('breadcrumb') ?>
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="<?= Backend::url('books/book/awards') ?>">Awards</a></li>
+        <li class="breadcrumb-item"><a href="<?= Backend::url('books/book/awards') ?>">Награды</a></li>
         <li class="breadcrumb-item active" aria-current="page"><?= e($this->pageTitle) ?></li>
     </ol>
 <?php Block::endPut() ?>
