@@ -27,8 +27,6 @@ use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceCo
 
 class OrderService implements OrderServiceContract
 {
-    const AUTHOR_REWARD_PERCENTAGE = 80;
-
     private OperationHistoryServiceContract $operationHistoryService;
 
     public function __construct()
@@ -556,6 +554,6 @@ class OrderService implements OrderServiceContract
      */
     public function getAuthorRewardCoefficient(): float
     {
-        return self::AUTHOR_REWARD_PERCENTAGE / 100;
+        return (int)config('orders.author_reward_percentage') / 100;
     }
 }

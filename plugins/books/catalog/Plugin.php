@@ -130,7 +130,7 @@ class Plugin extends PluginBase
                         'label' => 'Награды',
                         'icon' => 'icon-leaf',
                         'url' => Backend::url('books/book/awards'),
-                        'permissions' => ['books.catalog.*'],
+                        'permissions' => ['books.book.awards'],
                     ],
                 ],
             ],
