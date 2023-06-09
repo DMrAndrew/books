@@ -14,12 +14,6 @@ modelClass: Books\Book\Models\Award
 # Default redirect location
 defaultRedirect: books/book/awards
 
-# Create page
-create:
-    title: backend::lang.form.create_title
-    redirect: books/book/awards/update/:id
-    redirectClose: books/book/awards
-
 # Update page
 update:
     title: backend::lang.form.update_title

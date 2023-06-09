@@ -33,13 +33,6 @@
                     class="btn btn-default">
                     <?= e(trans('backend::lang.form.save_and_close')) ?>
                 </button>
-                <button
-                    type="button"
-                    class="oc-icon-trash-o btn-icon danger pull-right"
-                    data-request="onDelete"
-                    data-load-indicator="<?= e(trans('backend::lang.form.deleting_name', ['name'=>$formRecordName])) ?>"
-                    data-request-confirm="<?= e(trans('backend::lang.form.confirm_delete')) ?>">
-                </button>
                 <span class="btn-text">
                     <?= e(trans('backend::lang.form.or')) ?> <a href="<?= Backend::url('books/book/awards') ?>"><?= e(trans('backend::lang.form.cancel')) ?></a>
                 </span>
