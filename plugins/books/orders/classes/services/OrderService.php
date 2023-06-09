@@ -96,15 +96,13 @@ class OrderService implements OrderServiceContract
      */
     public function calculateAuthorsOrderRewardFromEdition(Order $order): int
     {
-        $orderAmount = $this->calculateAmount($order);
-        $awardsAmount = $order->awards->sum('amount');
-        $depositAmount = $order->deposits->sum('amount');
-        $donationsAmount = $order->donations->sum('amount');
+        $orderTotalAmount = $this->calculateAmount($order);
 
-        $rewardCoefficient = $this->getAuthorRewardCoefficient();
-        $rewardAmount = max(($orderAmount - $awardsAmount - $depositAmount - $donationsAmount), 0);
+        $awardsPartAmount = $order->awards->sum('amount');
+        $depositsPartAmount = $order->deposits->sum('amount');
+        $donationsPartAmount = $order->donations->sum('amount');
 
-        return intval($rewardCoefficient * $rewardAmount);
+        return max(($orderTotalAmount - $awardsPartAmount - $depositsPartAmount - $donationsPartAmount), 0);
     }
 
     /**
@@ -116,10 +114,7 @@ class OrderService implements OrderServiceContract
     {
         $donationsAmount = $order->donations->sum('amount');
 
-        $rewardCoefficient = $this->getAuthorRewardCoefficient();
-        $rewardAmount = max(($donationsAmount), 0);
-
-        return intval($rewardCoefficient * $rewardAmount);;
+        return max(($donationsAmount), 0);
     }
 
     /**
@@ -436,6 +431,8 @@ class OrderService implements OrderServiceContract
             throw new Exception("Unable to resolve Author(s) for order #{$order->id}");
         }
 
+        $rewardTaxedCoefficient = $this->getAuthorRewardCoefficient();
+
         /**
          * Разделить гонорар с продажи книги с учетом процентов
          */
@@ -445,9 +442,10 @@ class OrderService implements OrderServiceContract
                 ?->orderable
                 ?->book;
 
-            $book->profiles->each(function ($profile) use ($byEdition) {
+            $book->profiles->each(function ($profile) use ($byEdition, $rewardTaxedCoefficient) {
                 $authorRewardPartRounded = intdiv(($byEdition * $profile->pivot->percent), 100);
-                $profile->user->proxyWallet()->deposit($authorRewardPartRounded);
+                $authorRewardPartTaxed = intval($rewardTaxedCoefficient * $authorRewardPartRounded);
+                $profile->user->proxyWallet()->deposit($authorRewardPartTaxed);
             });
         }
 
@@ -457,11 +455,19 @@ class OrderService implements OrderServiceContract
         if ($bySupport) {
             $authorsRewardPartRounded = $this->getRewardPartRounded($bySupport, $profiles->count());
 
-            $profiles->each(function ($profile) use ($order, $authorsRewardPartRounded) {
-                $profile->user->proxyWallet()->deposit($authorsRewardPartRounded);
+            $profiles->each(function ($profile) use ($order, $authorsRewardPartRounded, $rewardTaxedCoefficient) {
 
+                $authorRewardPartTaxed = intval($rewardTaxedCoefficient * $authorsRewardPartRounded);
+                $profile->user->proxyWallet()->deposit($authorRewardPartTaxed);
+
+                /**
+                 * Вы наградили автора <вся сумма>
+                 */
                 $this->operationHistoryService->addMakingAuthorSupport($order, $profile, $authorsRewardPartRounded);
-                $this->operationHistoryService->addReceivingAuthorSupport($order, $profile, $authorsRewardPartRounded);
+                /**
+                 * Вы получили <сумма с учетом комиссии> от
+                 */
+                $this->operationHistoryService->addReceivingAuthorSupport($order, $profile, $authorRewardPartTaxed);
             });
         }
     }
