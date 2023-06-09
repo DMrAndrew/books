@@ -6,3 +6,18 @@ columns:
     id:
         label: ID
         searchable: true
+
+    name:
+        label: Название
+        type: text
+        searchable: true
+
+    rate:
+        label: Рейтинг
+        type: number
+        searchable: true
+
+    price:
+        label: Цена
+        type: number
+        searchable: true

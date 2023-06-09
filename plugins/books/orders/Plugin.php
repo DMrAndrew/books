@@ -12,6 +12,7 @@ use Books\Orders\Components\Order;
 use Books\Orders\Models\BalanceDeposit as DepositModel;
 use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
+use Config;
 use Illuminate\Foundation\AliasLoader;
 use System\Classes\PluginBase;
 use Books\Orders\Models\Order as OrderModel;
@@ -55,6 +56,8 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
+        Config::set('orders', Config::get('books.orders::config'));
+
         AliasLoader::getInstance()->alias('Order', OrderModel::class);
         AliasLoader::getInstance()->alias('OrderProduct', OrderProduct::class);
         AliasLoader::getInstance()->alias('OrderPromocode', OrderPromocode::class);

@@ -1,0 +1,25 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Награда
+
+# Model Form Field configuration
+form: $/books/book/models/award/fields.yaml
+
+# Model Class name
+modelClass: Books\Book\Models\Award
+
+# Default redirect location
+defaultRedirect: books/book/awards
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/book/awards
+    redirectClose: books/book/awards
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title

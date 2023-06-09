@@ -65,7 +65,6 @@ class AuthorSupport extends ComponentBase
         /**
          * From /book-card
          */
-
         if ($book = Book::query()->with('profiles')->findOrFail((int)$this->param('book_id'))) {
 
             $profileIds = $book->profiles
@@ -106,7 +105,9 @@ class AuthorSupport extends ComponentBase
             }
 
             return [
-                '#authors_support_form' => $this->renderPartial('@support_submit'),
+                '#authors_support_form' => $this->renderPartial('@support_submit', [
+                    'order' => $order,
+                ]),
                 '#supportTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
             ];
 
@@ -125,7 +126,7 @@ class AuthorSupport extends ComponentBase
             return [];
         }
 
-        $order = $this->getOrder($this->getUser());
+        $order = OrderModel::findOrFail((int)post('order_id'));
 
         if ($payType === 'card') {
             return Redirect::to(url('/payment/charge', ['order' => $order->id]));
