@@ -103,6 +103,11 @@ class Promocode extends Model
         return $builder->notActivated()->notExpired();
     }
 
+    public function scopeCurrentMonthCreated(Builder $builder): Builder
+    {
+        return $builder->where('created_at', '>=', Carbon::now()->startOfMonth());
+    }
+
     public function scopeNotActivated(Builder $builder)
     {
         return $builder->where('is_activated', false);

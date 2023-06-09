@@ -7,6 +7,7 @@ use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
 use Illuminate\Database\Eloquent\Collection;
+use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Request;
@@ -105,7 +106,7 @@ class Promocode extends ComponentBase
              * generate promocode
              */
             $this->book->ebook->promocodes()->create([
-                'profile_id' => $this->user->profile?->id,
+                'profile_id' => $this->user->profile->id,
                 'expire_in' => $promoLimiter->getExpireIn(),
             ]);
 
@@ -116,11 +117,9 @@ class Promocode extends ComponentBase
             ];
 
         } catch (Exception $ex) {
-            if (Request::ajax()) {
-                throw $ex;
-            } else {
-                Flash::error($ex->getMessage());
-            }
+            Log::error($ex->getMessage());
+            Flash::error($ex->getMessage());
+            return [];
         }
     }
 

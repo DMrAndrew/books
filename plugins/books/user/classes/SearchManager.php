@@ -18,21 +18,24 @@ class SearchManager
 
     public function apply(string $query): \October\Rain\Support\Collection|Collection
     {
-        $res = Search::add(Book::public()->defaultEager(), 'title')
+
+        $res = $query ? Search::add(Book::public()->defaultEager(), 'title')
             ->add(Profile::query()->shortPublicEager()->booksExists(), 'username')
             ->includeModelType()
-            ->orderByModel([
-                Book::class, Profile::class])
-            ->beginWithWildcard(false)
+            ->orderByModel([Book::class, Profile::class])
+            ->beginWithWildcard()
+            ->endWithWildcard()
+            ->dontParseTerm()
             ->search($query)
-            ->groupBy('type');
+            ->groupBy('type')
+            : Collection::make();
 
         return $res->map(function ($grouped, $key) {
             $class = $this->classes[$key];
             $count = $grouped->count();
 
             return [
-                'active' => ! (bool) $this->active++,
+                'active' => !(bool)$this->active++,
                 'count' => $count,
                 'label' => $class::wordForm()->getCorrectSuffix($count),
                 'items' => $grouped,

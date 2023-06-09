@@ -131,17 +131,11 @@ class BookService
             collect(explode(',', $info->getKeywords()))->each(fn($tag) => $this->addTag($tag));
 
             foreach ($info->getGenres() as $item) {
-                //TODO tolowercase
                 if ($genre = Genre::query()->where('name', $item)->first()) {
                     $this->addGenre($genre);
                 }
             }
             $this->save($data);
-
-//            collect($book->getChapters())->map(function ($chapter) {
-//                return (new Chapter())->service()->setEdition($this->book->ebook)->from($chapter);
-//            });
-
             return $this->book;
         });
     }
