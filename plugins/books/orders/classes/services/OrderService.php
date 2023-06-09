@@ -101,10 +101,10 @@ class OrderService implements OrderServiceContract
         $depositAmount = $order->deposits->sum('amount');
         $donationsAmount = $order->donations->sum('amount');
 
-        $rewardKoefficient = $this->getAuthorRewardKoefficient();
+        $rewardCoefficient = $this->getAuthorRewardCoefficient();
         $rewardAmount = max(($orderAmount - $awardsAmount - $depositAmount - $donationsAmount), 0);
 
-        return intval($rewardKoefficient * $rewardAmount);
+        return intval($rewardCoefficient * $rewardAmount);
     }
 
     /**
@@ -116,10 +116,10 @@ class OrderService implements OrderServiceContract
     {
         $donationsAmount = $order->donations->sum('amount');
 
-        $rewardKoefficient = $this->getAuthorRewardKoefficient();
+        $rewardCoefficient = $this->getAuthorRewardCoefficient();
         $rewardAmount = max(($donationsAmount), 0);
 
-        return intval($rewardKoefficient * $rewardAmount);;
+        return intval($rewardCoefficient * $rewardAmount);;
     }
 
     /**
@@ -548,7 +548,7 @@ class OrderService implements OrderServiceContract
     /**
      * @return float
      */
-    public function getAuthorRewardKoefficient(): float
+    public function getAuthorRewardCoefficient(): float
     {
         return self::AUTHOR_REWARD_PERCENTAGE / 100;
     }
