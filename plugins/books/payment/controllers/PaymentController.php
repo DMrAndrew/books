@@ -94,8 +94,6 @@ class PaymentController extends Controller
         $paymentWebhookData = $request ?? null;
 
         if ($paymentWebhookData != null || is_array($paymentWebhookData)) {
-            $resultCode = DB::transaction( function() use ($paymentWebhookData, $checkOnly) {
-
                 $transactionId = $paymentWebhookData['TransactionId'];
                 $paymentData = json_decode($paymentWebhookData['Data'], true);
 
@@ -135,13 +133,10 @@ class PaymentController extends Controller
                     $this->updatePaymentStatus($payment, $paymentWebhookData);
                 }
 
-                return self::STATUS_CODE_OK;
-            });
-
             /**
              * Response OK
              */
-            return $resultCode;
+            return self::STATUS_CODE_OK;
 
         } else {
             throw new Exception("Cant get payment data from request");
