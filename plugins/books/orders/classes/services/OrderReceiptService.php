@@ -165,7 +165,7 @@ class OrderReceiptService implements OrderReceiptServiceContract
                 "price" => $price,
                 "quantity" => 1, //количество
                 "amount" => $amount, //сумма
-                "vat" =>  0, //ставка НДС
+                "vat" =>  config('orders.order_receipt_vat_value'), //ставка НДС
                 "method" => 4, // признак способа расчета - https://developers.cloudkassir.ru/#method
                 "object" => 0, // признак предмета расчета - https://developers.cloudkassir.ru/#object
                 "measurementUnit" => "шт" //единица измерения
@@ -187,7 +187,7 @@ class OrderReceiptService implements OrderReceiptServiceContract
                 "price" => $amount,
                 "quantity" => 1, //количество
                 "amount" => 0, //сумма
-                "vat" =>  0, //ставка НДС
+                "vat" =>  config('orders.order_receipt_vat_value'), //ставка НДС
                 "method" => 4, // признак способа расчета - https://developers.cloudkassir.ru/#method
                 "object" => 0, // признак предмета расчета - https://developers.cloudkassir.ru/#object
                 "measurementUnit" => "шт" //единица измерения
