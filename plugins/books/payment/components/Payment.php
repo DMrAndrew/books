@@ -1,6 +1,7 @@
 <?php namespace Books\Payment\Components;
 
 use Books\Orders\Classes\Enums\OrderStatusEnum;
+use Books\Orders\Classes\Services\OrderReceiptService;
 use Books\Orders\Classes\Services\OrderService;
 use Books\Orders\Models\Order as OrderModel;
 use Books\Payment\Models\Payment as PaymentModel;
@@ -18,6 +19,7 @@ class Payment extends ComponentBase
 {
     private ?OrderModel $order;
     private OrderService $orderService;
+    private OrderReceiptService $receiptService;
     private ?User $user;
 
     public function componentDetails()
@@ -45,6 +47,7 @@ class Payment extends ComponentBase
 
         $this->orderService = app(OrderService::class);
         $this->order = $this->getOrder($this->param('order_id'));
+        $this->receiptService = app()->makeWith(OrderReceiptService::class, ['order' => $this->order]);
 
         $this->prepareVals();
     }
@@ -67,6 +70,7 @@ class Payment extends ComponentBase
     {
         $this->page['order'] = $this->order;
         $this->page['paymentData'] = $this->getPaymentData();
+        $this->page['receiptDataJson'] = json_encode($this->getPaymentReceiptData());
         $this->page['successUrl'] = $this->orderService->getOrderSuccessRedirectPage($this->order);
         $this->page['errorUrl'] = $this->orderService->getOrderErrorRedirectPage($this->order);
     }
@@ -132,5 +136,10 @@ class Payment extends ComponentBase
                 'email' => $this->order->user->email,
             ],
         ];
+    }
+
+    private function getPaymentReceiptData(): array
+    {
+        return $this->receiptService->getReceiptData();
     }
 }

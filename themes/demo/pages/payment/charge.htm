@@ -24,7 +24,8 @@ redirect = "/"
     }, 200);
 
     function runPaymentWidget() {
-        let amount = {{ paymentData.amount }};
+        const amount = {{ paymentData.amount }};
+        const receipt = {{ receiptDataJson|raw }};
 
         var payments = new cp.CloudPayments({
             language: "ru-RU",
@@ -42,14 +43,17 @@ redirect = "/"
                 currency: "RUB",
                 invoiceId: "{{ paymentData.invoiceId }}",
                 accountId: "{{ paymentData.accountId }}",
-                email: "",
+                email: "{{ paymentData.email }}",
                 skin: "classic",
                 requireEmail: true,
                 data: {
                     paymentId: "{{ paymentData.data.paymentId}}",
                     userId: "{{ paymentData.data.userId}}",
                     userName: "{{ paymentData.data.userName}}",
-                }
+                    "CloudPayments": {
+                        "CustomerReceipt": receipt, //онлайн-чек
+                    }
+                },
             },
             {
                 onSuccess: function (options) { // success
