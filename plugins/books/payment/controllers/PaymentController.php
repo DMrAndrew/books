@@ -7,7 +7,6 @@ use Backend\Classes\Controller;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Classes\Services\OrderService;
 use Books\Payment\Models\Payment as PaymentModel;
-use Db;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

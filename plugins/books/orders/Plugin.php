@@ -4,6 +4,8 @@ namespace Books\Orders;
 
 use Backend;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
+use Books\Orders\Classes\Contracts\OrderReceiptService as OrderReceiptServiceContract;
+use Books\Orders\Classes\Services\OrderReceiptService;
 use Books\Orders\Classes\Services\OrderService;
 use Books\Orders\Components\AuthorSupport;
 use Books\Orders\Components\BalanceDeposit;
@@ -47,6 +49,7 @@ class Plugin extends PluginBase
     public function register()
     {
         $this->app->bind(OrderServiceContract::class, OrderService::class);
+        $this->app->bind(OrderReceiptServiceContract::class, OrderReceiptService::class);
     }
 
     /**
