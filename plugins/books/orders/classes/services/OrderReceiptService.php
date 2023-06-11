@@ -99,18 +99,14 @@ class OrderReceiptService implements OrderReceiptServiceContract
      */
     public function getReceiptData(): array
     {
-        $receiptData = [];
-
-        $receiptData['Items'] = $this->getOrderItems();
-
-        $receiptData['email'] = $this->order->user->email;
-        $receiptData['customerInfo'] = $this->order->user->username;
-        $receiptData['isBso'] = false;
-        $receiptData['AgentSign'] = null;
-
-        $receiptData['amounts'] = $this->getAmountsData();
-
-        return $receiptData;
+        return [
+            'Items' => $this->getOrderItems(),
+            'email' => $this->order->user->email,
+            'customerInfo' => $this->order->user->username,
+            'isBso' => false,
+            'AgentSign' => null,
+            'amounts' => $this->getAmountsData(),
+        ];
     }
 
     /**
