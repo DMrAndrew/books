@@ -7,7 +7,6 @@ use Backend\Classes\Controller;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
 use Books\Orders\Classes\Services\OrderService;
 use Books\Payment\Models\Payment as PaymentModel;
-use Db;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -94,8 +93,6 @@ class PaymentController extends Controller
         $paymentWebhookData = $request ?? null;
 
         if ($paymentWebhookData != null || is_array($paymentWebhookData)) {
-            $resultCode = DB::transaction( function() use ($paymentWebhookData, $checkOnly) {
-
                 $transactionId = $paymentWebhookData['TransactionId'];
                 $paymentData = json_decode($paymentWebhookData['Data'], true);
 
@@ -135,13 +132,10 @@ class PaymentController extends Controller
                     $this->updatePaymentStatus($payment, $paymentWebhookData);
                 }
 
-                return self::STATUS_CODE_OK;
-            });
-
             /**
              * Response OK
              */
-            return $resultCode;
+            return self::STATUS_CODE_OK;
 
         } else {
             throw new Exception("Cant get payment data from request");
