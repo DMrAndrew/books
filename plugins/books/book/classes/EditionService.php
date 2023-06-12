@@ -17,13 +17,14 @@ class EditionService
     public function update(array $payload)
     {
         $data = collect($payload)->only(['price', 'status', 'free_parts']);
-        $this->edition->fill($data->toArray());
 
         if ($status = BookStatus::tryFrom($data->get('status')) ?? false) {
             $data['status'] = $status;
         } else {
             $data->forget('status');
         }
+
+        $this->edition->fill($data->toArray());
 
         if ($this->edition->isDirty(['status']) && !in_array($this->edition->status, $this->edition->getAllowedStatusCases())) {
             throw new ValidationException(['status' => 'В данный момент Вы не можете перевести издание в этот статус.']);
