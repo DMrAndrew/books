@@ -71,3 +71,6 @@
 1.0.20:
     - 'Обновить цены на награды'
     - seed_awards_update_price.php
+1.0.21:
+    - 'Fix типа для book_id'
+    - change_advert_book_id_type.php
