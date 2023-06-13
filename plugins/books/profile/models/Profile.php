@@ -149,7 +149,7 @@ class Profile extends Model
     public $hasMany = [
         'authorships' => [Author::class, 'key' => 'profile_id', 'otherKey' => 'id'],
         'settings' => [Settings::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
-        'cycles' => [Cycle::class, 'key' => 'user_id', 'otherKey' => 'id'],
+        'cycles' => [Cycle::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
         'promocodes' => [Promocode::class, 'key' => 'profile_id', 'otherKey' => 'id'],
     ];
 

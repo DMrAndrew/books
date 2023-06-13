@@ -125,7 +125,6 @@ class SeedAllTables extends Seeder
             'Приключенческий любовный роман',
             'Юмористический любовный роман',
             'Психологический любовный роман',
-            'Исторический любовный роман',
             'Мужской любовный роман',
         ],
         'Бизнес' => [
@@ -195,6 +194,6 @@ class SeedAllTables extends Seeder
 
     private function mapWith(array $array, $key = 'name'): array
     {
-        return array_map(fn ($item) => [$key => $item], $array);
+        return array_map(fn($item) => [$key => $item], $array);
     }
 }
