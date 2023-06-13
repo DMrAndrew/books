@@ -24,7 +24,6 @@ class OrderReceiptService implements OrderReceiptServiceContract
     }
 
     /**
-     *
      * Данные для чека https://developers.cloudpayments.ru/#format-peredachi-dannyh-dlya-onlayn-cheka
      * {
             "Items": [//товарные позиции
