@@ -72,6 +72,9 @@ class BookUser extends ExtensionBase
         return Profile::MAX_USER_PROFILES_COUNT;
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function setBirthdayAttribute($value): void
     {
         if (!$value) {

@@ -2,6 +2,7 @@
 
 namespace Books\User\Components;
 
+use ApplicationException;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Components\Widget;
 use Books\User\Classes\CookieEnum;
@@ -11,6 +12,7 @@ use Cookie;
 use Db;
 use Exception;
 use Flash;
+use Log;
 use October\Rain\Auth\AuthException;
 use RainLab\User\Components\Account;
 use RainLab\User\Components\Session;
@@ -116,16 +118,14 @@ class BookAccount extends Account
                 }
                 $redirect = $this->onRegister();
                 $user = Auth::getUser();
-                $user->update(['required_post_register' => 0]);
+                $user?->update(['required_post_register' => 0]);
 
                 return $redirect;
             });
         } catch (Exception $ex) {
-            if (Request::ajax()) {
-                throw $ex;
-            } else {
-                Flash::error($ex->getMessage());
-            }
+            Flash::error($ex->getMessage());
+            Log::error($ex);
+            return [];
         }
     }
 
