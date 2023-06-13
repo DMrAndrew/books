@@ -522,20 +522,16 @@ class OrderService implements OrderServiceContract
         // order amount
         $orderAmount = $this->calculateAmount($order);
 
-        // check user balance
         if ((int)$order->user->proxyWallet()->balance < $orderAmount) {
             throw new Exception('Недостаточно средств на балансе');
         }
 
-        return DB::transaction(function () use ($order, $orderAmount) {
-            // approve order
-            $this->approveOrder($order);
+        $this->approveOrder($order);
 
-            // withdraw balance
-            $order->user->proxyWallet()->withdraw($orderAmount);
+        // withdraw balance
+        $order->user->proxyWallet()->withdraw($orderAmount);
 
-            return true;
-        });
+        return true;
     }
 
     /**
