@@ -65,7 +65,7 @@ class AuthorSupport extends ComponentBase
         /**
          * From /book-card
          */
-        if ($book = Book::query()->with('profiles')->findOrFail((int)$this->param('book_id'))) {
+        if ($book = Book::query()->with('profiles')->find((int)$this->param('book_id'))) {
 
             $profileIds = $book->profiles
                 ->pluck('id')
