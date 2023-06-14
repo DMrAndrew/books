@@ -232,8 +232,13 @@ class WidgetService
             ->defaultEager()
             ->whereIn((new Book())->getTable() . '.id', $ids)
             ->when($this->diffWithUser, function ($builder) {
-                $builder->whereNotIn((new Book())->getTable() . '.id', $this->user?->queryLibs()->with('favorable')->get()->pluck('favorable')->pluck('book_id')->toArray() ?? [])
-                    ->hasGenres($this->user?->unloved_genres ?? Cookie::has('unloved_genres') ? json_decode(Cookie::get('unloved_genres')) : [], 'exclude');
+                $builder->whereNotIn((new Book())->getTable() . '.id', $this->user?->queryLibs()
+                    ->with('favorable')
+                    ->get()
+                    ->pluck('favorable')
+                    ->pluck('book_id')
+                    ->toArray() ?? [])
+                    ->diffWithUnloved();
             })
             ->public()
             ->limit($this->limit)
