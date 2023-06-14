@@ -45,10 +45,7 @@ class AuthorSpace extends ComponentBase
     {
         $this->profile_id = (int)$this->param('profile_id');
         $this->authUser = Auth::getUser();
-        if (!$this->profile = Profile::query()
-            ->find($this->profile_id ?? $this->authUser?->profile->id)) {
-            abort(404);
-        }
+        $this->profile = Profile::query()->find($this->profile_id ?? $this->authUser?->profile->id) ?? abort(404);
 
         $comments = $this->addComponent(Comments::class, 'comments');
         $comments->bindModel($this->profile);
@@ -93,9 +90,9 @@ class AuthorSpace extends ComponentBase
             'cycles' => $this->profile->cyclesWithAvailableCoAuthorsCycles()->load(['books' => fn($books) => $books->public()])->filter(fn($i) => $i->books->count())->values(),
             'subscribers' => $this->profile->subscribers->groupBy(fn($i) => $i->books_count ? 'authors' : 'readers'),
             'subscriptions' => $this->profile->subscriptions,
-            'reposts' => $this->profile->user->reposts,
-            'received_awards_count' => $this->profile->received_awards_count,
-            'left_awards_count' => $this->profile->left_awards_count,
+            'reposts' => $this->profile?->user?->reposts,
+            'received_awards_count' => $this->profile?->received_awards_count,
+            'left_awards_count' => $this->profile?->left_awards_count,
         ], $this->getAuthorComments());
     }
 
