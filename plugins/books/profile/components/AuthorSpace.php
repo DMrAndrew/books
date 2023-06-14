@@ -43,7 +43,7 @@ class AuthorSpace extends ComponentBase
 
     public function init()
     {
-        $this->profile_id = $this->param('profile_id');
+        $this->profile_id = (int)$this->param('profile_id');
         $this->authUser = Auth::getUser();
         if (!$this->profile = Profile::query()
             ->find($this->profile_id ?? $this->authUser?->profile->id)) {
@@ -69,7 +69,7 @@ class AuthorSpace extends ComponentBase
     protected function prepareVals()
     {
         $isOwner = $this->authUser && $this->profile->is($this->authUser?->profile);
-        $sameAccount = $this->authUser && $this->profile->user->is($this->authUser);
+        $sameAccount = $this->authUser && $this->profile && $this->profile->user?->is($this->authUser);
 
         $this->profile = Profile::query()
             ->hasSubscriber($this->authUser?->profile)
