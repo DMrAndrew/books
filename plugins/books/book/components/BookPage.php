@@ -48,7 +48,7 @@ class BookPage extends ComponentBase
     public function init(): void
     {
         $this->user = Auth::getUser();
-        $this->book_id = $this->param('book_id');
+        $this->book_id = (int)$this->param('book_id');
         $this->book = Book::query()->public()->find($this->book_id) ?? $this->user?->profile->books()->find($this->book_id);
 
 
