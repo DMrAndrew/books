@@ -83,7 +83,7 @@ class ImageUploader extends ComponentBase
             'fileTypes' => [
                 'title' => 'books.fileuploader::lang.prop.fileTypes',
                 'description' => 'books.fileuploader::lang.prop.fileTypes_desc',
-                'default' => '.gif,.jpg,.jpeg,.png,.webp',
+                'default' => '.gif,.jpg,.jpeg,.png',
                 'type' => 'string',
             ],
             'imageWidth' => [
@@ -151,12 +151,12 @@ class ImageUploader extends ComponentBase
      * Returns the CSS dimensions for the uploaded image,
      * uses auto where no dimension is provided.
      *
-     * @param  string  $mode
+     * @param string $mode
      * @return string
      */
     public function getCssDimensions($mode = null)
     {
-        if (! $this->imageWidth && ! $this->imageHeight) {
+        if (!$this->imageWidth && !$this->imageHeight) {
             return '';
         }
 
@@ -164,19 +164,19 @@ class ImageUploader extends ComponentBase
 
         if ($mode == 'block') {
             $cssDimensions .= ($this->imageWidth)
-                ? 'width: '.$this->imageWidth.'px;'
-                : 'width: '.$this->imageHeight.'px;';
+                ? 'width: ' . $this->imageWidth . 'px;'
+                : 'width: ' . $this->imageHeight . 'px;';
 
             $cssDimensions .= ($this->imageHeight)
-                ? 'height: '.$this->imageHeight.'px;'
+                ? 'height: ' . $this->imageHeight . 'px;'
                 : 'height: auto;';
         } else {
             $cssDimensions .= ($this->imageWidth)
-                ? 'width: '.$this->imageWidth.'px;'
+                ? 'width: ' . $this->imageWidth . 'px;'
                 : 'width: auto;';
 
             $cssDimensions .= ($this->imageHeight)
-                ? 'height: '.$this->imageHeight.'px;'
+                ? 'height: ' . $this->imageHeight . 'px;'
                 : 'height: auto;';
         }
 
@@ -194,7 +194,7 @@ class ImageUploader extends ComponentBase
     {
         $path = $thumb = $file->getPath();
 
-        if (! empty($this->imageWidth) || ! empty($this->imageHeight)) {
+        if (!empty($this->imageWidth) || !empty($this->imageHeight)) {
             $thumb = $file->getThumb($this->imageWidth, $this->imageHeight, $this->thumbOptions);
         } else {
             $thumb = $file->getThumb(63, 63, $this->thumbOptions);
@@ -208,7 +208,7 @@ class ImageUploader extends ComponentBase
 
     public function onRender()
     {
-        if (! $this->isBound) {
+        if (!$this->isBound) {
             throw new ApplicationException('There is no model bound to the uploader!');
         }
 

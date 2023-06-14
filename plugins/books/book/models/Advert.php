@@ -32,7 +32,7 @@ class Advert extends Model
      * @var array rules for validation
      */
     public $rules = [
-        'banner' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|dimensions:min_width=272,min_height=112|max:4096'
+        'banner' => 'nullable|image|mimes:jpg,jpeg,png,gif|dimensions:min_width=272,min_height=112|max:4096'
     ];
 
 

@@ -2,7 +2,7 @@
     <div class="subscribe-card__header">
         <div class="subscribe-card__avatar">
             {% if item.avatar %}
-            <img src="{{item.avatar.path}}" alt="Аватар">
+            <img src="{{item.avatar.getThumb(40,40)}}" alt="">
             {% else %}
             <span class="ui-text-body--1 ui-text--medium">{{item.firstLatter}}</span>
             {% endif %}
