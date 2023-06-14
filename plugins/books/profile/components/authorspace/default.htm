@@ -312,7 +312,7 @@
                         {% for repost in reposts %}
                         <div class="cb-mini-card _avatar">
                             <div class="cb-mini-card__image-wrapper">
-                                <img src="{{profile.avatar.getThumb(50,50)}}" alt="">
+                                <img src="{{profile.avatar?.getThumb(50,50)}}" alt="">
                             </div>
                             <div class="cb-mini-card__wrapper">
                                 <div class="">Поделился <a class="ui-link _violet" href="{{repost.getLink}}">{{repost.getLabel}}</a>
