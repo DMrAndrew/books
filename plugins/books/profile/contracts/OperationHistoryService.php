@@ -3,8 +3,8 @@
 namespace Books\Profile\Contracts;
 
 use Books\Book\Models\AwardBook;
-use Books\Book\Models\Edition;
 use Books\Orders\Models\Order;
+use Books\Orders\Models\OrderProduct;
 use Books\Profile\Models\Profile;
 
 interface OperationHistoryService
@@ -19,10 +19,10 @@ interface OperationHistoryService
     public function addWithdrawal(Order $order): void;
 
     /** Покупка книги (оплата) */
-    public function addReceivingPurchase(Order $order, Edition $edition): void;
+    public function addReceivingPurchase(Order $order, OrderProduct $orderProduct): void;
 
     /** Покупка подписки на книгу(оплата) */
-    public function addReceivingSubscription(Order $order, Edition $edition): void;
+    public function addReceivingSubscription(Order $order, OrderProduct $orderProduct): void;
 
     /** Поддержка автора (оплата) */
     public function addMakingAuthorSupport(Order $order, Profile $profile, int $donationAmount): void;
