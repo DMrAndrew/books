@@ -539,13 +539,6 @@ class Book extends Model
     {
         $this->setAdultIfHasOne();
         $this->setSortOrder();
-
-        WidgetService::clearCompilationsCache();
-    }
-
-    public function completedEventHandler()
-    {
-        WidgetService::clearCompilationsCache();
     }
 
     protected function beforeUpdate()
@@ -559,7 +552,7 @@ class Book extends Model
             $this->age_restriction = AgeRestrictionsEnum::A18;
         }
     }
-    
+
     /**
      * Try set default book cover if not exists one.
      *
