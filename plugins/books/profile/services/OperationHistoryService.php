@@ -6,12 +6,14 @@ namespace Books\Profile\Services;
 use ApplicationException;
 use Books\Book\Models\AwardBook;
 use Books\Orders\Models\Order;
+use Books\Orders\Models\OrderProduct;
 use Books\Profile\Classes\Enums\OperationType;
 use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceContract;
 use Books\Profile\Models\OperationHistory;
 use Books\Profile\Models\Profile;
 use Cms\Classes\Controller;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use October\Rain\Support\Facades\Twig;
 
 class OperationHistoryService implements OperationHistoryServiceContract
@@ -72,16 +74,19 @@ class OperationHistoryService implements OperationHistoryServiceContract
      * @return void
      * @throws ApplicationException
      */
-    public function addReceivingPurchase(Order $order, mixed $orderProduct): void
+    public function addReceivingPurchase(Order $order, OrderProduct $orderProduct): void
     {
         $user = $order->user;
+        /** @var Model $product */
         $product = $orderProduct->orderable;
         $edition = $product::class::find($product->id);
+
+        $amount = $orderProduct->isPromocodeApplied() ? 0 : $orderProduct->amount;
 
         $params = [
             'url' => url('book-card', ['book_id' => $edition->book->id]),
             'name' => $edition->book->title,
-            'amount' => $orderProduct->amount,
+            'amount' => $amount,
         ];
 
         OperationHistory::create([
@@ -98,16 +103,19 @@ class OperationHistoryService implements OperationHistoryServiceContract
      * @return void
      * @throws ApplicationException
      */
-    public function addReceivingSubscription(Order $order, mixed $orderProduct): void
+    public function addReceivingSubscription(Order $order, OrderProduct $orderProduct): void
     {
         $user = $order->user;
+        /** @var Model $product */
         $product = $orderProduct->orderable;
         $edition = $product::class::find($product->id);
+
+        $amount = $orderProduct->isPromocodeApplied() ? 0 : $orderProduct->amount;
 
         $params = [
             'url' => url('book-card', ['book_id' => $edition->book->id]),
             'name' => $edition->book->title,
-            'amount' => $orderProduct->amount,
+            'amount' => $amount,
         ];
 
         OperationHistory::create([

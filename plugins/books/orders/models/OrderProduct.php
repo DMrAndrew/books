@@ -87,4 +87,14 @@ class OrderProduct extends Model
     {
         return $builder->where('orderable_type', $class);
     }
+
+    public function isPromocodeApplied(): bool
+    {
+        $orderProduct = $this;
+        $product = $orderProduct->orderable;
+
+        return $orderProduct->order->promocodes()->whereHas('promocode', function ($q) use ($product){
+            $q->where('promoable_id', $product->id);
+        })->exists();
+    }
 }
