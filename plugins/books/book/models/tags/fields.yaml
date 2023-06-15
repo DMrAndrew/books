@@ -5,4 +5,19 @@
 fields:
     id:
         label: ID
+        span: left
+        disabled: true
+
+    name:
+        label: Тег
+        span: left
+
+    created_at:
+        label: Создан
+        span: left
+        disabled: true
+
+    updated_at:
+        label: Изменен
+        span: left
         disabled: true
