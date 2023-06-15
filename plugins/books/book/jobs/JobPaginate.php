@@ -2,6 +2,7 @@
 
 namespace Books\Book\Jobs;
 
+use Books\Book\Classes\WidgetService;
 use Books\Book\Models\Chapter;
 use Exception;
 use Log;
