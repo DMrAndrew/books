@@ -100,14 +100,7 @@ class Plugin extends PluginBase
                 'icon' => 'icon-leaf',
                 'permissions' => ['books.catalog.*'],
                 'order' => 500,
-
                 'sideMenu' => [
-                    'books' => [
-                        'label' => 'Книги',
-                        'icon' => 'icon-leaf',
-                        'url' => Backend::url('books/book/book'),
-                        'permissions' => ['books.book.*'],
-                    ],
                     'types' => [
                         'label' => 'Типы книг',
                         'icon' => 'icon-leaf',
@@ -119,24 +112,6 @@ class Plugin extends PluginBase
                         'icon' => 'icon-leaf',
                         'url' => Backend::url('books/catalog/genre'),
                         'permissions' => ['books.catalog.*'],
-                    ],
-                    'prohibited' => [
-                        'label' => 'Запрещённый контент',
-                        'icon' => 'icon-leaf',
-                        'url' => Backend::url('books/book/prohibited'),
-                        'permissions' => ['books.book.*'],
-                    ],
-                    'awards' => [
-                        'label' => 'Награды',
-                        'icon' => 'icon-leaf',
-                        'url' => Backend::url('books/book/awards'),
-                        'permissions' => ['books.book.awards'],
-                    ],
-                    'tags' => [
-                        'label' => 'Теги',
-                        'icon' => 'icon-leaf',
-                        'url' => Backend::url('books/book/tags'),
-                        'permissions' => ['books.book.tags'],
                     ],
                 ],
             ],

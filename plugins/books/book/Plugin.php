@@ -30,9 +30,7 @@ use Books\Book\Components\Promocode;
 use Books\Book\Components\Reader;
 use Books\Book\Components\ReadStatistic;
 use Books\Book\Components\Widget;
-use Books\Book\Console\DeleteNotActivatedFreePromocodes;
 use Books\Book\Models\Author;
-use Books\Book\Models\Award;
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
@@ -43,10 +41,8 @@ use Books\Book\Models\Pagination;
 use Books\Book\Models\Prohibited;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
-use Books\Catalog\Models\Genre;
 use Books\Profile\Behaviors\Slavable;
 use Books\Reposts\behaviors\Shareable;
-use Books\Reposts\Components\Reposter;
 use Config;
 use Event;
 use Illuminate\Database\Console\PruneCommand;
@@ -55,6 +51,7 @@ use Mobecan\Favorites\Behaviors\Favorable;
 use RainLab\Location\Behaviors\LocationModel;
 use System\Classes\PluginBase;
 use Tizis\FB2\FB2Controller;
+use Backend;
 
 /**
  * Plugin Information File
@@ -118,6 +115,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Prohibited', Prohibited::class);
         AliasLoader::getInstance()->alias('FB2Controller', FB2Controller::class);
 
+        $this->extendBooksController();
 
         Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
 
@@ -133,7 +131,6 @@ class Plugin extends PluginBase
         foreach (config('book.prohibited') as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Prohibitable::class);
-
             });
         }
 
@@ -183,6 +180,41 @@ class Plugin extends PluginBase
         ];
     }
 
+    public function extendBooksController(): void
+    {
+        /**
+         * Навигация
+         */
+        Event::listen('backend.menu.extendItems', function ($manager) {
+            $manager->addSideMenuItems('Books.Catalog', 'catalog', [
+                'books' => [
+                    'label' => 'Книги',
+                    'icon' => 'icon-leaf',
+                    'url' => Backend::url('books/book/book'),
+                    'permissions' => ['books.book.books'],
+                ],
+                'prohibited' => [
+                    'label' => 'Запрещённый контент',
+                    'icon' => 'icon-leaf',
+                    'url' => Backend::url('books/book/prohibited'),
+                    'permissions' => ['books.book.prohibited'],
+                ],
+                'awards' => [
+                    'label' => 'Награды',
+                    'icon' => 'icon-leaf',
+                    'url' => Backend::url('books/book/awards'),
+                    'permissions' => ['books.book.awards'],
+                ],
+                'tags' => [
+                    'label' => 'Теги',
+                    'icon' => 'icon-leaf',
+                    'url' => Backend::url('books/book/tags'),
+                    'permissions' => ['books.book.tags'],
+                ],
+            ]);
+        });
+    }
+
     /**
      * Registers any backend permissions used by this plugin.
      *
@@ -190,12 +222,22 @@ class Plugin extends PluginBase
      */
     public function registerPermissions()
     {
-        return []; // Remove this line to activate
-
         return [
-            'books.book.some_permission' => [
+            'books.book.books' => [
                 'tab' => 'Book',
-                'label' => 'Some permission',
+                'label' => 'Books permission',
+            ],
+            'books.book.prohibited' => [
+                'tab' => 'Book',
+                'label' => 'Prohibited permission',
+            ],
+            'books.book.awards' => [
+                'tab' => 'Book',
+                'label' => 'Awards permission',
+            ],
+            'books.book.tags' => [
+                'tab' => 'Book',
+                'label' => 'Tags permission',
             ],
         ];
     }
