@@ -227,12 +227,10 @@ class OrderService implements OrderServiceContract
         /** @var Model $promocodeProduct */
         $promocodeProduct = $promocode->promoable;
 
-        $promoableProductInOrder = $order->products
+        return $order->products
             ->where('orderable_type', $promocodeProduct::class)
             ->where('orderable_id', $promocodeProduct->id)
-            ->first();
-
-        return $promoableProductInOrder->exists;
+            ->exists();
     }
 
     /**
