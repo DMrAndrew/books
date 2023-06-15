@@ -132,6 +132,12 @@ class Plugin extends PluginBase
                         'url' => Backend::url('books/book/awards'),
                         'permissions' => ['books.book.awards'],
                     ],
+                    'tags' => [
+                        'label' => 'Теги',
+                        'icon' => 'icon-leaf',
+                        'url' => Backend::url('books/book/tags'),
+                        'permissions' => ['books.book.tags'],
+                    ],
                 ],
             ],
         ];

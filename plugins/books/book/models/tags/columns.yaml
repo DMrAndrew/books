@@ -6,3 +6,15 @@ columns:
     id:
         label: ID
         searchable: true
+
+    name:
+        label: Тег
+        searchable: true
+
+    created_at:
+        label: Создан
+        searchable: true
+
+    updated_at:
+        label: Изменен
+        searchable: true
