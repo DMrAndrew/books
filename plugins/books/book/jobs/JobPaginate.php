@@ -13,7 +13,6 @@ class JobPaginate
     {
         try {
             Chapter::find($data['chapter_id'] ?? null)?->service()->paginate();
-            WidgetService::clearCompilationsCache();
             $job->delete();
         } catch (Exception $exception) {
             Log::error($exception->getMessage());
