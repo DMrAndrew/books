@@ -120,6 +120,7 @@ class Plugin extends PluginBase
 
 
         Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
+        Event::listen('books.book.completed', fn(Book $book) => $book->completedEventHandler());
 
 
         Book::extend(function (Book $book) {
