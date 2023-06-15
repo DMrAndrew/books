@@ -183,6 +183,23 @@ class Plugin extends PluginBase
         ];
     }
 
+    /**
+     * Registers any backend permissions used by this plugin.
+     *
+     * @return array
+     */
+    public function registerPermissions()
+    {
+        return []; // Remove this line to activate
+
+        return [
+            'books.book.some_permission' => [
+                'tab' => 'Book',
+                'label' => 'Some permission',
+            ],
+        ];
+    }
+
     public function registerSchedule($schedule): void
     {
         $schedule->call(function () {
