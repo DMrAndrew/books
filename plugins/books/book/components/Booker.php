@@ -87,7 +87,7 @@ class Booker extends ComponentBase
         $this->page['ebook'] = $this->book->ebook;
         $this->page['age_restrictions'] = AgeRestrictionsEnum::cases();
         $this->page['cycles'] = $this->getCycles();
-        $this->page['genres_list'] = Genre::public()->get()->diff($this->service->getGenres());
+        $this->page['genres_list'] = Genre::public()->get()->diff($this->book->genres);
     }
 
     public function onRefreshFiles()
