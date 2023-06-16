@@ -67,9 +67,7 @@ class Advert extends Model
     public function registerVisit(?User $user = null, ?string $ip = null): ?AdvertVisit
     {
         $user ??= Auth::getUser();
-        if (!$user) {
-            return null;
-        }
+
         if (!$this->getOriginal('enabled') || $this->visits()->count() >= $this->allowed_visit_count) {
             return null;
         }
@@ -82,7 +80,7 @@ class Advert extends Model
             fn($b) => $b->when($user, fn($q) => $q->user($user))->when($ip, fn($i) => $i->orWhere(fn($orWhere) => $orWhere->ip($ip)))
         );
 
-        return $builder()->first() ?? $this->visits()->create(['user_id' => $user->id, 'ip' => $ip]);
+        return $builder()->first() ?? $this->visits()->create(['user_id' => $user?->id, 'ip' => $ip]);
     }
 
 

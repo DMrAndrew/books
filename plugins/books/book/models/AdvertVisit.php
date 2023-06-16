@@ -33,7 +33,7 @@ class AdvertVisit extends Model
 
     public function scopeUser(Builder $builder, ?User $user): Builder
     {
-        return $builder->where('user_id', $user?->id);
+        return $builder->where('user_id', $user?->id ?? null);
     }
 
     public function scopeToday(Builder $builder): Builder
