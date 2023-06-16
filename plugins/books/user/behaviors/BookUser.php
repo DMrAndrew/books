@@ -81,9 +81,6 @@ class BookUser extends ExtensionBase
             $this->parent->attributes['birthday'] = null;
             return;
         }
-        if ($this->parent->birthday) {
-            return;
-        }
 
         $date = Carbon::parse($value);
         $date->lessThan(today()) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть больше текущего дня']);

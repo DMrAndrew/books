@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Тег
+
+# Model Form Field configuration
+form: $/books/book/models/tags/fields.yaml
+
+# Model Class name
+modelClass: Books\Book\Models\Tag
+
+# Default redirect location
+defaultRedirect: books/book/tags
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: books/book/tags/update/:id
+    redirectClose: books/book/tags
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/book/tags
+    redirectClose: books/book/tags
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title
