@@ -138,31 +138,4 @@
     openModal('[data-modal="buy_book"]', '[data-modal="open_buy_book"]');
     document.querySelector('[data-modal="open_buy_book"]').click();
     document.body.style.overflow = 'initial';
-
-    if (typeof addOrderFormEvents !== "function") {
-        function addOrderFormEvents() {
-            // donation
-            if (typeof updateDonateTimeout === 'undefined' || updateDonateTimeout == null) {
-                var updateDonateTimeout;
-            }
-            $(document).on('keyup', '#donate', function(e) {
-                e.preventDefault();
-                this.value = this.value.replace(/[^\d.]/g, '');
-
-                clearTimeout(updateDonateTimeout);
-                updateDonateTimeout = setTimeout(function() {
-                    clearTimeout(updateDonateTimeout);
-                    oc.request('#orderForm', 'onOrderAddDonation', {})
-                }, 1000);
-            });
-
-            // promocode
-            $(document).on('click', '#promocodeSubmit', function(e) {
-                e.preventDefault();
-                this.value = this.value.replace(/[^\d.]/g, '');
-                oc.request('#orderForm', 'onOrderAddPromocode', {})
-            });
-        }
-        addOrderFormEvents();
-    }
 </script>
