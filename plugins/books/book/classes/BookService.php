@@ -246,7 +246,7 @@ class BookService
         if (!$tag) {
             return;
         }
-        $tag = Tag::query()->firstOrCreate([Tag::NAME => (is_string($tag) ? ($tag) : $tag->{Tag::NAME})]);
+        $tag = Tag::query()->firstOrCreate([Tag::NAME => mb_ucfirst(trim((is_string($tag) ? ($tag) : $tag->{Tag::NAME})))]);
         $this->proxy()->tags()->add($tag, $this->getSessionKey());
     }
 

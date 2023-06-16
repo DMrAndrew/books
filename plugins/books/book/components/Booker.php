@@ -153,7 +153,7 @@ class Booker extends ComponentBase
     {
         try {
 
-            if ($this->user->profile->cycles()->name(post('name'))->exists()) {
+            if ($this->user->profile->cycles()->name(mb_ucfirst(trim(post('name'))))->exists()) {
                 throw new ValidationException(['name' => 'Цикл уже существует.']);
             }
             $cycle = $this->user->profile->cycles()->create(array_merge(['user_id' => $this->user->id], post()));
@@ -184,9 +184,10 @@ class Booker extends ComponentBase
 
         $exists = $this->service->getTags();
         $like = Tag::query()
-            ->whereNotIn('id', $exists->pluck('id'))
             ->nameLike($term)
+            ->whereNotIn('id', $exists->pluck('id')->toArray())
             ->get();
+
 
         $already_has = (bool)$exists->first(fn($i) => mb_strtolower($i->name) === mb_strtolower($term));
         $can_create = !$already_has && !(bool)$like->first(fn($i) => mb_strtolower($i->name) === mb_strtolower($term));
