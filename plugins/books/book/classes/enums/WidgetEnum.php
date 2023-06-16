@@ -3,6 +3,7 @@
 namespace Books\Book\Classes\Enums;
 
 use Books\Book\Classes\WidgetService;
+use Exception;
 
 enum WidgetEnum: string
 {
@@ -37,6 +38,9 @@ enum WidgetEnum: string
         };
     }
 
+    /**
+     * @throws Exception
+     */
     public function service(): WidgetService
     {
         return new WidgetService($this);

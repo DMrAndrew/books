@@ -26,7 +26,7 @@ class WidgetService
 
     protected $values;
 
-    protected $limit = 10;
+    protected int $limit = 10;
 
     /**
      * @throws Exception
@@ -193,6 +193,9 @@ class WidgetService
         return $this->query;
     }
 
+    /**
+     * @throws Exception
+     */
     protected function validate()
     {
         if (!$this->book?->exists) {
@@ -229,6 +232,7 @@ class WidgetService
             $ids = Cache::get($this->cacheKey) ?? collect()->toArray();
         }
         $this->values = $this->query
+            ->public()
             ->defaultEager()
             ->whereIn((new Book())->getTable() . '.id', $ids)
             ->when($this->diffWithUser, function ($builder) {
@@ -240,8 +244,6 @@ class WidgetService
                     ->toArray() ?? [])
                     ->diffWithUnloved();
             })
-            ->public()
-            ->limit($this->limit)
             ->get();
 
         return $this->sort();
