@@ -35,6 +35,7 @@ class EditionService
 
         if ($this->edition->price) {
             $this->edition->addValidationRule('free_parts', 'min:3');
+            $this->edition->addValidationRule('price', 'min:' . config('book.minimal_price'));
         }
 
         if (!$this->edition->isPublished()
