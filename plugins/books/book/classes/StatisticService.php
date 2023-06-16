@@ -49,7 +49,7 @@ class StatisticService
 
     public function get(Model|Collection ...$needle)
     {
-        $dates = collect($this->period->toArray());
+        $dates = collect($this->period->toArray())->reverse();
         $books = $this->class::query()
             ->whereIn('id', collect($needle)->pluck('id'))
             ->with(['trackers' => fn($trackers) => $trackers->withoutGlobalScope(new ScopeToday())->completed()])
@@ -88,13 +88,15 @@ class StatisticService
             ];
         });
 
+
+        $reversed = $common->reverse();
         $graph = [
-            'columns' => $common->pluck('date')->join(','),
-            'rows' => $common->pluck('total')->join(','),
+            'columns' => $reversed->pluck('date')->join(','),
+            'rows' => $reversed->pluck('total')->join(','),
         ];
 
         return [
-            'common' => $common->reverse(),
+            'common' => $common,
             'graph' => $graph,
             'byBooks' => $byBooks,
         ];
