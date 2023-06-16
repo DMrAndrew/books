@@ -68,11 +68,8 @@ class Booker extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
-        $this->user = Auth::getUser();
-        if (!$this->user) {
-            throw new ApplicationException('User required');
-        }
-        $this->book = $this->user->profile->books()->find($this->property('book_id')) ?? new Book();
+        $this->user = Auth::getUser() ?? throw new ApplicationException('User required');
+        $this->book = $this->user->profile->books()->find((int)$this->property('book_id')) ?? new Book();
 
         $this->service = new BookService(user: $this->user, book: $this->book, session_key: $this->getSessionKey());
 
@@ -179,14 +176,18 @@ class Booker extends ComponentBase
 
     public function onSearchTag()
     {
-        $term = post('term');
-        if (!$term || strlen($term) < 3) {
+        $term = trim(post('term'));
+        if (!$term || strlen($term) < 2) {
             return [];
         }
 
-        $like = Tag::query()->nameLike($term)->get();
+
         $exists = $this->service->getTags();
-        $array = $like->diff($exists);
+        $like = Tag::query()
+            ->whereNotIn('id', $exists->pluck('id'))
+            ->nameLike($term)
+            ->get();
+
         $already_has = (bool)$exists->first(fn($i) => mb_strtolower($i->name) === mb_strtolower($term));
         $can_create = !$already_has && !(bool)$like->first(fn($i) => mb_strtolower($i->name) === mb_strtolower($term));
 
@@ -198,7 +199,7 @@ class Booker extends ComponentBase
                 'htm' => $this->renderPartial('select/option', ['placeholder' => 'Тэг «' . $term . '» уже добавлен на страницу']),
             ];
         }
-        $res = array_merge($res, collect($array)->map(function ($item) {
+        $res = array_merge($res, collect($like)->map(function ($item) {
             return [
                 'id' => $item->id,
                 'label' => $item->name,

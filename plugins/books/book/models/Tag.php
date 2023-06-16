@@ -108,6 +108,11 @@ class Tag extends Model
         return $q->where('name', 'like', "%$name%");
     }
 
+    public function scopeName($q, string $name)
+    {
+        return $q->where('name', '=', $name);
+    }
+
     public function scopeAsOption(Builder $builder): Builder
     {
         return $builder->select(['id', 'name']);

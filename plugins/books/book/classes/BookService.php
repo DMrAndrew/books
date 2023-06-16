@@ -160,7 +160,9 @@ class BookService
             $bookData = $data->only($this->proxy->getFillable());
 
             if ($bookData->has('cycle_id')) {
-                $bookData['cycle_id'] = Cycle::find($bookData->get('cycle_id'))?->id ?? null;
+//                $bookData['cycle_id'] = Cycle::find($bookData->get('cycle_id'))?->id ?? null;
+                $bookData['cycle_id'] = $this->user->profile->cyclesWithAvailableCoAuthorsCycles()->find($bookData->get('cycle_id'))
+                    ?? throw new ValidationException(['cycle_id' => 'Цикл не найден.']);
             }
 
             $this->{($this->isNew() ? 'create' : 'update')}($bookData->toArray());
