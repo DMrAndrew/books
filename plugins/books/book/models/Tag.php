@@ -108,13 +108,22 @@ class Tag extends Model
         return $q->where('name', 'like', "%$name%");
     }
 
+    public function scopeName($q, string $name)
+    {
+        return $q->where('name', '=', $name);
+    }
+
     public function scopeAsOption(Builder $builder): Builder
     {
         return $builder->select(['id', 'name']);
     }
 
-    protected function beforeCreate()
+    public function setNameAttribute($value)
     {
-        $this->name = mb_ucfirst($this->name);
+        $this->attributes['name'] = mb_ucfirst($value);
     }
+//    protected function beforeCreate()
+//    {
+//        $this->name = mb_ucfirst($this->name);
+//    }
 }

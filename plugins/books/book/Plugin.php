@@ -48,6 +48,7 @@ use Event;
 use Illuminate\Database\Console\PruneCommand;
 use Illuminate\Foundation\AliasLoader;
 use Mobecan\Favorites\Behaviors\Favorable;
+use October\Rain\Database\Models\DeferredBinding;
 use RainLab\Location\Behaviors\LocationModel;
 use System\Classes\PluginBase;
 use Tizis\FB2\FB2Controller;
@@ -251,6 +252,11 @@ class Plugin extends PluginBase
         $schedule->call(function () {
             GenreRater::queue();
         })->everyTenMinutes();
+
+        $schedule->call(function () {
+            DeferredBinding::cleanUp(1);
+        })->dailyAt('03:00');
+
 
         $schedule->command('model:prune', [
             '--model' => [Models\Promocode::class],

@@ -9,6 +9,7 @@ use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
 use RainLab\User\Facades\Auth;
+use ValidationException;
 
 /**
  * EBooker Component
@@ -48,7 +49,7 @@ class EBooker extends ComponentBase
     public function fresh()
     {
         $this->ebook = Auth::getUser()?->profile->books()->with('chapters')->find($this->property('book_id'))?->ebook;
-        if (! $this->ebook) {
+        if (!$this->ebook) {
             throw new ApplicationException('Электронное издание книги не найден.');
         }
     }
@@ -80,7 +81,7 @@ class EBooker extends ComponentBase
 
     public function onUpdateSortOrder()
     {
-        $partial = fn () => [
+        $partial = fn() => [
             '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
         ];
 
@@ -98,7 +99,7 @@ class EBooker extends ComponentBase
 
     public function onDeleteChapter()
     {
-        $partial = fn () => [
+        $partial = fn() => [
             '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
         ];
         try {
@@ -117,8 +118,15 @@ class EBooker extends ComponentBase
         }
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function onUpdate()
     {
+        if (!$this->ebook->book->genres()->count()) {
+            Flash::error('Добавьте книге хотя бы один жанр.');
+            return [];
+        }
         try {
             $this->service->update(post());
 

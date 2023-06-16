@@ -8,6 +8,7 @@ use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Rater;
 use Books\Book\Classes\ScopeToday;
+use Books\Book\Classes\WidgetService;
 use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
@@ -540,12 +541,10 @@ class Book extends Model
         $this->setSortOrder();
     }
 
-
     protected function beforeUpdate()
     {
         $this->setAdultIfHasOne();
     }
-
 
     public function setAdultIfHasOne()
     {
@@ -553,7 +552,6 @@ class Book extends Model
             $this->age_restriction = AgeRestrictionsEnum::A18;
         }
     }
-
 
     /**
      * Try set default book cover if not exists one.

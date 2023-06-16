@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\AliasLoader;
+use Model;
 use Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use System\Classes\AppBase;
@@ -59,6 +60,7 @@ class Provider extends AppBase
     public function boot()
     {
         parent::boot();
+        Model::preventLazyLoading(!app()->isProduction());
         Request::setTrustedProxies(config('app.trusted_proxies'), -1);
     }
 }
