@@ -176,7 +176,7 @@ class WidgetService
         return $this->values;
     }
 
-    public static function clearCompilationsCache(): void
+    public static function clearCompiledCache(): void
     {
         foreach ([WidgetEnum::hotNew, WidgetEnum::new, WidgetEnum::gainingPopularity] as $widget) {
             $widget->service()->clearCache();
@@ -244,6 +244,7 @@ class WidgetService
                     ->toArray() ?? [])
                     ->diffWithUnloved();
             })
+            ->limit($this->limit)
             ->get();
 
         return $this->sort();
