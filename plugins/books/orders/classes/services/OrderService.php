@@ -230,7 +230,7 @@ class OrderService implements OrderServiceContract
         return $order->products
             ->where('orderable_type', $promocodeProduct::class)
             ->where('orderable_id', $promocodeProduct->id)
-            ->exists();
+            ->count() > 0;
     }
 
     /**
