@@ -334,6 +334,13 @@ class Edition extends Model implements ProductInterface
         }
     }
 
+    public function scopeSelling(Builder $builder): Builder
+    {
+        return $builder
+            ->free(false)
+            ->whereIn('status', [BookStatus::WORKING, BookStatus::COMPLETE]);
+    }
+
     public function scopeEbook(Builder $builder): Builder
     {
         return $builder->type(EditionsEnums::Ebook);
