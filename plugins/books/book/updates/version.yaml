@@ -74,3 +74,9 @@
 1.0.21:
     - 'Fix типа для book_id'
     - change_advert_book_id_type.php
+1.0.22:
+    - 'Колонки для статистики'
+    - add_stats_fields.php
+1.0.23:
+    - 'ip для трекеров'
+    - add_trackers_ip.php

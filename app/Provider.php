@@ -4,17 +4,15 @@ namespace App;
 
 use App\classes\RevisionHistory;
 use App\middleware\FetchCheckUp;
+use App\traits\DateScopes;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Cms\Classes\Controller;
-use Cms\Classes\Theme;
 use Exception;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\AliasLoader;
 use Model;
 use Request;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use System\Classes\AppBase;
 use System\Models\Revision;
 
@@ -50,6 +48,9 @@ class Provider extends AppBase
         // Add a new middleware to end of the stack.
         $this->app[Kernel::class]
             ->pushMiddleware(FetchCheckUp::class);
+        Model::extend(function (Model $model) {
+            $model->implementClassWith(DateScopes::class);
+        });
     }
 
     /**

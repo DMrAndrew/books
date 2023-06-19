@@ -8,6 +8,9 @@ use Log;
 
 class JobPaginate
 {
+    /**
+     * @throws Exception
+     */
     public function fire($job, $data)
     {
         try {

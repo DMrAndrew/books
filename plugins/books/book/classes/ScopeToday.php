@@ -11,7 +11,7 @@ class ScopeToday implements Scope
 {
     public function apply(Builder $builder, Model $model)
     {
-        return $builder->whereDate('created_at', today());
+        return $builder->whereDate($model->getQualifiedCreatedAtColumn(), today());
     }
 
     public function extend(Builder $builder)

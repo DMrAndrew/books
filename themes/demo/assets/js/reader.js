@@ -11,7 +11,7 @@ class Reader {
     curFont = 14;
     minFont = 12;
     #tracker_id = null;
-    #trackerInterval = 30000;
+    #trackerInterval = 15000;
 
     #paginator_id = null
 

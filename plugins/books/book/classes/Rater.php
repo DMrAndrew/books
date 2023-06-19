@@ -4,10 +4,10 @@ namespace Books\Book\Classes;
 
 use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Models\Book;
-use Books\Book\Models\Stats;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Traits\Conditionable;
+use Log;
 use Queue;
 
 class Rater
@@ -16,58 +16,92 @@ class Rater
 
     const MAX_READ_TIME_MINUTES_PER_PAGE = 15;
 
-    const SHIFT_LENGTH = 5000;
 
-    protected bool $withDump = false;
-
-    protected Stats $stats;
+    protected $result = null;
 
     protected array $closures = [];
+    protected ?Builder $builder = null;
 
-    protected Builder $builder;
-
-    public function __construct(protected Book $book)
+    public function __construct(protected ?Book $book = null,
+                                protected ?int  $dateBetween = null,
+                                protected bool  $withDump = false)
     {
-        $this->stats = $this->book->exists ? $this->book->stats : new Stats();
-        $this->builder = Book::query();
+        $this->setBuilder(Book::query());
+    }
+
+
+    /**
+     * @param int|null $dateBetween
+     * @return Rater
+     */
+    public
+    function setDateBetween(?int $dateBetween): static
+    {
+        $this->dateBetween = is_int($dateBetween) ? abs($dateBetween) : $dateBetween;
+        return $this;
+    }
+
+
+    /**
+     * @param Builder $builder
+     */
+    public
+    function setBuilder(Builder $builder): static
+    {
+        $this->builder = $builder;
+        $this->builder->with('stats');
+        if ($this->book) {
+            $this->builder->where('id', $this->book->id);
+        }
+        return $this;
+    }
+
+    public
+    function getResult()
+    {
+        return $this->result;
+    }
+
+    /**
+     * @return int|null
+     */
+    public
+    function getDateBetween(): ?int
+    {
+        return $this->dateBetween;
     }
 
     /**
      * @param bool $withDump
      * @return Rater
      */
-    public function setWithDump(bool $withDump): static
+    public
+    function setWithDump(bool $withDump): static
     {
         $this->withDump = $withDump;
 
         return $this;
     }
 
-    private function canPerform(): bool
+
+    private
+    function canPerform(): bool
     {
-        return $this->stats->exists && count($this->closures);
+        return count($this->closures);
     }
 
-    private function set(string $stat_key, ?string $book_key = null, mixed $value = null): void
-    {
-        $this->stats->fill([$stat_key => $value ?? $this->book[$book_key ?? $stat_key]]);
-    }
-
-    /**
-     * @return Stats
-     */
-    public function getStats(): Stats
-    {
-        return $this->stats;
-    }
-
-    public function performClosures(): static
+    public
+    function performClosures(): static
     {
         if ($this->canPerform()) {
-            $this->book = $this->builder->find($this->book->id);
-
-            foreach ($this->closures as $closure) {
-                $closure();
+            $this->result = $this->builder->get();
+            foreach ($this->result as $book) {
+                foreach ($this->closures as $closure) {
+                    $closure($book);
+                }
+                if ($this->withDump) {
+                    $book->stats->dump();
+                }
             }
         }
 
@@ -77,48 +111,56 @@ class Rater
     /**
      * @return Builder
      */
-    public function getBuilder(): Builder
+    public
+    function getBuilder(): Builder
     {
         return $this->builder;
     }
 
-    public function apply(): static
+    public
+    function apply(): static
     {
         $this->performClosures();
-        $this->stats->save();
+        $this->result->map->stats->each->save();
         $this->closures = [];
-
-        if ($this->withDump) {
-            $this->stats->dump();
-        }
 
         return $this;
     }
 
-    public function queue(): ?static
+    public
+    function queue(): ?static
     {
         if (!$this->canPerform()) {
             return null;
         }
-        $actions = array_keys($this->closures);
-        $id = $this->book->id;
-        Queue::push(function ($job) use ($id, $actions) {
+
+        $data = [
+            'ids' => $this->builder->select('id')->get()->pluck('id'),
+            'closures' => array_keys($this->closures),
+            'withDump' => $this->withDump,
+            'dateBetween' => $this->dateBetween,
+        ];
+        Queue::push(function ($job) use ($data) {
             try {
-                $r = new static(Book::find($id));
-                foreach ($actions as $action) {
-                    $r->{$action}();
+                $r = new static();
+                $r->setBuilder($r->getBuilder()->whereIn('id', $data['ids']));
+                $r->setWithDump($data['withDump']);
+                $r->setDateBetween($data['dateBetween']);
+                foreach ($data['closures'] as $closure) {
+                    $r->{$closure}();
                 }
                 $r->apply();
                 $job->delete();
             } catch (Exception $exception) {
-                //
+                Log::error($exception->getMessage());
+                throw $exception;
             }
         });
-
         return $this;
     }
 
-    public function applyStats(StatsEnum ...$stats): static
+
+    function applyStats(StatsEnum ...$stats): static
     {
         foreach ($stats as $stat) {
             $this->{$stat->value}();
@@ -127,7 +169,8 @@ class Rater
         return $this;
     }
 
-    public function applyStatsAll(): static
+    public
+    function applyAllStats(): static
     {
         $this->applyStats(
             StatsEnum::LIBS,
@@ -135,103 +178,122 @@ class Rater
             StatsEnum::READ,
             StatsEnum::LIKES,
             StatsEnum::UPDATE_FREQUENCY,
-            StatsEnum::READ_TIME
+            StatsEnum::READ_TIME,
+            StatsEnum::collected_gain_popularity_rate,
+            StatsEnum::collected_hot_new_rate,
+            StatsEnum::sells_count,
         );
 
         return $this;
     }
 
-    public function applyAllBook(StatsEnum ...$stats): int
-    {
-        $count = 0;
-        foreach (Book::cursor() as $book) {
-            $book->rater()
-                ->setWithDump($this->withDump)
-                ->when(count($stats),
-                    fn($rater) => $rater->applyStats($stats),
-                    fn($rater) => $rater->applyStatsAll())
-                ->apply();
-            $count++;
-        }
-
-        return $count;
-    }
-
-    public function rate(): static
+    public
+    function rate(): static
     {
         $this->likes();
         $this->builder->withSum('awardsItems', 'rate');
         $this->builder->withCount('reposts');
-        $this->closures[StatsEnum::RATE->value] = function () {
+        $this->closures[StatsEnum::RATE->value] = function (Book $book) {
             $rate = collect([
-                $this->book['likes_count'] ?? 0,
-                $this->book['awards_items_sum_rate'] ?? 0,
-                ($this->book['reposts_count'] ?? 0) * 2,
+                $book['likes_count'] ?? 0,
+                $book['awards_items_sum_rate'] ?? 0,
+                ($book['reposts_count'] ?? 0) * 2,
 
             ])->sum();
-            $this->book['rate'] = $rate;
-            $this->set('rate');
+            $book->stats->rate = $rate;
+
         };
 
         return $this;
     }
 
-    public function frequency(): static
+    public
+    function frequency(): static
     {
-        $this->closures[StatsEnum::UPDATE_FREQUENCY->value] = function () {
-            $this->book['freq'] = $this->book->ebook->updateHistory['freq'];
-            $this->set('freq');
+        $this->closures[StatsEnum::UPDATE_FREQUENCY->value] = function (Book $book) {
+            $book->stats->freq = $book->ebook->updateHistory['freq'];
         };
 
         return $this;
     }
 
-    public function time(): static
+    public
+    function time(): static
     {
-        $this->closures[StatsEnum::READ_TIME->value] = function () {
-            $this->book['read_time'] = (int)ceil($this->book
-                    ->paginationTrackers()
-                    ->where('time', '>', 0)
-                    ->get()
-                    ->where('time', '<', self::MAX_READ_TIME_MINUTES_PER_PAGE * 60)
-                    ->sum('time') / 60);
-            $this->set('read_time');
+        $this->builder->withReadTime(ofLastDays: $this->dateBetween, maxTime: Rater::MAX_READ_TIME_MINUTES_PER_PAGE * 60);
+        $this->closures[StatsEnum::READ_TIME->value] = function (Book $book) {
+            $book->stats->read_time = (int)ceil($book->pagination_trackers_sum_time / 60);
         };
 
         return $this;
     }
 
-    public function read(): static
+    public
+    function read(): static
     {
-        $this->closures[StatsEnum::READ->value] = function () {
-            $this->book['read_count'] = $this->book->ebook->chapters()->withReadTrackersCount()->get()->sum('completed_trackers');
-            $this->set('read_count');
+        $this->builder->withReadChaptersTrackersCount();
+        $this->closures[StatsEnum::READ->value] = function (Book $book) {
+            $book->stats->read_count = $book->chapters_trackers_count;
         };
 
         return $this;
     }
 
-    public function likes(): static
+    public
+    function likes(): static
     {
-        $this->builder->likesCount();
-        $this->closures[StatsEnum::LIKES->value] = fn() => $this->set('likes_count');
+        $this->builder->likesCount($this->dateBetween);
+        $this->closures[StatsEnum::LIKES->value] = fn(Book $book) => $book->stats->likes_count = $book->likes_count;
 
         return $this;
     }
 
-    public function libs(): static
+    public
+    function libs(): static
     {
-        $this->builder->inLibCount();
-        $this->closures[StatsEnum::LIBS->value] = fn() => $this->set('in_lib_count');
+        $this->builder->inLibCount($this->dateBetween);
+        $this->closures[StatsEnum::LIBS->value] = fn(Book $book) => $book->stats->in_lib_count = $book->in_lib_count;
 
         return $this;
     }
 
-    public function comments(): static
+    public
+    function comments(): static
     {
-        $this->builder->commentsCount($this->book->profile);
-        $this->closures[StatsEnum::COMMENTS->value] = fn() => $this->set('comments_count');
+        $this->builder->commentsCount(withOutAuthorProfile: true, ofLastDays: $this->dateBetween);
+        $this->closures[StatsEnum::COMMENTS->value] = fn(Book $book) => $book->stats->comments_count = $book->comments_count;
 
         return $this;
     }
+
+    public
+    function collected_genre_rate(): static
+    {
+        $this->closures[StatsEnum::COLLECTED_GENRE_RATE->value] = fn(Book $book) => $book->stats->collected_genre_rate = $book->stats->forGenres($book->isWorking());
+        return $this;
+    }
+
+    public
+    function collected_gain_popularity_rate(): static
+    {
+        $this->closures[StatsEnum::collected_gain_popularity_rate->value] = fn(Book $book) => $book->stats->collected_genre_rate = $book->stats->gainingPopularity($book->isWorking());
+        return $this;
+    }
+
+    public
+    function collected_hot_new_rate(): static
+    {
+        $this->closures[StatsEnum::collected_hot_new_rate->value] = fn(Book $book) => $book->stats->collected_hot_new_rate = $book->stats->hotNew($book->isWorking());
+        return $this;
+    }
+
+    public
+    function sells_count(): static
+    {
+        $this->builder->withCountEditionSells($this->dateBetween);
+        $this->closures[StatsEnum::sells_count->value] = fn(Book $book) => $book->stats->sells_count = $book->customers_count;
+        return $this;
+    }
+
+
 }

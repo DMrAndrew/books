@@ -38,6 +38,35 @@ enum WidgetEnum: string
         };
     }
 
+    public static function listable(): array
+    {
+        return [
+            self::hotNew->value => self::hotNew,
+            self::gainingPopularity->value => self::gainingPopularity,
+            self::bestsellers->value => self::bestsellers,
+            self::top->value => self::top,
+            self::recommend->value => self::recommend,
+            self::todayDiscount->value => self::todayDiscount,
+            self::new->value => self::new
+        ];
+    }
+
+    public function isListable(): bool
+    {
+        return in_array($this, self::listable());
+    }
+
+    public function mapSortEnum(): SortEnum
+    {
+        return match ($this) {
+            default => SortEnum::default,
+            self::new => SortEnum::new,
+            self::todayDiscount => SortEnum::discount,
+            self::gainingPopularity => SortEnum::gainingPopularity,
+
+        };
+    }
+
     /**
      * @throws Exception
      */

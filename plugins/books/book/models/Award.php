@@ -1,5 +1,6 @@
 <?php namespace Books\Book\Models;
 
+
 use Books\Book\Classes\Enums\AwardsEnum;
 use Books\Orders\Models\OrderProduct;
 use Model;

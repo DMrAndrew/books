@@ -14,26 +14,21 @@ use Queue;
 
 class GenreRater implements ShouldQueue, ShouldBeUnique
 {
-    public function __construct()
-    {
-    }
-
     public function compute()
     {
-        return Genre::query()
-            ->whereHas('books')
-            ->with(['books' => fn ($books) => $books->onlyPublicStatus(), 'books.ebook', 'books.stats'])
+        Genre::query()
+            ->whereHas('books', fn($books) => $books->onlyPublicStatus())
+            ->with(['books' => fn($books) => $books->onlyPublicStatus(), 'books.ebook', 'books.stats'])
             ->get()
             ->map(function ($genre) {
-                $books = $genre->books?->sortByDesc(fn (Book $book) => $book->stats->forGenres($book->status === BookStatus::WORKING));
+                $rating = $genre->books?->sortByDesc(fn(Book $book) => $book->stats->collected_genre_rate)
+                    ->values();
 
-                Db::transaction(function () use ($books, $genre) {
+                Db::transaction(function () use ($rating, $genre) {
                     BookGenre::query()->where('genre_id', $genre->id)->update(['rate_number' => null]);
-//                    $books->map->pivot->each->update(['rate_number' => null]);
-                    if ($books->count()) {
+                    if ($rating->count()) {
                         BookGenre::query()->upsert(
-                            $books->values()
-                                ->map(fn ($book, $key) => array_merge($book->pivot->only(['book_id', 'genre_id']), ['rate_number' => $key + 1]))
+                            $rating->map(fn($book, $key) => array_merge($book->pivot->only(['book_id', 'genre_id']), ['rate_number' => $key + 1]))
                                 ->toArray(),
                             ['book_id', 'genre_id'],
                             ['rate_number']);

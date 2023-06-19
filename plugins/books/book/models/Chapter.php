@@ -9,7 +9,6 @@ use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Jobs\JobPaginate;
 use Books\Book\Jobs\JobProgress;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Collection;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;

@@ -5,10 +5,10 @@ namespace Books\Book\Behaviors;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Tracker;
 use Books\Collections\classes\CollectionEnum;
-use Event;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Extension\ExtensionBase;
+use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
 class Trackable extends ExtensionBase
@@ -18,31 +18,23 @@ class Trackable extends ExtensionBase
         $this->model->morphMany['trackers'] = [Tracker::class, 'name' => 'trackable'];
     }
 
-    public function trackTime(?User $user, $time = 0, $unit = 'ms')
-    {
-        if (!$time || !$user) {
-            return null;
-        }
-        $time = (int)floor(match ($unit) {
-            'ms', 'millisecond' => $time / 1000,
-            's', 'sec', 'seconds' => $time,
-            'm', 'min', 'minutes' => $time * 60
-        });
-        $tracker = $this->model->trackByUser($user);
-        $tracker?->increment('time', $time);
-        Event::fire('books.paginator.tracked', [$tracker]);
 
-        return $tracker;
+    public function getTracker(?User $user = null, ?string $ip = null)
+    {
+        return $this->model
+            ->trackers()
+            ->userOrIP($user, $ip)
+            ->first()
+            ??
+            $this->model->trackers()->create([
+                'user_id' => ($user ?? Auth::getUser())?->id,
+                'ip' => request()->ip()
+            ]);
     }
 
-    public function trackByUser(User $user): Tracker
+    public function scopeWithReadTrackersCount(Builder $builder, ?int $ofLastDays = null): Builder
     {
-        return $this->model->trackers()->firstOrCreate(['user_id' => $user->id]);
-    }
-
-    public function scopeWithReadTrackersCount(Builder $builder): Builder
-    {
-        return $builder->withCount(['trackers as completed_trackers' => fn($trackers) => $trackers->withoutTodayScope()->completed()]);
+        return $builder->withCount(['trackers as completed_trackers' => fn($trackers) => $trackers->withoutTodayScope()->completed()->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays))]);
     }
 
     public function scopeCountUserTrackers(Builder $builder, User $user): Builder
@@ -56,48 +48,77 @@ class Trackable extends ExtensionBase
             return false;
         }
 
-        return $this->model
-            ->{$this->model->trackerChildRelation}()
-            ->with('trackers')->get()
+
+        $trackers = $this->model->{$this->model->trackerChildRelation}()
+            ->with(['trackers' => fn($trackers) => $trackers->userOrIp($user)])
+            ->get()
             ->pluck('trackers')
-            ->flatten(1)
-            ->filter(fn($i) => !$user || $i['user_id'] === $user->id)
-            ->groupBy('user_id')
-            ->map(function ($trackers, $user_id) {
-                $user = User::find($user_id);
-                $tracker = $this->model->trackByUser($user);
+            ->flatten(1);
 
-                $progress = (int)ceil(
-                    $trackers->pluck('progress') //прогресс по всем трекнутым
-                    ->pad($this->model->{$this->model->trackerChildRelation}()->count(), 0)// добиваем до общего кол-ва
-                    ->avg() // profit
-                );
+        $this->collect($trackers->where('user_id', '!=', null)->groupBy('user_id'));
+        $this->collect($trackers->where('user_id', '=', null)->groupBy('ip'));
 
-                $tracker->update([
-                    'length' => $trackers->sum('length'),
-                    'time' => $trackers->sum('time'),
-                    'progress' => $progress,
-                ]);
 
-                //когда пользователь открыл книгу и начал читать (от 3-х страниц) добавляем в раздел "читаю сейчас" если книга в библиотеке и в разделе "Хочу прочесть"
-                if ($this->model instanceof Edition) {
-                    $lib = $user->library($this->model->book);
-                    if ($lib->is(CollectionEnum::INTERESTED)) {
-                        //TODO ref
-                        $trackers_count = $this->model
-                            ->chapters()
-                            ->select('id')
-                            ->with(['pagination' => fn($p) => $p->select(['id', 'chapter_id'])->countUserTrackers($user)])
-                            ->get()->pluck('pagination')
-                            ->flatten(1)
-                            ->pluck('trackers_count')->sum();
-                        if ($trackers_count > 3) {
-                            $lib->reading();
-                        }
-                    }
-                }
+    }
 
-                return $progress;
-            });
+    public function collect($groups)
+    {
+        return $groups->map(function ($group, $key) {
+            $user = User::find($key);
+            $tracker = $this->model->getTracker(...[($user ? 'user' : 'ip') => $user]);
+            $res = $this->save($tracker, $group);
+            if ($user && $this->model instanceof Edition) {
+                $this->toLib($user);
+            }
+
+            return $res;
+
+        });
+    }
+
+    public function save($tracker, $array)
+    {
+
+        $progress = (int)ceil($array
+            ->pluck('progress') //прогресс по всем трекнутым
+            ->pad($this->model->{$this->model->trackerChildRelation}()->count(), 0)// добиваем до общего кол-ва
+            ->avg() // profit
+        );
+
+        $tracker->update([
+            'length' => $array->sum('length'),
+            'time' => $array->sum('time'),
+            'progress' => $progress,
+        ]);
+
+        return $progress;
+
+    }
+
+
+    /**
+     * Когда пользователь открыл книгу и начал читать (от 3-х страниц)
+     * добавляем в раздел "читаю сейчас"
+     * если книга в библиотеке и в разделе "Хочу прочесть"
+     * @param $user
+     * @return void
+     */
+    public function toLib($user)
+    {
+        $lib = $user->library($this->model->book);
+        if ($lib->is(CollectionEnum::INTERESTED)) {
+            //TODO ref
+            $trackers_count = $this->model
+                ->chapters()
+                ->select('id')
+                ->with(['pagination' => fn($p) => $p->select(['id', 'chapter_id'])->countUserTrackers($user)])
+                ->get()->pluck('pagination')
+                ->flatten(1)
+                ->pluck('trackers_count')->sum();
+            if ($trackers_count > 3) {
+                $lib->reading();
+            }
+        }
+
     }
 }

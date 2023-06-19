@@ -9,6 +9,6 @@ trait HasUserScope
 {
     public function scopeUser(Builder $builder, User $user): Builder
     {
-        return $builder->where('user_id', '=', $user->id);
+        return $builder->where($this->qualifyColumn('user_id'), '=', $user->id);
     }
 }

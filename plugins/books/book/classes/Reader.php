@@ -63,17 +63,16 @@ class Reader
     {
         return !$this->contentGuard
             || $this->chapter->isFree()
-            || ($this->user ? $this->book->isAuthor($this->user->profile) : false)
-            || ($this->user ? $this->user->bookIsBought($this->edition) : false);
+            || ($this->user && $this->book->isAuthor($this->user->profile))
+            || ($this->user && $this->user->bookIsBought($this->edition));
     }
 
     public function track(?int $ms, int $paginator_id)
     {
         if ($paginator = $this->chapter?->pagination()->find($paginator_id)) {
-            if ($tracker = $paginator->trackTime($this->user, $ms)) {
+            if ($tracker = $paginator->trackTime($ms)) {
                 $tracker->update(['length' => $paginator->length, 'progress' => 100]);
                 $paginator->chapter->progress($this->user);
-
                 return $tracker;
             }
         }

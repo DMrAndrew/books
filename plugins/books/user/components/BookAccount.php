@@ -53,6 +53,12 @@ class BookAccount extends Account
 
         $todayDiscount = $this->addComponent(Widget::class, 'todayDiscount');
         $todayDiscount->setUpWidget(WidgetEnum::todayDiscount, withAll: true);
+
+        $bestsellers = $this->addComponent(Widget::class, 'bestsellers');
+        $bestsellers->setUpWidget(WidgetEnum::bestsellers, withAll: true);
+
+        $top = $this->addComponent(Widget::class, 'top');
+        $top->setUpWidget(WidgetEnum::top, withAll: true);
     }
 
     public function onLogout()
