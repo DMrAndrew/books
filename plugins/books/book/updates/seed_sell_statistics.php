@@ -50,7 +50,7 @@ class seed_sell_statistics extends Seeder
          */
         for ($i = 0; $i <= self::SEED_RECORDS; $i++) {
 
-            $bookId = array_rand(array_keys($books));
+            $bookId = array_keys($books)[array_rand(array_keys($books))];
             $book = Book::find($bookId);
 
             if ($book == null) {
@@ -74,7 +74,7 @@ class seed_sell_statistics extends Seeder
 
             // гонорар
             $totalReward = intval($price - $taxValue);
-            $rewardRate = array_rand([20, 33, 50, 100]);
+            $rewardRate = [20, 33, 50, 100][array_rand([20, 33, 50, 100])];
             $authorReward = intval($totalReward * $rewardRate / 100);
 
             $data = [

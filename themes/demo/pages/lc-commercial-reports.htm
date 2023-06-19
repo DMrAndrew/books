@@ -1,9 +1,9 @@
-url = "/cc-profile"
+url = "/lc-commercial-reports"
 layout = "default"
-title = "Коммерческий кабинет - профиль"
-description = "Коммерческий кабинет"
-meta_title = "Коммерческий кабинет"
-meta_description = "Коммерческий кабинет"
+title = "Коммерческий кабинет - Ежемесячные отчеты"
+description = "Ежемесячные отчеты"
+meta_title = "Ежемесячные отчеты"
+meta_description = "Ежемесячные отчеты"
 turbo_cache_control='no-cache'
 [session]
 security = "user"
@@ -18,12 +18,12 @@ redirect = "/"
             {% partial "profile/sidebarmenu" %}
             <div class="ui-col-sm-9">
                 <div class="personal-area__subtitle">
-                    <span class="ui-text-head--3 ui-text--bold">Коммерческий кабинет</span>
+                    <span class="ui-text-head--3 ui-text--bold">Ежемесячные отчеты</span>
                     <svg class="square-16">
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
                     </svg>
                 </div>
-                {% component 'CommercialSales' %}
+                {% component 'CommercialSalesReports' %}
             </div>
         </div>
     </div>

@@ -30,8 +30,11 @@ class CommercialSales extends ComponentBase
         return [];
     }
 
-    public function init(): void
+    public function init()
     {
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
+        }
         $this->user = Auth::getUser();
     }
 
