@@ -2,7 +2,7 @@
 
 namespace Books\Book\Models;
 
-use App\traits\HasUserOrIPScope;
+use App\traits\HasUserIPScopes;
 use Books\Book\Classes\ScopeToday;
 use Model;
 use October\Rain\Database\Builder;
@@ -25,7 +25,7 @@ use RainLab\User\Models\User;
 class Tracker extends Model
 {
     use Validation;
-    use HasUserOrIPScope;
+    use HasUserIPScopes;
 
     /**
      * @var string table name

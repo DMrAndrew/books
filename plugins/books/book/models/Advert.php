@@ -70,11 +70,14 @@ class Advert extends Model
             return null;
         }
 
-        if ($visit = $this->visits()->today()->userOrIp()->first()) {
+        if ($visit = $this->visits()->today()->userOrIpWithDefault()->first()) {
             return $visit;
         }
 
-        return $this->visits()->create();
+        return $this->visits()->create([
+            'user_id' => Auth::getUser()?->id,
+            'ip' => request()->ip()
+        ]);
     }
 
 

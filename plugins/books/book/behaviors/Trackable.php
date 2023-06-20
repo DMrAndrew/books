@@ -22,10 +22,7 @@ class Trackable extends ExtensionBase
 
     public function getTracker(?User $user = null, ?string $ip = null)
     {
-        return $this->model
-            ->trackers()
-            ->userOrIP($user, $ip)
-            ->first()
+        return $this->model->trackers()->userOrIP($user, $ip)->first()
             ??
             $this->model->trackers()->create([
                 'user_id' => ($user ?? Auth::getUser())?->id,
@@ -43,7 +40,7 @@ class Trackable extends ExtensionBase
         return $builder->withCount(['trackers' => fn($i) => $i->user($user)]);
     }
 
-    public function computeProgress(?User $user = null)
+    public function computeProgress()
     {
         if (!$this->model->trackerChildRelation || !$this->model->hasRelation($this->model->trackerChildRelation)) {
             return false;
@@ -56,11 +53,12 @@ class Trackable extends ExtensionBase
             ->pluck('trackers')
             ->flatten(1);
 
+
         $byUser = $trackers->where('user_id', '!=', null)->groupBy('user_id')->map(function ($group, $id) {
             $user = User::find($id);
             if ($user) {
                 $tracker = $this->model->getTracker(user: $user);
-                $this->save($tracker, $group);
+                $this->collectProgress($tracker, $group);
                 if ($user && $this->model instanceof Edition) {
                     $this->toLib($user);
                 }
@@ -69,8 +67,8 @@ class Trackable extends ExtensionBase
 
         });
         $byIP = $trackers->where('user_id', '=', null)->groupBy('ip')->map(function ($group, $ip) {
-            $tracker = $this->model->getTracker(ip: $ip);
-            $this->save($tracker, $group);
+            $tracker = $this->model->getTracker(user: null, ip: $ip);
+            $this->collectProgress($tracker, $group);
             return $group;
         });
 
@@ -79,36 +77,13 @@ class Trackable extends ExtensionBase
 
     }
 
-    public function collect($groups)
+    public function collectProgress($tracker, $array)
     {
-        return $groups->map(function ($group, $key) {
-            Log::info('$key' . $key);
-            $user = User::find($key);
-            $tracker = $this->model->getTracker(...[
-                'user' => $user,
-                'ip' => $user ? null : $key
-            ]);
-            Log::info('$tracker:' . $tracker);
-            Log::info('$group:' . $group);
-            $res = $this->save($tracker, $group);
-            if ($user && $this->model instanceof Edition) {
-                $this->toLib($user);
-            }
-
-            return $res;
-
-        });
-    }
-
-    public function save($tracker, $array)
-    {
-
         $progress = (int)ceil($array
             ->pluck('progress') //прогресс по всем трекнутым
             ->pad($this->model->{$this->model->trackerChildRelation}()->count(), 0)// добиваем до общего кол-ва
             ->avg() // profit
         );
-        Log::info('$progress' . $progress);
 
         $tracker->update([
             'length' => $array->sum('length'),

@@ -1,6 +1,6 @@
 <?php namespace Books\Book\Models;
 
-use App\traits\HasUserOrIPScope;
+use App\traits\HasUserIPScopes;
 use Books\Book\Classes\ScopeToday;
 use Model;
 use October\Rain\Database\Builder;
@@ -14,7 +14,7 @@ use October\Rain\Database\Traits\Validation;
 class AdvertVisit extends Model
 {
     use Validation;
-    use HasUserOrIPScope;
+    use HasUserIPScopes;
 
     /**
      * @var string table name

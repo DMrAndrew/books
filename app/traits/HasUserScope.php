@@ -7,8 +7,8 @@ use RainLab\User\Models\User;
 
 trait HasUserScope
 {
-    public function scopeUser(Builder $builder, User $user): Builder
+    public function scopeUser(Builder $builder, ?User $user = null): Builder
     {
-        return $builder->where($this->qualifyColumn('user_id'), '=', $user->id);
+        return $builder->where($this->qualifyColumn('user_id'), '=', $user?->id);
     }
 }

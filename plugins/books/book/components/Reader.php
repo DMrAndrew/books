@@ -82,7 +82,7 @@ class Reader extends ComponentBase
     {
         return $this->book
             ->paginationTrackers()
-            ->userOrIp($this->user)
+            ->userOrIpWithDefault($this->user)
             ->type(Pagination::class)
             ->orderByUpdatedAt(asc: false)
             ->first()?->trackable;

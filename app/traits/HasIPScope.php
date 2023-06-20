@@ -8,7 +8,6 @@ trait HasIPScope
 {
     public function scopeIp(Builder $builder, ?string $ip = null): Builder
     {
-        $ip ??= request()->ip();
         return $builder->where('ip', $ip);
     }
 
