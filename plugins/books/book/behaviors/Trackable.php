@@ -56,9 +56,25 @@ class Trackable extends ExtensionBase
             ->pluck('trackers')
             ->flatten(1);
 
-        $this->collect($trackers->where('user_id', '!=', null)->groupBy('user_id'));
-        $this->collect($trackers->where('user_id', '=', null)->groupBy('ip'));
-        return $trackers;
+        $byUser = $trackers->where('user_id', '!=', null)->groupBy('user_id')->map(function ($group, $id) {
+            $user = User::find($id);
+            if ($user) {
+                $tracker = $this->model->getTracker(user: $user);
+                $this->save($tracker, $group);
+                if ($user && $this->model instanceof Edition) {
+                    $this->toLib($user);
+                }
+            }
+            return $group;
+
+        });
+        $byIP = $trackers->where('user_id', '=', null)->groupBy('ip')->map(function ($group, $ip) {
+            $tracker = $this->model->getTracker(ip: $ip);
+            $this->save($tracker, $group);
+            return $group;
+        });
+
+        return $byUser->concat($byIP);
 
 
     }
