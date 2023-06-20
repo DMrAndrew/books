@@ -404,8 +404,7 @@ class Book extends Model
 
     public function scopeHasGenres(Builder $builder, ?array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        $ids ??= $mode === 'include' ? [] : null;
-        if (is_null($ids)) {
+        if ($ids === null || !count($ids)) {
             return $builder;
         }
 
@@ -416,8 +415,7 @@ class Book extends Model
 
     public function scopeHasTags(Builder $builder, ?array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        $ids ??= $mode === 'include' ? [] : null;
-        if (is_null($ids)) {
+        if ($ids === null || !count($ids)) {
             return $builder;
         }
 
