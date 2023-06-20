@@ -2,17 +2,34 @@
     <div class="commerce">
 
         <div class="commerce__block wrapper">
+
+            {{ form_ajax('onFilterStatistics',{
+            'data-request-flash':1,'data-request-validate':'1','data-request-complete':'iniSelect()'}) }}
             <div class="commerce-control">
                 <div class="commerce-control__columns _flex-end _indent-large">
                     <div class="commerce-control__input _max-width ui-select">
                         <div class="ui-select-header">
                             <label class="ui-select-label">Книги</label>
                         </div>
+
                         <div class="ui-select-container">
                             <div class="ui-select-item _size-32">
-                                <div class="ui-select-item-option">Все книги</div>
-                                <svg class="ui-select-item-icon">
-                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
+                                <select class="book-select" name="book_id" style="display: none">
+                                    <option
+                                        {{ not current_book ? 'selected' : ''  }}
+                                    value="">Все произведения</option>
+                                    {% for book in books %}
+                                    <option  value="{{book.id}}"
+                                             {{ current_book.id == book.id ? 'selected' : ''  }}
+                                    >{{book.title}}</option>
+                                    {% endfor %}
+
+                                </select>
+                                <svg class="ui-select-item-icon chevron_up _fake">
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme }}"></use>
+                                </svg>
+                                <svg class="ui-select-item-icon chevron_down _fake">
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme }}"></use>
                                 </svg>
                             </div>
                         </div>
@@ -22,161 +39,47 @@
                         <div class="ui-select-header">
                             <label class="ui-select-label">Период</label>
                         </div>
-                        <div class="ui-select-container">
-                            <div class="ui-select-item _size-32">
-                                <div class="ui-select-item-option">20.01.2022–21.04.2022</div>
-                                <svg class="ui-select-item-icon">
-                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
-                                </svg>
-                            </div>
+                        <div class="ui-input-container">
+                            <svg class="ui-input-item-icon _fake">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                            </svg>
+                            <input type="text" name="dates" class="ui-input-item _size-32" size="32">
                         </div>
                     </div>
 
                     <div class="commerce-control__input">
-                        <a href="#" class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium ui-button--full-mobile">Искать</a>
+                        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium ui-button--full-mobile">Искать</button>
                     </div>
                 </div>
             </div>
+            {{ form_close() }}
 
             <div class="commerce__category">
-                <div class="table">
-                    <div class="table__head">
-                        <div class="table__col">Дата/месяц</div>
-                        <div class="table__col _half">Книга</div>
-                        <div class="table__col _large nowrap">Подписка/продажа</div>
-                        <div class="table__col">Цена</div>
-                        <div class="table__col">Количество</div>
-                        <div class="table__col">Гонорар</div>
-                        <div class="table__col empty"></div>
-                    </div>
-
-                    <div class="table__list">
-                        <div class="table__row">
-                            <div class="table__col _not-found">Ничего не найдено</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="commerce__block wrapper">
-            <div class="commerce-control">
-                <div class="commerce-control__columns _flex-end _indent-large">
-                    <div class="commerce-control__input _max-width ui-select">
-                        <div class="ui-select-header">
-                            <label class="ui-select-label">Книги</label>
-                        </div>
-                        <div class="ui-select-container">
-                            <div class="ui-select-item _size-32">
-                                <div class="ui-select-item-option">Все книги</div>
-                                <svg class="ui-select-item-icon">
-                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="commerce-control__input _max-width ui-select">
-                        <div class="ui-select-header">
-                            <label class="ui-select-label">Период</label>
-                        </div>
-                        <div class="ui-select-container">
-                            <div class="ui-select-item _size-32">
-                                <div class="ui-select-item-option">20.01.2022–21.04.2022</div>
-                                <svg class="ui-select-item-icon">
-                                    <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="commerce-control__input">
-                        <a href="#" class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium ui-button--full-mobile">Искать</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="commerce__category">
-                <div class="table">
-                    <div class="table__head">
-                        <div class="table__col">Дата/месяц</div>
-                        <div class="table__col _half">Книга</div>
-                        <div class="table__col _large nowrap">Подписка/продажа</div>
-                        <div class="table__col">Цена</div>
-                        <div class="table__col">Количество</div>
-                        <div class="table__col">Гонорар</div>
-                        <div class="table__col empty"></div>
-                    </div>
-
-                    <div class="table__list">
-                        <div class="table__row">
-                            <div class="table__col" data-title="Дата/месяц">10.08.2022</div>
-                            <div class="table__col _half" data-title="Книга">Эльф, инкуб и пропаданка</div>
-                            <div class="table__col _large" data-title="Подписка/продажа">Продажа</div>
-                            <div class="table__col" data-title="Цена">169.00</div>
-                            <div class="table__col" data-title="Количество">1</div>
-                            <div class="table__col" data-title="Гонорар">84.50</div>
-                            <div class="table__col"><a href="#" class="ui-link _violet">Подробнее</a></div>
-                        </div>
-                        <div class="table__row">
-                            <div class="table__col empty"></div>
-                            <div class="table__col _half" data-title="Книга">Между льдом и пламенем 2, или Как достать ректора</div>
-                            <div class="table__col _large" data-title="Подписка/продажа">Продажа</div>
-                            <div class="table__col" data-title="Цена">200.00</div>
-                            <div class="table__col" data-title="Количество">1</div>
-                            <div class="table__col" data-title="Гонорар">100.50</div>
-                            <div class="table__col"><a href="#" class="ui-link _violet">Подробнее</a></div>
-                        </div>
-                        <div class="table__row">
-                            <div class="table__col empty"></div>
-                            <div class="table__col _half empty"></div>
-                            <div class="table__col _large empty"></div>
-                            <div class="table__col" data-title="Цена">100.00</div>
-                            <div class="table__col" data-title="Количество">1</div>
-                            <div class="table__col" data-title="Гонорар">84.50</div>
-                            <div class="table__col"><a href="#" class="ui-link _violet">Подробнее</a></div>
-                        </div>
-                        <div class="table__row">
-                            <div class="table__col empty"></div>
-                            <div class="table__col _half" data-title="Книга">Между льдом и пламенем 2, или Как достать ректора</div>
-                            <div class="table__col _large" data-title="Подписка/продажа">Продажа</div>
-                            <div class="table__col" data-title="Цена">200.00</div>
-                            <div class="table__col" data-title="Количество">1</div>
-                            <div class="table__col" data-title="Гонорар">100.50</div>
-                            <div class="table__col"><a href="#" class="ui-link _violet">Подробнее</a></div>
-                        </div>
-                        <div class="table__row">
-                            <div class="table__col" data-title="Дата/месяц">12.08.2022</div>
-                            <div class="table__col _half" data-title="Книга">Хранитель 1+2 книги</div>
-                            <div class="table__col _large" data-title="Подписка/продажа">Продажа</div>
-                            <div class="table__col" data-title="Цена">178.00</div>
-                            <div class="table__col" data-title="Количество">1</div>
-                            <div class="table__col" data-title="Гонорар">89.00</div>
-                            <div class="table__col"><a href="#" class="ui-link _violet">Подробнее</a></div>
-                        </div>
-                        <div class="table__row">
-                            <div class="table__col empty"></div>
-                            <div class="table__col _half" data-title="Книга">Контракт с чудовищем</div>
-                            <div class="table__col _large" data-title="Подписка/продажа">Продажа</div>
-                            <div class="table__col" data-title="Цена">195.00</div>
-                            <div class="table__col" data-title="Количество">1</div>
-                            <div class="table__col" data-title="Гонорар">97.50</div>
-                            <div class="table__col"><a href="#" class="ui-link _violet">Подробнее</a></div>
-                        </div>
-                        <div class="table__row">
-                            <div class="table__col _bold empty"></div>
-                            <div class="table__col _bold _half"></div>
-                            <div class="table__col _bold _large _right" data-title="Подписка/продажа">Итого:</div>
-                            <div class="table__col _bold" data-title="Цена">195.00</div>
-                            <div class="table__col _bold" data-title="Количество">1</div>
-                            <div class="table__col _bold" data-title="Гонорар">97.50</div>
-                            <div class="table__col _bold empty"></div>
-                        </div>
-                    </div>
-                </div>
+                <div id="statisticsDataTable"></div>
             </div>
         </div>
 
     </div>
 </div>
+<script>
+    $('input[name="dates"]').daterangepicker({
+        startDate:`{{from}}`,
+        endDate:'`{{to}}`',
+        "locale": {
+            "format": "DD.MM.YYYY",
+            "separator": " - ",
+            "applyLabel": "Применить",
+            "cancelLabel": "Отменить",
+            "fromLabel": "С",
+            "toLabel": "По",
+            "customRangeLabel": "Custom",
+            "weekLabel": "W",
+            "daysOfWeek": ["Вс","Пн","Вт","Ср","Th","Пт","Сб"],
+            "monthNames": ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"],
+            "firstDay": 1
+        },
+        'buttonClasses': 'ui-button ui-button-size--32',
+        'cancelButtonClasses': 'ui-button-view--3',
+        'applyButtonClasses': 'ui-button-view--2'
+    });
+</script>

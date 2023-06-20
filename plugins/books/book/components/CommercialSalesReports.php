@@ -48,7 +48,7 @@ class CommercialSalesReports extends ComponentBase
         $this->page['sell_years'] = $this->getSellsYears();
     }
 
-    public function onFilterSales()
+    public function onFilterSales(): array
     {
         $year = post('sells_year');
         $month = post('sells_month');
@@ -128,7 +128,6 @@ class CommercialSalesReports extends ComponentBase
                 'summary' => $incompletedSummary,
             ]),
         ];
-
     }
 
     /**
