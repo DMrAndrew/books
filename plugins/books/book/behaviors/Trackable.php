@@ -58,6 +58,7 @@ class Trackable extends ExtensionBase
 
         $this->collect($trackers->where('user_id', '!=', null)->groupBy('user_id'));
         $this->collect($trackers->where('user_id', '=', null)->groupBy('ip'));
+        return $trackers;
 
 
     }
