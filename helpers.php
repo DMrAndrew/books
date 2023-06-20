@@ -5,6 +5,7 @@
  * и включено расширение mbstring (Multibyte String Functions)
  */
 
+use Books\User\Classes\CookieEnum;
 use Books\User\Classes\UserService;
 use Carbon\CarbonInterval;
 use RainLab\User\Facades\Auth;
@@ -98,6 +99,14 @@ function getFreqString(int $count, int $days): string
         . ' в '
         . str_replace('неделя', 'неделю', CarbonInterval::days($days)->cascade()->forHumans(['parts' => 1, 'aUnit' => true]));
 }
+
+function getUnlovedFromCookie(): array
+{
+    return Cookie::has(CookieEnum::UNLOVED_GENRES->value) ?
+        json_decode(Cookie::get(CookieEnum::UNLOVED_GENRES->value))
+        : [];
+}
+
 
 ?>
 

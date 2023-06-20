@@ -4,6 +4,6 @@
     "description": "Easy work with virtual wallet",
     "require": {
         "composer/installers": "~1.0",
-        "bavix/laravel-wallet": "9.*"
+        "bavix/laravel-wallet": "8.4.3"
     }
 }

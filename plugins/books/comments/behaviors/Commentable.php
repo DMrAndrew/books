@@ -24,7 +24,7 @@ class Commentable extends ExtensionBase
 
     public function addComment(User $user, array $payload)
     {
-        if (! $this->model->isCommentAllowed()) {
+        if (!$this->model->isCommentAllowed()) {
             return false;
         }
         $payload['user_id'] = $user->id;
@@ -47,14 +47,20 @@ class Commentable extends ExtensionBase
         }
     }
 
-    public function scopeCommentsCount(Builder $builder, ?Profile $profile): Builder
+    public function scopeCommentsCount(Builder $builder, ?bool $withOutAuthorProfile = false, ?int $ofLastDays = null): Builder
     {
-        return $builder->withCount(['comments' => function (Builder $comments) use ($profile) {
-            return $comments->when($profile?->exists, function (Builder $c) use ($profile) {
+        if ($withOutAuthorProfile) {
+            $profile = match (get_class($this->model)) {
+                Book::class => $this->model->profile()->pluck((new Profile())->getQualifiedKeyName()),
+                Profile::class => Profile::query()->whereIn('id', [$this->model->id])->pluck((new Profile())->getQualifiedKeyName()),
+            };
+        }
+        return $builder->withCount(['comments' => function (Builder $comments) use ($withOutAuthorProfile, $profile, $ofLastDays) {
+            return $comments->when($withOutAuthorProfile, function (Builder $c) use ($profile) {
                 return $c->whereDoesntHave('profile', function (Builder $p) use ($profile) {
-                    return $p->whereIn((new Profile())->getTable().'.id', [$profile->id]);
+                    return $p->whereIn((new Profile())->getQualifiedKeyName(), $profile);
                 });
-            });
+            })->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays));
         }]);
     }
 }

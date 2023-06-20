@@ -5,10 +5,10 @@ namespace Books\Book\Models;
 use Books\Book\Classes\Enums\AgeRestrictionsEnum;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Rater;
 use Books\Book\Classes\ScopeToday;
-use Books\Book\Classes\WidgetService;
 use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
@@ -67,6 +67,7 @@ use WordForm;
  *
  * @property  File cover
  * @property  Stats stats
+ * @property  BookStatus status
  */
 class Book extends Model
 {
@@ -74,6 +75,7 @@ class Book extends Model
     use HasFactory;
     use HasRelationships;
     use PowerJoins;
+
 
     /**
      * @var string table associated with the model
@@ -156,7 +158,8 @@ class Book extends Model
         'coauthors' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'coAuthors'],
         'editions' => [Edition::class, 'key' => 'book_id', 'id'],
         'libs' => [Lib::class, 'key' => 'book_id', 'otherKey' => 'id'],
-        'awards' => [AwardBook::class, 'key' => 'book_id', 'otherKey' => 'id']
+        'awards' => [AwardBook::class, 'key' => 'book_id', 'otherKey' => 'id'],
+        'bookGenre' => [BookGenre::class, 'key' => 'book_id']
     ];
 
     public $belongsTo = [
@@ -222,14 +225,14 @@ class Book extends Model
 
     public $attachMany = [];
 
-    public static function sortCollectionBySalesAt($collection, bool $desc = true)
-    {
-        return $collection->{'sortBy' . ($desc ? 'Desc' : '')}(fn($b) => $b->ebook->sales_at);
-    }
-
     public function awardsItems()
     {
         return $this->hasManyDeepFromRelations($this->awards(), (new AwardBook())->award());
+    }
+
+    public function scopeWithSumAwardItems(Builder $builder, ?int $ofLastDays = null)
+    {
+        return $builder->withSum(['awardsItems' => fn($awards) => $awards->when($ofLastDays, fn($b) => $b->ofLastDays($b))], 'rate');
     }
 
     public static function sortCollectionByPopularGenre($collection)
@@ -237,9 +240,14 @@ class Book extends Model
         return $collection->sortBy(fn($book) => $book->genres->pluck('pivot')->min('rate_number') ?: 10000);
     }
 
+    public function scopeOrderByPopularGenres(Builder $builder)
+    {
+        return $builder->orderByPowerJoinsMin('bookGenre.rate_number');
+    }
+
     public function rater(): Rater
     {
-        return new Rater($this);
+        return new Rater($this, ...func_get_args());
     }
 
     public function paginationTrackers(): HasManyDeep
@@ -282,6 +290,14 @@ class Book extends Model
         );
     }
 
+    public function customers(): HasManyDeep
+    {
+        return $this->hasManyDeepFromRelationsWithConstraints(
+            [$this, 'editions'],
+            [new Edition(), 'customers']
+        );
+    }
+
 
     public function isAuthor(Profile $profile)
     {
@@ -296,6 +312,39 @@ class Book extends Model
         $user ??= Auth::getUser();
 
         return $user && $this->profiles()->user($user)->exists();
+    }
+
+    public function scopeCustomersExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->has('customers');
+    }
+
+    public function scopeOrderByBestSells(Builder $builder, bool $asc = false)
+    {
+        return $builder->orderByLeftPowerJoinsCount('editions.customers.id', $asc ? 'asc' : 'desc');
+    }
+
+    public function scopeWithCountEditionSells(Builder $builder, ?int $ofLastDays = null): Builder
+    {
+        return $builder->withCount(['customers' => fn($c) => $c->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays))]);
+    }
+
+    public function scopeWithReadTime(Builder $builder, ?int $ofLastDays = null, ?int $maxTime = null): Builder
+    {
+        return $builder->withSum(['paginationTrackers' =>
+            fn($paginationTrackers) => $paginationTrackers
+                ->when($maxTime, fn($b) => $b->maxTime($maxTime))
+                ->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays))
+        ],
+            'time');
+    }
+
+
+    public function scopeWithReadChaptersTrackersCount(Builder $builder, ?int $ofLastDays = null): Builder
+    {
+        return $builder->withCount(['chaptersTrackers' => fn($trackers) => $trackers->withoutTodayScope()
+            ->completed()
+            ->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays))]);
     }
 
     public function scopeWithLastLengthUpdate(Builder $builder): Builder
@@ -350,10 +399,7 @@ class Book extends Model
     public function scopeDiffWithUnloved(Builder $builder, ?User $user = null)
     {
         $user ??= Auth::getUser();
-        if (!$user) {
-            return $builder;
-        }
-        return $builder->hasGenres($user->unloved_genres, 'exclude');
+        return $builder->hasGenres($user?->unloved_genres ?? getUnlovedFromCookie(), 'exclude');
     }
 
     public function scopeHasGenres(Builder $builder, ?array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
@@ -363,7 +409,8 @@ class Book extends Model
         }
 
         return $builder->{$mode == 'include' ? 'whereHas' : 'whereDoesntHave'}('genres',
-            fn($genres) => $genres->where(fn($q) => $q->whereIn('id', $ids))->orWhereIn('parent_id', $ids));
+            fn($genres) => $genres->where(fn($q) => $q->whereIn((new Genre())->getQualifiedKeyName(), $ids))
+                ->orWhereIn((new Genre())->qualifyColumn('parent_id'), $ids));
     }
 
     public function scopeHasTags(Builder $builder, ?array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
@@ -398,17 +445,22 @@ class Book extends Model
 
     public function scopePublic(Builder $q)
     {
-
         return $q->withoutProhibited()
             ->hasProhibitedGenres(has: false)
             ->notEmptyEdition()
             ->onlyPublicStatus()
-            ->adult();
+            ->adult()
+            ->genresExists();
     }
 
     public function isProhibited(): bool
     {
         return !!static::query()->prohibitedOnly()->orWhere(fn($b) => $b->hasProhibitedGenres(true))->find($this->id);
+    }
+
+    public function scopeGenresExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->has('genres');
     }
 
     public function scopeHasProhibitedGenres(Builder $builder, bool $has = false)
@@ -461,19 +513,22 @@ class Book extends Model
         return $builder->with(['ebook.chapters' => fn($i) => $i->published()]);
     }
 
-    public function scopeAfterPublishedAtDate(Builder $builder, Carbon $carbon): Builder
+    public function scopeAfterPublishedAtDate(Builder $builder, Carbon|int $date): Builder
     {
-        return $builder->whereHas('editions', fn($editions) => $editions->whereDate('sales_at', '>=', $carbon));
+        if (is_int($date)) {
+            $date = Carbon::now()->copy()->subDays($date);
+        }
+        return $builder->whereHas('editions', fn($editions) => $editions->whereDate('sales_at', '>=', $date));
     }
 
-    public function scopeLikesCount(Builder $builder): Builder
+    public function scopeLikesCount(Builder $builder, ?int $ofLastDays = null): Builder
     {
-        return $builder->withCount(['favorites as likes_count']);
+        return $builder->withCount(['favorites as likes_count' => fn($f) => $f->when($ofLastDays, fn($favorites) => $favorites->ofLastDays($ofLastDays))]);
     }
 
-    public function scopeInLibCount(Builder $builder): Builder
+    public function scopeInLibCount(Builder $builder, ?int $ofLastDays = null): Builder
     {
-        return $builder->withCount(['libs as in_lib_count' => fn($libs) => $libs->notWatched()]);
+        return $builder->withCount(['libs as in_lib_count' => fn($libs) => $libs->notWatched()->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays))]);
     }
 
     public function scopeLikeExists(Builder $builder, ?User $user = null): Builder
@@ -497,6 +552,7 @@ class Book extends Model
         return $builder->with(['editions' => fn($edition) => $edition->withProgress($user)]);
     }
 
+
     public function getCollectedRate(WidgetEnum $widget)
     {
         return match ($widget) {
@@ -519,6 +575,16 @@ class Book extends Model
     public function scopeOrderByDiscountAmount(Builder $builder, bool $asc = false)
     {
         return $builder->orderByPowerJoins('editions.discount.amount', $asc ? 'asc' : 'desc');
+    }
+
+    public function scopeOrderBySalesAt(Builder $builder, bool $asc = false)
+    {
+        return $builder->orderByPowerJoins('editions.sales_at', $asc ? 'asc' : 'desc');
+    }
+
+    public function scopeSortByStatValue(Builder $builder, StatsEnum $stat, bool $asc = false)
+    {
+        return $builder->orderByPowerJoins('stats.' . $stat->mapStatAttribute(), $asc ? 'asc' : 'desc');
     }
 
     public function refreshAllowedVisits(): int
@@ -643,4 +709,10 @@ class Book extends Model
     {
         return Html::limit($this->annotation ?? '', config('books.book::config.annotation_length', 300), '...');
     }
+
+    public function isWorking(): bool
+    {
+        return $this->status === BookStatus::WORKING;
+    }
+
 }

@@ -1,9 +1,10 @@
 <?php namespace Books\Book\Models;
 
+use App\traits\HasUserIPScopes;
+use Books\Book\Classes\ScopeToday;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
-use RainLab\User\Models\User;
 
 /**
  * AdvertVisits Model
@@ -13,6 +14,7 @@ use RainLab\User\Models\User;
 class AdvertVisit extends Model
 {
     use Validation;
+    use HasUserIPScopes;
 
     /**
      * @var string table name
@@ -26,18 +28,9 @@ class AdvertVisit extends Model
      */
     public $rules = [];
 
-    public function scopeIp(Builder $builder, string $ip): Builder
-    {
-        return $builder->where('ip', $ip);
-    }
-
-    public function scopeUser(Builder $builder, ?User $user): Builder
-    {
-        return $builder->where('user_id', $user?->id ?? null);
-    }
-
     public function scopeToday(Builder $builder): Builder
     {
-        return $builder->whereDate('created_at', '=', today());
+        return $builder->withGlobalScope('today', new ScopeToday());
     }
+
 }

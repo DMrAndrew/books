@@ -33,6 +33,7 @@ class BookGenre extends Pivot
         'rate_number' => 'nullable|integer|min:0',
     ];
 
+
 //    public $morphMany = [
 //        'revision_history' => [Revision::class, 'name' => 'revisionable'],
 //    ];

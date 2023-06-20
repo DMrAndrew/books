@@ -34,13 +34,13 @@ class Prohibitable extends ExtensionBase
 
     public function scopeProhibited(Builder $builder, string $mode = 'without')
     {
-       
+
         if (Schema::hasTable((new Prohibited())->getTable())) {
 
             $user = Auth::getUser();
             $country = $user?->country ?? Country::getDefault();
             $prohibited_builder = fn() => Prohibited::query()->type($this->class);
-            $column_id = (new $this->class)->getTable() . '.id';
+            $column_id = (new $this->class)->getQualifiedKeyName();
             $method = match ($mode) {
                 'only' => 'whereIn',
                 default => 'whereNotIn'

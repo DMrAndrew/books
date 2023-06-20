@@ -17,10 +17,10 @@ class SlaveScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        $id = (new (get_class($model)))->getTable() . '.id';
+        $slaves = fn($i) => $i->profiler($model)->select('slave_id');
         if ($profile = $this->getQueryProfile($builder) ?? $this->getQueryUser($builder)?->profile) {
-            $builder->whereIn($id, $profile->profiler($model)->select('slave_id'))
-                ->orWhereIn($id, $profile->user->profiler($model)->select('slave_id'));
+            $builder->whereIn($model->getQualifiedKeyName(), $slaves($profile))
+                ->orWhereIn($model->getQualifiedKeyName(), $slaves($profile->user));
         }
     }
 

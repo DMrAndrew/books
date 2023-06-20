@@ -7,8 +7,6 @@ use Books\Book\Classes\Exceptions\FBParserException;
 use Books\Book\Classes\Exceptions\UnknownFormatException;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
-use Books\Book\Models\Chapter;
-use Books\Book\Models\Cycle;
 use Books\Book\Models\Tag;
 use Books\Catalog\Models\Genre;
 use Books\Profile\Models\Profile;
@@ -103,7 +101,7 @@ class BookService
             $payload->save();
             $ebook = $this->book->ebook()->first();
             $ebook->fb2()->add($payload);
-            $ebook->parseFBChaptersQueue($payload);
+            $ebook->parseFB2($payload);
             Event::fire('books.book.parsed', [$this->book]);
 
             return $this->book;
