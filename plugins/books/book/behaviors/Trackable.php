@@ -66,6 +66,7 @@ class Trackable extends ExtensionBase
     public function collect($groups)
     {
         return $groups->map(function ($group, $key) {
+            Log::info('$key' . $key);
             $user = User::find($key);
             $tracker = $this->model->getTracker(...[
                 'user' => $user,
