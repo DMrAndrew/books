@@ -10,6 +10,7 @@ use Books\Book\Models\Book;
 use Books\Book\Models\Stats;
 use Books\Book\Models\Tag;
 use Books\Catalog\Classes\FavoritesManager;
+use Books\Catalog\Models\Genre;
 use Books\Collections\classes\CollectionEnum;
 use Books\Collections\Models\Lib;
 use Cache;
@@ -355,9 +356,10 @@ class WidgetService
 
     public function popular()
     {
+        $genres = $this->book->genres()->pluck('id')->toArray();
         return $this->query()
-            ->whereHas('genres', fn($genres) => $genres->whereIn('id', $this->book->genres()->pluck('id')->toArray()))
-            ->whereNot('id', $this->book->id);
+            ->hasGenres($genres)
+            ->whereNot((new Book())->getQualifiedKeyName(), $this->book->id);
     }
 
     public function otherAuthorBook()
@@ -366,7 +368,7 @@ class WidgetService
             ->whereNotIn('id', [$this->book->id])
             ->whereHas('author', fn($author) => $author->where('profile_id', '=', $this->book->author()->value('profile_id')))
             ->whereHas('genres', fn($genres) => $genres
-                ->whereIn('id', ($this->user?->loved_genres ?? json_decode(Cookie::get('loved_genres')) ?: (new FavoritesManager())->getDefaultGenres())));
+                ->whereIn('id', $this->user?->loved_genres ?? getUnlovedFromCookie()));
     }
 
     public function readingWithThisOne()
@@ -385,9 +387,11 @@ class WidgetService
             ->values()
             ->toArray();
 
+
+        $ids = $this->book->genres()->pluck('id')->toArray();
         return $this->query()
-            ->whereIn('id', $readingWithIds)
-            ->hasGenres($this->book->genres()->pluck('id')->toArray());
+            ->whereIn((new Book())->getQualifiedKeyName(), $readingWithIds)
+            ->hasGenres($ids);
     }
 
     public function cycle()

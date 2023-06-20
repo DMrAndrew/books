@@ -70,8 +70,8 @@ enum WidgetEnum: string
     /**
      * @throws Exception
      */
-    public function service(): WidgetService
+    public function service(...$args): WidgetService
     {
-        return new WidgetService($this);
+        return new WidgetService($this, ...$args);
     }
 }

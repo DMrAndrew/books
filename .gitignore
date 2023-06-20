@@ -22,6 +22,7 @@ package-lock.json
 _ide_helper.php
 .phpunit.result.cache
 nbproject
+docker-compose.local.yml
 
 # Project
 /bootstrap/compiled.php
@@ -29,3 +30,5 @@ nbproject
 /plugins/mobecan/
 /frontend
 /themes/jquery-ui-1.13.2/
+
+/docker/php/8.1/DockerfileLocal

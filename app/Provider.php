@@ -4,6 +4,7 @@ namespace App;
 
 use App\classes\RevisionHistory;
 use App\middleware\FetchCheckUp;
+use App\Providers\TelescopeServiceProvider;
 use App\traits\DateScopes;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;

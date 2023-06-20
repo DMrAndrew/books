@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "188d5d365fd5125cde52ae92d3706032",
+    "content-hash": "cb47ac9a0c2cd3d40b765dc092b92fcb",
     "packages": [
         {
             "name": "bavix/laravel-wallet",
@@ -3203,6 +3203,77 @@
                 "source": "https://github.com/laravel/socialite"
             },
             "time": "2023-06-06T13:42:43+00:00"
+        },
+        {
+            "name": "laravel/telescope",
+            "version": "v4.14.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/telescope.git",
+                "reference": "8067e857ca3733f738666994f0b5cd305fa0ed59"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/telescope/zipball/8067e857ca3733f738666994f0b5cd305fa0ed59",
+                "reference": "8067e857ca3733f738666994f0b5cd305fa0ed59",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "laravel/framework": "^8.37|^9.0|^10.0",
+                "php": "^8.0",
+                "symfony/var-dumper": "^5.0|^6.0"
+            },
+            "require-dev": {
+                "ext-gd": "*",
+                "guzzlehttp/guzzle": "^6.0|^7.0",
+                "laravel/octane": "^1.4",
+                "orchestra/testbench": "^6.0|^7.0|^8.0",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.x-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Telescope\\TelescopeServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Telescope\\": "src/",
+                    "Laravel\\Telescope\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                },
+                {
+                    "name": "Mohamed Said",
+                    "email": "mohamed@laravel.com"
+                }
+            ],
+            "description": "An elegant debug assistant for the Laravel framework.",
+            "keywords": [
+                "debugging",
+                "laravel",
+                "monitoring"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/telescope/issues",
+                "source": "https://github.com/laravel/telescope/tree/v4.14.6"
+            },
+            "time": "2023-06-03T02:57:12+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -10485,6 +10556,45 @@
                 "source": "https://github.com/umpirsky/country-list/tree/2.0.6"
             },
             "time": "2020-12-03T10:09:09+00:00"
+        },
+        {
+            "name": "vdlp/oc-telescope-plugin",
+            "version": "2.0.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://gateway.octobercms.com/composer/dist/vdlp/oc-telescope-plugin/vdlp-oc-telescope-plugin-5de5f09077d84ad4367279950b02b997d69ec87a-zip-af5328.zip",
+                "reference": "5de5f09077d84ad4367279950b02b997d69ec87a",
+                "shasum": "435de910f104e8ca520b4ed4e161a0ca8923f807"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0",
+                "laravel/telescope": "^4.0",
+                "october/rain": "^3.2",
+                "php": "^8.0.2"
+            },
+            "type": "october-plugin",
+            "archive": {
+                "exclude": [
+                    ".gitattributes",
+                    ".github",
+                    ".gitignore"
+                ]
+            },
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Van der Let & Partners",
+                    "email": "octobercms@vdlp.nl"
+                }
+            ],
+            "description": "Laravel Telescope integration for October CMS",
+            "support": {
+                "source": "https://github.com/vdlp/oc-telescope-plugin/tree/2.0.0",
+                "issues": "https://github.com/vdlp/oc-telescope-plugin/issues"
+            },
+            "time": "2023-04-19T14:34:43+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

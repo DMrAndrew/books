@@ -3,12 +3,10 @@
 namespace Books\Book\Classes;
 
 use Books\Book\Classes\Enums\StatsEnum;
+use Books\Book\Jobs\RaterExec;
 use Books\Book\Models\Book;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Traits\Conditionable;
-use Log;
-use Queue;
 
 class Rater
 {
@@ -140,22 +138,7 @@ class Rater
             'withDump' => $this->withDump,
             'dateBetween' => $this->dateBetween,
         ];
-        Queue::push(function ($job) use ($data) {
-            try {
-                $r = new static();
-                $r->setBuilder($r->getBuilder()->whereIn('id', $data['ids']));
-                $r->setWithDump($data['withDump']);
-                $r->setDateBetween($data['dateBetween']);
-                foreach ($data['closures'] as $closure) {
-                    $r->{$closure}();
-                }
-                $r->apply();
-                $job->delete();
-            } catch (Exception $exception) {
-                Log::error($exception->getMessage());
-                throw $exception;
-            }
-        });
+        RaterExec::dispatch($data);
         return $this;
     }
 

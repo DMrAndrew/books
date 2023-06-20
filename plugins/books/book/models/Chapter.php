@@ -6,8 +6,8 @@ use Books\Book\Classes\ChapterService;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
-use Books\Book\Jobs\JobPaginate;
-use Books\Book\Jobs\JobProgress;
+use Books\Book\Jobs\Paginate;
+use Books\Book\Jobs\Reading;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Model;
 use October\Rain\Database\Builder;
@@ -19,7 +19,6 @@ use October\Rain\Database\Traits\Purgeable;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
-use Queue;
 use RainLab\User\Models\User;
 use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
@@ -177,7 +176,7 @@ class Chapter extends Model
 
     public function paginateContent()
     {
-        Queue::push(JobPaginate::class, ['chapter_id' => $this->id]);
+        Paginate::dispatch($this);
     }
 
 
@@ -254,7 +253,7 @@ class Chapter extends Model
 
     public function progress(?User $user = null)
     {
-        Queue::push(JobProgress::class, ['chapter_id' => $this->id, 'user_id' => $user?->id]);
+        Reading::dispatch($this, $user);
     }
 
     public function getContent()

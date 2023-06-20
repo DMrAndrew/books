@@ -2,7 +2,6 @@
 
 namespace Books\Book\Models;
 
-use App\traits\DateScopes;
 use Books\Book\Classes\Enums\AgeRestrictionsEnum;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
@@ -13,9 +12,7 @@ use Books\Book\Classes\ScopeToday;
 use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
-use Books\User\Classes\CookieEnum;
 use Carbon\Carbon;
-use Cookie;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Kirschbaum\PowerJoins\PowerJoins;
 use Model;
@@ -402,25 +399,25 @@ class Book extends Model
     public function scopeDiffWithUnloved(Builder $builder, ?User $user = null)
     {
         $user ??= Auth::getUser();
-        return $builder->hasGenres($user?->unloved_genres ??
-            (Cookie::has(CookieEnum::UNLOVED_GENRES->value) ?
-                Cookie::get(CookieEnum::UNLOVED_GENRES->value)
-                : []), 'exclude');
+        return $builder->hasGenres($user?->unloved_genres ?? getUnlovedFromCookie(), 'exclude');
     }
 
     public function scopeHasGenres(Builder $builder, ?array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if ($ids === null || !count($ids)) {
+        $ids ??= $mode === 'include' ? [] : null;
+        if (is_null($ids)) {
             return $builder;
         }
 
         return $builder->{$mode == 'include' ? 'whereHas' : 'whereDoesntHave'}('genres',
-            fn($genres) => $genres->where(fn($q) => $q->whereIn('id', $ids))->orWhereIn('parent_id', $ids));
+            fn($genres) => $genres->where(fn($q) => $q->whereIn((new Genre())->getQualifiedKeyName(), $ids))
+                ->orWhereIn((new Genre())->qualifyColumn('parent_id'), $ids));
     }
 
     public function scopeHasTags(Builder $builder, ?array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if ($ids === null || !count($ids)) {
+        $ids ??= $mode === 'include' ? [] : null;
+        if (is_null($ids)) {
             return $builder;
         }
 

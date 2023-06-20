@@ -9,7 +9,6 @@ use Books\Book\Classes\BookService;
 use Books\Book\Classes\ChapterService;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\FB2Manager;
-use Books\Book\Classes\GenreRater;
 use Books\Book\Classes\Rater;
 use Books\Book\Classes\StatisticService;
 use Books\Book\Classes\WidgetService;
@@ -30,6 +29,7 @@ use Books\Book\Components\Promocode;
 use Books\Book\Components\Reader;
 use Books\Book\Components\ReadStatistic;
 use Books\Book\Components\Widget;
+use Books\Book\Jobs\GenreRaterExec;
 use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
@@ -250,7 +250,7 @@ class Plugin extends PluginBase
         })->everyMinute();
 
         $schedule->call(function () {
-            GenreRater::queue();
+            GenreRaterExec::dispatch();
         })->everyTenMinutes();
 
         $schedule->call(function () {

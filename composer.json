@@ -126,6 +126,17 @@
         "books/payment-plugin": {
             "type": "path",
             "url": "./plugins/books/payment"
+        },
+        "vdlp/oc-telescope-plugin": {
+            "type": "path",
+            "url": "./plugins/vdlp/telescope"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": [
+                "laravel/telescope"
+            ]
         }
     }
 }
