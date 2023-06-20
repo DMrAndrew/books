@@ -20,7 +20,7 @@ return new class extends Migration {
     {
         Schema::create('books_sell_statistics', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('profile_id');
             $table->unsignedBigInteger('edition_id');
             $table->string('edition_type')->default(EditionsEnums::default()->value);
             $table->dateTime('sell_at');

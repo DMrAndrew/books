@@ -12,7 +12,7 @@ use October\Rain\Database\Updates\Seeder;
 
 class seed_sell_statistics extends Seeder
 {
-    const SEED_RECORDS = 50;
+    const SEED_RECORDS = 100;
 
     public function run()
     {
@@ -58,6 +58,7 @@ class seed_sell_statistics extends Seeder
             }
 
             $edition = $book->editions->first();
+            $profile_id = $book->author->profile_id;
 
             $sellTypes = [
                 SellStatisticSellTypeEnum::SELL->value,
@@ -78,7 +79,7 @@ class seed_sell_statistics extends Seeder
             $authorReward = intval($totalReward * $rewardRate / 100);
 
             $data = [
-                'user_id' => $userWithBooks->id,
+                'profile_id' => $profile_id,
                 'edition_id' => $bookId,
                 'edition_type' => $edition->type->value,
                 'sell_at' => Carbon::today()->subDays(rand(0, 365))->subHours(rand(1, 23))->subMinutes(rand(1, 55)),

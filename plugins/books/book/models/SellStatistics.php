@@ -3,8 +3,8 @@
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\SellStatisticSellTypeEnum;
+use Books\Profile\Models\Profile;
 use Model;
-use RainLab\User\Models\User;
 
 /**
  * SellStatistics Model
@@ -24,7 +24,7 @@ class SellStatistics extends Model
      * @var array rules for validation
      */
     public $rules = [
-        'user_id' => 'required|exists:users,id',
+        'profile_id' => 'required|exists:books_profile_profiles,id',
         'edition_id' => 'required',
         'edition_type' => 'required',
         'sell_at' => 'required',
@@ -38,7 +38,7 @@ class SellStatistics extends Model
     ];
 
     public $fillable = [
-        'user_id',
+        'profile_id',
         'edition_id',
         'edition_type',
         'sell_at',
@@ -73,7 +73,7 @@ class SellStatistics extends Model
      * @var array
      */
     public $belongsTo = [
-        'user' => [User::class],
+        'profile' => [Profile::class],
         'edition' => [Edition::class, 'key' => 'edition_id'],
     ];
 }
