@@ -122,8 +122,18 @@
                     <td class="_right">{{ edition.priceTag.price }} ₽</td>
                 </tr>
                 {% endfor %}
+
                 </tbody>
             </table>
+
+            {% if editions|length == 0 %}
+            <div class="table__list">
+                <div class="table__row">
+                    <div class="table__col _not-found">Ничего не найдено</div>
+                </div>
+            </div>
+            {% endif %}
+
         </div>
     </div>
 
