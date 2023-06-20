@@ -106,6 +106,9 @@ class BookAccount extends Account
             return Db::transaction(function () {
                 $rules = (new UserModel)->rules;
 
+                // README: костыль, дабы очистить поле Email от пробелов
+                request()?->merge($this->trimStrings(post(), 'email'));
+
                 $v = Validator::make(
                     post(),
                     $rules,
@@ -157,5 +160,27 @@ class BookAccount extends Account
                 Flash::error($ex->getMessage());
             }
         }
+    }
+
+    /**
+     * @param array $attributes
+     * @param array|string $keys
+     * @return array
+     */
+    private function trimStrings(array $attributes, array|string $keys): array
+    {
+        if (is_string($keys)) {
+            $keys = [$keys];
+        }
+
+        foreach ($attributes as $key => $value) {
+            if (!is_string($value) || !in_array($key, $keys, true)) {
+                continue;
+            }
+
+            $attributes[$key] = preg_replace('/\s/', '', $value);
+        }
+
+        return $attributes;
     }
 }
