@@ -5,6 +5,7 @@ namespace Books\Book\Behaviors;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Tracker;
 use Books\Collections\classes\CollectionEnum;
+use Log;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Extension\ExtensionBase;
@@ -69,6 +70,8 @@ class Trackable extends ExtensionBase
                 'user' => $user,
                 'ip' => $user ? null : $key
             ]);
+            Log::info('$tracker:' . $tracker);
+            Log::info('$group:' . $group);
             $res = $this->save($tracker, $group);
             if ($user && $this->model instanceof Edition) {
                 $this->toLib($user);
@@ -87,6 +90,7 @@ class Trackable extends ExtensionBase
             ->pad($this->model->{$this->model->trackerChildRelation}()->count(), 0)// добиваем до общего кол-ва
             ->avg() // profit
         );
+        Log::info('$progress' . $progress);
 
         $tracker->update([
             'length' => $array->sum('length'),
