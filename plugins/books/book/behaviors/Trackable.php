@@ -28,7 +28,7 @@ class Trackable extends ExtensionBase
             ??
             $this->model->trackers()->create([
                 'user_id' => ($user ?? Auth::getUser())?->id,
-                'ip' => request()->ip()
+                'ip' => $ip ?? request()->ip()
             ]);
     }
 
@@ -65,7 +65,10 @@ class Trackable extends ExtensionBase
     {
         return $groups->map(function ($group, $key) {
             $user = User::find($key);
-            $tracker = $this->model->getTracker(...[($user ? 'user' : 'ip') => $user]);
+            $tracker = $this->model->getTracker([
+                'user' => $user,
+                'ip' => $user ? null : $key
+            ]);
             $res = $this->save($tracker, $group);
             if ($user && $this->model instanceof Edition) {
                 $this->toLib($user);

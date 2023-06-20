@@ -3,6 +3,7 @@
 use Books\Book\Classes\GenreRater;
 use Books\Book\Models\Book;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -11,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 /**
  * GenreRaterExec Job
  */
-class GenreRaterExec implements ShouldQueue
+class GenreRaterExec implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
