@@ -12,6 +12,8 @@ use Exception;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
+use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Model;
 use Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -48,6 +50,10 @@ class Provider extends AppBase
 //            ->prependMiddleware(FetchCheckUp::class);
 
         // Add a new middleware to end of the stack.
+        $this->app[Kernel::class]
+            ->pushMiddleware(TrimStrings::class);
+        $this->app[Kernel::class]
+            ->pushMiddleware(ConvertEmptyStringsToNull::class);
         $this->app[Kernel::class]
             ->pushMiddleware(FetchCheckUp::class);
     }

@@ -104,21 +104,6 @@ class BookAccount extends Account
     {
         try {
             return Db::transaction(function () {
-                $rules = (new UserModel)->rules;
-
-                // README: костыль, дабы очистить поле Email от пробелов
-                request()?->merge($this->trimStrings(post(), 'email'));
-
-                $v = Validator::make(
-                    post(),
-                    $rules,
-                    $this->getValidatorMessages(),
-                    $this->getCustomAttributes()
-                );
-
-                if ($v->fails()) {
-                    throw new ValidationException($v);
-                }
                 $redirect = $this->onRegister();
                 $user = Auth::getUser();
                 $user?->update(['required_post_register' => 0]);
