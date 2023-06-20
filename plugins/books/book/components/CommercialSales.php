@@ -43,6 +43,9 @@ class CommercialSales extends ComponentBase
         $this->page['editions'] = $this->getEditionsInSale();
     }
 
+    /**
+     * @return Collection
+     */
     private function getEditionsInSale(): Collection
     {
         $authorships = $this->user->profile
