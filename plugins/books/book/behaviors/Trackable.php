@@ -51,7 +51,7 @@ class Trackable extends ExtensionBase
 
 
         $trackers = $this->model->{$this->model->trackerChildRelation}()
-            ->with(['trackers' => fn($trackers) => $trackers->userOrIp($user)])
+            ->with(['trackers'])
             ->get()
             ->pluck('trackers')
             ->flatten(1);
