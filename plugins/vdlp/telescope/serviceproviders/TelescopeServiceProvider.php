@@ -6,6 +6,7 @@ namespace Vdlp\Telescope\ServiceProviders;
 
 use ApplicationException;
 use Backend\Classes\AuthManager;
+use Backend\Facades\BackendAuth;
 use Backend\Models\User;
 use Cms\Classes\Theme;
 use Illuminate\Support\Facades\Route;
@@ -133,14 +134,9 @@ final class TelescopeServiceProvider extends TelescopeServiceProviderBase
     {
         Telescope::auth(static function (): bool {
             /** @var ?User $user */
-            $user = AuthManager::instance()->getUser();
+            $user = BackendAuth::getUser();
 
-            if ($user === null) {
-                return false;
-            }
-
-            return $user->hasPermission('vdlp.telescope.access_dashboard')
-                || $user->isSuperUser();
+            return $user && ($user->hasPermission('vdlp.telescope.access_dashboard') || $user->isSuperUser());
         });
     }
 }
