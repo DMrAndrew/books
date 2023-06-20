@@ -5,10 +5,12 @@ namespace Books\Orders\Classes\Services;
 
 use ApplicationException;
 use Books\Book\Classes\Enums\BookStatus;
+use Books\Book\Classes\Enums\SellStatisticSellTypeEnum;
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
 use Books\Book\Models\Donation;
 use Books\Book\Models\Promocode;
+use Books\Book\Models\SellStatistics;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Classes\Contracts\ProductInterface;
 use Books\Orders\Classes\Enums\OrderStatusEnum;
@@ -438,10 +440,32 @@ class OrderService implements OrderServiceContract
                 ?->orderable
                 ?->book;
 
-            $book->profiles->each(function ($profile) use ($byEdition, $rewardTaxedCoefficient) {
+            $book->profiles->each(function ($profile) use ($byEdition, $book, $order, $rewardTaxedCoefficient) {
                 $authorRewardPartRounded = intdiv(($byEdition * $profile->pivot->percent), 100);
                 $authorRewardPartTaxed = intval($rewardTaxedCoefficient * $authorRewardPartRounded);
                 $profile->user->proxyWallet()->deposit($authorRewardPartTaxed);
+
+                /**
+                 * Сохранить статистику продажи
+                 */
+                $edition = $book->editions()->first();
+                $sellType = $edition->status === BookStatus::COMPLETE
+                    ? SellStatisticSellTypeEnum::SELL
+                    : SellStatisticSellTypeEnum::SUBSCRIBE;
+
+                SellStatistics::create([
+                    'profile_id' => $profile->id,
+                    'edition_id' => $edition->id,
+                    'edition_type' => $edition->type->value,
+                    'sell_at' => Carbon::now(),
+                    'edition_status' => $edition->status->value,
+                    'sell_type' => $sellType,
+                    'price' => $order->editions->sum('amount'),
+                    'reward_rate' => intval($rewardTaxedCoefficient * 100),
+                    'reward_value' => $authorRewardPartTaxed,
+                    'tax_rate' => intval(100 - ($rewardTaxedCoefficient * 100)),
+                    'tax_value' => $authorRewardPartRounded - $authorRewardPartTaxed,
+                ]);
             });
         }
 

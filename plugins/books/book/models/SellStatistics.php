@@ -46,7 +46,7 @@ class SellStatistics extends Model
         'sell_type',
         'price',
         'reward_rate',
-        'reward',
+        'reward_value',
         'tax_rate',
         'tax_value',
     ];
