@@ -4,7 +4,7 @@ namespace Books\Book\Components;
 
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Reader as Service;
-use Books\Book\Classes\Traits\InjectAdultAgreementModel;
+use Books\Book\Classes\Traits\InjectBookStuff;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Pagination;
@@ -21,7 +21,7 @@ use Response;
  */
 class Reader extends ComponentBase
 {
-    use InjectAdultAgreementModel;
+    use InjectBookStuff;
 
     protected ?Book $book;
 
@@ -63,6 +63,7 @@ class Reader extends ComponentBase
         $this->chapter_id = (int)$this->param('chapter_id');
         $this->chapter = $this->chapter_id ? Chapter::find($this->chapter_id) ?? abort(404) : null;
         $this->tryInjectAdultModel();
+        $this->addMeta();
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
         $advert = $this->addComponent(AdvertBanner::class, 'advertBanner');
