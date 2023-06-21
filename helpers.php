@@ -5,10 +5,12 @@
  * и включено расширение mbstring (Multibyte String Functions)
  */
 
+use Books\Book\Models\Book;
 use Books\User\Classes\CookieEnum;
 use Books\User\Classes\UserService;
 use Carbon\CarbonInterval;
 use RainLab\User\Facades\Auth;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 if (!function_exists('mb_ucfirst') && extension_loaded('mbstring')) {
     /**
@@ -97,7 +99,9 @@ function getFreqString(int $count, int $days): string
         . ' '
         . (new WordForm(...['раз', 'раза', 'раз']))->getCorrectSuffix($count)
         . ' в '
-        . str_replace('неделя', 'неделю', CarbonInterval::days($days)->cascade()->forHumans(['parts' => 1, 'aUnit' => true]));
+        . str_replace('неделя', 'неделю', CarbonInterval::days($days)
+            ->cascade()
+            ->forHumans(['parts' => 1, 'aUnit' => true]));
 }
 
 function getUnlovedFromCookie(): array
@@ -107,6 +111,29 @@ function getUnlovedFromCookie(): array
         : [];
 }
 
+function getLovedFromCookie(): array
+{
+    return Cookie::has(CookieEnum::LOVED_GENRES->value) ?
+        json_decode(Cookie::get(CookieEnum::LOVED_GENRES->value))
+        : [];
+}
+
+/**
+ * @throws NotFoundHttpException
+ */
+function askAboutAdult(Book $book): bool
+{
+    return restrictProhibited($book) &&
+        (($book->isAdult() && UserService::canBeAskedAdultPermission()) || abort(404));
+}
+
+/**
+ * @throws NotFoundHttpException
+ */
+function restrictProhibited(Book $book): bool
+{
+    return (isComDomainRequested() && $book->isProhibited()) ? abort(404) : true;
+}
 
 ?>
 

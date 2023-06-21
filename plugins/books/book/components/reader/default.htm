@@ -84,3 +84,6 @@
         </div>
     </div>
 </div>
+{% if ask_adult %}
+{% partial 'auth/adult-modal' active=1 %}
+{% endif %}

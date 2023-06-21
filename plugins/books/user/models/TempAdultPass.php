@@ -1,5 +1,6 @@
 <?php namespace Books\User\Models;
 
+use App\traits\HasIPScope;
 use Books\User\Classes\CookieEnum;
 use Carbon\Carbon;
 use Cookie;
@@ -17,6 +18,7 @@ class TempAdultPass extends Model
 {
     use Validation;
     use HasUlids;
+    use HasIPScope;
 
     /**
      * @var string table name
@@ -33,11 +35,6 @@ class TempAdultPass extends Model
     protected $fillable = ['ip', 'is_agree'];
 
     protected $dates = ['expire_in'];
-
-    public function scopeIp(Builder $builder, string $ip): Builder
-    {
-        return $builder->where('ip', $ip);
-    }
 
     public function scopeAgree(Builder $builder): Builder
     {

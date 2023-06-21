@@ -111,7 +111,12 @@ class Stats extends Model
             $h->shift();
         }
         $this->history = $h->toArray();
-//        $this->save();
+        return $this;
+    }
+
+    public function clearDumps(): static
+    {
+        $this->history = [];
         return $this;
     }
 
