@@ -1,35 +1,5 @@
 <div class="table">
     {% if data|length > 0 %}
-<!--    <div class="table__head">-->
-<!--        <div class="table__col">Дата/месяц</div>-->
-<!--        <div class="table__col _half">Книга</div>-->
-<!--        <div class="table__col _large nowrap">Подписка/Продажа</div>-->
-<!--        <div class="table__col">Цена</div>-->
-<!--        <div class="table__col">Количество</div>-->
-<!--        <div class="table__col">Гонорар</div>-->
-<!--        <div class="table__col empty"></div>-->
-<!--    </div>-->
-
-<!--    <div class="table__list">-->
-<!--        {% for dayGroup in data %}-->
-<!--            {% for record in dayGroup %}-->
-<!--            <div class="table__row">-->
-<!--                    <div class="table__col" data-title="Дата/месяц">{{ record.date == previousDay ? '' : record.date }}</div>-->
-<!--                    <div class="table__col _half" data-title="Книга">{{ record.title }}</div>-->
-<!--                    <div class="table__col _large" data-title="Подписка/продажа">{{ record.type }}</div>-->
-<!--                    <div class="table__col" data-title="Цена">{{ record.price }}</div>-->
-<!--                    <div class="table__col" data-title="Количество">{{ record.count }}</div>-->
-<!--                    <div class="table__col" data-title="Гонорар">{{ record.reward }}</div>-->
-<!--                <div class="table__col">-->
-<!--                    <a href="#" class="ui-link _violet">Подробнее</a>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            {% set previousDay = record.date %}-->
-<!--            {% endfor %}-->
-<!--        {% endfor %}-->
-<!--    </div>-->
-
     <div class="table __container-shift">
         <table class="table-static">
             <thead>
