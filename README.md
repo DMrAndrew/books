@@ -28,3 +28,10 @@ exit
 ### Известные проблемы
 Если не удается авторизоваться как админ, на странице `/backend` при попытке авторизоваться выпадает ошибка `Неправильный токен безопасности`
 Необходимо пересобрать контейнеры командой - `export WWWUSER=${WWWUSER:-$UID} && export WWWGROUP=${WWWGROUP:-$(id -g)} && docker-compose up -d`
+
+### Запустить Telescope
+- включить в .env - ``TELESCOPE_ENABLED=true``
+- выполнить ``php artisan vendor:publish --tag telescope-assets --force``
+- выполнить ``php artisan vendor:publish --tag telescope-config``
+
+Открывать по адресу ``/backend/vdlp/telescope/dashboard``
