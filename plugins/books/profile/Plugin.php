@@ -3,6 +3,10 @@
 namespace Books\Profile;
 
 use Backend;
+use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
+use Books\Orders\Classes\Contracts\SellStatisticService as SellStatisticServiceContract;
+use Books\Orders\Classes\Services\OrderService;
+use Books\Orders\Classes\Services\SellStatisticService;
 use Books\Profile\Behaviors\HasProfile;
 use Books\Profile\Behaviors\Masterable;
 use Books\Profile\Behaviors\Slavable;
@@ -63,7 +67,9 @@ class Plugin extends PluginBase
      */
     public function register(): void
     {
-        $this->app->bind(OperationHistoryServiceContract::class, OperationHistoryService::class);
+        $this->app->singleton(OrderServiceContract::class, OrderService::class);
+        $this->app->singleton(OperationHistoryServiceContract::class, OperationHistoryService::class);
+        $this->app->singleton(SellStatisticServiceContract::class, SellStatisticService::class);
 
         Event::listen('books.profile.username.modify.requested', fn($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
     }

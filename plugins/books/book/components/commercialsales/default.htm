@@ -1,0 +1,56 @@
+<div class="commerce">
+
+    <div class="commerce-control">
+        <div class="commerce-control__columns _margin-side">
+            <a href="{{ 'lc-commercial-statistics'|page }}" class="commerce-control__column wrapper">
+                <svg class="square-32">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#line-chart-stroked-32' | theme}}"></use>
+                </svg>
+                <p>Статистика продаж</p>
+            </a>
+            <a href="#" class="commerce-control__column wrapper">
+                <svg class="square-32">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#currency-ruble-strocked-32' | theme}}"></use>
+                </svg>
+                <p>Выплаты</p>
+            </a>
+        </div>
+
+        <a href="{{ 'lc-commercial-reports'|page }}" class="commerce-control__button ui-button ui-button-view--2 ui-button-size--32 ui-button--full-mobile">Ежемесячные отчеты</a>
+    </div>
+
+    <div class="commerce__block wrapper">
+        <div class="commerce__title ui-text-head--3 ui-text--bold">В продаже</div>
+
+        <div class="table">
+            <table class="table-static">
+                <thead>
+                <tr>
+                    <td class="_large">Произведение</td>
+                    <td>Тип продажи</td>
+                    <td class="_right">Цена</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for edition in editions %}
+                <tr>
+                    <td class="_half"><div class="ellipsis"><a href="{{ 'book-card'|page({ book_id: edition.book.id }) }}" class="ui-link _violet">{{ edition.book.title }}</a></div></td>
+                    <td>{{ edition.status.value == 'complete' ? 'Продажа' : 'Подписка'}}</td>
+                    <td class="_right">{{ edition.priceTag.price }} ₽</td>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+
+            {% if editions|length == 0 %}
+            <div class="table__list">
+                <div class="table__row">
+                    <div class="table__col _not-found">Ничего не найдено</div>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>

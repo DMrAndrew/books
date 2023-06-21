@@ -1,0 +1,87 @@
+<div class="ui-container-fluid">
+    <div class="commerce">
+        <div class="commerce__block wrapper">
+
+            {{ form_ajax('onFilterSales',{id:'sell-reports-form',
+                'data-request-flash':1,'data-request-validate':'1'}) }}
+            <div class="commerce-control">
+                <div class="commerce-control__columns _flex-end _indent-large">
+                    <div class="commerce-control__input _max-width ui-select">
+                        <div class="ui-select-header">
+                            <label class="ui-select-label">Год</label>
+                        </div>
+
+                        <div class="ui-select-container">
+                            <div class="ui-select-item _size-32">
+                                <select class="book-select" name="sells_year" style="display: none">
+                                    <option value="">-</option>
+                                    {% for year in sell_years %}
+                                    <option style="display: none"
+                                    value="{{ year }}">{{ year }}</option>
+                                    {% endfor %}
+                                </select>
+                                <svg class="ui-select-item-icon chevron_up _fake">
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme }}"></use>
+                                </svg>
+                                <svg class="ui-select-item-icon chevron_down _fake">
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme }}"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="commerce-control__input _max-width ui-select">
+                        <div class="ui-select-header">
+                            <label class="ui-select-label">Месяц</label>
+                        </div>
+                        <div class="ui-select-container">
+                            <div class="ui-select-item _size-32">
+                                <select class="book-select" name="sells_month" style="display: none">
+                                    <option value="">-</option>
+                                    <option value="1">Январь</option>
+                                    <option value="2">Февраль</option>
+                                    <option value="3">Март</option>
+                                    <option value="4">Апрель</option>
+                                    <option value="5">Май</option>
+                                    <option value="6">Июнь</option>
+                                    <option value="7">Июль</option>
+                                    <option value="8">Август</option>
+                                    <option value="9">Сентябрь</option>
+                                    <option value="10">Октябрь</option>
+                                    <option value="11">Ноябрь</option>
+                                    <option value="12">Декабрь</option>
+                                </select>
+                                <svg class="ui-select-item-icon chevron_up _fake">
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme }}"></use>
+                                </svg>
+                                <svg class="ui-select-item-icon chevron_down _fake">
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme }}"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="commerce-control__input">
+                        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium ui-button--full-mobile">Искать</button>
+                    </div>
+                </div>
+            </div>
+            {{ form_close() }}
+
+            <div class="commerce__category">
+                <div class="commerce__title ui-text-head--3 ui-text--bold">Доходы от незавершенных книг</div>
+                <div id="incompletedDataTable"></div>
+            </div>
+
+            <div class="commerce__category">
+                <div class="commerce__title ui-text-head--3 ui-text--bold">Доходы от завершенных книг</div>
+                <div id="completedDataTable"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    initDatepicker("#datepicker")
+    iniSelect()
+</script>

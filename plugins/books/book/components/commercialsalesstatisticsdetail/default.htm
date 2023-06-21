@@ -1,0 +1,79 @@
+<div style="margin-bottom: 16px"> </div>
+<div class="ui-container">
+    <div class="personal-area__title ui-text-head--2 ui-text--bold">{{ book.title }}</div>
+</div>
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
+            <div class="ui-col-sm-12">
+
+                <div class="commerce">
+                    <div class="commerce__block wrapper">
+                        <div class="commerce-control">
+                            <div class="commerce-control__columns _indent-large">
+                                <div class="commerce-control__text">
+                                    <span>Дата:</span> {{ date }}
+                                </div>
+                                <div class="commerce-control__text">
+                                    <span>Продажа</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="commerce__category">
+
+                            <table class="table-static">
+                                <thead>
+                                <tr>
+                                    <td class="table__col _wide">Тип</td>
+                                    <td class="table__col _right">Количество</td>
+                                    <td class="table__col _right">Цена</td>
+                                    <td class="table__col _right">Сумма</td>
+                                    <td class="table__col _right">Ставка комиссии</td>
+                                    <td class="table__col _right">Комиссия</td>
+                                    <td class="table__col _right">Гонорар</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {% if statistics|length > 0 %}
+                                {% for dateGroup in statistics %}
+                                    {% for record in dateGroup %}
+                                    <tr>
+                                        <td class="table__col _wide">{{ record.type }}</td>
+                                        <td class="table__col _right">{{ record.count }}</td>
+                                        <td class="table__col _right">{{ record.price }}</td>
+                                        <td class="table__col _right">{{ record.amount }}</td>
+                                        <td class="table__col _right">{{ record.tax_rate }}</td>
+                                        <td class="table__col _right">{{ record.tax_value }}</td>
+                                        <td class="table__col _right">{{ record.reward }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% endfor %}
+
+                                <tr>
+                                    <td class="table__col _bold _wide _right">Итого:</td>
+                                    <td class="table__col _bold _right">{{ summary.sells_count }}</td>
+                                    <td class="table__col _bold _right"></td>
+                                    <td class="table__col _bold _right">{{ summary.sells_amount_total }}</td>
+                                    <td class="table__col _bold _right"></td>
+                                    <td class="table__col _bold _right">{{ summary.sells_tax_total }}</td>
+                                    <td class="table__col _bold _right">{{ summary.sells_reward_total }}</td>
+                                </tr>
+                                {% endif %}
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {% if statistics|length == 0 %}
+                        <div class="commerce__subtitle ui-text-body--2">Нет операций за данный период</div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

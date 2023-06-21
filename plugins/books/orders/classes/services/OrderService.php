@@ -16,14 +16,14 @@ use Books\Orders\Models\BalanceDeposit as DepositModel;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderPromocode;
 use Books\Profile\Models\Profile;
-use Books\Profile\Services\OperationHistoryService;
+use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceContract;
 use Carbon\Carbon;
 use Db;
 use Exception;
 use October\Rain\Support\Collection;
 use October\Rain\Database\Model;
 use RainLab\User\Models\User;
-use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceContract;
+use Books\Orders\Classes\Contracts\SellStatisticService as SellStatisticServiceContract;
 
 class OrderService implements OrderServiceContract
 {
@@ -31,7 +31,7 @@ class OrderService implements OrderServiceContract
 
     public function __construct()
     {
-        $this->operationHistoryService = app(OperationHistoryService::class);
+        $this->operationHistoryService = app(OperationHistoryServiceContract::class);
     }
 
     /**
@@ -438,11 +438,17 @@ class OrderService implements OrderServiceContract
                 ?->orderable
                 ?->book;
 
-            $book->profiles->each(function ($profile) use ($byEdition, $rewardTaxedCoefficient) {
+            $book->profiles->each(function ($profile) use ($byEdition, $book, $order, $rewardTaxedCoefficient) {
                 $authorRewardPartRounded = intdiv(($byEdition * $profile->pivot->percent), 100);
                 $authorRewardPartTaxed = intval($rewardTaxedCoefficient * $authorRewardPartRounded);
                 $profile->user->proxyWallet()->deposit($authorRewardPartTaxed);
             });
+
+            /**
+             * Сохранить статистику продажи
+             */
+            $sellStatisticService = app(SellStatisticServiceContract::class);
+            $sellStatisticService->addSellsFromOrder($order);
         }
 
         /**

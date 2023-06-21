@@ -1,0 +1,26 @@
+url = "/lc-commercial-statistics"
+layout = "default"
+title = "Коммерческий кабинет - Статистика продаж"
+description = "Статистика продаж"
+meta_title = "Статистика продаж"
+meta_description = "Статистика продаж"
+turbo_cache_control='no-cache'
+[session]
+security = "user"
+redirect = "/"
+[CommercialSalesStatistics]
+==
+<div style="margin-bottom: 16px"> </div>
+<div class="ui-container">
+    <div class="personal-area__title ui-text-head--2 ui-text--bold">Статистика продаж</div>
+</div>
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
+            <div class="ui-col-sm-12">
+                {% component 'CommercialSalesStatistics' %}
+            </div>
+        </div>
+    </div>
+</div>
