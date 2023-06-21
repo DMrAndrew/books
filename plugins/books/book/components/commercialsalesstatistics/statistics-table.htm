@@ -34,9 +34,9 @@
         <table class="table-static">
             <thead>
             <tr>
-                <td>Дата/месяц</td>
+                <td>Дата</td>
                 <td class="_wide">Книга</td>
-                <td>Подписка/Продажа</td>
+                <td>Тип продажи</td>
                 <td>Цена</td>
                 <td>Количество</td>
                 <td>Гонорар</td>
@@ -50,7 +50,7 @@
                 <tr>
                     <td>{{ record.date == previousDay ? '' : record.date }}</td>
                     <td class="_wide"><div class="_name">{{ record.title == previousTitle ? '' : record.title }}</div></td>
-                    <td class="table__col _right">{{ record.type == previousType ? '' : record.type }}</td>
+                    <td class="table__col">{{ record.type == previousType ? '' : record.type }}</td>
                     <td class="table__col _right">{{ record.price }}</td>
                     <td class="table__col _right">{{ record.count }}</td>
                     <td class="table__col _right">{{ record.reward }}</td>

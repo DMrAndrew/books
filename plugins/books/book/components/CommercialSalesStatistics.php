@@ -63,8 +63,8 @@ class CommercialSalesStatistics extends ComponentBase
         $bookId = post('book_id');
         $period = post('dates');
 
-        if (empty($bookId) || empty($period)) {
-            Flash::error('Необходимо выбрать Произведение и Период для построения отчета');
+        if (empty($period)) {
+            Flash::error('Необходимо выбрать Период для построения отчета');
 
             return[];
         }
@@ -73,14 +73,18 @@ class CommercialSalesStatistics extends ComponentBase
         $periodFrom = Carbon::createFromFormat('d.m.Y', $dateFrom);
         $periodTo = Carbon::createFromFormat('d.m.Y', $dateTo);
 
-        $book = Book::findOrFail($bookId);
-        $editionIds = $book->editions->pluck('id')->toArray();
-
-        $sellStatistics = SellStatistics
+        $sellStatisticsQuery = SellStatistics
             ::with(['edition', 'edition.book'])
             ->where('profile_id', $this->user->profile->id)
-            ->whereBetween('sell_at', [$periodFrom, $periodTo])
-            ->whereIn('edition_id', $editionIds)
+            ->whereBetween('sell_at', [$periodFrom, $periodTo]);
+
+        if (!empty($bookId)) {
+            $book = Book::findOrFail($bookId);
+            $editionIds = $book->editions->pluck('id')->toArray();
+            $sellStatisticsQuery->whereIn('edition_id', $editionIds);
+        }
+
+        $sellStatistics = $sellStatisticsQuery
             ->orderBy('sell_at', 'desc')
             ->get();
 

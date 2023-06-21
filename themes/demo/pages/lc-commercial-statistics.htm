@@ -10,18 +10,15 @@ security = "user"
 redirect = "/"
 [CommercialSalesStatistics]
 ==
-{% partial 'profile/personal_area_header' %}
+<div style="margin-bottom: 16px"> </div>
+<div class="ui-container">
+    <div class="personal-area__title ui-text-head--2 ui-text--bold">Статистика продаж</div>
+</div>
+
 <div class="personal-area">
     <div class="ui-container-fluid">
         <div class="personal-area__container ui-grid-container ui-grid-gap">
-
             <div class="ui-col-sm-12">
-                <div class="personal-area__subtitle">
-                    <span class="ui-text-head--3 ui-text--bold">Статистика продаж</span>
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-                    </svg>
-                </div>
                 {% component 'CommercialSalesStatistics' %}
             </div>
         </div>
