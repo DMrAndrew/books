@@ -25,12 +25,12 @@ class Cycle extends ComponentBase
 
     public function init()
     {
-        $this->cycle = CycleModel::query()->booksEager()->find($this->param('cycle_id')) ?? abort(404);
-        $this->cycle->books->count() > 0 ?: abort(404);
-        $books = Book::sortCollectionBySalesAt($this->cycle->books, false)->values();
+        $this->cycle = CycleModel::query()->booksEager()->find((int)$this->param('cycle_id')) ?? abort(404);
+        $books = $this->cycle->books;
+        $books->count() > 0 ?: abort(404);
         $this->page['cycle'] = $this->cycle;
         $this->page['books'] = $books;
-        $this->page->meta_title = $this->page->meta_title.' «'.$this->cycle->name.'»';
+        $this->page->meta_title = $this->page->meta_title . ' «' . $this->cycle->name . '»';
         $this->page['start_at'] = $books->first()?->ebook->sales_at?->format('d.m.y') ?? '-';
         $this->page['end_at'] = $books->last()?->ebook?->sales_at?->format('d.m.y') ?? '-';
         $this->page['last_updated_at'] = $this->cycle->last_updated_at?->format('d.m.y') ?? '-';

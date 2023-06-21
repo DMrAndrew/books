@@ -9,7 +9,7 @@ use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\ElectronicFormats;
 use Books\Book\Classes\PriceTag;
-use Books\Book\Jobs\ParseFBChapters;
+use Books\Book\Jobs\ParseFB2;
 use Books\Orders\Classes\Contracts\ProductInterface;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -23,7 +23,6 @@ use October\Rain\Database\Relations\MorphMany;
 use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
-use Queue;
 use RainLab\User\Models\User;
 use System\Models\File;
 use System\Models\Revision;
@@ -412,9 +411,9 @@ class Edition extends Model implements ProductInterface
         $this->chapters()->get()->each->paginateContent();
     }
 
-    public function parseFBChaptersQueue(File $fb2)
+    public function parseFB2(File $fb2): void
     {
-        Queue::push(ParseFBChapters::class, ['edition_id' => $this->id, 'file_id' => $fb2->id]);
+        ParseFB2::dispatch($this, $fb2);
     }
 
     public function setParsingFailed(): void

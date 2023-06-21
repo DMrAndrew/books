@@ -146,6 +146,7 @@
                         <span class="ui-checkbox-text">Только законченные</span>
                     </label>
                 </div>
+
                 <div class="listing-book-filters__radio-wrapper">
                     <label class="ui-radio">
                         <input data-request="listing::onSearch"
@@ -154,46 +155,16 @@
                         <div class="ui-radio-checker"></div>
                         <span class="ui-radio-text">Без подборки</span>
                     </label>
+                    {% for  widget in listable %}
                     <label class="ui-radio">
                         <input data-request="listing::onSearch"
                                data-track-input="{{bind.trackInputTime}}"
-                               type="radio" name="widget" value="recommend" {{bind.widget.value == 'recommend' ?
-                        'checked' : '' }} hidden>
+                               type="radio" name="widget" hidden value="{{widget.value}}" {{bind.widget.value == widget.value ? 'checked' : '' }} >
                         <div class="ui-radio-checker"></div>
-                        <span class="ui-radio-text">Рекомендуем</span>
+                        <span class="ui-radio-text">{{widget.label}}</span>
                     </label>
-                    <label class="ui-radio">
-                        <input data-request="listing::onSearch"
-                               data-track-input="{{bind.trackInputTime}}"
-                               type="radio" name="widget" value="new" {{bind.widget.value == 'new' ?
-                        'checked' : '' }} hidden>
-                        <div class="ui-radio-checker"></div>
-                        <span class="ui-radio-text">Новинки</span>
-                    </label>
-                    <label class="ui-radio">
-                        <input data-request="listing::onSearch"
-                               data-track-input="{{bind.trackInputTime}}"
-                               type="radio" name="widget" value="hotNew" {{bind.widget.value == 'hotNew' ?
-                        'checked' : '' }} hidden>
-                        <div class="ui-radio-checker"></div>
-                        <span class="ui-radio-text">Горячие новинки</span>
-                    </label>
-                    <label class="ui-radio">
-                        <input data-request="listing::onSearch"
-                               data-track-input="{{bind.trackInputTime}}"
-                               type="radio" name="widget" value="gainingPopularity" {{bind.widget.value == 'gainingPopularity' ?
-                        'checked' : '' }} hidden>
-                        <div class="ui-radio-checker"></div>
-                        <span class="ui-radio-text">Набирают популярность</span>
-                    </label>
-                    <label class="ui-radio">
-                        <input data-request="listing::onSearch"
-                               data-track-input="{{bind.trackInputTime}}"
-                               type="radio" name="widget" value="todayDiscount" {{bind.widget.value == 'todayDiscount' ?
-                        'checked' : '' }} hidden>
-                        <div class="ui-radio-checker"></div>
-                        <span class="ui-radio-text">Скидки сегодня</span>
-                    </label>
+                    {% endfor %}
+
                 </div>
                 {% partial 'controls/autocomplete'
                 label='Теги'

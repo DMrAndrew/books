@@ -53,12 +53,7 @@ class ListingFilter
         $this->include($this->fromPost(Genre::class, $query['genre'] ?? null));
         $this->type = ($query['type'] ?? null) ? EditionsEnums::tryFrom($query['type']) : null;
         $this->widget = WidgetEnum::tryFrom($query['widget'] ?? '');
-        $this->sort = SortEnum::tryFrom($query['sort'] ?? '') ?? match ($this->widget) {
-            WidgetEnum::hotNew => SortEnum::hotNew,
-            WidgetEnum::new => SortEnum::new,
-            WidgetEnum::gainingPopularity => SortEnum::gainingPopularity,
-            default => SortEnum::default()
-        };
+        $this->sort = SortEnum::tryFrom($query['sort'] ?? '') ?? $this->widget?->mapSortEnum() ?? SortEnum::default();
     }
 
     public function save(): void

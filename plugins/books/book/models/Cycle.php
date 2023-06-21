@@ -101,7 +101,7 @@ class Cycle extends Model
 
     public function scopeBooksEager(Builder $builder): Builder
     {
-        return $builder->with(['books' => fn($books) => $books->public()->defaultEager()]);
+        return $builder->with(['books' => fn($books) => $books->public()->defaultEager()->orderBySalesAt()]);
     }
 
     public function getLastUpdatedAtAttribute()

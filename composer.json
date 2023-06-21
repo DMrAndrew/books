@@ -30,7 +30,8 @@
         "books/notifications-plugin": "*",
         "kirschbaum-development/eloquent-power-joins": "^3.0",
         "books/wallet-plugin": "*",
-        "books/payment-plugin": "*"
+        "books/payment-plugin": "*",
+        "laracraft-tech/laravel-date-scopes": "^1.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -125,6 +126,17 @@
         "books/payment-plugin": {
             "type": "path",
             "url": "./plugins/books/payment"
+        },
+        "vdlp/oc-telescope-plugin": {
+            "type": "path",
+            "url": "./plugins/vdlp/telescope"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": [
+                "laravel/telescope"
+            ]
         }
     }
 }

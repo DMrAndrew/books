@@ -53,6 +53,12 @@ class BookAccount extends Account
 
         $todayDiscount = $this->addComponent(Widget::class, 'todayDiscount');
         $todayDiscount->setUpWidget(WidgetEnum::todayDiscount, withAll: true);
+
+        $bestsellers = $this->addComponent(Widget::class, 'bestsellers');
+        $bestsellers->setUpWidget(WidgetEnum::bestsellers, withAll: true);
+
+        $top = $this->addComponent(Widget::class, 'top');
+        $top->setUpWidget(WidgetEnum::top, withAll: true);
     }
 
     public function onLogout()
@@ -104,18 +110,6 @@ class BookAccount extends Account
     {
         try {
             return Db::transaction(function () {
-                $rules = (new UserModel)->rules;
-
-                $v = Validator::make(
-                    post(),
-                    $rules,
-                    $this->getValidatorMessages(),
-                    $this->getCustomAttributes()
-                );
-
-                if ($v->fails()) {
-                    throw new ValidationException($v);
-                }
                 $redirect = $this->onRegister();
                 $user = Auth::getUser();
                 $user?->update(['required_post_register' => 0]);
@@ -157,5 +151,27 @@ class BookAccount extends Account
                 Flash::error($ex->getMessage());
             }
         }
+    }
+
+    /**
+     * @param array $attributes
+     * @param array|string $keys
+     * @return array
+     */
+    private function trimStrings(array $attributes, array|string $keys): array
+    {
+        if (is_string($keys)) {
+            $keys = [$keys];
+        }
+
+        foreach ($attributes as $key => $value) {
+            if (!is_string($value) || !in_array($key, $keys, true)) {
+                continue;
+            }
+
+            $attributes[$key] = preg_replace('/\s/', '', $value);
+        }
+
+        return $attributes;
     }
 }

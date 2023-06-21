@@ -9,6 +9,7 @@ use Books\Book\Classes\WidgetService;
 use Books\Book\Models\Book;
 use Books\Book\Models\Tag;
 use Books\Catalog\Classes\ListingFilter;
+use Books\Catalog\Classes\ListingService;
 use Books\Catalog\Models\Genre;
 use Cms\Classes\ComponentBase;
 use Exception;
@@ -46,6 +47,7 @@ class Listing extends ComponentBase
     {
         $this->filter = new ListingFilter();
         $this->page['types'] = EditionsEnums::toArray();
+        $this->page['listable'] = WidgetEnum::listable();
     }
 
     public function onRender()
@@ -203,50 +205,7 @@ class Listing extends ComponentBase
      */
     public function books()
     {
-        $query = Book::query()
-            ->hasGenres($this->filter->excludes(Genre::class)->pluck('id')->toArray(), 'exclude')
-            ->hasGenres($this->filter->includes(Genre::class)->pluck('id')->toArray())
-            ->hasTags($this->filter->excludes(Tag::class)->pluck('id')->toArray(), 'exclude')
-            ->hasTags($this->filter->includes(Tag::class)->pluck('id')->toArray())
-            ->when($this->filter->complete, fn($q) => $q->complete())
-            ->when(!$this->filter->free && $this->filter->min_price, fn($q) => $q->minPrice($this->filter->min_price))
-            ->when(!$this->filter->free && $this->filter->max_price, fn($q) => $q->maxPrice($this->filter->max_price))
-            ->when($this->filter->free, fn($q) => $q->free())
-            ->when($this->filter->type, fn($q) => $q->type($this->filter->type))
-            ->public()
-            ->defaultEager();
-
-        $books = null;
-        if ($this->filter->widget && in_array($this->filter->widget, [
-                WidgetEnum::recommend,
-                WidgetEnum::todayDiscount,
-                WidgetEnum::hotNew,
-                WidgetEnum::new,
-                WidgetEnum::gainingPopularity])) {
-            $service = new WidgetService($this->filter->widget);
-
-            $books = $service
-                ->setQuery($query)
-                ->setUseSort(!in_array($this->filter->widget, [
-                    WidgetEnum::hotNew,
-                    WidgetEnum::todayDiscount,
-                    WidgetEnum::new,
-                    WidgetEnum::gainingPopularity]))
-                ->collect()
-                ->sort()
-                ->getValues();
-        }
-
-        $books ??= $query->get();
-
-        return match ($this->filter->sort) {
-            SortEnum::popular_day, SortEnum::popular_week, SortEnum::popular_month => $books->sortByDesc(fn($book) => $book->stats->popular()),
-            SortEnum::new => Book::sortCollectionBySalesAt($books),
-            SortEnum::discount => $books->sortBy(fn($book) => $book->ebook->discount?->priceTag()->odds() ?? -1),
-            SortEnum::hotNew, SortEnum::gainingPopularity => $books->sortByDesc(fn($book) => $book->getCollectedRate($this->filter->sort === SortEnum::hotNew ? WidgetEnum::hotNew : WidgetEnum::gainingPopularity)),
-            SortEnum::topRate => $books->sortByDesc(fn($book) => $book->stats->rate),
-            default => $books
-        };
+        return (new ListingService($this->filter))->books();
     }
 
     public function renderOptions(Collection $options, array $itemOptions = []): array

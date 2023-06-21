@@ -3,7 +3,7 @@
         {% if book.age_restriction.value != 0 %}
         <div class="book-card__footer-label">{{ book.age_restriction.getLabel }}</div>
         {% endif %}
-        <div class="book-card__footer-wrapper ui-tooltip" data-tooltip="Количество прочтений">
+        <div class="book-card__footer-wrapper ui-tooltip" data-tooltip="Количество прочитанных глав книги">
             <svg>
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
             </svg>

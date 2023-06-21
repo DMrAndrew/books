@@ -1,8 +1,7 @@
 <?php namespace Books\Book\Models;
 
+
 use Model;
-use October\Rain\Database\Builder;
-use October\Rain\Database\Pivot;
 use October\Rain\Database\Traits\Validation;
 
 /**
@@ -13,6 +12,7 @@ use October\Rain\Database\Traits\Validation;
 class AwardBook extends Model
 {
     use Validation;
+
 
     /**
      * @var string table name

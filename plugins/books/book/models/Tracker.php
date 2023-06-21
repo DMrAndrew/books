@@ -2,36 +2,47 @@
 
 namespace Books\Book\Models;
 
+use App\traits\HasUserIPScopes;
 use Books\Book\Classes\ScopeToday;
 use Model;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Relations\BelongsTo;
+use October\Rain\Database\Relations\MorphTo;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 
 /**
  * Tracker Model
  *
+ * @property int $time time in sec
+ * @property  Model trackable
+ * @property  User user
+ * @method MorphTo trackable
+ * @method BelongsTo user
+ *
  * @link https://docs.octobercms.com/3.x/extend/system/models.html
  */
 class Tracker extends Model
 {
     use Validation;
+    use HasUserIPScopes;
 
     /**
      * @var string table name
      */
     public $table = 'books_book_trackers';
 
-    protected $fillable = ['time', 'progress', 'length', 'user_id', 'data'];
+    protected $fillable = ['time', 'progress', 'length', 'user_id', 'data', 'ip'];
 
     /**
      * @var array rules for validation
      */
     public $rules = [
-        'user_id' => 'required|exists:users,id',
+        'user_id' => 'nullable|exists:users,id',
         'time' => 'integer',
         'length' => 'integer',
         'progress' => 'integer|between:0,100',
+        'ip' => 'required|ip'
     ];
 
     protected $casts = [
@@ -45,7 +56,7 @@ class Tracker extends Model
     ];
 
     public $belongsTo = [
-        'user' => [User::class, 'key' => 'id', 'otherKey' => 'user_id'],
+        'user' => [User::class, 'key' => 'user_id', 'otherKey' => 'id'],
     ];
 
     public $morphTo = [
@@ -57,9 +68,10 @@ class Tracker extends Model
         static::addGlobalScope(new ScopeToday());
     }
 
+
     public function scopeOrderByUpdatedAt(Builder $builder, bool $asc = true): Builder
     {
-        return $builder->orderBy('updated_at', $asc ? 'asc' : 'desc');
+        return $builder->orderBy($this->getQualifiedUpdatedAtColumn(), $asc ? 'asc' : 'desc');
     }
 
     public function scopeCompleted(Builder $builder): Builder
@@ -72,6 +84,16 @@ class Tracker extends Model
         return $builder->where('progress', '>=', $progress);
     }
 
+    public function scopeMaxTime(Builder $builder, int $value): Builder
+    {
+        return $builder->where('time', '<=', $value);
+    }
+
+    public function scopeMinTime(Builder $builder, int $value): Builder
+    {
+        return $builder->where('time', '>=', $value);
+    }
+
     public function scopeMaxProgress(Builder $builder, int $progress): Builder
     {
         return $builder->where('progress', '<=', $progress);
@@ -82,8 +104,4 @@ class Tracker extends Model
         return $builder->where('trackable_type', '=', $class);
     }
 
-    public function scopeUser(Builder $builder, ?User $user): Builder
-    {
-        return $builder->where('user_id', '=', $user?->id);
-    }
 }

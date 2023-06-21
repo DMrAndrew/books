@@ -64,23 +64,20 @@ class Advert extends Model
         return $this;
     }
 
-    public function registerVisit(?User $user = null, ?string $ip = null): ?AdvertVisit
+    public function registerVisit(): ?AdvertVisit
     {
-        $user ??= Auth::getUser();
-
-        if (!$this->getOriginal('enabled') || $this->visits()->count() >= $this->allowed_visit_count) {
+        if (!$this->getOriginal('enabled') || $this->visits()->count() >= $this->getOriginal('allowed_visit_count')) {
             return null;
         }
-        $ip ??= request()->ip();
 
-        if (!$user && !$ip) {
-            throw new ValidationException(['user' => 'User or IP required']);
+        if ($visit = $this->visits()->today()->userOrIpWithDefault()->first()) {
+            return $visit;
         }
-        $builder = fn() => $this->visits()->today()->where(
-            fn($b) => $b->when($user, fn($q) => $q->user($user))->when($ip, fn($i) => $i->orWhere(fn($orWhere) => $orWhere->ip($ip)))
-        );
 
-        return $builder()->first() ?? $this->visits()->create(['user_id' => $user?->id, 'ip' => $ip]);
+        return $this->visits()->create([
+            'user_id' => Auth::getUser()?->id,
+            'ip' => request()->ip()
+        ]);
     }
 
 
