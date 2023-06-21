@@ -48,7 +48,7 @@ class Rater
     {
         $this->builder = $builder;
         $this->builder->with('stats');
-        if ($this->book) {
+        if ($this->book->exists) {
             $this->builder->where('id', $this->book->id);
         }
         return $this;
