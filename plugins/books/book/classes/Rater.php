@@ -46,11 +46,10 @@ class Rater
     public
     function setBuilder(Builder $builder): static
     {
-        $this->builder = $builder;
-        $this->builder->with('stats');
-        if ($this->book->exists) {
-            $this->builder->where('id', $this->book->id);
-        }
+        $this->builder = $builder
+            ->with('stats')
+            ->when($this->book?->exists, fn($b) => $b->where('id', $this->book->id));
+
         return $this;
     }
 
