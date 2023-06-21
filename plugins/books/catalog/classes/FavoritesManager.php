@@ -28,13 +28,17 @@ class FavoritesManager
     /**
      * Default favorite genres ids array
      *
-     * @return array
      */
-    public function getDefaultGenres(): array
+    public static function defaultGenresBuilder()
     {
         return Genre::query()
             ->public()
-            ->favorite()
+            ->favorite();
+    }
+
+    public static function getDefaultGenresIds(): array
+    {
+        return static::defaultGenresBuilder()
             ->select(['id'])
             ->get()
             ->pluck('id')
