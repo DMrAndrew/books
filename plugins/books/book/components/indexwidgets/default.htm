@@ -1,0 +1,8 @@
+<div id="index-widgets">
+    {% if not user %}
+    {% partial 'site/favorite' %}
+    {% else %}
+    <div style="margin-bottom: 16px"></div>
+    {% endif %}
+    {% partial 'site/thematic' %}
+</div>
