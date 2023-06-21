@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
 use Db;
 use Flash;
-use October\Rain\Database\Collection;
+use Books\Book\Traits\FormatNumberTrait;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -17,6 +17,8 @@ use RainLab\User\Models\User;
  */
 class CommercialSalesReports extends ComponentBase
 {
+    use FormatNumberTrait;
+
     protected ?User $user;
 
     public function componentDetails()
@@ -148,15 +150,5 @@ class CommercialSalesReports extends ComponentBase
         $endYear = Carbon::createFromFormat('Y-m-d H:i:s', $sellAtRange->end_year)->year;
 
         return range($startYear, $endYear);
-    }
-
-    /**
-     * @param $number
-     *
-     * @return string
-     */
-    private function formatNumber($number): string
-    {
-        return number_format($number, 2, '.', '');
     }
 }

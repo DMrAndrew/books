@@ -55,7 +55,7 @@
                     <td class="table__col _right">{{ record.count }}</td>
                     <td class="table__col _right">{{ record.reward }}</td>
                     <td class="table__col _right">
-                        <a href="#" class="ui-link _violet">Подробнее</a>
+                        <a href="{{ 'lc-commercial-statistics-detail'|page({book_id: record.book_id, date: record.date}) }}" class="ui-link _violet">Подробнее</a>
                     </td>
                 </tr>
                 {% set previousDay = record.date %}

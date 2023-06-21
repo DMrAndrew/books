@@ -2,6 +2,7 @@
 
 use Books\Book\Models\Book;
 use Books\Book\Models\SellStatistics;
+use Books\Book\Traits\FormatNumberTrait;
 use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
 use Db;
@@ -16,6 +17,8 @@ use RainLab\User\Models\User;
  */
 class CommercialSalesStatistics extends ComponentBase
 {
+    use FormatNumberTrait;
+
     protected ?User $user;
 
     protected Carbon $from;
@@ -103,6 +106,7 @@ class CommercialSalesStatistics extends ComponentBase
                 $statisticsData[$day][] = [
                     'id' => $sell->id,
                     'date' => $sell->day,
+                    'book_id' => $book->id,
                     'title' => $book->title,
                     'type' => $sell->sell_type->getLabel(),
                     'price' => $this->formatNumber($sell->price),
@@ -162,15 +166,5 @@ class CommercialSalesStatistics extends ComponentBase
             $this->from = Carbon::createFromFormat('Y-m-d H:i:s', $sellAtRange->start_year);
             $this->to = Carbon::createFromFormat('Y-m-d H:i:s', $sellAtRange->end_year);
         }
-    }
-
-    /**
-     * @param $number
-     *
-     * @return string
-     */
-    private function formatNumber($number): string
-    {
-        return number_format($number, 2, '.', '');
     }
 }
