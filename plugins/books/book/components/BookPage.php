@@ -3,6 +3,7 @@
 namespace Books\Book\Components;
 
 use Books\Book\Classes\Enums\WidgetEnum;
+use Books\Book\Classes\Traits\InjectAdultAgreementModel;
 use Books\Book\Models\Book;
 use Books\Comments\Components\Comments;
 use Books\Reposts\Components\Reposter;
@@ -18,6 +19,8 @@ use RainLab\User\Models\User;
  */
 class BookPage extends ComponentBase
 {
+    use InjectAdultAgreementModel;
+
     protected ?Book $book;
 
     protected ?User $user;
@@ -48,24 +51,10 @@ class BookPage extends ComponentBase
     public function init(): void
     {
         $this->user = Auth::getUser();
-        $this->book_id = (int)$this->param('book_id');
+        $this->book_id = (int)$this->param('book_id') ?? abort(404);
         $this->book = Book::query()->public()->find($this->book_id) ?? $this->user?->profile->books()->find($this->book_id);
 
-
-        if (!$this->book && $this->book_id && ($this->book = Book::find($this->book_id) ?? abort(404))) {
-
-//            if (!isComDomainRequested() && (comDomain() ?? false) && $this->book->isProhibited()) {
-//                abort(Redirect::to(comDomain() . '/book-card/' . $this->book->id));
-//            }
-
-            if (isComDomainRequested() && $this->book->isProhibited()) {
-                abort(404);
-            }
-
-            if (($this->book->isAdult() && UserService::canBeAskedAdultPermission()) || abort(404)) {
-                $this->page['ask_adult'] = 1;
-            }
-        }
+        $this->tryInjectAdultModel();
 
         $this->user?->library($this->book)->get(); //Добавить в библиотеку
         $this->book = Book::query()

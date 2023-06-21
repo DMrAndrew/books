@@ -4,6 +4,7 @@ namespace Books\Book\Components;
 
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Reader as Service;
+use Books\Book\Classes\Traits\InjectAdultAgreementModel;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Pagination;
@@ -20,13 +21,17 @@ use Response;
  */
 class Reader extends ComponentBase
 {
-    protected Book $book;
+    use InjectAdultAgreementModel;
+
+    protected ?Book $book;
 
     protected ?Chapter $chapter;
 
     protected ?User $user;
 
     protected ?Service $service = null;
+    protected int $book_id;
+    protected int $chapter_id;
 
     /**
      * componentDetails
@@ -52,9 +57,12 @@ class Reader extends ComponentBase
     public function init()
     {
         $this->user = Auth::getUser();
-        $this->book = Book::query()->public()->find($this->param('book_id'))
-            ?? $this->user?->profile->books()->find($this->param('book_id')) ?? abort(404);
-        $this->chapter = $this->param('chapter_id') ? Chapter::find($this->param('chapter_id')) ?? abort(404) : null;
+        $this->book_id = (int)$this->param('book_id') ?? abort(404);
+        $this->book = Book::query()->public()->find($this->book_id)
+            ?? $this->user?->profile->books()->find($this->book_id);
+        $this->chapter_id = (int)$this->param('chapter_id');
+        $this->chapter = $this->chapter_id ? Chapter::find($this->chapter_id) ?? abort(404) : null;
+        $this->tryInjectAdultModel();
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
         $advert = $this->addComponent(AdvertBanner::class, 'advertBanner');
