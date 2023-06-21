@@ -37,8 +37,8 @@
                                 </thead>
                                 <tbody>
 
-                                {% for statistic in statistics %}
-                                    {% for record in statistic %}
+                                {% for dateGroup in statistics %}
+                                    {% for record in dateGroup %}
                                     <tr>
                                         <td class="table__col _wide">{{ record.type }}</td>
                                         <td class="table__col _right">{{ record.count }}</td>

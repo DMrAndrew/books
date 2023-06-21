@@ -84,15 +84,40 @@ class CommercialSalesStatisticsDetail extends ComponentBase
 
         $statisticsData = [];
         foreach ($groupedByEdition as $type => $group) {
-            $statisticsData[$type][] = [
-                'type' => $type,
-                'count' => $group->count(),
-                'price' => $this->formatNumber($group->first()?->price),
-                'amount' => $this->formatNumber($group->sum('price')),
-                'tax_rate' => $group->first()?->tax_rate . '%',
-                'tax_value' => $this->formatNumber($group->sum('tax_value')),
-                'reward' => $this->formatNumber($group->sum('reward_value')),
-            ];
+            $group->each(function ($sell) use (&$statisticsData, $type) {
+                $statisticsData[$type][] = [
+                    'id' => $sell->id,
+                    'type' => $type,
+                    'count' => 1,
+                    'price' => $this->formatNumber($sell->price),
+                    'amount' => $this->formatNumber($sell->price),
+                    'tax_rate' => $sell->tax_rate . '%',
+                    'tax_value' => $this->formatNumber($sell->tax_value),
+                    'reward' => $this->formatNumber($sell->reward_value),
+                ];
+            });
+
+
+            /**
+             * Collapse items with same [type, price, tax_rate]
+             */
+            foreach ($statisticsData[$type] as $keyI => $itemI) {
+                foreach ($statisticsData[$type] as &$itemJ) {
+                    if (
+                        $itemI['id'] !== $itemJ['id']
+                        && $itemI['type'] === $itemJ['type']
+                        && $itemI['price'] === $itemJ['price']
+                        && $itemI['tax_rate'] === $itemJ['tax_rate']
+                    ) {
+                        $itemJ['amount'] = $this->formatNumber((int)$itemJ['amount'] + (int)$itemI['amount']);
+                        $itemJ['tax_value'] = $this->formatNumber((int)$itemJ['tax_value'] + (int)$itemI['tax_value']);
+                        $itemJ['reward'] = $this->formatNumber((int)$itemJ['reward'] + (int)$itemI['reward']);
+                        $itemJ['count'] ++;
+
+                        unset($statisticsData[$type][$keyI]);
+                    }
+                }
+            }
         }
         $this->page['statistics'] = $statisticsData;
 
