@@ -106,7 +106,5 @@ class CommercialSalesStatisticsDetail extends ComponentBase
             'sells_reward_total' => $this->formatNumber($sellStatistics->sum('reward_value')),
         ];
         $this->page['summary'] = $summary;
-
-        //dd($summary);
     }
 }
