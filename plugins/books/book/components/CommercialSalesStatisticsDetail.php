@@ -97,7 +97,6 @@ class CommercialSalesStatisticsDetail extends ComponentBase
                 ];
             });
 
-
             /**
              * Collapse items with same [type, price, tax_rate]
              */
