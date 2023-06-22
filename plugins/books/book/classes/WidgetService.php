@@ -333,7 +333,7 @@ class WidgetService
 
     public function todayDiscount()
     {
-        return $this->query()->activeDiscountExist();
+        return $this->query()->notFree()->activeDiscountExist();
     }
 
     public function recommend()
