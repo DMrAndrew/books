@@ -86,8 +86,19 @@
                         *
                         {% endif %}
                     </div>
-                    <input name="password" class="ui-input-item _size-32" type="password">
-
+                    <div class="password-block">
+                        <input name="password" class="ui-input-item _size-32 personal-area__wrap _indent-small"
+                               type="password">
+                        <button class="password-block__toggle " type="button" onclick="togglePassword(event)">
+                            <svg class="password-block__ico">
+                                <use
+                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-off-stroked-16' | theme}}"></use>
+                            </svg>
+                            <svg class="password-block__ico">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
+                            </svg>
+                        </button>
+                    </div>
                     <div class="ui-select-hitn"></div>
                     <div class="ui-select-error" data-validate-for="password"></div>
                 </div>
@@ -99,8 +110,19 @@
                         *
                         {% endif %}
                     </div>
-                    <input name="password_confirmation" class="ui-input-item _size-32" type="password">
-
+                    <div class="password-block">
+                        <input name="password_confirmation"
+                               class="ui-input-item _size-32 personal-area__wrap _indent-small" type="password">
+                        <button class="password-block__toggle " type="button" onclick="togglePassword(event)">
+                            <svg class="password-block__ico">
+                                <use
+                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-off-stroked-16' | theme}}"></use>
+                            </svg>
+                            <svg class="password-block__ico">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
+                            </svg>
+                        </button>
+                    </div>
                     <div class="ui-select-hitn"></div>
                     <div class="ui-select-error" data-validate-for="password_confirmation"></div>
                 </div>
