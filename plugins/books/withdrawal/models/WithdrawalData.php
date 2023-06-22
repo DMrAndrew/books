@@ -1,8 +1,8 @@
 <?php namespace Books\Withdrawal\Models;
 
-use Books\Book\Classes\Enums\EmploymentTypeEnum;
-use Books\Book\Classes\Enums\WithdrawalAgreementStatusEnum;
-use Books\Book\Classes\Enums\WithdrawalStatusEnum;
+use Books\Withdrawal\Classes\Enums\EmploymentTypeEnum;
+use Books\Withdrawal\Classes\Enums\WithdrawalAgreementStatusEnum;
+use Books\Withdrawal\Classes\Enums\WithdrawalStatusEnum;
 use Books\Profile\Models\Profile;
 use Model;
 use October\Rain\Database\Traits\Validation;
@@ -16,19 +16,15 @@ class WithdrawalData extends Model
 {
     use Validation;
 
-    /**
-     * @var string table name
-     */
     public $table = 'books_withdrawal_data';
 
-    /**
-     * @var array rules for validation
-     */
     public $rules = [
         'profile_id' => 'required|exists:books_profile_profiles,id',
+
         'agreement_status' => 'required',
         'withdrawal_status' => 'required',
         'withdraw_frozen' => 'required',
+
         'fio' => 'required|string',
         'email' => 'required|email',
         'birthday' => 'required',
@@ -36,7 +32,7 @@ class WithdrawalData extends Model
         'passport_date' => 'required',
         'passport_issued_by' => 'required',
         'address' => 'required',
-        'inn' => 'required|min:9|max:12',
+        'inn' => 'required|numeric|min:9|max:12',
         'employment_type' => 'required',
         'employment_register_number' => 'required', //номер ИП
         'bank_beneficiary' => 'required', // Банк получатель
@@ -48,11 +44,32 @@ class WithdrawalData extends Model
         'bank_corr_account' => 'required',
         'approved_at' => 'required',
     ];
-    public $fillable = [];
 
-    /**
-     * @var array dates attributes that should be mutated to dates
-     */
+    public $fillable = [
+        'profile_id',
+        'agreement_status',
+        'withdrawal_status',
+        'withdraw_frozen',
+        'fio',
+        'email',
+        'birthday',
+        'passport_number',
+        'passport_date',
+        'passport_issued_by',
+        'address',
+        'inn',
+        'employment_type',
+        'employment_register_number',
+        'bank_beneficiary',
+        'bank_inn',
+        'bank_kpp',
+        'bank_receiver',
+        'bank_account',
+        'bank_bik',
+        'bank_corr_account',
+        'approved_at',
+    ];
+
     protected $dates = [
         'created_at',
         'updated_at',
@@ -60,9 +77,6 @@ class WithdrawalData extends Model
         'passport_date',
     ];
 
-    /**
-     * @var array Attributes to be cast to native types
-     */
     protected $casts = [
         'agreement_status' => WithdrawalAgreementStatusEnum::class,
         'withdrawal_status' => WithdrawalStatusEnum::class,

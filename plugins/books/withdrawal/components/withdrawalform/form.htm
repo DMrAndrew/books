@@ -1,0 +1,138 @@
+<div class="personal-area__container ui-grid-container ui-grid-gap">
+
+    <div class="ui-col-sm-12">
+            <form class="personal-area__wrapper" data-request="onSaveWithdrawal"
+                  data-request-validate="true"
+                  data-request-flash="true">
+            <div class="personal-area__wrap _indent-large ui-text--bold ui-text-head--2">Основная информация</div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Введите ФИО</label>
+                <input class="ui-input-item _size-32" type="text" name="fio" value="{{ withdrawal.fio }}" placeholder="Иванов Иван Иванович">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Введите электронную почту</label>
+                <input class="ui-input-item _size-32" type="text" name="email" value="{{ withdrawal.email }}" placeholder="ivanovivan@mail.ru">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Введите дату рождения</label>
+                <input name="birthday" class="ui-input-item _size-32" type="text" id="datepicker_birthday"
+                       value="{{ withdrawal and withdrawal.birthday ? carbon(withdrawal.birthday).format('d.m.Y') : ''}}" placeholder="23.10.2000">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Серия и номер паспорта</label>
+                <input class="ui-input-item _size-32" type="text" name="passport_number" value="{{ withdrawal.passport_number }}" placeholder="2319 665893">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Дата выдачи паспорта</label>
+                <input name="passport_date" class="ui-input-item _size-32" type="text" id="datepicker_passport_date"
+                       value="{{ withdrawal and withdrawal.passport_date ? carbon(withdrawal.passport_date).format('d.m.Y') : ''}}" placeholder="11.10.2020">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Кем выдан</label>
+                <input class="ui-input-item _size-32" type="text" name="passport_issued_by" value="{{ withdrawal.passport_issued_by }}" placeholder="УМВД Кемеровской области">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Зарегистрирован</label>
+                <input class="ui-input-item _size-32" type="text" name="address" value="{{ withdrawal.address }}" placeholder="ул. Туполева, д.25, кв.13">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label _violet">Скан паспорта (с пропиской)</label>
+                <label class="ui-input-label">Скан паспорта с пропиской (данные паспорта не хранятся и удаляются сразу после проверки)</label>
+
+                <button type="file" class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Загрузить</button>
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">ИНН</label>
+                <input class="ui-input-item _size-32" type="text" name="inn" value="{{ withdrawal.inn }}" placeholder="121314555771919">
+            </div>
+
+            <div class="personal-area__wrap _indent-large ui-select">
+                <div class="ui-select-header">
+                    <label class="ui-select-label">Тип занятости</label>
+                </div>
+                <div class="ui-select-container">
+                    <div class="ui-select-item _size-32">
+                        <select class="book-select" id="employment_type" name="employment_type" style="display: none">
+                            <option value="">Выберите тип</option>
+                            {% for type in employmentTypes %}
+                            <option style="display: none"
+                                {{ withdrawal.employment_type.value == type.value ? 'selected' : '' }}
+                                value="{{ type.value }}">
+                                {{ type.getLabel }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <svg class="ui-select-item-icon chevron_up _fake">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-up-16' | theme }}"></use>
+                        </svg>
+                        <svg class="ui-select-item-icon chevron_down _fake">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme }}"></use>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Основной государственный регистрационный номер индивидуального предпринимателя</label>
+                <input class="ui-input-item _size-32" type="text" name="employment_register_number"
+                       value="{{ withdrawal.employment_register_number }}" placeholder="">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Банковские реквизиты:</label>
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">ИНН Банка</label>
+                <input class="ui-input-item _size-32" type="text" name="bank_inn" value="{{ withdrawal.bank_inn }}" placeholder="345546456">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">КПП Банка</label>
+                <input class="ui-input-item _size-32" type="text" name="bank_kpp" value="{{ withdrawal.bank_kpp }}" placeholder="345546456">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Получатель</label>
+                <input class="ui-input-item _size-32" type="text" name="bank_receiver" value="{{ withdrawal.bank_receiver }}" placeholder="Иванов Иван Иванович">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Номер счета</label>
+                <input class="ui-input-item _size-32" type="text" name="bank_account" value="{{ withdrawal.bank_account }}" placeholder="43565636746">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">БИК</label>
+                <input class="ui-input-item _size-32" type="text" name="bank_bik" value="{{ withdrawal.bank_bik }}" placeholder="04909428">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Банк-получатель</label>
+                <input class="ui-input-item _size-32" type="text" name="bank_beneficiary" value="{{ withdrawal.bank_beneficiary }}" placeholder="АО “Тинькофф банк”">
+            </div>
+
+            <div class="ui-input personal-area__wrap _indent-large">
+                <label class="ui-input-label">Корр.счет</label>
+                <input class="ui-input-item _size-32" type="text" name="bank_corr_account" value="{{ withdrawal.bank_corr_account }}" placeholder="669579058956567">
+            </div>
+
+
+            <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Подтвердить данные</button>
+        </form>
+    </div>
+</div>
+<script>
+    initDatepicker(`#datepicker_birthday`, {yearRange: "c-60:c"});
+    initDatepicker(`#datepicker_passport_date`, {yearRange: "c-60:c"});
+    iniSelect();
+</script>

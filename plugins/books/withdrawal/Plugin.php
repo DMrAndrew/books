@@ -1,6 +1,7 @@
 <?php namespace Books\Withdrawal;
 
 use Backend;
+use Books\Withdrawal\Components\WithdrawalForm;
 use System\Classes\PluginBase;
 
 /**
@@ -10,6 +11,8 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
+    public $require = ['RainLab.User', 'Books.Profile'];
+
     /**
      * pluginDetails about this plugin.
      */
@@ -44,10 +47,8 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
         return [
-            'Books\Withdrawal\Components\MyComponent' => 'myComponent',
+            WithdrawalForm::class => 'WithdrawalForm',
         ];
     }
 
@@ -56,12 +57,10 @@ class Plugin extends PluginBase
      */
     public function registerPermissions()
     {
-        return []; // Remove this line to activate
-
         return [
-            'books.withdrawal.some_permission' => [
-                'tab' => 'Withdrawal',
-                'label' => 'Some permission'
+            'books.withdrawal.access' => [
+                'tab' => 'withdrawal',
+                'label' => 'access'
             ],
         ];
     }
@@ -75,7 +74,7 @@ class Plugin extends PluginBase
 
         return [
             'withdrawal' => [
-                'label' => 'Withdrawal',
+                'label' => 'Вывод средств',
                 'url' => Backend::url('books/withdrawal/mycontroller'),
                 'icon' => 'icon-leaf',
                 'permissions' => ['books.withdrawal.*'],

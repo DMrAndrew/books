@@ -1,6 +1,10 @@
 <?php namespace Books\Withdrawal\Components;
 
+use Books\Withdrawal\Classes\Enums\EmploymentTypeEnum;
+use Books\Withdrawal\Models\WithdrawalData;
 use Cms\Classes\ComponentBase;
+use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 
 /**
  * WithdrawalForm Component
@@ -9,6 +13,8 @@ use Cms\Classes\ComponentBase;
  */
 class WithdrawalForm extends ComponentBase
 {
+    protected ?User $user;
+
     public function componentDetails()
     {
         return [
@@ -23,5 +29,34 @@ class WithdrawalForm extends ComponentBase
     public function defineProperties()
     {
         return [];
+    }
+
+    public function init()
+    {
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
+        }
+        $this->user = Auth::getUser();
+    }
+
+    public function onRender()
+    {
+        $this->page['withdrawal'] = $this->getWithdrawal();
+        $this->page['employmentTypes'] = EmploymentTypeEnum::cases();
+    }
+
+    /**
+     * @return WithdrawalData|null
+     */
+    private function getWithdrawal(): ?WithdrawalData
+    {
+        return WithdrawalData
+            ::where('profile_id', $this->user->profile->id)
+            ->first();
+    }
+
+    public function onSaveWithdrawal()
+    {
+        dd(post());
     }
 }

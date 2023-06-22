@@ -1,6 +1,6 @@
 <?php
 
-namespace Books\Book\Classes\Enums;
+namespace Books\Withdrawal\Classes\Enums;
 
 enum WithdrawalAgreementStatusEnum: string
 {
