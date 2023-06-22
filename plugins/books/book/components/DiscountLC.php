@@ -1,6 +1,5 @@
 <?php namespace Books\Book\Components;
 
-use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\PriceTag;
 use Books\Book\Models\Book;
 use Books\Book\Models\Discount;
@@ -86,7 +85,7 @@ class DiscountLC extends ComponentBase
         return $this->query()->find(post('value') ?? post('book_id') ?? $this->param('book_id'));
     }
 
-    public function onChangeEdition()
+    public function onChangeEdition(): array
     {
         return [
             '#create_discount_modal_content' => $this->renderPartial('@discount_modal_content', array_merge(post(), [
