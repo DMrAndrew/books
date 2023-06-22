@@ -5,6 +5,7 @@ use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\SellStatisticSellTypeEnum;
 use Books\Profile\Models\Profile;
 use Model;
+use October\Rain\Database\Traits\Validation;
 
 /**
  * SellStatistics Model
@@ -13,7 +14,7 @@ use Model;
  */
 class SellStatistics extends Model
 {
-    use \October\Rain\Database\Traits\Validation;
+    use Validation;
 
     /**
      * @var string table name
