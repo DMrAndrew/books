@@ -1,10 +1,17 @@
 <?php namespace Books\Withdrawal\Components;
 
 use Books\Withdrawal\Classes\Enums\EmploymentTypeEnum;
+use Books\Withdrawal\Classes\Enums\WithdrawalAgreementStatusEnum;
+use Books\Withdrawal\Classes\Enums\WithdrawalStatusEnum;
 use Books\Withdrawal\Models\WithdrawalData;
+use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
+use Exception;
+use Flash;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use ValidationException;
+use Validator;
 
 /**
  * WithdrawalForm Component
@@ -57,6 +64,30 @@ class WithdrawalForm extends ComponentBase
 
     public function onSaveWithdrawal()
     {
-        dd(post());
+        try {
+            $formData = array_merge(post(), [
+                'profile_id' => $this->user->profile->id,
+                'agreement_status' => WithdrawalAgreementStatusEnum::SIGNING,
+                'withdrawal_status' => WithdrawalStatusEnum::ALLOWED,
+                //'birthday' => Carbon::createFromFormat('d.m.Y', post('birthday')),
+                //'passport_date' => Carbon::createFromFormat('d.m.Y', post('passport_date')),
+            ]);
+
+            $validator = Validator::make(
+                $formData,
+                collect((new WithdrawalData())->rules)->toArray()
+            );
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+
+            WithdrawalData::updateOrCreate([
+                'profile_id' => $this->user->profile->id,
+            ], $formData);
+
+        } catch (Exception $ex) {
+            Flash::error($ex->getMessage());
+            return [];
+        }
     }
 }

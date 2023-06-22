@@ -23,18 +23,21 @@ class WithdrawalData extends Model
 
         'agreement_status' => 'required',
         'withdrawal_status' => 'required',
-        'withdraw_frozen' => 'required',
+        'withdraw_frozen' => 'sometimes|boolean',
 
         'fio' => 'required|string',
         'email' => 'required|email',
         'birthday' => 'required',
+
         'passport_number' => 'required|string',
         'passport_date' => 'required',
         'passport_issued_by' => 'required',
         'address' => 'required',
-        'inn' => 'required|numeric|min:9|max:12',
+
+        'inn' => 'required|min:9|max:12',
         'employment_type' => 'required',
         'employment_register_number' => 'required', //номер ИП
+
         'bank_beneficiary' => 'required', // Банк получатель
         'bank_inn' => 'required',
         'bank_kpp' => 'required',
@@ -42,7 +45,6 @@ class WithdrawalData extends Model
         'bank_account' => 'required',
         'bank_bik' => 'required',
         'bank_corr_account' => 'required',
-        'approved_at' => 'required',
     ];
 
     public $fillable = [

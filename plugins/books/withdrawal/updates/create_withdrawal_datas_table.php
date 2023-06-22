@@ -1,8 +1,8 @@
 <?php namespace Books\Withdrawal\Updates;
 
-use Books\Book\Classes\Enums\EmploymentTypeEnum;
-use Books\Book\Classes\Enums\WithdrawalAgreementStatusEnum;
-use Books\Book\Classes\Enums\WithdrawalStatusEnum;
+use Books\Withdrawal\Classes\Enums\EmploymentTypeEnum;
+use Books\Withdrawal\Classes\Enums\WithdrawalAgreementStatusEnum;
+use Books\Withdrawal\Classes\Enums\WithdrawalStatusEnum;
 use Schema;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
@@ -29,7 +29,7 @@ return new class extends Migration
 
             $table->string('fio')->nullable();
             $table->string('email')->nullable();
-            $table->dateTime('birthday')->nullable();
+            $table->timestamp('birthday')->nullable();
             $table->string('passport_number')->nullable();
             $table->string('passport_date')->nullable();
             $table->string('passport_issued_by')->nullable();
@@ -47,7 +47,7 @@ return new class extends Migration
             $table->string('bank_bik');
             $table->string('bank_corr_account');
 
-            $table->dateTime('approved_at')->nullable();
+            $table->timestamp('approved_at')->nullable();
             $table->timestamps();
         });
     }

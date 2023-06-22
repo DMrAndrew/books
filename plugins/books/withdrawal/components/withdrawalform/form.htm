@@ -52,7 +52,7 @@
 
             <div class="ui-input personal-area__wrap _indent-large">
                 <label class="ui-input-label">ИНН</label>
-                <input class="ui-input-item _size-32" type="text" name="inn" value="{{ withdrawal.inn }}" placeholder="121314555771919">
+                <input class="ui-input-item _size-32" type="text" name="inn" maxlength="12" value="{{ withdrawal.inn }}" placeholder="121314555771919">
             </div>
 
             <div class="personal-area__wrap _indent-large ui-select">
@@ -132,7 +132,7 @@
     </div>
 </div>
 <script>
-    initDatepicker(`#datepicker_birthday`, {yearRange: "c-60:c"});
-    initDatepicker(`#datepicker_passport_date`, {yearRange: "c-60:c"});
+    initDatepicker(`#datepicker_birthday`, {yearRange: "c-60:c", dateFormat: "dd.mm.yy"});
+    initDatepicker(`#datepicker_passport_date`, {yearRange: "c-60:c", dateFormat: "dd.mm.yy"});
     iniSelect();
 </script>
