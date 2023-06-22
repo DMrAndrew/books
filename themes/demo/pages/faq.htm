@@ -1,0 +1,97 @@
+url = "/faq"
+layout = "default"
+title = "Справка авторам и читателям"
+meta_title = "Справка авторам и читателям"
+
+==
+<div class="ui-container">
+    <div style="margin-bottom: 16px"></div>
+
+    <h1 class="ui-text-head--2 ui-text--bold faq__title">Справка авторам и читателям</h1>
+
+    <div class="thematic-section thematic-section__no-padding">
+        <div class="ui-tabs-header">
+            <div class="ui-tabs-line"></div>
+            <div class="ui-tabs-header-wrapper" data-tabs="faq">
+                <div class="ui-tabs-link active" data-tab="1">Справка авторам</div>
+                <!--                <div class="ui-tabs-link" data-tab="2">Справка читателям</div>-->
+            </div>
+        </div>
+
+        <div class="ui-tabs-body _field" data-tabs="faq">
+            <div class="ui-tabs-content active" data-tab-content="1">
+                <div class="typographical-block" data-dropdown>
+                    <div class="faq__block">
+                        <div class="faq__link" data-dropdown-link="1">
+                            <span class="faq__link-text">Регистрация</span>
+                            <button class="faq__link-ico">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M13.0005 10.6851L13 2H11L11.0005 10.6851L2 10.685V12.685L11.0005 12.6851L11.0005 22H13.0005L13.0005 12.6851L22 12.6851V10.6851L13.0005 10.6851Z"
+                                        fill="black"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="faq__content" data-dropdown-content="1">
+                            <img src="{{'assets/images/faq/faq-1.png' | theme}}" alt="">
+                            <img src="{{'assets/images/faq/faq-2.png' | theme}}" alt="">
+                            <p>Для регистрации необходимо заполнить обязательные поля:</p>
+                            <img src="{{'assets/images/faq/faq-3.png' | theme}}" alt="">
+                            <p>Поля «Любимые жанры» и «Дата рождения» не являются обязательными. Их можно заполнить
+                                позже в настройках профиля. <br>
+                                В поле «Имя или псевдоним» необходимо записать свой псевдоним на сайте. Именно так вас
+                                будут называть другие пользователи портала. <br>
+                                <strong>ВНИМАНИЕ!</strong> Для того, чтобы видеть книги 18+ необходимо иметь возраст
+                                выше 18 лет! </p>
+                        </div>
+                    </div>
+                    <div class="faq__block">
+                        <div class="faq__link" data-dropdown-link="2">
+                            <span class="faq__link-text">Настройка профиля</span>
+                            <button class="faq__link-ico">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M13.0005 10.6851L13 2H11L11.0005 10.6851L2 10.685V12.685L11.0005 12.6851L11.0005 22H13.0005L13.0005 12.6851L22 12.6851V10.6851L13.0005 10.6851Z"
+                                        fill="black"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="faq__content" data-dropdown-content="2">
+                            <p>Чтобы настроить профиль, необходимо перейти в свой личный кабинет, нажав на иконку
+                                аватара, а затем выбрав пункт «Личный кабинет» в выпадающем меню</p>
+                            <img src="{{'assets/images/faq/faq-4.png' | theme}}" alt="">
+                            <p>Здесь вы сможете выбрать свой аватар, а также баннер профиля, рассказать о себе и
+                                поведать свой жизненный девиз пользователям сайта. При желании вы также можете оставить
+                                свои контакты. <br>
+                                Затем, вам следует перейти во вкладку «Настройки» в левом меню.</p>
+                            <img src="{{'assets/images/faq/faq-5.png' | theme}}" alt="">
+                            <p>Внимательно выбирайте все ваши НЕЛЮБИМЫЕ жанры, так как сайт реагирует в первую очередь
+                                на них, исключая для вас все книги с ними.</p>
+                            <p>Чтобы выбрать жанр в любимое достаточно поставить сердечко. Чтобы в нелюбимое –
+                                крестик.</p>
+                            <p>Если хотите удалить данный жанр из любимого/нелюбимого достаточно нажать повторно.</p>
+                            <p><strong>ВНИМАНИЕ!</strong> Перед выбором жанров рекомендуем вам нажать на кнопку
+                                «Сбросить все» внизу всплывающего поля с жанрами.</p>
+                            <p><strong>ОБРАТИТЕ ВНИМАНИЕ!</strong> При нажатии на крестик или сердечко раздела (Пример
+                                «Фэнтези») все поджанры автоматически выставятся любимыми/нелюбимыми.</p>
+                            <img src="{{'assets/images/faq/faq-6.png' | theme}}" alt="">
+                            <p>После того, как вы убедились в том, что выбор закончен, нажмите на кнопку
+                                «Сохранить».<br>
+                                Настройка вашего профиля завершена. </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--            <div class="ui-tabs-content" data-tab-content="2">-->
+            <!--                <div>2</div>-->
+            <!--            </div>-->
+        </div>
+    </div>
+</div>
+<script>
+    initTabs('[data-tabs="faq"]');
+    dropdownsInit();
+</script>
