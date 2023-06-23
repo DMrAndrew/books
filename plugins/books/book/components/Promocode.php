@@ -1,6 +1,7 @@
 <?php namespace Books\Book\Components;
 
 use Books\Book\Classes\PromocodeGenerationLimiter;
+use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\Promocode as PromocodeModel;
 use Cms\Classes\ComponentBase;
@@ -59,7 +60,7 @@ class Promocode extends ComponentBase
     public function vals()
     {
         return [
-            'books' => $this->user->profile->books()->notFree()->get(),
+            'books' => $this->getAccountBooks(),
             'bookItem' => $this->getBook(),
             'promocodes' => $this->getBooksPromocodes()
         ];
@@ -67,8 +68,8 @@ class Promocode extends ComponentBase
 
     public function getBook()
     {
-        return $this->user->profile
-            ->books()
+        return $this
+            ->getAccountBooks()
             ->find(post('value') ?? post('book_id') ?? $this->param('book_id'));
     }
 
@@ -128,11 +129,29 @@ class Promocode extends ComponentBase
         // todo реализовать после оплаты/покупки
     }
 
+    /**
+     * @return Collection|null
+     */
     private function getBooksPromocodes(): ?Collection
     {
-
         return $this->book?->ebook?->promocodes()
             ->with(['user'])
             ->get() ?? new Collection();
+    }
+
+    /**
+     * @return Collection
+     */
+    private function getAccountBooks(): Collection
+    {
+        $allAccountProfilesIds = $this->user->profiles->pluck('id')->toArray();
+        $booksIds = Author
+            ::with(['book'])
+            ->whereIn('profile_id', $allAccountProfilesIds)
+            ->get()
+            ->pluck('book_id')
+            ->toArray();
+
+        return Book::whereIn('id', $booksIds)->notFree()->get();
     }
 }
