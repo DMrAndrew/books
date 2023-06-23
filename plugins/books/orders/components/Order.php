@@ -117,10 +117,25 @@ class Order extends ComponentBase
 
         $order = $this->getOrder($this->getUser(), $this->book);
 
+        /**
+         * Zero cost
+         */
+        if ($this->orderService->calculateAmount($order) === 0) {
+            $this->orderService->approveOrder($order);
+
+            return Redirect::to($this->currentPageUrl());
+        }
+
+        /**
+         * Pay with card
+         */
         if ($payType === 'card') {
             return Redirect::to(url('/payment/charge', ['order' => $order->id]));
         }
 
+        /**
+         * Pay from balance
+         */
         if ($payType === 'balance') {
             try {
                 $this->orderService->payFromDeposit($order);
