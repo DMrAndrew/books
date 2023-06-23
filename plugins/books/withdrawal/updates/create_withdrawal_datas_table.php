@@ -21,7 +21,7 @@ return new class extends Migration
     {
         Schema::create('books_withdrawal_data', function(Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('profile_id');
+            $table->unsignedBigInteger('user_id');
 
             $table->string('agreement_status')->default(WithdrawalAgreementStatusEnum::SIGNING->value);
             $table->string('withdrawal_status')->default(WithdrawalStatusEnum::ALLOWED->value);

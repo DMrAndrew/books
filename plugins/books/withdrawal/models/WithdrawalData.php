@@ -3,9 +3,9 @@
 use Books\Withdrawal\Classes\Enums\EmploymentTypeEnum;
 use Books\Withdrawal\Classes\Enums\WithdrawalAgreementStatusEnum;
 use Books\Withdrawal\Classes\Enums\WithdrawalStatusEnum;
-use Books\Profile\Models\Profile;
 use Model;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Models\User;
 
 /**
  * WithdrawalData Model
@@ -19,7 +19,7 @@ class WithdrawalData extends Model
     public $table = 'books_withdrawal_data';
 
     public $rules = [
-        'profile_id' => 'required|exists:books_profile_profiles,id',
+        'user_id' => 'required|exists:users,id',
 
         'agreement_status' => 'required',
         'withdrawal_status' => 'required',
@@ -48,7 +48,7 @@ class WithdrawalData extends Model
     ];
 
     public $fillable = [
-        'profile_id',
+        'user_id',
         'agreement_status',
         'withdrawal_status',
         'withdraw_frozen',
@@ -89,6 +89,6 @@ class WithdrawalData extends Model
      * @var array
      */
     public $belongsTo = [
-        'profile' => [Profile::class],
+        'user' => [User::class],
     ];
 }

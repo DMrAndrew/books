@@ -58,7 +58,7 @@ class WithdrawalForm extends ComponentBase
     private function getWithdrawal(): ?WithdrawalData
     {
         return WithdrawalData
-            ::where('profile_id', $this->user->profile->id)
+            ::where('user_id', $this->user->id)
             ->first();
     }
 
@@ -66,11 +66,15 @@ class WithdrawalForm extends ComponentBase
     {
         try {
             $formData = array_merge(post(), [
-                'profile_id' => $this->user->profile->id,
+                'user_id' => $this->user->id,
                 'agreement_status' => WithdrawalAgreementStatusEnum::SIGNING,
                 'withdrawal_status' => WithdrawalStatusEnum::ALLOWED,
-                //'birthday' => Carbon::createFromFormat('d.m.Y', post('birthday')),
-                //'passport_date' => Carbon::createFromFormat('d.m.Y', post('passport_date')),
+                'birthday' => post('birthday')
+                    ? Carbon::createFromFormat('d.m.Y', post('birthday'))
+                    : null,
+                'passport_date' => post('passport_date')
+                    ? Carbon::createFromFormat('d.m.Y', post('passport_date'))
+                    : null,
             ]);
 
             $validator = Validator::make(
@@ -82,7 +86,7 @@ class WithdrawalForm extends ComponentBase
             }
 
             WithdrawalData::updateOrCreate([
-                'profile_id' => $this->user->profile->id,
+                'user_id' => $this->user->id,
             ], $formData);
 
         } catch (Exception $ex) {
