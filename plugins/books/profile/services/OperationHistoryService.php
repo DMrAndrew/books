@@ -164,7 +164,7 @@ class OperationHistoryService implements OperationHistoryServiceContract
 
         $params = [
             'url' => url('author-page', ['profile_id' => $user->id]),
-            'name' => $user->username,
+            'name' => $user->profile->username,
             'amount' => $donationAmount,
         ];
 

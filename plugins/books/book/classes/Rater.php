@@ -158,8 +158,8 @@ class Rater
         $this->applyStats(
             StatsEnum::LIBS,
             StatsEnum::COMMENTS,
+            StatsEnum::RATE,
             StatsEnum::READ,
-            StatsEnum::LIKES,
             StatsEnum::UPDATE_FREQUENCY,
             StatsEnum::READ_TIME,
             StatsEnum::collected_gain_popularity_rate,
