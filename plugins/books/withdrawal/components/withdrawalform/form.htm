@@ -44,10 +44,12 @@
             </div>
 
             <div class="ui-input personal-area__wrap _indent-large">
-                <label class="ui-input-label _violet">Скан паспорта (с пропиской)</label>
+                <label class="ui-input-label _violet"><a href="#" class="_violet">Скан паспорта (с пропиской)</a></label>
                 <label class="ui-input-label">Скан паспорта с пропиской (данные паспорта не хранятся и удаляются сразу после проверки)</label>
 
-                <button type="file" class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Загрузить</button>
+<!--                <button type="file" class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3 ui-text&#45;&#45;medium">Загрузить</button>-->
+
+                    {% component 'fileUploader' %}
             </div>
 
             <div class="ui-input personal-area__wrap _indent-large">

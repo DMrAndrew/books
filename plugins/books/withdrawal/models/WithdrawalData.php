@@ -6,6 +6,7 @@ use Books\Withdrawal\Classes\Enums\WithdrawalStatusEnum;
 use Model;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
+use System\Models\File;
 
 /**
  * WithdrawalData Model
@@ -45,6 +46,7 @@ class WithdrawalData extends Model
         'bank_account' => 'required',
         'bank_bik' => 'required',
         'bank_corr_account' => 'required',
+        'files' => 'nullable|image|mimes:*|max:3072',
     ];
 
     public $fillable = [
@@ -90,5 +92,9 @@ class WithdrawalData extends Model
      */
     public $belongsTo = [
         'user' => [User::class],
+    ];
+
+    public $attachMany = [
+        'files' => File::class,
     ];
 }

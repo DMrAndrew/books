@@ -1,5 +1,6 @@
 <?php namespace Books\Withdrawal\Components;
 
+use Books\FileUploader\Components\ImageUploader;
 use Books\Withdrawal\Classes\Enums\EmploymentTypeEnum;
 use Books\Withdrawal\Classes\Enums\WithdrawalAgreementStatusEnum;
 use Books\Withdrawal\Classes\Enums\WithdrawalStatusEnum;
@@ -21,6 +22,7 @@ use Validator;
 class WithdrawalForm extends ComponentBase
 {
     protected ?User $user;
+    private ?WithdrawalData $withdrawal;
 
     public function componentDetails()
     {
@@ -44,6 +46,19 @@ class WithdrawalForm extends ComponentBase
             return $redirect;
         }
         $this->user = Auth::getUser();
+        $this->withdrawal = $this->getWithdrawal();
+
+        $component = $this->addComponent(
+            ImageUploader::class,
+            'fileUploader',
+            [
+                'deferredBinding' => true,
+                "placeholderText" => "Выберите файл или перетащите в это окно",
+                "maxSize" => 30,
+                "fileTypes" => "*",
+            ]
+        );
+        $component->bindModel('files', $this->withdrawal);
     }
 
     public function onRender()
