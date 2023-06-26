@@ -52,10 +52,12 @@ class WithdrawalForm extends ComponentBase
             ImageUploader::class,
             'fileUploader',
             [
-                'deferredBinding' => true,
-                "placeholderText" => "Выберите файл или перетащите в это окно",
+                'modelClass' => WithdrawalData::class,
+                'deferredBinding' => !(bool)$this->withdrawal->id,
+                "placeholderText" => "Скан паспорта с пропиской (данные паспорта не хранятся и удаляются сразу после проверки)",
                 "maxSize" => 30,
-                "fileTypes" => "*",
+                "isMulti" => true,
+                "fileTypes" => ".gif,.jpg,.jpeg,.png",
             ]
         );
         $component->bindModel('files', $this->withdrawal);

@@ -46,7 +46,8 @@ class WithdrawalData extends Model
         'bank_account' => 'required',
         'bank_bik' => 'required',
         'bank_corr_account' => 'required',
-        'files' => 'nullable|image|mimes:*|max:3072',
+        'files' => 'sometimes|array',
+        'files.*' => 'mimes:gif,jpg,jpeg,png|max:3072',
     ];
 
     public $fillable = [
@@ -72,6 +73,7 @@ class WithdrawalData extends Model
         'bank_bik',
         'bank_corr_account',
         'approved_at',
+        'files',
     ];
 
     protected $dates = [
