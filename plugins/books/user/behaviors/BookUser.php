@@ -32,7 +32,6 @@ class BookUser extends ExtensionBase
         $this->parent->hasMany['ownedBooks'] = [UserBook::class];
         $this->parent->hasMany['orders'] = [Order::class];
         $this->parent->addValidationRule('birthday', 'required');
-        $this->parent->addValidationRule('birthday', 'date');
         $this->parent->addValidationRule('show_birthday', 'boolean');
         $this->parent->addValidationRule('username', 'required');
 
