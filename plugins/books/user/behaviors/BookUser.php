@@ -35,10 +35,10 @@ class BookUser extends ExtensionBase
         $this->parent->addValidationRule('show_birthday', 'boolean');
         $this->parent->addValidationRule('username', 'required');
 
-        $this->parent->customMessages = [
+        $this->parent->customMessages = array_merge($this->parent->customMessages, [
             'birthday.date' => 'Поле Дата рождения должно быть корректной датой',
             'birthday.required' => 'Поле Дата рождения обязательное для заполнения',
-        ];
+        ]);
 
         $this->parent->addFillable([
             'birthday',
