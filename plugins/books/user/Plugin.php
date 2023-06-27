@@ -58,6 +58,10 @@ class Plugin extends PluginBase
         Event::listen('rainlab.user.register', function (User $model) {
             (new UserEventHandler())->afterCreate($model->fresh());
         });
+
+        Event::listen('rainlab.user.getNotificationVars', function(User $model) {
+            return false;
+        });
     }
 
     /**
