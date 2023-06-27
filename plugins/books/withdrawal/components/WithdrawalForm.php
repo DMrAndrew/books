@@ -1,6 +1,7 @@
 <?php namespace Books\Withdrawal\Components;
 
 use Books\FileUploader\Components\ImageUploader;
+use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
 use Books\Withdrawal\Classes\Enums\EmploymentTypeEnum;
 use Books\Withdrawal\Classes\Enums\WithdrawalAgreementStatusEnum;
 use Books\Withdrawal\Classes\Enums\WithdrawalStatusEnum;
@@ -11,6 +12,7 @@ use Exception;
 use Flash;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Redirect;
 use ValidationException;
 use Validator;
 
@@ -110,5 +112,45 @@ class WithdrawalForm extends ComponentBase
             Flash::error($ex->getMessage());
             return [];
         }
+
+        return Redirect::refresh();
+    }
+
+    public function onSetFillingStatus()
+    {
+        try {
+            $this->withdrawal->update([
+                'agreement_status' => WithdrawalAgreementStatusEnum::FILLING,
+            ]);
+        } catch (Exception $ex) {
+            Flash::error($ex->getMessage());
+            return [];
+        }
+
+        return Redirect::refresh();
+    }
+
+    public function onSendVerificationCode()
+    {
+        try {
+            $agreementService = app()->make(AgreementServiceContract::class, ['user' => $this->user]);
+            $agreementService->sendVerificationCode();
+
+            $this->withdrawal->update([
+                'agreement_status' => WithdrawalAgreementStatusEnum::VERIFYING,
+            ]);
+        } catch (Exception $ex) {
+            Flash::error($ex->getMessage());
+            return [];
+        }
+
+        return [
+            '#verification_input' => $this->renderPartial('withdrawal/verify')
+        ];
+    }
+
+    public function onVerify()
+    {
+        dd(post());
     }
 }

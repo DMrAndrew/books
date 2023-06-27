@@ -1,5 +1,6 @@
 <?php namespace Books\Withdrawal\Models;
 
+use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
 use Books\Withdrawal\Classes\Enums\EmploymentTypeEnum;
 use Books\Withdrawal\Classes\Enums\WithdrawalAgreementStatusEnum;
 use Books\Withdrawal\Classes\Enums\WithdrawalStatusEnum;
@@ -99,4 +100,11 @@ class WithdrawalData extends Model
     public $attachMany = [
         'files' => File::class,
     ];
+
+    public function agreementHTML(): string
+    {
+        $agreementService = app()->make(AgreementServiceContract::class, ['user' => $this->user]);
+
+        return $agreementService->getAgreementHTML();
+    }
 }

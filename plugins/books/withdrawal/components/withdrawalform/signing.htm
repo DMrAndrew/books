@@ -1,0 +1,26 @@
+<div class="personal-area__container ui-grid-container ui-grid-gap">
+
+    <div class="ui-col-sm-12">
+        <div>
+            {{ withdrawal.agreementHTML }}
+        </div>
+
+        <div id="verification_input">
+            <form class="personal-area__wrapper">
+                <button type="button"
+                        data-request="onSendVerificationCode"
+                        data-request-flash="true"
+                        class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">
+                    Подписать
+                </button>
+                <button
+                   type="button"
+                   data-request="onSetFillingStatus"
+                   data-request-flash="true"
+                   class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">
+                    Изменить
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

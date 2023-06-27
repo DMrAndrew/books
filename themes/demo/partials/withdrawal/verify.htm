@@ -1,0 +1,18 @@
+<form class="personal-area__wrapper" data-request="onSigning"
+      data-request-validate="true"
+      data-request-flash="true">
+
+
+    <div class="ui-input personal-area__wrap _indent-large">
+        <label class="ui-input-label">Введите 6-значный код подтверждения, отправленный на вашу почту</label>
+        <input class="ui-input-item _size-32" type="text" name="verification_code" value="" placeholder="">
+    </div>
+
+    <button type="button"
+            data-request="onSendVerificationCode"
+            data-request-flash="true"
+            class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">
+        Подтвердить
+    </button>
+</form>
+

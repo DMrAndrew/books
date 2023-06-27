@@ -1,6 +1,8 @@
 <?php namespace Books\Withdrawal;
 
 use Backend;
+use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
+use Books\Withdrawal\Classes\Services\AgreementService;
 use Books\Withdrawal\Components\WithdrawalForm;
 use System\Classes\PluginBase;
 
@@ -31,7 +33,7 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-        //
+        $this->app->bind(AgreementServiceContract::class, AgreementService::class);
     }
 
     /**
