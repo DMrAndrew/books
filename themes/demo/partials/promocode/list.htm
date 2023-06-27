@@ -16,7 +16,7 @@
             <td>
                 {% if promocode.user %}
                 <div class="ui-link _violet">
-                    <a href="/author-page/{{promocode.user.id}}" target="_blank">{{ promocode.user.name }}</a>
+                    <a href="/author-page/{{ promocode.activated_by.id }}" target="_blank">{{ promocode.activated_by.name }}</a>
                 </div>
                 {% endif %}
             </td>

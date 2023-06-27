@@ -250,6 +250,7 @@ class OrderService implements OrderServiceContract
             'is_activated' => true,
             'activated_at' => Carbon::now(),
             'user_id' => $order->user_id,
+            'used_by_profile_id' => $order->user->profile->id
         ]);
     }
 

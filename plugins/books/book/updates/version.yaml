@@ -80,3 +80,6 @@
 1.0.23:
     - 'ip для трекеров'
     - add_trackers_ip.php
+1.0.24:
+    - 'Поле used_by_profile_id в промокодах'
+    - update_promocodes_table_add_used_by_profile_id.php
