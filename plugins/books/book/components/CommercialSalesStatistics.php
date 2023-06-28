@@ -144,6 +144,7 @@ class CommercialSalesStatistics extends ComponentBase
         $summary = [
             'sells_count' => $sellStatistics->count(),
             'sells_sum_amount' => $this->formatNumber($sellStatistics->sum('price')),
+            'sells_reward_amount' => $this->formatNumber($sellStatistics->sum('reward_value')),
         ];
 
         return [

@@ -8,12 +8,14 @@
                 </svg>
                 <p>Статистика продаж</p>
             </a>
+            {% if this.environment == 'local' %}
             <a href="{{ 'lc-commercial-withdraw'|page }}" class="commerce-control__column wrapper">
                 <svg class="square-32">
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#currency-ruble-strocked-32' | theme}}"></use>
                 </svg>
                 <p>Выплаты</p>
             </a>
+            {% endif %}
         </div>
 
         <a href="{{ 'lc-commercial-reports'|page }}" class="commerce-control__button ui-button ui-button-view--2 ui-button-size--32 ui-button--full-mobile">Ежемесячные отчеты</a>
