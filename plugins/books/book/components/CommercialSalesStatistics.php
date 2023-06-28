@@ -1,5 +1,7 @@
 <?php namespace Books\Book\Components;
 
+use Books\Book\Classes\Traits\AccoutBooksTrait;
+use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\SellStatistics;
 use Books\Book\Traits\FormatNumberTrait;
@@ -7,6 +9,7 @@ use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
 use Db;
 use Flash;
+use October\Rain\Database\Collection;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -17,7 +20,8 @@ use RainLab\User\Models\User;
  */
 class CommercialSalesStatistics extends ComponentBase
 {
-    use FormatNumberTrait;
+    use FormatNumberTrait,
+        AccoutBooksTrait;
 
     protected ?User $user;
 
@@ -53,7 +57,7 @@ class CommercialSalesStatistics extends ComponentBase
 
     public function onRender()
     {
-        $this->page['books'] = $this->user->profile->books()->get();
+        $this->page['books'] = $this->getAccountBooks();
         $this->page['from'] = $this->from->format('d.m.Y');
         $this->page['to'] = $this->to->format('d.m.Y');
     }
@@ -78,7 +82,7 @@ class CommercialSalesStatistics extends ComponentBase
 
         $sellStatisticsQuery = SellStatistics
             ::with(['edition', 'edition.book'])
-            ->where('profile_id', $this->user->profile->id)
+            ->whereIn('profile_id', $this->user->profiles->pluck('id'))
             ->whereBetween('sell_at', [$periodFrom, $periodTo]);
 
         if (!empty($bookId)) {
@@ -155,7 +159,7 @@ class CommercialSalesStatistics extends ComponentBase
     private function prepareDates()
     {
         $sellAtRange = SellStatistics
-            ::where('profile_id', $this->user->profile->id)
+            ::whereIn('profile_id', $this->user->profiles->pluck('id'))
             ->select(DB::raw('MIN(sell_at) AS start_year, MAX(sell_at) AS end_year'))
             ->first();
 
