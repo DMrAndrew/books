@@ -22,7 +22,7 @@
                     <td class="table__col _wide">
                         <div class="_name">{{ record.title == previousTitle ? '' : record.title }}</div>
                     </td>
-                    <td class="table__col">{{ record.type == previousType ? '' : record.type }}</td>
+                    <td class="table__col">{{ (record.type == previousType and record.title == previousTitle ) ? '' : record.type }}</td>
                     <td class="table__col _left">{{ record.price }}</td>
                     <td class="table__col _left">{{ record.count }}</td>
                     <td class="table__col _left">{{ record.reward }}</td>
