@@ -128,7 +128,7 @@ class CommercialSalesStatistics extends ComponentBase
                 foreach ($statisticsData[$day] as &$itemJ) {
                     if (
                         $itemI['id'] !== $itemJ['id']
-                        && $itemI['title'] === $itemJ['title']
+                        && $itemI['book_id'] === $itemJ['book_id']
                         && $itemI['type'] === $itemJ['type']
                         && $itemI['price'] === $itemJ['price']
                     ) {
