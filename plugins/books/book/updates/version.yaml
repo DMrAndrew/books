@@ -86,3 +86,6 @@
 1.0.25:
     - 'Seed sell statistics for dev'
     - seed_sell_statistics.php
+1.0.26:
+    - 'Поле used_by_profile_id в промокодах'
+    - update_promocodes_table_add_used_by_profile_id.php
