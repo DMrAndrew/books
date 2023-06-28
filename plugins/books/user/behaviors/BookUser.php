@@ -31,10 +31,15 @@ class BookUser extends ExtensionBase
         ];
         $this->parent->hasMany['ownedBooks'] = [UserBook::class];
         $this->parent->hasMany['orders'] = [Order::class];
-        $this->parent->addValidationRule('birthday', 'nullable');
-        $this->parent->addValidationRule('birthday', 'date');
+        $this->parent->addValidationRule('birthday', 'required');
         $this->parent->addValidationRule('show_birthday', 'boolean');
         $this->parent->addValidationRule('username', 'required');
+
+        $this->parent->customMessages = array_merge($this->parent->customMessages, [
+            'birthday.date' => 'Поле Дата рождения должно быть корректной датой',
+            'birthday.required' => 'Поле Дата рождения обязательное для заполнения',
+        ]);
+
         $this->parent->addFillable([
             'birthday',
             'show_birthday',
