@@ -4,13 +4,13 @@
         <table class="table-static">
             <thead>
             <tr>
-                <td>Дата</td>
-                <td class="_wide">Книга</td>
-                <td>Тип продажи</td>
-                <td>Цена</td>
-                <td>Количество</td>
-                <td>Гонорар</td>
-                <td></td>
+                <td class="table__col">Дата</td>
+                <td class="table__col _wide">Книга</td>
+                <td class="table__col">Тип продажи</td>
+                <td class="table__col">Цена</td>
+                <td class="table__col">Количество</td>
+                <td class="table__col">Гонорар</td>
+                <td class="table__col"></td>
             </tr>
             </thead>
             <tbody>
@@ -19,12 +19,14 @@
                 {% for record in dayGroup %}
                 <tr>
                     <td>{{ record.date == previousDay ? '' : record.date }}</td>
-                    <td class="_wide"><div class="_name">{{ record.title == previousTitle ? '' : record.title }}</div></td>
+                    <td class="table__col _wide">
+                        <div class="_name">{{ record.title == previousTitle ? '' : record.title }}</div>
+                    </td>
                     <td class="table__col">{{ record.type == previousType ? '' : record.type }}</td>
-                    <td class="table__col _right">{{ record.price }}</td>
-                    <td class="table__col _right">{{ record.count }}</td>
-                    <td class="table__col _right">{{ record.reward }}</td>
-                    <td class="table__col _right">
+                    <td class="table__col _left">{{ record.price }}</td>
+                    <td class="table__col _left">{{ record.count }}</td>
+                    <td class="table__col _left">{{ record.reward }}</td>
+                    <td class="table__col _left">
                         <a href="{{ 'lc-commercial-statistics-detail'|page({book_id: record.book_id, date: record.date, sell_type: record.sell_type}) }}" class="ui-link _violet">Подробнее</a>
                     </td>
                 </tr>
@@ -38,9 +40,9 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td class="_wide"><div class="table__col _right _wide _bold">Итого:</div></td>
-                <td><div class="table__col _bold" data-title="Сумма продаж">{{ summary.sells_count }}</div></td>
-                <td><div class="table__col _bold" data-title="Сумма продаж">{{ summary.sells_reward_amount }}</div></td>
+                <td class="table__col _wide"><div class="table__col _right _wide _bold">Итого:</td>
+                <td class="table__col _bold _left" data-title="Сумма продаж">{{ summary.sells_count }}</td>
+                <td class="table__col _bold _left" data-title="Сумма продаж">{{ summary.sells_reward_amount }}</td>
                 <td></td>
                 <td></td>
             </tr>
