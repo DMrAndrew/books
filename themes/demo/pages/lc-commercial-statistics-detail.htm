@@ -1,0 +1,13 @@
+url = "/lc-commercial-statistics-detail/:book_id/:date/:sell_type"
+layout = "default"
+title = "Коммерческий кабинет - Статистика продаж подробно"
+description = "Статистика продаж подробно"
+meta_title = "Статистика продаж подробно"
+meta_description = "Статистика продаж подробно"
+turbo_cache_control='no-cache'
+[session]
+security = "user"
+redirect = "/"
+[CommercialSalesStatisticsDetail]
+==
+{% component 'CommercialSalesStatisticsDetail' %}

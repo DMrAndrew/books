@@ -1,0 +1,26 @@
+url = "/lc-commercial-reports"
+layout = "default"
+title = "Коммерческий кабинет - Ежемесячные отчеты"
+description = "Ежемесячные отчеты"
+meta_title = "Ежемесячные отчеты"
+meta_description = "Ежемесячные отчеты"
+turbo_cache_control='no-cache'
+[session]
+security = "user"
+redirect = "/"
+[CommercialSalesReports]
+==
+<div style="margin-bottom: 16px"> </div>
+<div class="ui-container">
+    <div class="personal-area__title ui-text-head--2 ui-text--bold">Ежемесячные отчеты</div>
+</div>
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
+            <div class="ui-col-sm-12">
+                {% component 'CommercialSalesReports' %}
+            </div>
+        </div>
+    </div>
+</div>

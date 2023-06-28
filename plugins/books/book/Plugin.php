@@ -21,6 +21,10 @@ use Books\Book\Components\BookCard;
 use Books\Book\Components\Booker;
 use Books\Book\Components\BookPage;
 use Books\Book\Components\Chapterer;
+use Books\Book\Components\CommercialSales;
+use Books\Book\Components\CommercialSalesReports;
+use Books\Book\Components\CommercialSalesStatistics;
+use Books\Book\Components\CommercialSalesStatisticsDetail;
 use Books\Book\Components\DiscountLC;
 use Books\Book\Components\EBooker;
 use Books\Book\Components\LCBooker;
@@ -178,6 +182,10 @@ class Plugin extends PluginBase
             AdvertLC::class => 'advertLC',
             AdvertBanner::class => 'advertBanner',
             DiscountLC::class => 'discountLC',
+            CommercialSales::class => 'CommercialSales',
+            CommercialSalesReports::class => 'CommercialSalesReports',
+            CommercialSalesStatistics::class => 'CommercialSalesStatistics',
+            CommercialSalesStatisticsDetail::class => 'CommercialSalesStatisticsDetail',
         ];
     }
 
