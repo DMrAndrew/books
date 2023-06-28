@@ -21,6 +21,6 @@ trait AccoutBooksTrait
             ->pluck('book_id')
             ->toArray();
 
-        return Book::whereIn('id', $booksIds)->notFree()->get();
+        return Book::whereIn('id', $booksIds)->get();
     }
 }

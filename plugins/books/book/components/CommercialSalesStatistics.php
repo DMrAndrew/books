@@ -1,7 +1,6 @@
 <?php namespace Books\Book\Components;
 
 use Books\Book\Classes\Traits\AccoutBooksTrait;
-use Books\Book\Models\Author;
 use Books\Book\Models\Book;
 use Books\Book\Models\SellStatistics;
 use Books\Book\Traits\FormatNumberTrait;
@@ -9,7 +8,6 @@ use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
 use Db;
 use Flash;
-use October\Rain\Database\Collection;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -83,7 +81,8 @@ class CommercialSalesStatistics extends ComponentBase
         $sellStatisticsQuery = SellStatistics
             ::with(['edition', 'edition.book'])
             ->whereIn('profile_id', $this->user->profiles->pluck('id'))
-            ->whereBetween('sell_at', [$periodFrom, $periodTo]);
+            ->whereDate('sell_at', '>=', $periodFrom)
+            ->whereDate('sell_at', '<=', $periodTo);
 
         if (!empty($bookId)) {
             $book = Book::findOrFail($bookId);
@@ -92,7 +91,9 @@ class CommercialSalesStatistics extends ComponentBase
         }
 
         $sellStatistics = $sellStatisticsQuery
-            ->orderBy('sell_at', 'desc')
+            ->orderBy('edition_id', 'desc')
+            ->orderBy('sell_type', 'desc')
+            ->orderBy('price', 'desc')
             ->get();
 
         /**
@@ -110,6 +111,7 @@ class CommercialSalesStatistics extends ComponentBase
                 $statisticsData[$day][] = [
                     'id' => $sell->id,
                     'date' => $sell->day,
+                    'sell_type' => $sell->sell_type->value,
                     'book_id' => $book->id,
                     'title' => $book->title,
                     'type' => $sell->sell_type->getLabel(),

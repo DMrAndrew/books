@@ -1,5 +1,7 @@
 <?php namespace Books\Book\Components;
 
+use Books\Book\Classes\Enums\SellStatisticSellTypeEnum;
+use Books\Book\Classes\Traits\AccoutBooksTrait;
 use Books\Book\Models\SellStatistics;
 use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
@@ -14,11 +16,13 @@ use RainLab\User\Models\User;
  */
 class CommercialSalesStatisticsDetail extends ComponentBase
 {
-    use FormatNumberTrait;
+    use FormatNumberTrait,
+        AccoutBooksTrait;
 
     protected ?User $user;
     private int $book_id;
     private string $date;
+    private string $sell_type;
 
     public function componentDetails()
     {
@@ -45,14 +49,22 @@ class CommercialSalesStatisticsDetail extends ComponentBase
 
         $this->book_id = (int)$this->param('book_id');
         $this->date = (string)$this->param('date');
+        $this->sell_type = (string)$this->param('sell_type');
     }
 
     public function onRender()
     {
+        $this->page['sell_type'] = $this->getSellType();
+
         /**
          * Book
          */
-        $book = $this->user->profile->books()->findOrFail($this->book_id);
+        $book = $this->getAccountBooks()->where('id', $this->book_id)->first();
+
+        if (!$book) {
+            abort(404);
+        }
+
         $editionIds = $book->editions->pluck('id')->toArray();
         $this->page['book'] = $book;
 
@@ -69,8 +81,10 @@ class CommercialSalesStatisticsDetail extends ComponentBase
          */
         $sellStatistics = SellStatistics
             ::with(['edition', 'edition.book'])
-            ->where('profile_id', $this->user->profile->id)
-            ->whereBetween('sell_at', [$periodFrom, $periodTo])
+            ->where('sell_type', $this->sell_type)
+            ->whereIn('profile_id', $this->user->profiles->pluck('id'))
+            ->whereDate('sell_at', '>=', $periodFrom)
+            ->whereDate('sell_at', '<=', $periodTo)
             ->whereIn('edition_id', $editionIds)
             ->get();
 
@@ -130,5 +144,19 @@ class CommercialSalesStatisticsDetail extends ComponentBase
             'sells_reward_total' => $this->formatNumber($sellStatistics->sum('reward_value')),
         ];
         $this->page['summary'] = $summary;
+    }
+
+    /**
+     * @return string|null
+     */
+    private function getSellType(): ?string
+    {
+        foreach(SellStatisticSellTypeEnum::cases() as $case) {
+            if ($case->value == $this->sell_type) {
+                return $case->getLabel();
+            }
+        }
+
+        return null;
     }
 }
