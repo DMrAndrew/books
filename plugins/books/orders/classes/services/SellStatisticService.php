@@ -39,8 +39,10 @@ class SellStatisticService implements SellStatisticServiceContract
 
         $rewardTaxedCoefficient = $this->orderService->getAuthorRewardCoefficient();
 
-        $book->profiles->each(function ($profile) use ($editionsAmount, $book, $order, $rewardTaxedCoefficient) {
-            $authorRewardPartRounded = intdiv(($editionsAmount * $profile->pivot->percent), 100);
+        $book->authors->each(function ($author) use ($editionsAmount, $book, $order, $rewardTaxedCoefficient) {
+            $profile = $author->profile;
+
+            $authorRewardPartRounded = intdiv(($editionsAmount * $author->percent), 100);
             $authorRewardPartTaxed = intval($rewardTaxedCoefficient * $authorRewardPartRounded);
 
             /**

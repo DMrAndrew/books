@@ -4,10 +4,10 @@
             <thead>
             <tr>
                 <td>ID<br>Книги</td>
-                <td class="_wide">Название</td>
-                <td>Сумма продаж</td>
-                <td>Комиссия сервиса</td>
-                <td class="nowrap">К выплате</td>
+                <td class="table__col _wide">Название</td>
+                <td class="table__col">Сумма продаж</td>
+                <td class="table__col">Комиссия сервиса</td>
+                <td class="table__col nowrap _left">К выплате</td>
             </tr>
             </thead>
             <tbody>
@@ -15,19 +15,19 @@
             {% for record in data %}
             <tr>
                 <td>{{ record.id }}</td>
-                <td class="_wide"><div class="_name">{{ record.title }}</div></td>
-                <td class="table__col _right">{{ record.sells_sum_amount }}</td>
-                <td class="table__col _right">{{ record.tax_sum_amount }}</td>
-                <td class="table__col _right">{{ record.reward_sum_amount }}</td>
+                <td class="table__col _wide"><div class="_name">{{ record.title }}</div></td>
+                <td class="table__col">{{ record.sells_sum_amount }}</td>
+                <td class="table__col">{{ record.tax_sum_amount }}</td>
+                <td class="table__col _left">{{ record.reward_sum_amount }}</td>
             </tr>
             {% endfor %}
 
             <tr>
                 <td></td>
-                <td class="_wide"><div class="table__col _right _wide _bold">Итого:</div></td>
-                <td><div class="table__col _bold" data-title="Сумма продаж">{{ summary.sells_sum_amount }}</div></td>
-                <td><div class="table__col _bold" data-title="Комиссия сервиса">{{ summary.tax_sum_amount }}</div></td>
-                <td><div class="table__col _bold" data-title="К выплате">{{ summary.reward_sum_amount }}</div></td>
+                <td class="table__col _wide"><div class="table__col _right _wide _bold">Итого:</div></td>
+                <td class="table__col _bold" data-title="Сумма продаж">{{ summary.sells_sum_amount }}</td>
+                <td class="table__col _bold" data-title="Комиссия сервиса">{{ summary.tax_sum_amount }}</td>
+                <td class="table__col _bold _left" data-title="К выплате">{{ summary.reward_sum_amount }}</td>
             </tr>
 
             </tbody>

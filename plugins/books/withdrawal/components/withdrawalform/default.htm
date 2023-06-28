@@ -1,0 +1,11 @@
+{% if withdrawal.agreement_status.value == 'filling' %}
+
+    {% partial __SELF__ ~ '::form' %}
+
+{% elseif withdrawal.agreement_status.value in ['signing', 'verifying'] %}
+
+    {% partial __SELF__ ~ '::signing' %}
+
+{% endif %}
+
+
