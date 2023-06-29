@@ -188,6 +188,7 @@ class Plugin extends PluginBase
             CommercialSalesReports::class => 'CommercialSalesReports',
             CommercialSalesStatistics::class => 'CommercialSalesStatistics',
             CommercialSalesStatisticsDetail::class => 'CommercialSalesStatisticsDetail',
+            IndexWidgets::class => 'IndexWidgets',
         ];
     }
 
