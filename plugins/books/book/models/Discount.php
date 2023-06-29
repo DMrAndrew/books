@@ -1,5 +1,6 @@
 <?php namespace Books\Book\Models;
 
+use App;
 use Books\Book\Classes\PriceTag;
 use Carbon\Carbon;
 use Model;
@@ -46,11 +47,19 @@ class Discount extends Model
             throw new ValidationException(['discount' => 'Укажите дату скидки.']);
         }
         $date = Carbon::parse($date)->startOfDay();
-        if (!$date->gt(today()->endOfDay())) {
-            throw new ValidationException(['discount' => 'Скидку можно установить только с завтрашнего дня.']);
-        }
-        $this->attributes['active_at'] = $date;
 
+        if (App::environment() === 'production') {
+            if (!$date->gt(today()->endOfDay())) {
+                throw new ValidationException(['discount' => 'Скидку можно установить только с завтрашнего дня.']);
+            }
+        } else {
+            // для тестирования скидку можно установить сегодняшним днем
+            if (!$date->gt(today()->subDay()->endOfDay())) {
+                throw new ValidationException(['discount' => 'Скидку можно установить только с сегодняшнего дня.']);
+            }
+        }
+
+        $this->attributes['active_at'] = $date;
     }
 
     public function priceTag(): PriceTag

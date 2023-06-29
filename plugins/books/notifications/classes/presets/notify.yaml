@@ -49,3 +49,9 @@ author_accepted:
     event: Books\Notifications\Classes\Events\AuthorAccepted
     items:
         - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+
+book_discounted:
+    name: Скидка на книгу
+    event: Books\Notifications\Classes\Events\DiscountCreated
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
