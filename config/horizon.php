@@ -195,8 +195,8 @@ return [
             'tries' => 3,
             'timeout' => 90,
             'nice' => 0,
-            'balanceMaxShift' => 10,
-            'balanceCooldown' => 1,
+            'balanceMaxShift' => 2,
+            'balanceCooldown' => 2,
         ],
         'supervisor-2' => [
             'connection' => 'redis',
@@ -211,8 +211,8 @@ return [
             'tries' => 3,
             'timeout' => 90,
             'nice' => 0,
-            'balanceMaxShift' => 10,
-            'balanceCooldown' => 1,
+            'balanceMaxShift' => 2,
+            'balanceCooldown' => 2,
         ]
     ],
 
