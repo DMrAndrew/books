@@ -64,9 +64,11 @@ class DiscountCreated extends BaseEvent
                 CollectionEnum::READING->value,
             ])
             ->with('favorites.user')
-            ->whereHas('favorites.user', function ($query) use ($bookId) {
-                return $query->whereDoesntHave('ownedBooks', function ($q) use ($bookId) {
-                    return $q->where('ownable_id', $bookId);
+            ->whereHas('favorites', function ($query) use ($bookId) {
+                return $query->whereHas('user', function ($query) use ($bookId) {
+                    return $query->whereDoesntHave('ownedBooks', function ($q) use ($bookId) {
+                        return $q->where('ownable_id', $bookId);
+                    });
                 });
             })
             ->get()
