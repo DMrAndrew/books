@@ -89,7 +89,7 @@ class Plugin extends PluginBase
     {
         parent::register();
 
-        $this->registerConsoleCommand('model:prune', PruneCommand::class);
+
     }
 
     /**
@@ -265,6 +265,7 @@ class Plugin extends PluginBase
             DeferredBinding::cleanUp(1);
         })->dailyAt('03:00');
 
+        $schedule->command('horizon:snapshot')->everyFiveMinutes();
 
         $schedule->command('model:prune', [
             '--model' => [Models\Promocode::class],
