@@ -1,9 +1,4 @@
 <div class="ui-container-fluid">
-
-    {% flash error %}
-    <div class="alert alert-success">{{ message }}</div>
-    {% endflash %}
-
     <div class="favorite-genres__container">
         <div class="favorite-genres__header active">
             <span class="ui-text-head--3 ui-text--bold">Любимые жанры</span>
@@ -16,64 +11,40 @@
             <div class="favorite-genres__description">На основе ваших предпочтений рекомендации сервиса будут точнее и
                 интереснее</div>
             <div class="favorite-genres__actions ui-grid-container ui-grid-gap">
-                {% for col in collect(genres).split(2) %}
+                {% for col in favorite_genres_list.split(2) %}
                 <div class="ui-col-sm-6">
                     <div class="ui-grid-container ui-grid-gap">
                         {% for part in col.split(2) %}
                         <div class="ui-col-lg-6 ui-col-sm-12">
                             {% for item in part %}
-
                             <label class="ui-checkbox">
-                                <input type="checkbox" {{ item.loved ? 'checked' : ''  }} hidden data-request="onToggleFavorite" data-request-data="id: {{item.id}}">
+                                <input
+                                    data-request-flash="true"
+                                    hidden
+                                    data-request="onToggleFavorite"
+                                    type="checkbox"
+                                    data-request-data="id: {{item.id}}"
+                                    data-request-success="refreshWidgets()"
+                                    {{ item.selected ? 'checked' : ''  }} >
                                 <div class="ui-checkbox-checker">
                                     <svg>
                                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
                                     </svg>
-
                                 </div>
                                 <span  class="ui-checkbox-text">{{item.name}}</span>
                             </label>
-
                             {% endfor %}
                         </div>
                         {% endfor %}
                     </div>
                 </div>
                 {% endfor %}
-
-                <div class="ui-col-sm-6">
-                    <div class="ui-grid-container ui-grid-gap">
-                        <div class="ui-col-lg-6 ui-col-sm-12">
-                            {% for item in genres[2] %}
-                            <label class="ui-checkbox">
-                                <input type="checkbox" {{ item.selected ? 'checked' : ''  }} hidden data-request="onToggleFavorite" data-request-data="id: {{item.id}}">
-                                <div class="ui-checkbox-checker">
-                                    <svg>
-                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
-                                    </svg>
-
-                                </div>
-                                <span class="ui-checkbox-text">{{item.name}}</span>
-                            </label>
-                            {% endfor %}
-                        </div>
-                        <div class="ui-col-lg-6 ui-col-sm-12">
-                            {% for item in genres[3] %}
-                            <label class="ui-checkbox">
-                                <input type="checkbox" {{ item.selected ? 'checked' : ''  }} hidden data-request="onToggleFavorite" data-request-data="id: {{item.id}}">
-                                <div class="ui-checkbox-checker">
-                                    <svg>
-                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
-                                    </svg>
-
-                                </div>
-                                <span class="ui-checkbox-text">{{item.name}}</span>
-                            </label>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    function refreshWidgets(){
+        oc.ajax('IndexWidgets::onRefreshWidgets')
+    }
+</script>

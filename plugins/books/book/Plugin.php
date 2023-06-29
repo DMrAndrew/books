@@ -27,6 +27,7 @@ use Books\Book\Components\CommercialSalesStatistics;
 use Books\Book\Components\CommercialSalesStatisticsDetail;
 use Books\Book\Components\DiscountLC;
 use Books\Book\Components\EBooker;
+use Books\Book\Components\IndexWidgets;
 use Books\Book\Components\LCBooker;
 use Books\Book\Components\OutOfFree;
 use Books\Book\Components\Promocode;
@@ -119,6 +120,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Discount', Discount::class);
         AliasLoader::getInstance()->alias('Prohibited', Prohibited::class);
         AliasLoader::getInstance()->alias('FB2Controller', FB2Controller::class);
+        AliasLoader::getInstance()->alias('CookieEnum', CookieEnum::class);
 
         $this->extendBooksController();
 
@@ -186,6 +188,7 @@ class Plugin extends PluginBase
             CommercialSalesReports::class => 'CommercialSalesReports',
             CommercialSalesStatistics::class => 'CommercialSalesStatistics',
             CommercialSalesStatisticsDetail::class => 'CommercialSalesStatisticsDetail',
+            IndexWidgets::class => 'IndexWidgets',
         ];
     }
 

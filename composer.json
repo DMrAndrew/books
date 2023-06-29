@@ -31,7 +31,9 @@
         "kirschbaum-development/eloquent-power-joins": "^3.0",
         "books/wallet-plugin": "*",
         "books/payment-plugin": "*",
-        "laracraft-tech/laravel-date-scopes": "^1.1"
+        "laracraft-tech/laravel-date-scopes": "^1.1",
+        "vdlp/oc-telescope-plugin": "^2.0",
+        "vdlp/oc-horizon-plugin": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -130,12 +132,17 @@
         "vdlp/oc-telescope-plugin": {
             "type": "path",
             "url": "./plugins/vdlp/telescope"
+        },
+        "vdlp/oc-horizon-plugin": {
+            "type": "git",
+            "url": "https://github.com/vdlp/oc-horizon-plugin/"
         }
     },
     "extra": {
         "laravel": {
             "dont-discover": [
-                "laravel/telescope"
+                "laravel/telescope",
+                "laravel/horizon"
             ]
         }
     }

@@ -21,7 +21,7 @@ class GenreRaterExec implements ShouldQueue, ShouldBeUnique
      */
     public function __construct()
     {
-        //
+        $this->onQueue('compute');
     }
 
     /**

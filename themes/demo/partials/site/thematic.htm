@@ -2,11 +2,11 @@
 <div class="thematic _indent ui-container-fluid">
     <div class="ui-grid-container ui-grid-gap main-page-grid">
         <div class="ui-col-md-9 main-page-grid__main">
-            {% component 'gainingPopularity' %}
-            {% component 'hotNew' %}
-            {% component 'todayDiscount' %}
-            {% component 'bestsellers' %}
             {% component 'top' %}
+            {% component 'bestsellers' %}
+            {% component 'gainingPopularity' %}
+            {% component 'todayDiscount' %}
+            {% component 'hotNew' %}
         </div>
         <div class="ui-col-md-3 main-page-grid__aside">
             <div class="ui-grid-container ui-grid-gap">
@@ -20,23 +20,6 @@
         {% partial 'site/desc' %}
     </div>
 </div>
-
-<!-- Поповер для карточки -->
-<!-- Поискать еще скрипт -->
-<!--<div class="card-popover _size">-->
-<!--    <div class="card-popover__wrapper">-->
-<!--        <span>Автор: </span> Александр Рем-->
-<!--    </div>-->
-<!--    <div class="card-popover__wrapper">-->
-<!--        <span>Жанры: </span>  <a href="#" class="ui-link _violet">ЛитРПГ</a>, <a href="#" class="ui-link _violet">Космос</a>-->
-<!--    </div>-->
-<!--    <div class="card-popover__wrapper">-->
-<!--        <span>Аннотация :</span> Боги хаоса из разлома и главы мегакорпораций объединяют усилия. Две силы обладающие абсолютным могуществом в обоих мирах приговорили Ласку и Тима к ликвидации натравливая своих слуг и обещая баснословные награды за головы, не понимая, что тем самым создают себе врагов невиданных доселе.-->
-<!--    </div>-->
-<!--    <div class="card-popover__wrapper">-->
-<!--        <a href="#" class="ui-link _violet">Маги</a>, <a href="#" class="ui-link _violet">Приключения</a>-->
-<!--    </div>-->
-<!--</div>-->
 
 <script>
     (() => {

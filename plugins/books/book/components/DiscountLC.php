@@ -5,6 +5,7 @@ use Books\Book\Models\Book;
 use Books\Book\Models\Discount;
 use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
+use Event;
 use Flash;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -131,6 +132,8 @@ class DiscountLC extends ComponentBase
             return [];
         }
         $this->book->ebook->discounts()->add($discount);
+        Event::fire('books.book::edition.discounted', [$discount]);
+
         return $this->render();
     }
 

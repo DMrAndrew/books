@@ -29,6 +29,10 @@ RUN pecl install -o -f redis \
     && docker-php-ext-install mysqli pdo pdo_mysql curl mbstring zip intl gd xml exif opcache \
     && docker-php-ext-enable pdo pdo_mysql curl mbstring zip intl gd xml exif redis imagick
 
+RUN docker-php-ext-configure pcntl --enable-pcntl \
+  && docker-php-ext-install \
+    pcntl
+
 RUN groupadd --force -g $WWWGROUP sail
 RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
 

@@ -21,7 +21,7 @@ class RaterExec implements ShouldQueue
      */
     public function __construct(protected array $data)
     {
-        //
+        $this->onQueue('compute');
     }
 
     /**

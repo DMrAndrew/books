@@ -2,7 +2,7 @@ url = "/"
 layout = "default"
 title = "Главная"
 meta_title = "Главная"
-
+[IndexWidgets]
 ==
 <div>
     {% if not user %}
@@ -28,12 +28,6 @@ meta_title = "Главная"
             </div>
         </div>
     </div>
-
-    {% partial 'site/favorite' %}
-
-    {% else %}
-    <div style="margin-bottom: 16px"></div>
     {% endif %}
-    {% partial 'site/thematic' %}
-
+    {% component 'IndexWidgets' %}
 </div>

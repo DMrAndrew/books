@@ -19,7 +19,7 @@ class Paginate implements ShouldQueue
      */
     public function __construct(protected Chapter $chapter)
     {
-        //
+        $this->onQueue('paginate');
     }
 
     /**

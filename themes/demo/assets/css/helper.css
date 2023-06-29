@@ -156,3 +156,7 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
     overflow: hidden; /* Обрезаем всё за пределами блока */
 }
 
+.reader-user__user img {
+    margin-right: 0 !important;
+}
+

@@ -2,22 +2,15 @@
 
 namespace Books\Book\Classes;
 
-use BadMethodCallException;
 use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
-use Books\Book\Models\Stats;
-use Books\Book\Models\Tag;
-use Books\Catalog\Classes\FavoritesManager;
-use Books\Catalog\Models\Genre;
 use Books\Collections\classes\CollectionEnum;
 use Books\Collections\Models\Lib;
 use Cache;
 use Carbon\Carbon;
-use Cookie;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
 use October\Rain\Database\Builder;
 use RainLab\User\Models\User;
 
@@ -290,10 +283,10 @@ class WidgetService
     public function applySort(): static
     {
         $this->query()->when($this->useSort, fn($q) => match ($this->enum) {
-            WidgetEnum::cycle, WidgetEnum::readingWithThisOne, WidgetEnum::interested => $q,
+            WidgetEnum::readingWithThisOne, WidgetEnum::interested => $q,
             WidgetEnum::hotNew => $q->sortByStatValue(StatsEnum::collected_hot_new_rate),
             WidgetEnum::popular, WidgetEnum::otherAuthorBook, WidgetEnum::recommend => $q->orderByPopularGenres(),
-            WidgetEnum::new => $q->orderBySalesAt(),
+            WidgetEnum::cycle, WidgetEnum::new => $q->orderBySalesAt(),
             WidgetEnum::top, WidgetEnum::bestsellers => $q->orderByBestSells(),
             WidgetEnum::todayDiscount => $q->orderByDiscountAmount(),
             WidgetEnum::gainingPopularity => $q->sortByStatValue(StatsEnum::collected_gain_popularity_rate),
@@ -333,7 +326,7 @@ class WidgetService
 
     public function todayDiscount()
     {
-        return $this->query()->activeDiscountExist();
+        return $this->query()->notFree()->activeDiscountExist();
     }
 
     public function recommend()

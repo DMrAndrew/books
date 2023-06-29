@@ -21,8 +21,8 @@ if [ "$role" = "app" ]; then
         exec php-fpm
     fi
 elif [ "$role" = "queue" ]; then
-    echo "Running the queue..."
-    php /var/www/html/artisan queue:work --verbose --tries=3 --timeout=90
+    echo "Running the horizon..."
+    php /var/www/html/artisan horizon
 elif [ "$role" = "scheduler" ]; then
     while [ true ]
     do
