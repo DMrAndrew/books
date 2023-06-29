@@ -25,9 +25,9 @@ RUN apt-get update \
 RUN pecl install -o -f redis \
     && pecl install imagick \
     && rm -rf /tmp/pear \
-    && docker-php-ext-configure gd --with-jpeg pcntl --enable-pcntl \
+    && docker-php-ext-configure gd --with-jpeg pcntl \
     && docker-php-ext-install mysqli pdo pdo_mysql curl mbstring zip intl gd xml exif opcache pcntl \
-    && docker-php-ext-enable pdo pdo_mysql curl mbstring zip intl gd xml exif redis imagick
+    && docker-php-ext-enable pdo pdo_mysql curl mbstring zip intl gd xml exif redis imagick pcntl
 
 RUN groupadd --force -g $WWWGROUP sail
 RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
