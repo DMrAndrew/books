@@ -13,6 +13,7 @@ use Books\Profile\Models\Profile;
 use Carbon\Carbon;
 use Db;
 use Event;
+use Exception;
 use Illuminate\Support\Collection;
 use RainLab\User\Models\User;
 use Session;
@@ -96,15 +97,21 @@ class BookService
             return $this->book;
         }
         if ($payload instanceof File) {
-            $tizisBook = (new FB2Manager($payload))->apply();
-            $this->fromTizis($tizisBook);
-            $payload->save();
-            $ebook = $this->book->ebook()->first();
-            $ebook->fb2()->add($payload);
-            $ebook->parseFB2($payload);
-            Event::fire('books.book.parsed', [$this->book]);
+            try {
+                $tizisBook = (new FB2Manager($payload))->apply();
+                $this->fromTizis($tizisBook);
+                $payload->save();
+                $ebook = $this->book->ebook()->first();
+                $ebook->fb2()->add($payload);
+                $ebook->parseFB2($payload);
+                Event::fire('books.book.parsed', [$this->book]);
 
-            return $this->book;
+                return $this->book;
+            } catch (Exception $exception) {
+                $this->book?->ebook?->setParsingFailed();
+                throw $exception;
+            }
+
         }
         throw new UnknownFormatException();
     }

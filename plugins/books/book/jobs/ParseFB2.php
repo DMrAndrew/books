@@ -40,7 +40,7 @@ class ParseFB2 implements ShouldQueue
      */
     public function __construct(protected Edition $edition, protected File $file)
     {
-        //
+        $this->onQueue('parsing');
     }
 
     /**
@@ -66,7 +66,7 @@ class ParseFB2 implements ShouldQueue
                 ->catch(function (Batch $batch) use ($id) {
                     Edition::find($id)->setParsingFailed();
                 })
-                ->name('Парсинг книги: '.$this->edition->book->title)
+                ->name('Загрузка книги: '.$this->edition->book->title)
                 ->dispatch();
 
 

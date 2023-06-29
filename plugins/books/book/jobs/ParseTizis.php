@@ -34,7 +34,7 @@ class ParseTizis implements ShouldQueue
                                 public array        $payload = []
     )
     {
-        //
+        $this->onQueue('parsing');
     }
 
 
