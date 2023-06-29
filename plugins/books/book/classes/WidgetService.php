@@ -2,22 +2,15 @@
 
 namespace Books\Book\Classes;
 
-use BadMethodCallException;
 use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
-use Books\Book\Models\Stats;
-use Books\Book\Models\Tag;
-use Books\Catalog\Classes\RecommendsService;
-use Books\Catalog\Models\Genre;
 use Books\Collections\classes\CollectionEnum;
 use Books\Collections\Models\Lib;
 use Cache;
 use Carbon\Carbon;
-use Cookie;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
 use October\Rain\Database\Builder;
 use RainLab\User\Models\User;
 
