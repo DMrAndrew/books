@@ -13,6 +13,7 @@ use Books\Notifications\Classes\Events\BookSelling;
 use Books\Notifications\Classes\Events\BookSellingSubs;
 use Books\Notifications\Classes\Events\CommentCreated;
 use Books\Notifications\Classes\Events\CommentReplied;
+use Books\Notifications\Classes\Events\DiscountCreated;
 use Books\Notifications\Classes\Services\NotificationService;
 use Books\Notifications\Components\Notifications;
 use Books\Notifications\Components\NotificationsInHeader;
@@ -90,6 +91,7 @@ class Plugin extends PluginBase
                 AuthorAccepted::class,
                 CommentCreated::class,
                 CommentReplied::class,
+                DiscountCreated::class,
             ],
             'groups' => [
                 'user' => [
@@ -131,6 +133,7 @@ class Plugin extends PluginBase
             'books.book::author.accepted' => AuthorAccepted::class,
             'books.comments::comment.created' => CommentCreated::class,
             'books.comments::comment.replied' => CommentReplied::class,
+            'books.book::edition.discounted' => DiscountCreated::class,
         ]);
     }
 
