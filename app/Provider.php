@@ -10,10 +10,12 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Exception;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Database\Console\PruneCommand;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
+use Illuminate\Queue\Console\BatchesTableCommand;
 use Model;
 use Request;
 use System\Classes\AppBase;
@@ -32,10 +34,12 @@ class Provider extends AppBase
      */
     public function register()
     {
+        parent::register();
+        $this->registerConsoleCommand('model:prune', PruneCommand::class);
+        $this->registerConsoleCommand('queue:batches-table', BatchesTableCommand::class);
         AliasLoader::getInstance()->alias('Carbon', Carbon::class);
         AliasLoader::getInstance()->alias('CarbonPeriod', CarbonPeriod::class);
 
-        parent::register();
         Factory::guessFactoryNamesUsing(function ($modelName) {
             if (property_exists($modelName, 'factory')) {
                 return $modelName::$factory;

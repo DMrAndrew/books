@@ -149,7 +149,12 @@ return [
             'port' => env('REDIS_PORT', 6379),
             'database' => env('REDIS_DB', '0'),
         ],
-
+        'horizon' => [
+            'host' => env('HORIZON_REDIS_HOST', '127.0.0.1'),
+            'password' => env('HORIZON_REDIS_PASSWORD'),
+            'port' => env('HORIZON_REDIS_PORT', 6379),
+            'database' => env('HORIZON_REDIS_DATABASE', '1'),
+        ],
         'cache' => [
             'url' => env('REDIS_URL'),
             'host' => env('REDIS_HOST', '127.0.0.1'),

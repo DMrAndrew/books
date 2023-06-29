@@ -46,6 +46,7 @@ use System\Models\File;
  * @property  EditionsEnums type
  * @property  ChapterStatus status
  * @property  ChapterSalesType sales_type
+ * @property  int sort_order
  */
 class Chapter extends Model
 {

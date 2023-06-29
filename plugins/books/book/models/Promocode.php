@@ -47,6 +47,7 @@ class Promocode extends Model
         'profile_id',
         'is_activated',
         'user_id',
+        'used_by_profile_id',
         'activated_at',
         'expire_in',
     ];
@@ -59,6 +60,7 @@ class Promocode extends Model
         'profile_id' => 'required|nullable|exists:books_profile_profiles,id',
         'is_activated' => 'sometimes|nullable|boolean',
         'user_id' => 'sometimes|nullable|integer|exists:users,id',
+        'used_by_profile_id' => 'sometimes|nullable|integer|exists:books_profile_profiles,id',
         'activated_at' => 'sometimes|nullable|date',
         'expire_in' => 'sometimes|nullable|date',
     ];
@@ -67,6 +69,7 @@ class Promocode extends Model
         'user' => User::class,
         'book' => Book::class,
         'profile' => Profile::class,
+        'activated_by' => [Profile::class, 'key' => 'used_by_profile_id', 'otherKey' => 'id'],
     ];
 
     /**

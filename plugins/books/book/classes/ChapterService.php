@@ -76,7 +76,7 @@ class ChapterService
             throw new Exception('Edition required.');
         }
         $this->chapter->fill($this->dataPrepare($data));
-        $this->chapter->sort_order = $this->edition->nextChapterSortOrder();
+        $this->chapter->sort_order ??= $this->edition->nextChapterSortOrder();
         $this->chapter->sales_type ??= ChapterSalesType::PAY;
         $this->chapter['edition_id'] = $this->edition->id;
         $this->chapter->save();

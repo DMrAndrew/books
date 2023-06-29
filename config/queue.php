@@ -18,6 +18,10 @@ return [
 
     'default' => env('QUEUE_CONNECTION', 'sync'),
 
+
+    'batching' => [
+        'table' => 'books.job_batches'
+    ],
     /*
     |--------------------------------------------------------------------------
     | Queue Connections

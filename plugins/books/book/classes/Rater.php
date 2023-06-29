@@ -42,6 +42,7 @@ class Rater
 
     /**
      * @param Builder $builder
+     * @return Rater
      */
     public
     function setBuilder(Builder $builder): static

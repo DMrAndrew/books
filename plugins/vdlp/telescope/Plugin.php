@@ -35,7 +35,6 @@ final class Plugin extends PluginBase
 
     public function register(): void
     {
-
         $this->registerAccessGate();
 
         $this->app->register(TelescopeServiceProvider::class);

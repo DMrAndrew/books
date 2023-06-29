@@ -1,9 +1,11 @@
 <?php namespace Books\Book\Jobs;
 
 use Books\Book\Classes\FB2Manager;
-use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
+use Bus;
 use Exception;
+use Illuminate\Bus\Batch;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -17,14 +19,28 @@ use System\Models\File;
  */
 class ParseFB2 implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable;
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 1;
+
+    /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 240;
 
     /**
      * __construct a new job instance.
      */
-    public function __construct(protected Edition $edition, protected File $fb2)
+    public function __construct(protected Edition $edition, protected File $file)
     {
-        //
+        $this->onQueue('parsing');
     }
 
     /**
@@ -33,17 +49,31 @@ class ParseFB2 implements ShouldQueue
     public function handle(): void
     {
         try {
-            $tizisBook = (new FB2Manager($this->fb2))->apply();
-            foreach ($tizisBook->getChapters() as $chapter) {
-                (new Chapter())
-                    ->service()
-                    ->setEdition($this->edition)
-                    ->from($chapter);
+
+            $tizis = (new FB2Manager($this->file))->apply();
+            $jobs = [];
+            foreach (collect($tizis->getChapters())->values() as $key => $tizis) {
+                $jobs[] = new ParseTizis(
+                    $tizis,
+                    $this->edition,
+                    ['sort_order' => $key + 1]);
             }
-            $this->edition->setHiddenStatus();
+            $id = $this->edition->id;
+            $batch = Bus::batch($jobs)
+                ->then(function (Batch $batch) use ($id) {
+                    Edition::find($id)->setHiddenStatus();
+                })
+                ->catch(function (Batch $batch) use ($id) {
+                    Edition::find($id)->setParsingFailed();
+                })
+                ->name('Загрузка книги: '.$this->edition->book->title)
+                ->dispatch();
+
+
         } catch (Exception $exception) {
             Log::error($exception->getMessage());
             $this->edition->setParsingFailed();
+            $this->fail($exception->getMessage());
         }
     }
 }

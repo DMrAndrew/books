@@ -21,6 +21,10 @@ use Books\Book\Components\BookCard;
 use Books\Book\Components\Booker;
 use Books\Book\Components\BookPage;
 use Books\Book\Components\Chapterer;
+use Books\Book\Components\CommercialSales;
+use Books\Book\Components\CommercialSalesReports;
+use Books\Book\Components\CommercialSalesStatistics;
+use Books\Book\Components\CommercialSalesStatisticsDetail;
 use Books\Book\Components\DiscountLC;
 use Books\Book\Components\EBooker;
 use Books\Book\Components\IndexWidgets;
@@ -44,7 +48,6 @@ use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
 use Books\Profile\Behaviors\Slavable;
 use Books\Reposts\behaviors\Shareable;
-use Books\User\Classes\CookieEnum;
 use Config;
 use Event;
 use Illuminate\Database\Console\PruneCommand;
@@ -181,7 +184,10 @@ class Plugin extends PluginBase
             AdvertLC::class => 'advertLC',
             AdvertBanner::class => 'advertBanner',
             DiscountLC::class => 'discountLC',
-            IndexWidgets::class => 'IndexWidgets',
+            CommercialSales::class => 'CommercialSales',
+            CommercialSalesReports::class => 'CommercialSalesReports',
+            CommercialSalesStatistics::class => 'CommercialSalesStatistics',
+            CommercialSalesStatisticsDetail::class => 'CommercialSalesStatisticsDetail',
         ];
     }
 

@@ -20,6 +20,7 @@ class Reading implements ShouldQueue
      */
     public function __construct(public Chapter $chapter, public ?User $user = null)
     {
+        $this->onQueue('reading');
     }
 
     /**

@@ -1,8 +1,8 @@
 <?php namespace Books\Book\Components;
 
 use Books\Book\Classes\PromocodeGenerationLimiter;
+use Books\Book\Models\Author;
 use Books\Book\Models\Book;
-use Books\Book\Models\Promocode as PromocodeModel;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
-use Request;
 
 /**
  * Promocode Component
@@ -59,7 +58,7 @@ class Promocode extends ComponentBase
     public function vals()
     {
         return [
-            'books' => $this->user->profile->books()->notFree()->get(),
+            'books' => $this->getNotFreeAccountBooks(),
             'bookItem' => $this->getBook(),
             'promocodes' => $this->getBooksPromocodes()
         ];
@@ -67,8 +66,8 @@ class Promocode extends ComponentBase
 
     public function getBook()
     {
-        return $this->user->profile
-            ->books()
+        return $this
+            ->getNotFreeAccountBooks()
             ->find(post('value') ?? post('book_id') ?? $this->param('book_id'));
     }
 
@@ -123,16 +122,29 @@ class Promocode extends ComponentBase
         }
     }
 
-    public function onActivate()
-    {
-        // todo реализовать после оплаты/покупки
-    }
-
+    /**
+     * @return Collection|null
+     */
     private function getBooksPromocodes(): ?Collection
     {
-
         return $this->book?->ebook?->promocodes()
             ->with(['user'])
             ->get() ?? new Collection();
+    }
+
+    /**
+     * @return Collection
+     */
+    private function getNotFreeAccountBooks(): Collection
+    {
+        $allAccountProfilesIds = $this->user->profiles->pluck('id')->toArray();
+        $booksIds = Author
+            ::with(['book'])
+            ->whereIn('profile_id', $allAccountProfilesIds)
+            ->get()
+            ->pluck('book_id')
+            ->toArray();
+
+        return Book::whereIn('id', $booksIds)->notFree()->get();
     }
 }
