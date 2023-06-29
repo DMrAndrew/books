@@ -2,7 +2,7 @@
 
 namespace Books\User\Classes;
 
-use Books\Catalog\Classes\FavoritesManager;
+use Books\Catalog\Classes\RecommendsService;
 use Books\Profile\Classes\ProfileService;
 use Books\Profile\Models\Profile;
 use RainLab\Location\Models\Country;
@@ -20,7 +20,8 @@ class UserEventHandler
     public function afterCreate(User $user): void
     {
         (new ProfileService(new Profile()))->createProfile(user: $user);
-        (new FavoritesManager())->save($user);
+        (new RecommendsService())->save($user);
+        CookieEnum::RECOMMEND->forget();
         if ($country = Country::getDefault()) {
             $user->service()->update([
                 'country_id' => $country->id

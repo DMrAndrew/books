@@ -103,7 +103,7 @@ class Reader extends ComponentBase
             $this->service = new Service(
                 book: $this->book,
                 chapter: $this->chapter,
-                page: $this->getCurrentPaginatorKey() ?? $this->getParamPage(),
+                page: $this->getPageKey(),
                 user: $this->user
             );
         }
@@ -172,6 +172,12 @@ class Reader extends ComponentBase
     public function onTrack()
     {
         return $this->service()->track((int)post('ms'), (int)post('paginator_id'));
+    }
+
+    public function getPageKey(): ?int
+    {
+        $page = $this->getCurrentPaginatorKey() ?? $this->getParamPage();
+        return is_null($page) ? $page : ((int)$page);
     }
 
     public function getCurrentPaginatorKey()

@@ -1,8 +1,10 @@
-<div id="index-widgets">
-    {% if not user %}
+{% if not user %}
+<div id="checkboxs-container">
     {% partial 'site/favorite' %}
-    {% else %}
-    <div style="margin-bottom: 16px"></div>
-    {% endif %}
+</div>
+{% else %}
+<div style="margin-bottom: 16px"></div>
+{% endif %}
+<div id="widgets-container">
     {% partial 'site/thematic' %}
 </div>

@@ -5,7 +5,7 @@ namespace Books\Catalog;
 use Backend;
 use Books\Book\Models\Stats;
 use Books\Catalog\Classes\ListingFilter;
-use Books\Catalog\Components\FavoriteGenres;
+use Books\Catalog\Components\Recommends;
 use Books\Catalog\Components\Genres;
 use Books\Catalog\Components\Listing;
 use Books\Catalog\Models\Genre;
@@ -64,7 +64,7 @@ class Plugin extends PluginBase
     {
         return [
             Genres::class => 'genres',
-            FavoriteGenres::class => 'favorite_genres',
+            Recommends::class => 'favorite_genres',
             Listing::class => 'listing',
         ];
     }

@@ -4,8 +4,8 @@ namespace App;
 
 use App\classes\RevisionHistory;
 use App\middleware\FetchCheckUp;
-use App\Providers\TelescopeServiceProvider;
 use App\traits\DateScopes;
+use App\traits\FileExtension;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Exception;
@@ -17,6 +17,7 @@ use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Model;
 use Request;
 use System\Classes\AppBase;
+use System\Models\File;
 use System\Models\Revision;
 
 /**
@@ -57,6 +58,9 @@ class Provider extends AppBase
             ->pushMiddleware(FetchCheckUp::class);
         Model::extend(function (Model $model) {
             $model->implementClassWith(DateScopes::class);
+        });
+        File::extend(function (File $model) {
+            $model->implementClassWith(FileExtension::class);
         });
     }
 

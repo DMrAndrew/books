@@ -44,6 +44,7 @@ use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
 use Books\Profile\Behaviors\Slavable;
 use Books\Reposts\behaviors\Shareable;
+use Books\User\Classes\CookieEnum;
 use Config;
 use Event;
 use Illuminate\Database\Console\PruneCommand;
@@ -116,6 +117,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Discount', Discount::class);
         AliasLoader::getInstance()->alias('Prohibited', Prohibited::class);
         AliasLoader::getInstance()->alias('FB2Controller', FB2Controller::class);
+        AliasLoader::getInstance()->alias('CookieEnum', CookieEnum::class);
 
         $this->extendBooksController();
 
