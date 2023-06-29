@@ -187,7 +187,7 @@ return [
             'queue' => ['default', 'compute', 'reading'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 10,
+            'maxProcesses' => 100,
             'minProcesses' => 1,
             'maxTime' => 0,
             'maxJobs' => 0,
@@ -195,13 +195,15 @@ return [
             'tries' => 3,
             'timeout' => 90,
             'nice' => 0,
+            'balanceMaxShift' => 10,
+            'balanceCooldown' => 1,
         ],
         'supervisor-2' => [
             'connection' => 'redis',
             'queue' => ['parsing', 'paginate'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 10,
+            'maxProcesses' => 100,
             'minProcesses' => 2,
             'maxTime' => 0,
             'maxJobs' => 0,
@@ -209,46 +211,35 @@ return [
             'tries' => 3,
             'timeout' => 90,
             'nice' => 0,
+            'balanceMaxShift' => 10,
+            'balanceCooldown' => 1,
         ]
     ],
 
     'environments' => [
         'production' => [
             'supervisor-1' => [
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
+
             ],
             'supervisor-2' => [
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
+
             ]
 
         ],
         'stage' => [
             'supervisor-1' => [
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
+
             ],
             'supervisor-2' => [
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
             ]
         ],
 
         'local' => [
             'supervisor-1' => [
                 'maxProcesses' => 5,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
             ],
             'supervisor-2' => [
                 'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
             ]
 
         ],
