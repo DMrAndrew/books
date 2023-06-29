@@ -41,8 +41,8 @@ class DiscountCreated extends BaseEvent
             [
                 'author' => $edition?->book->author,
                 'book' => $edition?->book,
-                'old_price' => 1000,
-                'new_price' => 500,
+                'old_price' => $edition?->priceTag()->initialPrice(),
+                'new_price' => $edition?->priceTag()->price(),
                 'recipients' => static::getRecipients($args),
             ],
         );
