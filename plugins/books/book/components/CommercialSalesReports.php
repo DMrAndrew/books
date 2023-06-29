@@ -66,7 +66,7 @@ class CommercialSalesReports extends ComponentBase
 
         $sellStatistics = SellStatistics
             ::with(['edition', 'edition.book'])
-            ->where('profile_id', $this->user->profile->id)
+            ->whereIn('profile_id', $this->user->profiles->pluck('id'))
             ->whereBetween('sell_at', [$periodFrom, $periodTo])
             ->get();
 
@@ -138,7 +138,7 @@ class CommercialSalesReports extends ComponentBase
     private function getSellsYears(): array
     {
         $sellAtRange = SellStatistics
-            ::where('profile_id', $this->user->profile->id)
+            ::whereIn('profile_id', $this->user->profiles->pluck('id'))
             ->select(DB::raw('MIN(sell_at) AS start_year, MAX(sell_at) AS end_year'))
             ->first();
 

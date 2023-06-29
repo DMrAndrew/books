@@ -1,5 +1,6 @@
 <?php namespace Books\Book\Components;
 
+use Books\Book\Classes\Traits\AccoutBooksTrait;
 use Cms\Classes\ComponentBase;
 use October\Rain\Database\Collection;
 use RainLab\User\Facades\Auth;
@@ -12,6 +13,8 @@ use RainLab\User\Models\User;
  */
 class CommercialSales extends ComponentBase
 {
+    use AccoutBooksTrait;
+
     protected ?User $user;
 
     public function componentDetails()
@@ -48,19 +51,15 @@ class CommercialSales extends ComponentBase
      */
     private function getEditionsInSale(): Collection
     {
-        $authorships = $this->user->profile
-            ->authorships()
-            ->with(['book' => fn($q) => $q->defaultEager(), 'book.editions'])
-            ->get()
-            ->sortByDesc('sort_order');
+        $accountBooks = $this->getAccountBooks();
 
         $editionsInSale = new Collection();
-        $authorships->map(function ($authorship) use (&$editionsInSale) {
+        $accountBooks->map(function ($book) use (&$editionsInSale) {
             return $editionsInSale->push(
-                ...$authorship->book->editions()
+                ...$book->editions()
                     ->selling()
                     ->get()
-            );
+                );
         });
 
         return $editionsInSale;

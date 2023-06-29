@@ -16,13 +16,13 @@
                                     <span>Дата:</span> {{ date }}
                                 </div>
                                 <div class="commerce-control__text">
-                                    <span>Продажа</span>
+                                    <span>{{ sell_type }}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="commerce__category">
-
+                            <div class="table __container-shift">
                             <table class="table-static">
                                 <thead>
                                 <tr>
@@ -65,6 +65,7 @@
 
                                 </tbody>
                             </table>
+                            </div>
                         </div>
 
                         {% if statistics|length == 0 %}

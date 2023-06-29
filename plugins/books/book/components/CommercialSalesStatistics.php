@@ -1,5 +1,6 @@
 <?php namespace Books\Book\Components;
 
+use Books\Book\Classes\Traits\AccoutBooksTrait;
 use Books\Book\Models\Book;
 use Books\Book\Models\SellStatistics;
 use Books\Book\Traits\FormatNumberTrait;
@@ -17,7 +18,8 @@ use RainLab\User\Models\User;
  */
 class CommercialSalesStatistics extends ComponentBase
 {
-    use FormatNumberTrait;
+    use FormatNumberTrait,
+        AccoutBooksTrait;
 
     protected ?User $user;
 
@@ -53,7 +55,7 @@ class CommercialSalesStatistics extends ComponentBase
 
     public function onRender()
     {
-        $this->page['books'] = $this->user->profile->books()->get();
+        $this->page['books'] = $this->getAccountBooks();
         $this->page['from'] = $this->from->format('d.m.Y');
         $this->page['to'] = $this->to->format('d.m.Y');
     }
@@ -78,8 +80,9 @@ class CommercialSalesStatistics extends ComponentBase
 
         $sellStatisticsQuery = SellStatistics
             ::with(['edition', 'edition.book'])
-            ->where('profile_id', $this->user->profile->id)
-            ->whereBetween('sell_at', [$periodFrom, $periodTo]);
+            ->whereIn('profile_id', $this->user->profiles->pluck('id'))
+            ->whereDate('sell_at', '>=', $periodFrom)
+            ->whereDate('sell_at', '<=', $periodTo);
 
         if (!empty($bookId)) {
             $book = Book::findOrFail($bookId);
@@ -88,7 +91,9 @@ class CommercialSalesStatistics extends ComponentBase
         }
 
         $sellStatistics = $sellStatisticsQuery
-            ->orderBy('sell_at', 'desc')
+            ->orderBy('edition_id', 'desc')
+            ->orderBy('sell_type', 'desc')
+            ->orderBy('price', 'desc')
             ->get();
 
         /**
@@ -106,6 +111,7 @@ class CommercialSalesStatistics extends ComponentBase
                 $statisticsData[$day][] = [
                     'id' => $sell->id,
                     'date' => $sell->day,
+                    'sell_type' => $sell->sell_type->value,
                     'book_id' => $book->id,
                     'title' => $book->title,
                     'type' => $sell->sell_type->getLabel(),
@@ -122,7 +128,7 @@ class CommercialSalesStatistics extends ComponentBase
                 foreach ($statisticsData[$day] as &$itemJ) {
                     if (
                         $itemI['id'] !== $itemJ['id']
-                        && $itemI['title'] === $itemJ['title']
+                        && $itemI['book_id'] === $itemJ['book_id']
                         && $itemI['type'] === $itemJ['type']
                         && $itemI['price'] === $itemJ['price']
                     ) {
@@ -138,6 +144,7 @@ class CommercialSalesStatistics extends ComponentBase
         $summary = [
             'sells_count' => $sellStatistics->count(),
             'sells_sum_amount' => $this->formatNumber($sellStatistics->sum('price')),
+            'sells_reward_amount' => $this->formatNumber($sellStatistics->sum('reward_value')),
         ];
 
         return [
@@ -155,7 +162,7 @@ class CommercialSalesStatistics extends ComponentBase
     private function prepareDates()
     {
         $sellAtRange = SellStatistics
-            ::where('profile_id', $this->user->profile->id)
+            ::whereIn('profile_id', $this->user->profiles->pluck('id'))
             ->select(DB::raw('MIN(sell_at) AS start_year, MAX(sell_at) AS end_year'))
             ->first();
 
