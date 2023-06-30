@@ -5,6 +5,7 @@ namespace Books\Book\Models;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\BelongsTo;
 use October\Rain\Database\Traits\Validation;
 
@@ -112,6 +113,11 @@ class Stats extends Model
         }
         $this->history = $h->toArray();
         return $this;
+    }
+
+    public function scopeValidParamValue(Builder $builder, string $param): Builder
+    {
+        return $builder->whereNotNull($param)->where($param, '>', 0);
     }
 
     public function clearDumps(): static

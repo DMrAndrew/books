@@ -61,6 +61,7 @@ enum WidgetEnum: string
         return match ($this) {
             default => SortEnum::default,
             self::new => SortEnum::new,
+            self::hotNew => SortEnum::hotNew,
             self::todayDiscount => SortEnum::discount,
             self::gainingPopularity => SortEnum::gainingPopularity,
 

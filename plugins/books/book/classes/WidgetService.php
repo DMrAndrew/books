@@ -317,12 +317,16 @@ class WidgetService
 
     public function hotNew()
     {
-        return $this->query()->afterPublishedAtDate(date: 10);
+        return $this->query()
+            ->afterPublishedAtDate(date: 10)
+            ->whereHas('stats', fn($stats) => $stats->validParamValue(StatsEnum::collected_hot_new_rate->value));
     }
 
     public function gainingPopularity()
     {
-        return $this->query()->afterPublishedAtDate(date: 30);
+        return $this->query()
+            ->afterPublishedAtDate(date: 30)
+            ->whereHas('stats', fn($stats) => $stats->validParamValue(StatsEnum::collected_gain_popularity_rate->value));
     }
 
     public function todayDiscount()
@@ -343,9 +347,16 @@ class WidgetService
     public function interested()
     {
         $collection = $this->user?->getLib()[CollectionEnum::WATCHED->value] ?? collect();
-        $inlib = $collection->pluck('book')->pluck('id')->toArray();
+        $ids = $collection
+            ->sortByDesc('created_at')
+            ->slice(0, $this->short ? 3 : 10)
+            ->pluck('book')
+            ->pluck('id')
+            ->toArray();
 
-        return $this->query()->whereIn((new Book())->getQualifiedKeyName(), $inlib);
+        return $this->query()
+            ->whereIn((new Book())->getQualifiedKeyName(), $ids)
+            ->orderByRaw('FIELD (' . (new Book())->getQualifiedKeyName() . ', ' . implode(', ', $ids) . ') ASC');
     }
 
     public function popular()
@@ -390,7 +401,6 @@ class WidgetService
 
     public function cycle()
     {
-        //todo REF
         $ids = $this->book->cycle?->books()->public()->pluck('id')->toArray();
         return $this->query()->whereIn((new Book())->getQualifiedKeyName(), $ids);
     }
