@@ -171,7 +171,7 @@ class Booker extends ComponentBase
 
     public function getCycles()
     {
-        return $this->user?->profile->cyclesWithAvailableCoAuthorsCycles()->toArray() ?? [];
+        return $this->user?->profile->cycles()->toArray() ?? [];
     }
 
     public function onSearchTag()
