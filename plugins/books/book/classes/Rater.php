@@ -259,7 +259,7 @@ class Rater
     public
     function collected_gain_popularity_rate(): static
     {
-        $this->closures[StatsEnum::collected_gain_popularity_rate->value] = fn(Book $book) => $book->stats->collected_genre_rate = $book->stats->gainingPopularity($book->isWorking());
+        $this->closures[StatsEnum::collected_gain_popularity_rate->value] = fn(Book $book) => $book->stats->collected_gain_popularity_rate = $book->stats->gainingPopularity($book->isWorking());
         return $this;
     }
 
@@ -274,7 +274,7 @@ class Rater
     function sells_count(): static
     {
         $this->builder->withCountEditionSells($this->dateBetween);
-        $this->closures[StatsEnum::sells_count->value] = fn(Book $book) => $book->stats->sells_count = $book->customers_count;
+        $this->closures[StatsEnum::sells_count->value] = fn(Book $book) => $book->stats->sells_count = $book->sells_count;
         return $this;
     }
 
