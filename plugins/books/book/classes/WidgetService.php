@@ -391,6 +391,7 @@ class WidgetService
     public function cycle()
     {
         //todo REF
+        return $this->emptyBuilder();
         return $this->book->cycle?->books()->public()->defaultEager() ?? $this->emptyBuilder();
     }
 
