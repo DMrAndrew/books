@@ -3,6 +3,7 @@
 namespace Books\Notifications\Classes\Events;
 
 use Books\Notifications\Classes\NotificationTypeEnum;
+use Books\Profile\Models\Profile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -50,7 +51,7 @@ class CommentReplied extends BaseEvent
 
         // README: возвращаем именно такую коллекцию, а не collect() ибо во втором случае ошибка сериализации
         return new \October\Rain\Database\Collection([
-            $comment->parent?->user?->profile,
+            $comment->parent?->profiler?->master, // отвечаем на комментарий профилю, с которого был написан комментарий
         ]);
     }
 }
