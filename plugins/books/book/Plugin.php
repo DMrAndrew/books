@@ -46,8 +46,10 @@ use Books\Book\Models\Pagination;
 use Books\Book\Models\Prohibited;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
+use Books\Notifications\Console\NotifyUsersAboutTodaysDiscounts;
 use Books\Profile\Behaviors\Slavable;
 use Books\Reposts\behaviors\Shareable;
+use Books\User\Classes\CookieEnum;
 use Config;
 use Event;
 use Illuminate\Database\Console\PruneCommand;
@@ -91,6 +93,7 @@ class Plugin extends PluginBase
         parent::register();
 
         $this->registerConsoleCommand('model:prune', PruneCommand::class);
+        $this->registerConsoleCommand('book:discounts:notify_user_about_todays_discounts', NotifyUsersAboutTodaysDiscounts::class);
     }
 
     /**
@@ -272,5 +275,7 @@ class Plugin extends PluginBase
         $schedule->command('model:prune', [
             '--model' => [Models\Promocode::class],
         ])->dailyAt('03:00');
+
+        $schedule->command('book:discounts:notify_user_about_todays_discounts')->dailyAt('03:10');
     }
 }
