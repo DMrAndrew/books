@@ -347,14 +347,16 @@ class WidgetService
     public function interested()
     {
         $collection = $this->user?->getLib()[CollectionEnum::WATCHED->value] ?? collect();
-        $inlib = $collection
+        $ids = $collection
             ->sortByDesc('created_at')
             ->slice(0, $this->short ? 3 : 10)
             ->pluck('book')
             ->pluck('id')
             ->toArray();
 
-        return $this->query()->whereIn((new Book())->getQualifiedKeyName(), $inlib);
+        return $this->query()
+            ->whereIn((new Book())->getQualifiedKeyName(), $ids)
+            ->orderByRaw('FIELD (' . (new Book())->getQualifiedKeyName() . ', ' . implode(', ', $ids) . ') ASC');
     }
 
     public function popular()
