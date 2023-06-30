@@ -397,6 +397,6 @@ class WidgetService
 
     public function emptyBuilder()
     {
-        return $this->query()->where('id', null);
+        return $this->query()->where((new Book())->getQualifiedKeyName(), null);
     }
 }
