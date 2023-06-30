@@ -115,7 +115,7 @@ class Stats extends Model
         return $this;
     }
 
-    public function scopeValidParamValue(Builder $builder, $param): Builder
+    public function scopeValidParamValue(Builder $builder, string $param): Builder
     {
         return $builder->whereNotNull($param)->where($param, '>', 0);
     }
