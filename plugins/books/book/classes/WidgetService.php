@@ -300,9 +300,9 @@ class WidgetService
     {
         $ids = Author::query()
             ->owner()
-            ->orderByLeftPowerJoinsCount('book.editions.customers.id', 'desc')
+            ->orderByLeftPowerJoinsCount('book.editions.sells.id', 'desc')
             ->get()
-            ->where('customers_aggregation', '>', 0)
+            ->where('sells_aggregation', '>', 0)
             ->unique('profile_id')
             ->pluck('book_id')
             ->toArray();
@@ -391,8 +391,8 @@ class WidgetService
     public function cycle()
     {
         //todo REF
-        return $this->emptyBuilder();
-        return $this->book->cycle?->books()->public()->defaultEager() ?? $this->emptyBuilder();
+        $ids = $this->book->cycle?->books()->public()->pluck('id')->toArray();
+        return $this->query()->whereIn((new Book())->getQualifiedKeyName(), $ids);
     }
 
     public function emptyBuilder()
