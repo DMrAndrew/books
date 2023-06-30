@@ -319,14 +319,14 @@ class WidgetService
     {
         return $this->query()
             ->afterPublishedAtDate(date: 10)
-            ->whereHas(['stats' => fn($stats) => $stats->validParamValue(StatsEnum::collected_hot_new_rate->value)]);
+            ->whereHas('stats', fn($stats) => $stats->validParamValue(StatsEnum::collected_hot_new_rate->value));
     }
 
     public function gainingPopularity()
     {
         return $this->query()
             ->afterPublishedAtDate(date: 30)
-            ->whereHas(['stats' => fn($stats) => $stats->validParamValue(StatsEnum::collected_gain_popularity_rate->value)]);
+            ->whereHas('stats', fn($stats) => $stats->validParamValue(StatsEnum::collected_gain_popularity_rate->value));
     }
 
     public function todayDiscount()
