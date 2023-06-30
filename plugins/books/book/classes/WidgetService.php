@@ -270,12 +270,13 @@ class WidgetService
     public function applyEnum()
     {
         $this->applySort();
-        return method_exists($this, $this->enum->value) ? $this->{$this->enum->value}() : $this->emptyBuilder();
+        $this->builder = method_exists($this, $this->enum->value) ? $this->{$this->enum->value}() : $this->emptyBuilder();
+        return $this->builder;
     }
 
     public function collect(): static
     {
-        $this->values = $this->applyEnum();
+        $this->values = $this->applyEnum()->get();
 
         return $this;
     }
@@ -311,7 +312,7 @@ class WidgetService
 
     public function bestsellers()
     {
-        return $this->query()->customersExists();
+        return $this->query()->sellsExists();
     }
 
     public function hotNew()
@@ -344,7 +345,7 @@ class WidgetService
         $collection = $this->user?->getLib()[CollectionEnum::WATCHED->value] ?? collect();
         $inlib = $collection->pluck('book')->pluck('id')->toArray();
 
-        return $this->query()->whereIn('id', $inlib);
+        return $this->query()->whereIn((new Book())->getQualifiedKeyName(), $inlib);
     }
 
     public function popular()

@@ -68,6 +68,18 @@ enum WidgetEnum: string
     }
 
     /**
+     * Minutes of cache
+     * @return int
+     */
+    public function defaultCacheTTL(): int
+    {
+        return match ($this) {
+            default => 10,
+            self::interested, self::cycle => 3,
+        };
+    }
+
+    /**
      * @throws Exception
      */
     public function service(...$args): WidgetService

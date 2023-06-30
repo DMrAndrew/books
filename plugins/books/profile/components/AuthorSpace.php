@@ -87,7 +87,7 @@ class AuthorSpace extends ComponentBase
             'should_call_fit_profile' => $isOwner && $this->profile->isEmpty(),
             'profile' => $this->profile,
             'books' => $this->profile->books,
-            'cycles' => $this->profile->cyclesWithAvailableCoAuthorsCycles()->load(['books' => fn($books) => $books->public()])->filter(fn($i) => $i->books->count())->values(),
+            'cycles' => $this->profile->cycles()->with(['books' => fn($books) => $books->public()])->get()->filter(fn($i) => $i->books->count())->values(),
             'subscribers' => $this->profile->subscribers->groupBy(fn($i) => $i->books_count ? 'authors' : 'readers'),
             'subscriptions' => $this->profile->subscriptions,
             'reposts' => $this->profile?->user?->reposts,

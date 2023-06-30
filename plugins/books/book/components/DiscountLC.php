@@ -132,7 +132,10 @@ class DiscountLC extends ComponentBase
             return [];
         }
         $this->book->ebook->discounts()->add($discount);
-        Event::fire('books.book::edition.discounted', [$discount]);
+
+        if ($discount->active_at->eq(today()->startOfDay())) {
+            Event::fire('books.book::edition.discounted', [$discount]);
+        }
 
         return $this->render();
     }
