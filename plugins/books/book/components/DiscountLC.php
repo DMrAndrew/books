@@ -70,7 +70,7 @@ class DiscountLC extends ComponentBase
                 ->books()
                 ->has('ebook.discounts')
                 ->with('ebook.discounts', 'ebook.discounts.edition', 'ebook.discounts.edition.book')
-                ->get()->map->ebook->pluck('discounts')->flatten(1)->sortBy('active_at')
+                ->get()->map->ebook->pluck('discounts')->flatten(1)->sortByDesc('active_at')
         ];
     }
 
