@@ -156,7 +156,7 @@ class IndexWidgets extends ComponentBase
         $new->setUpWidget(WidgetEnum::new, withAll: true, short: true);
 
         $interested = $this->addComponent(Widget::class, 'interested');
-        $interested->setUpWidget(WidgetEnum::interested, short: true);
+        $interested->setUpWidget(WidgetEnum::interested, ...['short' => true]);
 
         $gainingPopularity = $this->addComponent(Widget::class, 'gainingPopularity');
         $gainingPopularity->setUpWidget(WidgetEnum::gainingPopularity, withAll: true);

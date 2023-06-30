@@ -68,6 +68,7 @@ use WordForm;
  * @property  File cover
  * @property  Stats stats
  * @property  BookStatus status
+ *
  */
 class Book extends Model
 {
@@ -290,11 +291,29 @@ class Book extends Model
         );
     }
 
+    /**
+     * Аккаунты, у которых есть книга (включая покупки по промокоду)
+     *
+     * @return HasManyDeep
+     */
     public function customers(): HasManyDeep
     {
         return $this->hasManyDeepFromRelationsWithConstraints(
             [$this, 'editions'],
             [new Edition(), 'customers']
+        );
+    }
+
+    /**
+     * Записи для статистики коммерческого кабинета, т.е. только те где книгу купили за деньги
+     *
+     * @return HasManyDeep
+     */
+    public function sells(): HasManyDeep
+    {
+        return $this->hasManyDeepFromRelationsWithConstraints(
+            [$this, 'editions'],
+            [new Edition(), 'sells']
         );
     }
 
@@ -318,15 +337,19 @@ class Book extends Model
     {
         return $builder->has('customers');
     }
+    public function scopeSellsExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
+    {
+        return $builder->has('sells');
+    }
 
     public function scopeOrderByBestSells(Builder $builder, bool $asc = false)
     {
-        return $builder->orderByLeftPowerJoinsCount('editions.customers.id', $asc ? 'asc' : 'desc');
+        return $builder->orderByLeftPowerJoinsCount('editions.sells.id', $asc ? 'asc' : 'desc');
     }
 
     public function scopeWithCountEditionSells(Builder $builder, ?int $ofLastDays = null): Builder
     {
-        return $builder->withCount(['customers' => fn($c) => $c->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays))]);
+        return $builder->withCount(['sells' => fn($c) => $c->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays))]);
     }
 
     public function scopeWithReadTime(Builder $builder, ?int $ofLastDays = null, ?int $maxTime = null): Builder
@@ -589,7 +612,7 @@ class Book extends Model
 
     public function refreshAllowedVisits(): int
     {
-        $sold_count = $this->editions()->get()->pluck('sold_count')->sum();
+        $sold_count = $this->editions()->withSellsCount()->pluck('sells_count')->sum();
         $additional_visits = match ($sold_count) {
             0 => 0,
             1 => 350,

@@ -32,9 +32,10 @@ use System\Models\Revision;
  *
  * * @method HasMany chapters
  * * @method HasMany discounts
+ * * @method HasMany sells Записи из статистики коммерческого кабинета, т.е. только те, где книга куплена за деньги
  * * @method AttachOne fb2
  * * @method BelongsTo book
- * * @method MorphMany customers
+ * * @method MorphMany customers Аккаунты, у которых есть книга (включая покупки по промокоду)
  *
  * * @property  Book book
  * * @property  BookStatus status
@@ -101,6 +102,7 @@ class Edition extends Model implements ProductInterface
     public $hasMany = [
         'chapters' => [Chapter::class, 'key' => 'edition_id', 'otherKey' => 'id'],
         'discounts' => [Discount::class, 'key' => 'edition_id', 'otherKey' => 'id'],
+        'sells' => [SellStatistics::class, 'key' => 'edition_id', 'otherKey' => 'id'],
     ];
 
     public $attachOne = [
@@ -221,7 +223,12 @@ class Edition extends Model implements ProductInterface
 
     public function getSoldCountAttribute(): int
     {
-        return $this->customers()->count();
+        return $this->sells()->count();
+    }
+
+    public function scopeWithSellsCount(Builder $builder)
+    {
+        return $builder->withCount('sells');
     }
 
     public function editAllowed(): bool
@@ -277,7 +284,7 @@ class Edition extends Model implements ProductInterface
 
     public function hasSales()
     {
-        return false;
+        return $this->sells()->exists();
     }
 
     public function shouldRevisionLength(): bool
