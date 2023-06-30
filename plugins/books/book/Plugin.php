@@ -46,6 +46,7 @@ use Books\Book\Models\Pagination;
 use Books\Book\Models\Prohibited;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
+use Books\Collections\Models\Lib;
 use Books\Notifications\Console\NotifyUsersAboutTodaysDiscounts;
 use Books\Profile\Behaviors\Slavable;
 use Books\Reposts\behaviors\Shareable;
@@ -273,7 +274,7 @@ class Plugin extends PluginBase
 
 
         $schedule->command('model:prune', [
-            '--model' => [Models\Promocode::class],
+            '--model' => [Models\Promocode::class, Lib::class],
         ])->dailyAt('03:00');
 
         $schedule->command('book:discounts:notify_user_about_todays_discounts')->dailyAt('03:10');

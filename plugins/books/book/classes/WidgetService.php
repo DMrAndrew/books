@@ -343,7 +343,12 @@ class WidgetService
     public function interested()
     {
         $collection = $this->user?->getLib()[CollectionEnum::WATCHED->value] ?? collect();
-        $inlib = $collection->pluck('book')->pluck('id')->toArray();
+        $inlib = $collection
+            ->sortByDesc('created_at')
+            ->slice(0, $this->short ? 3 : 10)
+            ->pluck('book')
+            ->pluck('id')
+            ->toArray();
 
         return $this->query()->whereIn((new Book())->getQualifiedKeyName(), $inlib);
     }
