@@ -1,5 +1,11 @@
 {% set file = __SELF__.singleFile %}
 
+<style>
+    .info:hover{
+        background-color: rgb(246 245 242 / 91%);
+        padding: 0px 15px;
+    }
+</style>
 <div
     class="responsiv-uploader-fileupload style-image-single {{ __SELF__.isPopulated() ? 'is-populated' }}"
     data-control="fileupload"
