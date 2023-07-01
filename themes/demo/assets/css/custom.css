@@ -21,3 +21,6 @@ body {
 .book-card__image,.advert img{
     object-fit:fill!important;
 }
+.book-mini-card__image{
+    border-radius:4px!important;
+}
