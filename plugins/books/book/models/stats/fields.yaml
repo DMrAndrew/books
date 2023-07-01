@@ -3,6 +3,53 @@
 # ===================================
 
 fields:
-    id:
-        label: ID
-        disabled: true
+    rate:
+        label: Рейтинг
+        span: row
+        size: tiny
+        spanClass: col-2
+    likes_count:
+        label: Кол-во лайков
+        span: row
+        size: tiny
+        spanClass: col-2
+    comments_count:
+        label: Кол-во комментариев
+        span: row
+        size: tiny
+        spanClass: col-2
+    read_count:
+        label: Кол-во прочтений по главам
+        span: row
+        size: tiny
+        spanClass: col-2
+    in_lib_count:
+        label: Кол-во добавлений в библиотеку
+        span: row
+        size: tiny
+        spanClass: col-2
+    read_time:
+        label: Время прочтения (мин.)
+        span: row
+        size: tiny
+        spanClass: col-2
+    sells_count:
+        label: Кол-во продаж (без промокодов)
+        span: row
+        size: tiny
+        spanClass: col-2
+    collected_hot_new_rate:
+        label: Показать по формуле "Горячие новинки"
+        span: row
+        size: tiny
+        spanClass: col-2
+    collected_gain_popularity_rate:
+        label: Показать по формуле "Набирают популярность"
+        span: row
+        size: tiny
+        spanClass: col-2
+    freq:
+        label: Частота обновлений
+        span: row
+        size: tiny
+        spanClass: col-2

@@ -160,6 +160,20 @@ class Plugin extends PluginBase
                 $model->implementClassWith(Trackable::class);
             });
         }
+
+        \Books\Book\Controllers\Book::extendFormFields(function ($form, $model, $context) {
+            if (!$model instanceof Book) {
+                return;
+            }
+            $form->addTabFields([
+                'stats' => [
+                    'type' => 'partial',
+                    'path' => '$/books/book/views/stats_relation_form.htm',
+                    'tab' => 'Статистика',
+                ],
+            ]);
+        });
+
     }
 
     /**

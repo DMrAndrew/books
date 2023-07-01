@@ -152,17 +152,6 @@ class Stats extends Model
         ]);
     }
 
-    public function popular(): float|int
-    {
-        return $this->toRateValue([
-            $this->rate,
-            $this->read_time * 3,
-            $this->comments_count * 2,
-            $this->read_count,
-            $this->sells_count ?: null
-        ]);
-    }
-
     public function hotNew(bool $includeFreq = true): float|int
     {
         return $this->toRateValue([
@@ -173,6 +162,17 @@ class Stats extends Model
             $this->read_time * 3,
             $this->read_count,
             $includeFreq ? $this->freq * 3 : null,
+        ]);
+    }
+
+    public function popular(): float|int
+    {
+        return $this->toRateValue([
+            $this->rate,
+            $this->read_time * 3,
+            $this->comments_count * 2,
+            $this->read_count,
+            $this->sells_count ?: null
         ]);
     }
 
