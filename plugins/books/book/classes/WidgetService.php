@@ -356,7 +356,7 @@ class WidgetService
 
         return $this->query()
             ->whereIn((new Book())->getQualifiedKeyName(), $ids)
-            ->orderByRaw('FIELD (' . (new Book())->getQualifiedKeyName() . ', ' . implode(', ', $ids) . ') ASC');
+            ->when(count($ids),fn($b) => $b->orderByRaw('FIELD (' . (new Book())->getQualifiedKeyName() . ', ' . implode(', ', $ids) . ') ASC'));
     }
 
     public function popular()
