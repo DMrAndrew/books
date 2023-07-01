@@ -28,7 +28,22 @@ class Reading implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->chapter->computeProgress($this->user);
-        $this->chapter->edition->computeProgress($this->user);
+        try {
+            $this->chapter->computeProgress($this->user);
+            $this->chapter->edition->computeProgress($this->user);
+        }
+        catch (\Exception $exception){
+            $this->fail($exception->getMessage());
+        }
+    }
+
+    /**
+     * Get the tags that should be assigned to the job.
+     *
+     * @return array<int, string>
+     */
+    public function tags(): array
+    {
+        return ['reading', get_class($this->chapter).':'.$this->chapter->id, $this->user ? get_class($this->user).':'.$this->user->id : ''];
     }
 }

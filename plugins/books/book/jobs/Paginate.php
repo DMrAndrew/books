@@ -29,4 +29,8 @@ class Paginate implements ShouldQueue
     {
         $this->chapter->service()->paginate();
     }
+
+    public function tags(): array{
+        return ['paginate', get_class($this->chapter).':'.$this->chapter->id];
+    }
 }

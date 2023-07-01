@@ -76,4 +76,8 @@ class ParseFB2 implements ShouldQueue
             $this->fail($exception->getMessage());
         }
     }
+
+    public function tags(): array{
+        return ['parsing','parseFB', get_class($this->edition).':'.$this->edition->id];
+    }
 }

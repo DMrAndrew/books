@@ -75,6 +75,7 @@ class AuthorSpace extends ComponentBase
                 'subscribers' => fn($subscribers) => $subscribers->shortPublicEager(),
                 'subscriptions' => fn($subscribers) => $subscribers->shortPublicEager(),
                 'reposts' => fn($reposts) => $reposts->with('shareable'),
+                'cycles' => fn($cycles) => $cycles->with(['books' => fn($books) => $books->public()]),
                 'books' => fn($books) => $books->public()->defaultEager()->orderByPivot('sort_order', 'desc')])
             ->withCount(['leftAwards', 'receivedAwards'])
             ->find($this->profile->id);
@@ -87,7 +88,7 @@ class AuthorSpace extends ComponentBase
             'should_call_fit_profile' => $isOwner && $this->profile->isEmpty(),
             'profile' => $this->profile,
             'books' => $this->profile->books,
-            'cycles' => $this->profile->cycles()->with(['books' => fn($books) => $books->public()])->get()->filter(fn($i) => $i->books->count())->values(),
+            'cycles' => $this->profile->cycles?->filter(fn($i) => $i->books->count())->values() ?? [],
             'subscribers' => $this->profile->subscribers->groupBy(fn($i) => $i->books_count ? 'authors' : 'readers'),
             'subscriptions' => $this->profile->subscriptions,
             'reposts' => $this->profile?->user?->reposts,
