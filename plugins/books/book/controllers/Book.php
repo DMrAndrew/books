@@ -4,6 +4,7 @@ namespace Books\Book\Controllers;
 
 use Backend\Behaviors\FormController;
 use Backend\Behaviors\ListController;
+use Backend\Behaviors\RelationController;
 use Backend\Classes\Controller;
 use BackendMenu;
 
@@ -17,6 +18,7 @@ class Book extends Controller
     public $implement = [
         FormController::class,
         ListController::class,
+        RelationController::class
     ];
 
     /**
@@ -28,6 +30,8 @@ class Book extends Controller
      * @var string listConfig file
      */
     public $listConfig = 'config_list.yaml';
+
+    public $relationConfig = 'config_relation.yaml';
 
     /**
      * @var array required permissions

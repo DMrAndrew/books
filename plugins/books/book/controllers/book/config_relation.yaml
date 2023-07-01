@@ -1,0 +1,9 @@
+stats:
+    label: Статистика
+    view:
+        form: $/books/book/models/stats/fields.yaml
+        toolbarButtons: false
+    manage:
+        title: Обновление профиля
+        form: $/books/book/models/stats/fields.yaml
+        list: $/books/book/models/stats/columns.yaml
