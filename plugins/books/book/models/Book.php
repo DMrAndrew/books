@@ -107,7 +107,7 @@ class Book extends Model
     public $rules = [
         'title' => 'required|between:2,100',
         'annotation' => 'nullable|string',
-        'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:3072',
+        'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:3072|dimensions:min_width=168,min_height=244',
         'cycle_id' => 'nullable|integer|exists:books_book_cycles,id',
     ];
 
