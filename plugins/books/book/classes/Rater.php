@@ -12,8 +12,6 @@ class Rater
 {
     use Conditionable;
 
-    const MAX_READ_TIME_MINUTES_PER_PAGE = 15;
-
 
     protected $result = null;
 
@@ -203,7 +201,7 @@ class Rater
     public
     function time(): static
     {
-        $this->builder->withReadTime(ofLastDays: $this->dateBetween, maxTime: (Rater::MAX_READ_TIME_MINUTES_PER_PAGE * 60));
+        $this->builder->withReadTime(ofLastDays: $this->dateBetween);
         $this->closures[StatsEnum::READ_TIME->value] = function (Book $book) {
             $book->stats->read_time = (int)ceil($book->pagination_trackers_sum_time / 60);
         };

@@ -20,7 +20,8 @@ use October\Rain\Database\Traits\Validation;
  * @property int comments_count
  * @property int freq
  * @property int in_lib_count
- * @property int read_time
+ * @property int read_time (мин)
+ * @property int limited_read_time Не больше 15 мин.
  * @property int read_count
  * @property int collected_genre_rate
  * @property int collected_gain_popularity_rate
@@ -45,6 +46,7 @@ class Stats extends Model
     public $table = 'books_book_stats';
 
     const HISTORY_EXPIRATION_DAYS = 3;
+    const MAX_READ_TIME_MINUTES_PER_PAGE = 15;
 
 //    protected $revisionable = ['rate'];
 
@@ -126,6 +128,11 @@ class Stats extends Model
         return $this;
     }
 
+    public function getLimitedReadTime(): int
+    {
+        return $this->read_time > static::MAX_READ_TIME_MINUTES_PER_PAGE ? static::MAX_READ_TIME_MINUTES_PER_PAGE : $this->read_time;
+    }
+
     public function forGenres(bool $includeFreq = true): float|int
     {
         return $this->toRateValue([
@@ -133,7 +140,7 @@ class Stats extends Model
             $this->comments_count,
             $this->in_lib_count,
             $this->likes_count,
-            $this->read_time,
+            $this->limited_read_time,
             $this->read_count,
             $includeFreq ? $this->freq : null,
         ]);
@@ -146,7 +153,7 @@ class Stats extends Model
             $this->comments_count * 2,
             $this->in_lib_count * 2,
             $this->likes_count,
-            $this->read_time * 3,
+            $this->limited_read_time * 3,
             $this->read_count,
             $includeFreq ? $this->freq : null,
         ]);
@@ -159,7 +166,7 @@ class Stats extends Model
             $this->comments_count,
             $this->in_lib_count,
             $this->likes_count,
-            $this->read_time * 3,
+            $this->limited_read_time * 3,
             $this->read_count,
             $includeFreq ? $this->freq * 3 : null,
         ]);
@@ -169,7 +176,7 @@ class Stats extends Model
     {
         return $this->toRateValue([
             $this->rate,
-            $this->read_time * 3,
+            $this->limited_read_time * 3,
             $this->comments_count * 2,
             $this->read_count,
             $this->sells_count ?: null
