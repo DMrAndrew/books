@@ -8,16 +8,6 @@ fields:
         span: row
         size: tiny
         spanClass: col-2
-    likes_count:
-        label: Кол-во лайков
-        span: row
-        size: tiny
-        spanClass: col-2
-    comments_count:
-        label: Кол-во комментариев
-        span: row
-        size: tiny
-        spanClass: col-2
     read_count:
         label: Кол-во прочтений по главам
         span: row
@@ -28,13 +18,23 @@ fields:
         span: row
         size: tiny
         spanClass: col-2
-    read_time:
-        label: Время прочтения (мин.)
+    comments_count:
+        label: Кол-во комментариев
+        span: row
+        size: tiny
+        spanClass: col-2
+    likes_count:
+        label: Кол-во лайков
         span: row
         size: tiny
         spanClass: col-2
     sells_count:
         label: Кол-во продаж (без промокодов)
+        span: row
+        size: tiny
+        spanClass: col-2
+    read_time:
+        label: Время прочтения (мин.)
         span: row
         size: tiny
         spanClass: col-2
@@ -49,7 +49,7 @@ fields:
         size: tiny
         spanClass: col-2
     freq:
-        label: Частота обновлений
+        label: Показатель частоты обновлений
         span: row
         size: tiny
         spanClass: col-2
