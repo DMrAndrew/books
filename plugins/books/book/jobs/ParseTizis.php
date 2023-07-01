@@ -61,4 +61,7 @@ class ParseTizis implements ShouldQueue
         }
     }
 
+    public function tags(): array{
+        return ['parsing','parseTizisChapter', get_class($this->edition).':'.$this->edition->id];
+    }
 }

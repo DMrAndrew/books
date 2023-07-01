@@ -45,4 +45,9 @@ class RaterExec implements ShouldQueue
             throw $exception;
         }
     }
+
+    public function tags(): array
+    {
+        return ['compute', 'RaterExec'];
+    }
 }

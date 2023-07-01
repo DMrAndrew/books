@@ -32,4 +32,8 @@ class GenreRaterExec implements ShouldQueue, ShouldBeUnique
         (new Book())->rater()->setWithDump(true)->applyAllStats()->apply();
         (new GenreRater())->compute();
     }
+
+    public function tags(): array{
+        return ['compute', 'GenreRaterExec'];
+    }
 }
