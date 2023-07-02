@@ -153,10 +153,11 @@ class Booker extends ComponentBase
     {
         try {
 
-            if ($this->user->profile->cycles()->name(mb_ucfirst(trim(post('name'))))->exists()) {
+            $name = mb_ucfirst(trim(post('name')));
+            if ($this->user->profile->cyclesWithShared()->name($name)->exists()) {
                 throw new ValidationException(['name' => 'Цикл уже существует.']);
             }
-            $cycle = $this->user->profile->cycles()->create(array_merge(['user_id' => $this->user->id], post()));
+            $cycle = $this->user->profile->cycles()->create(array_merge(['user_id' => $this->user->id, 'name' => $name]));
 
 
             return [
@@ -171,7 +172,7 @@ class Booker extends ComponentBase
 
     public function getCycles()
     {
-        return $this->user?->profile->cycles()->get()->toArray() ?? [];
+        return $this->user?->profile->cyclesWithShared()->with('profile')->get()->toArray() ?? [];
     }
 
     public function onSearchTag()

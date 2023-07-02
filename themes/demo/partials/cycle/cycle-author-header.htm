@@ -1,8 +1,5 @@
 <div class="author-cycles__header">
     <div class="author-cycles__title ui-text-head--3 ui-text--bold">{{cycle.name}}</div>
-    <a class="author-cycles__link ui-link _violet" href="/cycle/{{cycle.id}}">Подробнее</a>
+    <a class="author-cycles__link ui-link _violet" href="{{'cycle' | page({cycle_id: cycle.id})}}">Подробнее</a>
 </div>
-<!--<div class="author-cycles__stage">-->
-<!--    {% partial 'cycle/cycle-status' status=cycle.status.value %}-->
-<!--</div>-->
 {% placeholder thematic %}

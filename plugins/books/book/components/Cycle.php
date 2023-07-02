@@ -2,7 +2,6 @@
 
 namespace Books\Book\Components;
 
-use Books\Book\Models\Book;
 use Books\Book\Models\Cycle as CycleModel;
 use Cms\Classes\ComponentBase;
 
@@ -27,7 +26,6 @@ class Cycle extends ComponentBase
     {
         $this->cycle = CycleModel::query()->booksEager()->find((int)$this->param('cycle_id')) ?? abort(404);
         $books = $this->cycle->books;
-        $books->count() > 0 ?: abort(404);
         $this->page['cycle'] = $this->cycle;
         $this->page['books'] = $books;
         $this->page->meta_title = $this->page->meta_title . ' «' . $this->cycle->name . '»';
