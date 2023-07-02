@@ -102,7 +102,7 @@ class CommercialSalesStatistics extends ComponentBase
         $sellStatistics->each(function ($sell) {
             $sell->day = $sell->sell_at->format('d.m.Y');
         });
-        $groupedByDay = $sellStatistics->groupBy('day')->sortBy(fn($group) => $group->first()->sell_at);
+        $groupedByDay = $sellStatistics->groupBy('day')->sortByDesc(fn($group) => $group->first()->sell_at);
 
         $statisticsData = [];
         foreach ($groupedByDay as $day => $group) {
