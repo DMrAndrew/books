@@ -106,10 +106,9 @@ class ListingService
             //Сортировать рейтингу жанра, в порядке предоставленных пользователем
             $getRateNumber = fn($book, $genreId) => $book->genres->whereIn('id', [$genreId])->first()?->pivot->rate_number;
             $closures = $this->filter->includes(Genre::class)
-                ->reverse()
                 ->pluck('id')
                 ->map(fn($id) => fn($a, $b) => $getRateNumber($a, $id) <=> $getRateNumber($b, $id));
-            return $list->sortBy($closures->toArray());
+            return $list->sortByDesc($closures->toArray());
         }
         return $list;
     }
