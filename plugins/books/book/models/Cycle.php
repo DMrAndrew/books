@@ -116,4 +116,9 @@ class Cycle extends Model
     {
         $this->name = mb_ucfirst($this->name);
     }
+
+    public function beforeDelete()
+    {
+        $this->books()->update(['cycle_id' => null]);
+    }
 }

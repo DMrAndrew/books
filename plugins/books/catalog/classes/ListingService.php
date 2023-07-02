@@ -21,12 +21,16 @@ class ListingService
     protected bool $useWidgetSort = false;
     protected Builder $builder;
 
+    protected bool $hasIncludeGenres = false;
+
     public function __construct(protected ListingFilter $filter)
     {
         $this->useRater = in_array($this->filter->sort, [SortEnum::popular_day, SortEnum::popular_week, SortEnum::popular_month]);
         $this->useWidgetService = $this->filter->widget?->isListable() ?? false;
         $this->useWidgetSort = $this->useWidgetService && !$this->useRater && $this->filter->widget->mapSortEnum() === $this->filter->sort;
         $this->builder = Book::query()->public()->defaultEager();
+        $this->hasIncludeGenres = $this->filter->includes(Genre::class)->count();
+
     }
 
     public function selfBind()
@@ -43,6 +47,7 @@ class ListingService
             ->when($this->filter->type, fn($q) => $q->type($this->filter->type))
             ->when(!$this->useWidgetSort && !$this->useRater, fn($builder) => match ($this->filter->sort) {
                 default => $builder,
+                SortEnum::default => $this->hasIncludeGenres ? $builder : $builder->sortByStatValue(StatsEnum::RATE),
                 SortEnum::new => $builder->orderBySalesAt(),
                 SortEnum::hotNew => $builder->sortByStatValue(StatsEnum::collected_hot_new_rate),
                 SortEnum::gainingPopularity => $builder->sortByStatValue(StatsEnum::collected_gain_popularity_rate),
@@ -95,7 +100,18 @@ class ListingService
             $this->bindByWidgetService();
         }
 
-        return $this->useRater ? $this->getThroughRater() : $this->builder->get();
+        $list = $this->useRater ? $this->getThroughRater() : $this->builder->get();
+
+        if ($this->hasIncludeGenres && in_array($this->filter->sort, [SortEnum::default, null])) {
+            //Сортировать рейтингу жанра, в порядке предоставленных пользователем
+            $getRateNumber = fn($book, $genreId) => $book->genres->whereIn('id', [$genreId])->first()?->pivot->rate_number;
+            $closures = $this->filter->includes(Genre::class)
+                ->reverse()
+                ->pluck('id')
+                ->map(fn($id) => fn($a, $b) => $getRateNumber($a, $id) <=> $getRateNumber($b, $id));
+            return $list->sortBy($closures->toArray());
+        }
+        return $list;
     }
 
 }
