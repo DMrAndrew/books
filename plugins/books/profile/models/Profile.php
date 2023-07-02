@@ -194,10 +194,26 @@ class Profile extends Model
     {
         return $this->belongsToManyTroughProfiler(AwardBook::class);
     }
+
     public function cycles(): BelongsToMany
     {
         return $this->belongsToManyTroughProfiler(Cycle::class);
     }
+
+    public function cyclesWithShared(): BelongsToMany
+    {
+        return $this->cycles()
+            ->orWhereIn((new Cycle())->getQualifiedKeyName(), $this->books()->select('cycle_id'))
+            ->distinct();
+    }
+
+//    public function cyclesWithShared(): \Illuminate\Database\Eloquent\Builder
+//    {
+//        $column_id = (new Cycle())->getQualifiedKeyName();
+//        return Cycle::query()
+//            ->whereIn($column_id, $this->cycles()->select('id')) // свои
+//            ->orWhereIn($column_id, $this->books()->select('cycle_id')); // + циклы из книг
+//    }
 
     public function receivedAwards(): HasManyDeep
     {
