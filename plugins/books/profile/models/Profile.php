@@ -202,9 +202,10 @@ class Profile extends Model
 
     public function cyclesWithShared(): BelongsToMany
     {
+        $column_id = (new Cycle())->getQualifiedKeyName();
         return $this->cycles()
-            ->orWhereIn((new Cycle())->getQualifiedKeyName(), $this->books()->select('cycle_id'))
-            ->distinct();
+            ->orWhereIn($column_id, $this->books()->select('cycle_id'))
+            ->distinct($column_id);
     }
 
 //    public function cyclesWithShared(): \Illuminate\Database\Eloquent\Builder
