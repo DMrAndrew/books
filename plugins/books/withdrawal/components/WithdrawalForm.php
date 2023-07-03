@@ -55,13 +55,14 @@ class WithdrawalForm extends ComponentBase
             'fileUploader',
             [
                 'modelClass' => WithdrawalData::class,
-                'deferredBinding' => !(bool)$this->withdrawal->id,
+                'deferredBinding' => !(bool)$this->withdrawal?->id,
                 "placeholderText" => "Скан паспорта с пропиской (данные паспорта не хранятся и удаляются сразу после проверки)",
                 "maxSize" => 30,
                 "isMulti" => true,
                 "fileTypes" => ".gif,.jpg,.jpeg,.png",
             ]
         );
+
         $component->bindModel('files', $this->withdrawal);
     }
 
@@ -78,7 +79,7 @@ class WithdrawalForm extends ComponentBase
     {
         return WithdrawalData
             ::where('user_id', $this->user->id)
-            ->first();
+            ->firstOrNew();
     }
 
     public function onSaveWithdrawal()

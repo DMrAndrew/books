@@ -17,12 +17,12 @@ class AgreementService implements AgreementServiceContract
 
     public function getAgreementHTML(): string
     {
-        return 'HTML';
+        return 'HTML Договора';
     }
 
     public function getAgreementPDF(): string
     {
-        // TODO: Implement getAgreementPDF() method.
+        return 'PDF Договора';
     }
 
     public function sendVerificationCode(): void
