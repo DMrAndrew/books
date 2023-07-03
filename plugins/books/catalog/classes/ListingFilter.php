@@ -51,9 +51,9 @@ class ListingFilter
         $query = collect(request()->query())->only(['type', 'genre', 'tag', 'widget']);
         $this->include($this->fromPost(Tag::class, $query['tag'] ?? null));
         $this->include($this->fromPost(Genre::class, $query['genre'] ?? null));
-        $this->type = ($query['type'] ?? null) ? EditionsEnums::tryFrom($query['type']) : null;
+        $this->type = ($query['type'] ?? null) ? EditionsEnums::tryFrom($query['type']??null) : null;
         $this->widget = WidgetEnum::tryFrom($query['widget'] ?? '');
-        $this->sort = $this->sortFromString($query['sort']);
+        $this->sort = $this->sortFromString($query['sort']??null);
     }
 
     public function sortFromString(?string $val = null): SortEnum
