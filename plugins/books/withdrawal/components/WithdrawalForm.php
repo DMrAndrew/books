@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Http\RedirectResponse;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
@@ -39,7 +41,14 @@ class WithdrawalForm extends ComponentBase
      */
     public function defineProperties()
     {
-        return [];
+        return [
+            'paramCode' => [
+                'title'       => 'Код подтверждения договора на вывод средств',
+                'description' => 'Параметр страницы, используемые для подтверждения договора на вывод средств',
+                'type'        => 'string',
+                'default'     => 'code'
+            ],
+        ];
     }
 
     public function init()
@@ -66,6 +75,16 @@ class WithdrawalForm extends ComponentBase
         $component->bindModel('files', $this->withdrawal);
     }
 
+    public function onRun()
+    {
+        /*
+         * Activation code supplied
+         */
+        if ($code = $this->verificationCode()) {
+            $this->onVerifyCode($code);
+        }
+    }
+
     public function onRender()
     {
         $this->page['withdrawal'] = $this->getWithdrawal();
@@ -82,7 +101,10 @@ class WithdrawalForm extends ComponentBase
             ->firstOrNew();
     }
 
-    public function onSaveWithdrawal()
+    /**
+     * @return array|RedirectResponse
+     */
+    public function onSaveWithdrawal(): array|RedirectResponse
     {
         try {
             $formData = array_merge(post(), [
@@ -111,13 +133,17 @@ class WithdrawalForm extends ComponentBase
 
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
+
             return [];
         }
 
         return Redirect::refresh();
     }
 
-    public function onSetFillingStatus()
+    /**
+     * @return array|RedirectResponse
+     */
+    public function onSetFillingStatus(): array|RedirectResponse
     {
         try {
             $this->withdrawal->update([
@@ -125,13 +151,17 @@ class WithdrawalForm extends ComponentBase
             ]);
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
+
             return [];
         }
 
         return Redirect::refresh();
     }
 
-    public function onSendVerificationCode()
+    /**
+     * @return array|RedirectResponse
+     */
+    public function onSendVerificationCode(): array|RedirectResponse
     {
         try {
             $agreementService = app()->make(AgreementServiceContract::class, ['user' => $this->user]);
@@ -142,6 +172,7 @@ class WithdrawalForm extends ComponentBase
             ]);
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
+
             return [];
         }
 
@@ -150,19 +181,46 @@ class WithdrawalForm extends ComponentBase
         ];
     }
 
-    public function onVerifyCode()
+    /**
+     * @param null $code
+     *
+     * @return array|RedirectResponse
+     * @throws BindingResolutionException
+     */
+    public function onVerifyCode($code = null): array|RedirectResponse
     {
-        $verificationCode = post('verification_code');
+        $verificationCode = post('verification_code', $code);
 
-        if ($this->withdrawal->approve_code == $verificationCode) {
-            $this->withdrawal->update([
-                'agreement_status' => WithdrawalAgreementStatusEnum::CHECKING,
-            ]);
+        if ($verificationCode == null) {
+            Flash::error('Необходимо ввести код подтверждения');
+            return [];
+        }
+        if ($this->withdrawal->agreement_status == WithdrawalAgreementStatusEnum::CHECKING) {
+            return Redirect::to('/lc-commercial-withdraw');
+        }
+
+        $agreementService = app()->make(AgreementServiceContract::class, ['user' => $this->user]);
+        if ($agreementService->verifyAgreement($verificationCode)) {
 
             return Redirect::refresh();
         } else {
             Flash::error('Неверный код подтверждения');
+
             return [];
         }
+    }
+
+    /**
+     * @return string|null
+     */
+    private function verificationCode(): ?string
+    {
+        $routeParameter = $this->property('paramCode');
+
+        if ($code = $this->param($routeParameter)) {
+            return $code;
+        }
+
+        return get('verification_code');
     }
 }

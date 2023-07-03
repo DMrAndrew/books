@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Books\Withdrawal\Classes\Services;
 
 use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
+use Books\Withdrawal\Classes\Enums\WithdrawalAgreementStatusEnum;
 use Books\Withdrawal\Models\WithdrawalData;
 use Mail;
 use RainLab\User\Models\User;
@@ -35,7 +36,7 @@ class AgreementService implements AgreementServiceContract
         $data = [
             'name' => $this->user->username,
             'email' => $email,
-            'verificationUrl' => "/lc-commercial-withdraw/verify?code={$code}",
+            'verificationUrl' => "/lc-commercial-withdraw?verification_code={$code}",
             'code' => $code,
         ];
 
@@ -49,9 +50,25 @@ class AgreementService implements AgreementServiceContract
         // todo: копия админу?
     }
 
-    public function verifyAgreement(): void
+    /**
+     * @param string $code
+     *
+     * @return bool
+     */
+    public function verifyAgreement(string $code): bool
     {
-        // TODO: Implement verifyAgreement() method.
+        $withdrawal = $this->user->withdrawalData;
+
+        if ($withdrawal->approve_code == $code) {
+            $withdrawal->update([
+                'agreement_status' => WithdrawalAgreementStatusEnum::CHECKING,
+                'approved_at' => now(),
+            ]);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**

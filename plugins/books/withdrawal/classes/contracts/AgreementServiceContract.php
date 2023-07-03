@@ -11,5 +11,5 @@ interface AgreementServiceContract
 
     public function sendVerificationCode(): void;
 
-    public function verifyAgreement(): void;
+    public function verifyAgreement(string $code): bool;
 }
