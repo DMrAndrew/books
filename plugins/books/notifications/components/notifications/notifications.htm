@@ -27,11 +27,3 @@
         <span>Здесь пока ничего нет</span>
     </div>
 {% endif %}
-
-<script>
-    var divFirst = document.getElementById(`{{this.param.notification_id}}`);
-    divFirst.style.visibility = 'visible';
-    divFirst.style.display = 'block';
-    divFirst.tabIndex = "-1";
-    divFirst.focus();
-</script>
