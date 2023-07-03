@@ -1,6 +1,7 @@
 <input type="hidden" name="paginator_id" value="{{reader.paginator.id}}"/>
 {% partial '@pagination' %}
 <div class="reader__body">
+    <iframe></iframe>
     {% if reader.paginator.page == 1 %}
     <h2 class="ui-text-head--3-em ui-text--bold">{{reader.chapter.title|raw}}</h2>
     {% endif %}

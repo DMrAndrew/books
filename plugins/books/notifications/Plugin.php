@@ -3,7 +3,8 @@
 namespace Books\Notifications;
 
 use Books\Notifications\Classes\Actions\StoreDatabaseAction;
-use Books\Notifications\Classes\Behaviors\NotificationsModel;
+use Books\Notifications\Classes\Behaviors\NotificationModel;
+use Books\Notifications\Classes\Behaviors\NotificationOwner;
 use Books\Notifications\Classes\Contracts\NotificationService as NotificationServiceContract;
 use Books\Notifications\Classes\Events\AuthorAccepted;
 use Books\Notifications\Classes\Events\AuthorInvited;
@@ -14,11 +15,13 @@ use Books\Notifications\Classes\Events\BookSellingSubs;
 use Books\Notifications\Classes\Events\CommentCreated;
 use Books\Notifications\Classes\Events\CommentReplied;
 use Books\Notifications\Classes\Events\DiscountCreated;
+use Books\Notifications\Classes\Events\SystemMessage;
 use Books\Notifications\Classes\Services\NotificationService;
 use Books\Notifications\Components\Notifications;
 use Books\Notifications\Components\NotificationsInHeader;
 use Books\Profile\Models\Profile;
 use RainLab\Notify\Classes\Notifier;
+use RainLab\Notify\Models\Notification;
 use RainLab\Notify\NotifyRules\SaveDatabaseAction;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
@@ -71,6 +74,7 @@ class Plugin extends PluginBase
          */
         $this->bindNotificationEvents();
         $this->extendSaveDatabaseAction();
+        $this->extendNotificationModel();
     }
 
     /**
@@ -92,6 +96,7 @@ class Plugin extends PluginBase
                 CommentCreated::class,
                 CommentReplied::class,
                 DiscountCreated::class,
+                SystemMessage::class,
             ],
             'groups' => [
                 'user' => [
@@ -119,7 +124,7 @@ class Plugin extends PluginBase
      */
     protected function bindNotificationEvents(): void
     {
-        if (! class_exists(Notifier::class)) {
+        if (!class_exists(Notifier::class)) {
             return;
         }
 
@@ -134,6 +139,7 @@ class Plugin extends PluginBase
             'books.comments::comment.created' => CommentCreated::class,
             'books.comments::comment.replied' => CommentReplied::class,
             'books.book::edition.discounted' => DiscountCreated::class,
+            'system::message' => SystemMessage::class,
         ]);
     }
 
@@ -142,7 +148,7 @@ class Plugin extends PluginBase
      */
     protected function extendSaveDatabaseAction(): void
     {
-        if (! class_exists(SaveDatabaseAction::class)) {
+        if (!class_exists(SaveDatabaseAction::class)) {
             return;
         }
 
@@ -163,17 +169,24 @@ class Plugin extends PluginBase
         });
     }
 
+    protected function extendNotificationModel(): void
+    {
+        Notification::extend(static function (Notification $model): void {
+            $model->implementClassWith(NotificationModel::class);
+        });
+    }
+
     /**
      * @return void
      */
     protected function extendModels(): void
     {
         User::extend(static function (User $model): void {
-            $model->implementClassWith(NotificationsModel::class);
+            $model->implementClassWith(NotificationOwner::class);
         });
 
         Profile::extend(static function (Profile $model): void {
-            $model->implementClassWith(NotificationsModel::class);
+            $model->implementClassWith(NotificationOwner::class);
         });
     }
 }

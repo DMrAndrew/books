@@ -89,3 +89,6 @@
 1.0.26:
     - 'Поле used_by_profile_id в промокодах'
     - update_promocodes_table_add_used_by_profile_id.php
+1.0.27:
+    - 'Системные сообщения'
+    - create_system_messages_table.php

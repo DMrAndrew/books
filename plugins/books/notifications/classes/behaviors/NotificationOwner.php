@@ -6,7 +6,7 @@ use Model;
 use October\Rain\Extension\ExtensionBase;
 use RainLab\Notify\Models\Notification;
 
-class NotificationsModel extends ExtensionBase
+class NotificationOwner extends ExtensionBase
 {
     /**
      * @param  Model  $model

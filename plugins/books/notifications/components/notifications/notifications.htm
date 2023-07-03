@@ -12,7 +12,7 @@
                 </svg>
             </div>
             <div class="notification-menu__content">
-                {{ notification.body | raw }}
+                {{ notification.render() | raw }}
                 <div class="notification-menu__date">{{ notification.created_at.diffForHumans() }}</div>
             </div>
         </div>
@@ -27,3 +27,11 @@
         <span>Здесь пока ничего нет</span>
     </div>
 {% endif %}
+
+<script>
+    var divFirst = document.getElementById(`{{this.param.notification_id}}`);
+    divFirst.style.visibility = 'visible';
+    divFirst.style.display = 'block';
+    divFirst.tabIndex = "-1";
+    divFirst.focus();
+</script>

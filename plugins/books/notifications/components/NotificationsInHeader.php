@@ -53,7 +53,7 @@ class NotificationsInHeader extends ComponentBase
         }
 
         $this->page['unreadNotifications'] = $this->service->getCountUnreadNotifications(Auth::getUser()->profile);
-        $this->page['headerNotifications'] = $this->service->getUnreadNotifications(
+        $this->page['headerNotifications'] = $this->service->getSomeNotifications(
             Auth::getUser()->profile,
             (int) $this->property('recordsPerView', 11)
         );
@@ -68,7 +68,7 @@ class NotificationsInHeader extends ComponentBase
             return;
         }
 
-        $headerNotifications = $this->service->getUnreadNotifications(
+        $headerNotifications = $this->service->getSomeNotifications(
             Auth::getUser()->profile,
             (int) $this->property('recordsPerView', 11)
         );
