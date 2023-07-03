@@ -48,6 +48,14 @@ class NotificationService implements NotificationServiceContract
             ->limit($limit)
             ->get();
     }
+    public function getSomeNotifications(Profile $profile, int $limit = 10): Collection
+    {
+        return $this
+            ->getBuilder($profile)
+            ->orderByDesc('created_at')
+            ->limit($limit)
+            ->get();
+    }
 
     /**
      * {@inheritDoc}

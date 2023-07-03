@@ -55,3 +55,8 @@ book_discounted:
     event: Books\Notifications\Classes\Events\DiscountCreated
     items:
         - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+system_message:
+    name: Системное сообщение
+    event: Books\Notifications\Classes\Events\SystemMessage
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction

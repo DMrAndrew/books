@@ -44,6 +44,7 @@ use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
 use Books\Book\Models\Prohibited;
+use Books\Book\Models\SystemMessage;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
 use Books\Collections\Models\Lib;
@@ -125,6 +126,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('Prohibited', Prohibited::class);
         AliasLoader::getInstance()->alias('FB2Controller', FB2Controller::class);
         AliasLoader::getInstance()->alias('CookieEnum', CookieEnum::class);
+        AliasLoader::getInstance()->alias('SystemMessage', SystemMessage::class);
 
         $this->extendBooksController();
 
@@ -240,6 +242,12 @@ class Plugin extends PluginBase
                     'icon' => 'icon-leaf',
                     'url' => Backend::url('books/book/tags'),
                     'permissions' => ['books.book.tags'],
+                ],
+                'systemmessage' => [
+                    'label' => 'Системные сообщения',
+                    'icon' => 'icon-leaf',
+                    'url' => Backend::url('books/book/systemmessage'),
+                    'permissions' => ['books.book.systemmessage'],
                 ],
             ]);
         });
