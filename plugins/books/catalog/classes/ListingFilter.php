@@ -35,9 +35,9 @@ class ListingFilter
         if (!$this->getSessionKey()) {
             $this->fromQuery();
         } else {
-            $this->type = post('type') ? EditionsEnums::tryFrom(post('type')) : null;
-            $this->widget = WidgetEnum::tryFrom(post('widget')) ?? null;
-            $this->sort = SortEnum::tryFrom(post('sort')) ?? SortEnum::default();
+            $this->type = post('type') ? EditionsEnums::tryFrom(post('type') ?? '') : null;
+            $this->widget = WidgetEnum::tryFrom(post('widget') ?? '') ?? null;
+            $this->sort = $this->sortFromString(post('sort'));
             $this->complete = post('complete_only') == 'on';
             $this->free = post('free') == 'on';
             $this->max_price = (int)post('max_price') ?: null;
@@ -51,9 +51,14 @@ class ListingFilter
         $query = collect(request()->query())->only(['type', 'genre', 'tag', 'widget']);
         $this->include($this->fromPost(Tag::class, $query['tag'] ?? null));
         $this->include($this->fromPost(Genre::class, $query['genre'] ?? null));
-        $this->type = ($query['type'] ?? null) ? EditionsEnums::tryFrom($query['type']) : null;
+        $this->type = ($query['type'] ?? null) ? EditionsEnums::tryFrom($query['type']??null) : null;
         $this->widget = WidgetEnum::tryFrom($query['widget'] ?? '');
-        $this->sort = SortEnum::tryFrom($query['sort'] ?? '') ?? $this->widget?->mapSortEnum() ?? SortEnum::default();
+        $this->sort = $this->sortFromString($query['sort']??null);
+    }
+
+    public function sortFromString(?string $val = null): SortEnum
+    {
+        return SortEnum::tryFrom($val ?? '') ?? $this->widget?->mapSortEnum() ?? SortEnum::default();
     }
 
     public function save(): void
