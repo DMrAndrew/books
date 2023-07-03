@@ -160,3 +160,37 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
     margin-right: 0 !important;
 }
 
+
+.book-card__image,.advert img{
+    object-fit:fill!important;
+}
+.book-mini-card__image{
+    border-radius:4px!important;
+}
+.notification-menu__wrapper a {
+    text-decoration: none;
+    color: var(--color-dark-violet);
+}
+.notification-menu__wrapper a:hover {
+    text-decoration: underline;
+    color: var(--color-violet);
+}
+.notification-menu__content-wrapper p{
+    word-break: break-word!important;
+}
+.reader{
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+.reader__body{
+    position: relative;
+}
+.reader__body iframe{
+    position: absolute;
+    top:0;
+    height: 100%;
+    width: 100%;
+}

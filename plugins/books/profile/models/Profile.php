@@ -199,6 +199,13 @@ class Profile extends Model
         return $this->belongsToManyTroughProfiler(Cycle::class);
     }
 
+    public function cyclesWithShared(): \Illuminate\Database\Eloquent\Builder
+    {
+        $column_id = (new Cycle())->getQualifiedKeyName();
+        return Cycle::query()->whereIn($column_id, $this->cycles()->select('id')
+            ->union($this->books()->select('cycle_id')));
+    }
+
     public function receivedAwards(): HasManyDeep
     {
         return $this->hasManyDeepFromRelations($this->books(), (new Book())->awards())
@@ -213,28 +220,6 @@ class Profile extends Model
     public function reposts(): BelongsToMany
     {
         return $this->belongsToManyTroughProfiler(Repost::class);
-    }
-
-    public function existsInBookCycles(): HasManyDeep
-    {
-        return $this->hasManyDeepFromRelations(
-            $this->books(),
-            (new Book())->cycle(),
-        )->withoutGlobalScope(new SlaveScope());
-    }
-
-    public function cyclesWithAvailableCoAuthorsCycles()
-    {
-        return Cycle::query()->whereIn('id',
-            $this->cycles()
-                ->pluck('id')
-                ->concat($this
-                    ->existsInBookCycles()
-                    ->pluck((new Cycle())->getQualifiedKeyName()))
-                ->unique()
-                ->values()
-                ->toArray())
-            ->get();
     }
 
     public function isCommentAllowed(?Profile $profile = null)

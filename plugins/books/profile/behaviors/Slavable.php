@@ -26,9 +26,10 @@ class Slavable extends ExtensionBase
 
     public function profile(): HasOneThrough
     {
-        return $this->model->hasOneThrough(Profile::class, Profiler::class, 'slave_id', 'id', 'id', 'master_id')
-            ->where('master_type', '=', Profile::class)
-            ->where('slave_type', '=', get_class($this->model));
+        return $this->model
+            ->hasOneThrough(Profile::class, Profiler::class, 'slave_id', 'id', 'id', 'master_id')
+            ->where((new Profiler())->qualifyColumn('master_type'), '=', Profile::class)
+            ->where((new Profiler())->qualifyColumn('slave_type'), '=', get_class($this->model));
     }
 
     public function isAccountable(): bool

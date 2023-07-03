@@ -18,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Illuminate\Queue\Console\BatchesTableCommand;
 use Model;
 use Request;
+use Route;
 use System\Classes\AppBase;
 use System\Models\File;
 use System\Models\Revision;
@@ -78,5 +79,10 @@ class Provider extends AppBase
         parent::boot();
         Model::preventLazyLoading(!app()->isProduction());
         Request::setTrustedProxies(config('app.trusted_proxies'), -1);
+        Route::get('/cycle/{id}', function ($id) {
+            {
+                return redirect('/series/'.$id)->withInput();
+            }
+        });
     }
 }
