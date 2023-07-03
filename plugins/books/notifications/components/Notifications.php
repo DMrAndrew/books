@@ -4,6 +4,7 @@ namespace Books\Notifications\Components;
 
 use Books\Notifications\Classes\Contracts\NotificationService;
 use Books\Notifications\Classes\NotificationHandlers;
+use Books\Notifications\Classes\NotificationTypeEnum;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 
@@ -59,7 +60,7 @@ class Notifications extends ComponentBase
      */
     public function onMarkAllNotificationsAsRead()
     {
-        if (! Auth::getUser()) {
+        if (!Auth::getUser()) {
             return;
         }
 
@@ -86,19 +87,24 @@ class Notifications extends ComponentBase
      */
     protected function prepareVars(): void
     {
-        if (! Auth::getUser()) {
+        if (!Auth::getUser()) {
             return;
         }
 
         $this->page['tabs'] = $this->service->prepareTabsWithUnreadCount(
             Auth::getUser()->profile,
-            request()->input('type', 'all')
+            $this->getTabType()
         );
 
         $this->page['notifications'] = $this->service->getNotifications(
             Auth::getUser()->profile,
-            request()->input('type', 'all'),
-            (int) $this->property('recordsPerPage', 16)
+            $this->getTabType(),
+            (int)$this->property('recordsPerPage', 16)
         );
+    }
+
+    public function getTabType(): string
+    {
+        return NotificationTypeEnum::tryFrom(post('type') ?? $this->param('type'))?->value ?? 'all';
     }
 }

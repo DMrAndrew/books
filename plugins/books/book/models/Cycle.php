@@ -75,7 +75,7 @@ class Cycle extends Model
     ];
 
     public $hasMany = [
-        'books' => [Book::class],
+        'books' => [Book::class,'key' => 'cycle_id','otherKey' => 'id'],
     ];
 
     public $belongsTo = [
@@ -101,8 +101,11 @@ class Cycle extends Model
 
     public function scopeBooksEager(Builder $builder): Builder
     {
-        return $builder->with(['books' => fn($books) => $books->public()->defaultEager()->orderBySalesAt()]);
+        return $builder
+            ->whereHas('books', fn($books) => $books->public())
+            ->with(['books' => fn($books) => $books->public()->defaultEager()->orderBySalesAt(true)]);
     }
+
 
     public function getLastUpdatedAtAttribute()
     {
@@ -112,5 +115,10 @@ class Cycle extends Model
     protected function beforeCreate()
     {
         $this->name = mb_ucfirst($this->name);
+    }
+
+    public function beforeDelete()
+    {
+        $this->books()->update(['cycle_id' => null]);
     }
 }

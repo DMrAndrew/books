@@ -2,6 +2,8 @@
 
 namespace Books\Book\Models;
 
+use Cms\Classes\Controller;
+use DOMDocument;
 use Event;
 use Model;
 use October\Rain\Database\Builder;
@@ -94,5 +96,6 @@ class Pagination extends Model
 
         return $tracker;
     }
+
 
 }

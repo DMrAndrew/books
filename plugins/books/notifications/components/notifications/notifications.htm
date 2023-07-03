@@ -12,7 +12,7 @@
                 </svg>
             </div>
             <div class="notification-menu__content">
-                {{ notification.body | raw }}
+                {{ notification.render() | raw }}
                 <div class="notification-menu__date">{{ notification.created_at.diffForHumans() }}</div>
             </div>
         </div>

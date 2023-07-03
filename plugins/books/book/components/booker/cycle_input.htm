@@ -13,7 +13,7 @@
                     {% for cycle in cycles %}
                     <option  value="{{cycle.id}}"
                              {{ cycle_id == cycle.id ? 'selected' : ''  }}
-                    >{{cycle.name}}</option>
+                    >{{cycle.name}} ({{ cycle.profile.username}})</option>
                     {% endfor %}
 
                 </select>
