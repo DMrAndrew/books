@@ -150,8 +150,19 @@ class WithdrawalForm extends ComponentBase
         ];
     }
 
-    public function onVerify()
+    public function onVerifyCode()
     {
-        dd(post());
+        $verificationCode = post('verification_code');
+
+        if ($this->withdrawal->approve_code == $verificationCode) {
+            $this->withdrawal->update([
+                'agreement_status' => WithdrawalAgreementStatusEnum::CHECKING,
+            ]);
+
+            return Redirect::refresh();
+        } else {
+            Flash::error('Неверный код подтверждения');
+            return [];
+        }
     }
 }

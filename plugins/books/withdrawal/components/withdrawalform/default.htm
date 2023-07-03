@@ -6,6 +6,10 @@
 
     {% partial __SELF__ ~ '::signing' %}
 
+{% elseif withdrawal.agreement_status.value in ['checking'] %}
+
+    {% partial __SELF__ ~ '::checking' %}
+
 {% endif %}
 
 

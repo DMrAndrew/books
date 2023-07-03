@@ -70,7 +70,7 @@ class Plugin extends PluginBase
     /**
      * registerNavigation used by the backend.
      */
-    public function registerNavigation()
+    public function registerNavigation(): array
     {
         return []; // Remove this line to activate
 
@@ -82,6 +82,16 @@ class Plugin extends PluginBase
                 'permissions' => ['books.withdrawal.*'],
                 'order' => 500,
             ],
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function registerMailTemplates(): array
+    {
+        return [
+            'books.withdrawal::mail.agreement_verify',
         ];
     }
 }

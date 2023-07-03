@@ -4,6 +4,7 @@ use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
 use Books\Withdrawal\Classes\Enums\EmploymentTypeEnum;
 use Books\Withdrawal\Classes\Enums\WithdrawalAgreementStatusEnum;
 use Books\Withdrawal\Classes\Enums\WithdrawalStatusEnum;
+use Carbon\Carbon;
 use Model;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
@@ -17,6 +18,8 @@ use System\Models\File;
 class WithdrawalData extends Model
 {
     use Validation;
+
+    const VERIFICATION_CODE_LENGTH = 6;
 
     public $table = 'books_withdrawal_data';
 
@@ -49,6 +52,7 @@ class WithdrawalData extends Model
         'bank_corr_account' => 'required',
         //'files' => 'sometimes|array',
         //'files.*' => 'mimes:gif,jpg,jpeg,png|max:3072',
+        'approve_code' => 'nullable|string',
     ];
 
     public $fillable = [
@@ -75,6 +79,7 @@ class WithdrawalData extends Model
         'bank_corr_account',
         'approved_at',
         'files',
+        'approve_code',
     ];
 
     protected $dates = [
@@ -106,5 +111,12 @@ class WithdrawalData extends Model
         $agreementService = app()->make(AgreementServiceContract::class, ['user' => $this->user]);
 
         return $agreementService->getAgreementHTML();
+    }
+
+    public static function generateCode(): string
+    {
+        return substr(
+            strtoupper(hash('xxh32', Carbon::now()->toISOString())),
+            0, self::VERIFICATION_CODE_LENGTH);
     }
 }
