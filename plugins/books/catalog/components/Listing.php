@@ -69,7 +69,12 @@ class Listing extends ComponentBase
             'trackInputTime' => $this->trackInputTime,
             'sorts' => SortEnum::cases(),
             'user' => Auth::getUser(),
-            'genres_list' => $this->filter->query(Genre::class)->whereNotIn('id', $this->filter->byClass(Genre::class)->pluck('id')->toArray())->get()
+            'genres_list' => $this->filter
+                ->query(Genre::class)
+                ->whereNotIn('id', $this->filter->byClass(Genre::class)
+                    ->pluck('id')
+                    ->toArray())
+                ->get()
         ]);
     }
 
