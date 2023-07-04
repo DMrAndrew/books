@@ -2,7 +2,6 @@
 
 namespace Books\Catalog\Classes;
 
-use App\classes\CustomPaginator;
 use Books\Book\Classes\Enums\SortEnum;
 use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Classes\Rater;
@@ -20,6 +19,7 @@ class ListingService
     protected bool $useWidgetService = false;
     protected bool $useWidgetSort = false;
     protected Builder $builder;
+    protected bool $hasIncludeGenres = false;
 
     public function __construct(protected ListingFilter $filter)
     {
@@ -27,6 +27,7 @@ class ListingService
         $this->useWidgetService = $this->filter->widget?->isListable() ?? false;
         $this->useWidgetSort = $this->useWidgetService && !$this->useRater && $this->filter->widget->mapSortEnum() === $this->filter->sort;
         $this->builder = Book::query()->public()->defaultEager();
+        $this->hasIncludeGenres = $this->filter->includes(Genre::class)->count();
 
     }
 
@@ -44,7 +45,7 @@ class ListingService
             ->when($this->filter->free, fn($q) => $q->free())
             ->when($this->filter->type, fn($q) => $q->type($this->filter->type))
             ->when(!$this->useWidgetSort && !$this->useRater, fn($builder) => match ($this->filter->sort) {
-                default => $builder->orderByPopularGenres(),
+                default => $builder->when($this->hasIncludeGenres, fn($b) => $b->orderByPopularGenres())->sortByStatValue(StatsEnum::RATE),
                 SortEnum::new => $builder->orderBySalesAt(),
                 SortEnum::hotNew => $builder->sortByStatValue(StatsEnum::collected_hot_new_rate),
                 SortEnum::gainingPopularity => $builder->sortByStatValue(StatsEnum::collected_gain_popularity_rate),
