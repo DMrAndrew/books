@@ -68,7 +68,7 @@ class NotificationsInHeader extends ComponentBase
             return;
         }
 
-        $headerNotifications = $this->service->getSomeNotifications(
+        $headerNotifications = $this->service->getUnreadNotifications(
             Auth::getUser()->profile,
             (int) $this->property('recordsPerView', 11)
         );
