@@ -1,9 +1,15 @@
 {% if paginator.count %}
 <nav class="ui-pagination">
     <ul class="ui-pagination-list">
-<!--        <input type="hidden" name="{{paginator.getPageName}}" value="{{paginator.currentPage()}}" />-->
+        <!--        <input type="hidden" name="{{paginator.getPageName}}" value="{{paginator.currentPage()}}" />-->
         {% for link in paginator.linkCollectionCompact() %}
         <li>
+            {% if link.disabled %}
+            <a class="ui-pagination-item disabled">
+                {{link.label}}
+            </a>
+
+            {% else %}
             <a class="ui-pagination-item cursor-pointer {{ link.active ? 'active' : '' }} {{ link.disabled ? 'disabled' : '' }}"
                data-request="{{paginator.handler}}"
                data-request-data="page:{{ link.url }}"
@@ -11,6 +17,8 @@
             >
                 {{link.label}}
             </a>
+
+            {% endif %}
         </li>
         {% endfor %}
     </ul>
