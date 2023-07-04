@@ -39,7 +39,7 @@
                                     {% partial 'site/book-status' status=book.ebook.status %}
                                     <span class="book-card-full-type__description-dot"></span>
                                     {% if history.items[0] %}
-                                    <span>{{ history.items.last.date.format('d.m.y') }}</span>
+                                    <span>{{ history.items.first.date.format('d.m.y') }}</span>
                                     {% else %}
                                     <span>{{carbon(book.ebook.sales_at).format('d.m.y')}}</span>
                                     {% endif %}
@@ -245,7 +245,7 @@
                         </dl>
                         <dl class="book-card-history-modal__data-list">
                             <dt class="book-card-history-modal__data-title">Начало публикации:</dt>
-                            <dd>{{ history.items.first.date.format('d.m.y') }}</dd>
+                            <dd>{{ history.items.last.date.format('d.m.y') }}</dd>
                         </dl>
                     </div>
                     <div class="book-card-history-modal__table-container">
