@@ -23,11 +23,11 @@ class ProfileEventHandler
         ];
 
         //TODO Отправлять админу
-        if ($recipient = BackendUser::first()?->email) {
+        if ($recipients = BackendUser::all()?->map->email->toArray()) {
             Mail::queue(
                 'books.profile::mail.modify_username_request',
                 $data,
-                fn($msg) => $msg->to($recipient)
+                fn($msg) => $msg->to($recipients)
             );
         }
     }

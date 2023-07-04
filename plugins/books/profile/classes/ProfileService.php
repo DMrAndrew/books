@@ -26,7 +26,7 @@ class ProfileService
     public function createProfile(User $user, array $payload = [], bool $activate = true): Profile
     {
         $this->profile->user = $user;
-        $payload['username'] ??= $user->username;
+        $payload['username'] ??= $user->nickname ?? $user->username;
 
         return $this->newProfile($payload);
     }
