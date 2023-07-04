@@ -195,6 +195,7 @@ class WithdrawalForm extends ComponentBase
             Flash::error('Необходимо ввести код подтверждения');
             return [];
         }
+
         if ($this->withdrawal->agreement_status == WithdrawalAgreementStatusEnum::CHECKING) {
             return Redirect::to('/lc-commercial-withdraw');
         }

@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace Books\Withdrawal\Classes\Services;
 
+use Backend;
 use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
-use Books\Withdrawal\Classes\Enums\WithdrawalAgreementStatusEnum;
 use Books\Withdrawal\Models\WithdrawalData;
+use Exception;
+use Log;
 use Mail;
 use RainLab\User\Models\User;
+use Backend\Models\User as AdminUser;
 
 class AgreementService implements AgreementServiceContract
 {
@@ -65,6 +68,8 @@ class AgreementService implements AgreementServiceContract
                 'approved_at' => now(),
             ]);
 
+            $this->notifyAdminWithdrawalVerified();
+
             return true;
         }
 
@@ -84,5 +89,32 @@ class AgreementService implements AgreementServiceContract
         ]);
 
         return $code;
+    }
+
+    /**
+     * @return void
+     */
+    private function notifyAdminWithdrawalVerified(): void
+    {
+        try {
+            $admins = AdminUser::all();
+            $adminEmails = $admins->pluck('email')->toArray();
+
+            $data = [
+                'name' => $this->user->username,
+                'email' => $adminEmails,
+                'moderationUrl' => Backend::url("books/withdrawal/withdrawal/update/{$this->user->withdrawalData->id}"),
+            ];
+
+            // пользователю
+            Mail::queue(
+                'books.withdrawal::mail.admin_agreement_verified',
+                $data,
+                fn($msg) => $msg->to($adminEmails)
+            );
+        }
+        catch (Exception $ex) {
+            Log::error($ex->getMessage());
+        }
     }
 }

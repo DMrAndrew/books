@@ -60,9 +60,9 @@ class Plugin extends PluginBase
     public function registerPermissions()
     {
         return [
-            'books.withdrawal.access' => [
+            'books.withdrawal.withdrawal' => [
                 'tab' => 'withdrawal',
-                'label' => 'access'
+                'label' => 'Withdrawal permission'
             ],
         ];
     }
@@ -72,12 +72,10 @@ class Plugin extends PluginBase
      */
     public function registerNavigation(): array
     {
-        return []; // Remove this line to activate
-
         return [
             'withdrawal' => [
                 'label' => 'Вывод средств',
-                'url' => Backend::url('books/withdrawal/mycontroller'),
+                'url' => Backend::url('books/withdrawal/withdrawal'),
                 'icon' => 'icon-leaf',
                 'permissions' => ['books.withdrawal.*'],
                 'order' => 500,
@@ -92,6 +90,7 @@ class Plugin extends PluginBase
     {
         return [
             'books.withdrawal::mail.agreement_verify',
+            'books.withdrawal::mail.admin_agreement_verified',
         ];
     }
 }
