@@ -46,8 +46,8 @@ class ListingService
             ->when($this->filter->free, fn($q) => $q->free())
             ->when($this->filter->type, fn($q) => $q->type($this->filter->type))
             ->when(!$this->useWidgetSort && !$this->useRater, fn($builder) => match ($this->filter->sort) {
-                default => $builder,
-                SortEnum::default => $this->hasIncludeGenres ? $builder : $builder->sortByStatValue(StatsEnum::RATE),
+                default => $builder->orderByPopularGenres(),
+//                SortEnum::default => $this->hasIncludeGenres ? $builder : $builder->sortByStatValue(StatsEnum::RATE),
                 SortEnum::new => $builder->orderBySalesAt(),
                 SortEnum::hotNew => $builder->sortByStatValue(StatsEnum::collected_hot_new_rate),
                 SortEnum::gainingPopularity => $builder->sortByStatValue(StatsEnum::collected_gain_popularity_rate),
@@ -100,7 +100,7 @@ class ListingService
             $this->bindByWidgetService();
         }
 
-        $list = $this->useRater ? $this->getThroughRater() : $this->builder->get();
+        return $list = $this->useRater ? $this->getThroughRater() : $this->builder->get();
 
         if ($this->hasIncludeGenres && in_array($this->filter->sort, [SortEnum::default, null])) {
             //Сортировать рейтингу жанра, в порядке предоставленных пользователем

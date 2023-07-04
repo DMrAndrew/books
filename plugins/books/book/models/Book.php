@@ -236,11 +236,6 @@ class Book extends Model
         return $builder->withSum(['awardsItems' => fn($awards) => $awards->when($ofLastDays, fn($b) => $b->ofLastDays($b))], 'rate');
     }
 
-    public static function sortCollectionByPopularGenre($collection)
-    {
-        return $collection->sortBy(fn($book) => $book->genres->pluck('pivot')->min('rate_number') ?: 10000);
-    }
-
     public function scopeOrderByPopularGenres(Builder $builder)
     {
         return $builder->orderByPowerJoinsMin('bookGenre.rate_number');
@@ -337,6 +332,7 @@ class Book extends Model
     {
         return $builder->has('customers');
     }
+
     public function scopeSellsExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
         return $builder->has('sells');
@@ -494,7 +490,7 @@ class Book extends Model
     public function scopeOnlyPublicStatus(Builder $q): Builder|\Illuminate\Database\Eloquent\Builder
     {
         return $q->whereHas('editions', function ($query) {
-            return $query->whereNotIn('status', [BookStatus::HIDDEN->value]);
+            return $query->whereIn('status', [BookStatus::COMPLETE->value, BookStatus::WORKING->value, BookStatus::FROZEN->value]);
         });
     }
 
