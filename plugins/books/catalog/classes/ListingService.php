@@ -45,7 +45,9 @@ class ListingService
             ->when($this->filter->free, fn($q) => $q->free())
             ->when($this->filter->type, fn($q) => $q->type($this->filter->type))
             ->when(!$this->useWidgetSort && !$this->useRater, fn($builder) => match ($this->filter->sort) {
-                default => $builder->when($this->hasIncludeGenres, fn($b) => $b->orderByPopularGenres())->sortByStatValue(StatsEnum::RATE),
+                default => $builder->when($this->hasIncludeGenres,
+                    fn($b) => $b->orderByGenresRate(...Genre::find($this->filter->includes(Genre::class)->pluck('id')->toArray()))
+                )->sortByStatValue(StatsEnum::RATE),
                 SortEnum::new => $builder->orderBySalesAt(),
                 SortEnum::hotNew => $builder->sortByStatValue(StatsEnum::collected_hot_new_rate),
                 SortEnum::gainingPopularity => $builder->sortByStatValue(StatsEnum::collected_gain_popularity_rate),

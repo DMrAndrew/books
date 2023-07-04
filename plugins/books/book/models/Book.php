@@ -14,6 +14,7 @@ use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Query\JoinClause;
 use Kirschbaum\PowerJoins\PowerJoins;
 use Model;
 use October\Rain\Database\Builder;
@@ -160,7 +161,7 @@ class Book extends Model
         'editions' => [Edition::class, 'key' => 'book_id', 'id'],
         'libs' => [Lib::class, 'key' => 'book_id', 'otherKey' => 'id'],
         'awards' => [AwardBook::class, 'key' => 'book_id', 'otherKey' => 'id'],
-        'bookGenre' => [BookGenre::class, 'key' => 'book_id']
+        'bookGenre' => [BookGenre::class, 'key' => 'book_id', 'otherKey' => 'id'],
     ];
 
     public $belongsTo = [
@@ -239,6 +240,19 @@ class Book extends Model
     public function scopeOrderByPopularGenres(Builder $builder)
     {
         return $builder->orderByPowerJoinsMin('bookGenre.rate_number');
+    }
+
+    public function scopeOrderByGenresRate(Builder $builder, Genre ...$genres)
+    {
+        foreach ($genres as $index => $genre) {
+            $as = 'bookGenre as rate_' . $index;
+            $builder->withSum([$as => fn($g) => $g->where('genre_id', $genre->id)], 'rate_number');
+        }
+        foreach ($genres as $index => $genre) {
+            $builder->orderByRaw('-rate_' . $index . ' desc');
+        }
+
+        return $builder;
     }
 
     public function rater(): Rater
