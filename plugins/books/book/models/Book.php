@@ -247,8 +247,9 @@ class Book extends Model
         if (!count($genres)) {
             return $builder;
         }
-        $as = 'bookGenre as genres_rate';
-        $builder->withAvg([$as => fn($g) => $g->whereIn('genre_id', array_pluck($genres,'id'))], 'rate_number');
+        $builder->withAvg(['bookGenre as genres_rate'
+            => fn($g) => $g->whereIn('genre_id', array_pluck($genres, 'id'))]
+            , 'rate_number');
         $builder->orderByRaw('-genres_rate desc');
 
         return $builder;
