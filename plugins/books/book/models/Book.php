@@ -244,13 +244,13 @@ class Book extends Model
 
     public function scopeOrderByGenresRate(Builder $builder, Genre ...$genres)
     {
-        foreach ($genres as $index => $genre) {
-            $as = 'bookGenre as rate_' . $index;
-            $builder->withSum([$as => fn($g) => $g->where('genre_id', $genre->id)], 'rate_number');
+        if (!count($genres)) {
+            return $builder;
         }
-        foreach ($genres as $index => $genre) {
-            $builder->orderByRaw('-rate_' . $index . ' desc');
-        }
+        $builder->withAvg(['bookGenre as genres_rate'
+            => fn($g) => $g->whereIn('genre_id', array_pluck($genres, 'id'))]
+            , 'rate_number');
+        $builder->orderByRaw('-genres_rate desc');
 
         return $builder;
     }
