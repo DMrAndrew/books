@@ -1,0 +1,18 @@
+{% if paginator.count %}
+<nav class="ui-pagination">
+    <ul class="ui-pagination-list">
+<!--        <input type="hidden" name="{{paginator.getPageName}}" value="{{paginator.currentPage()}}" />-->
+        {% for link in paginator.linkCollectionCompact() %}
+        <li>
+            <a class="ui-pagination-item cursor-pointer {{ link.active ? 'active' : '' }} {{ link.disabled ? 'disabled' : '' }}"
+               data-request="{{paginator.handler}}"
+               data-request-data="page:{{ link.url }}"
+               data-request-complete="{{ paginator.scrollToContainer ?  '$(`'~paginator.scrollToContainer~'`)[0].scrollIntoView()' : '() => {}'}}"
+            >
+                {{link.label}}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</nav>
+{% endif %}

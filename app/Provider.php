@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\classes\CustomPaginator;
 use App\classes\RevisionHistory;
 use App\middleware\FetchCheckUp;
 use App\traits\DateScopes;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Queue\Console\BatchesTableCommand;
 use Model;
 use Request;
@@ -40,6 +42,7 @@ class Provider extends AppBase
         $this->registerConsoleCommand('queue:batches-table', BatchesTableCommand::class);
         AliasLoader::getInstance()->alias('Carbon', Carbon::class);
         AliasLoader::getInstance()->alias('CarbonPeriod', CarbonPeriod::class);
+        AliasLoader::getInstance()->alias('CustomPaginator', CustomPaginator::class);
 
         Factory::guessFactoryNamesUsing(function ($modelName) {
             if (property_exists($modelName, 'factory')) {

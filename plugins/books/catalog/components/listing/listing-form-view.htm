@@ -221,6 +221,7 @@
             {% for book in bind.books %}
             {% ajaxPartial "bookCard::standard-card" book=book user=bind.user %}
             {% endfor %}
+            {{bind.books.render|raw}}
             {% else %}
             <div class="library-placeholder wrapper">
                 <svg class="square-32">

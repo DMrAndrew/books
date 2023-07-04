@@ -2,9 +2,9 @@
 
 namespace Books\Catalog\Classes;
 
+use App\classes\CustomPaginator;
 use Books\Book\Classes\Enums\SortEnum;
 use Books\Book\Classes\Enums\StatsEnum;
-use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Rater;
 use Books\Book\Classes\WidgetService;
 use Books\Book\Models\Book;
@@ -21,17 +21,15 @@ class ListingService
     protected bool $useWidgetSort = false;
     protected Builder $builder;
 
-    protected bool $hasIncludeGenres = false;
-
     public function __construct(protected ListingFilter $filter)
     {
         $this->useRater = in_array($this->filter->sort, [SortEnum::popular_day, SortEnum::popular_week, SortEnum::popular_month]);
         $this->useWidgetService = $this->filter->widget?->isListable() ?? false;
         $this->useWidgetSort = $this->useWidgetService && !$this->useRater && $this->filter->widget->mapSortEnum() === $this->filter->sort;
         $this->builder = Book::query()->public()->defaultEager();
-        $this->hasIncludeGenres = $this->filter->includes(Genre::class)->count();
 
     }
+
 
     public function selfBind()
     {
@@ -47,7 +45,6 @@ class ListingService
             ->when($this->filter->type, fn($q) => $q->type($this->filter->type))
             ->when(!$this->useWidgetSort && !$this->useRater, fn($builder) => match ($this->filter->sort) {
                 default => $builder->orderByPopularGenres(),
-//                SortEnum::default => $this->hasIncludeGenres ? $builder : $builder->sortByStatValue(StatsEnum::RATE),
                 SortEnum::new => $builder->orderBySalesAt(),
                 SortEnum::hotNew => $builder->sortByStatValue(StatsEnum::collected_hot_new_rate),
                 SortEnum::gainingPopularity => $builder->sortByStatValue(StatsEnum::collected_gain_popularity_rate),
@@ -73,7 +70,7 @@ class ListingService
     /**
      * @throws Exception
      */
-    public function getThroughRater()
+    public function bindByRater(): void
     {
         $r = new Rater();
         $r->setDateBetween(match ($this->filter->sort) {
@@ -85,14 +82,16 @@ class ListingService
         $r->setBuilder($this->builder);
         $r->applyAllStats();
         $r->performClosures();
-        return $r->getResult()->sortByDesc(fn(Book $book) => $book->stats->popular());
+        $seq = $r->getResult()->sortByDesc(fn(Book $book) => $book->stats->popular())->pluck('id')->toArray();
+        $this->builder->orderByRaw('FIELD (' . (new Book())->getQualifiedKeyName() . ', ' . implode(', ', $seq) . ') ASC');
 
     }
+
 
     /**
      * @throws Exception
      */
-    public function books()
+    public function applyScopes()
     {
         $this->selfBind();
 
@@ -100,23 +99,19 @@ class ListingService
             $this->bindByWidgetService();
         }
 
-        return $list = $this->useRater ? $this->getThroughRater() : $this->builder->get();
-
-        if ($this->hasIncludeGenres && in_array($this->filter->sort, [SortEnum::default, null])) {
-            //Сортировать рейтингу жанра, в порядке предоставленных пользователем
-            $getRateNumber = fn($book, $genreId) => $book->genres->whereIn('id', [$genreId])->first()?->pivot->rate_number;
-            $closures = $this->filter->includes(Genre::class)
-                ->pluck('id')
-                ->map(fn($id) => function ($a, $b) use ($getRateNumber, $id) {
-                    $f = $getRateNumber($a, $id);
-                    $s = $getRateNumber($b, $id);
-
-                    return !$f ? 1 : (!$s ? -1 : $f <=> $s);
-
-                });
-            return $list->sortByDesc($closures->toArray());
+        if ($this->useRater) {
+            $this->bindByRater();
         }
-        return $list;
+
+        return $this;
+    }
+
+    /**
+     * @return Builder
+     */
+    public function getBuilder(): Builder
+    {
+        return $this->builder;
     }
 
 }
