@@ -22,7 +22,7 @@ class ProfileEventHandler
             'backend_url' => Backend::url("rainlab/user/users/preview/$user->id#primarytab-profili"),
         ];
 
-        if ($recipients = Backend\Models\UserGroup::where('code','owners')->first()->users->map->email->toArray()) {
+        if ($recipients = Backend\Models\UserGroup::where('code','owners')->first()?->users->map->email->toArray()) {
             Mail::queue(
                 'books.profile::mail.modify_username_request',
                 $data,

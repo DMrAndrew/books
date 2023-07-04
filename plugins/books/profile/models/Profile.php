@@ -194,6 +194,7 @@ class Profile extends Model
     {
         return $this->belongsToManyTroughProfiler(AwardBook::class);
     }
+
     public function cycles(): BelongsToMany
     {
         return $this->belongsToManyTroughProfiler(Cycle::class);
@@ -342,6 +343,15 @@ class Profile extends Model
     public function maxProfilesCount(): int
     {
         return self::MAX_USER_PROFILES_COUNT;
+    }
+
+    protected function beforeSave()
+    {
+        if ($this->isDirty('username')) {
+            if ($this->isUsernameExists($this->username)) {
+                throw new ValidationException(['username' => 'Псевдоним уже занят.']);
+            }
+        }
     }
 
     protected function beforeCreate()
