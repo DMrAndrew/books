@@ -33,7 +33,7 @@ class BookUser extends ExtensionBase
         $this->parent->hasMany['orders'] = [Order::class];
         $this->parent->addValidationRule('birthday', 'required');
         $this->parent->addValidationRule('show_birthday', 'boolean');
-        $this->parent->addValidationRule('username', 'required');
+//        $this->parent->addValidationRule('username', 'required');
 //        $this->parent->removeValidationRule('username', 'unique:users');
 
         $this->parent->customMessages = array_merge($this->parent->customMessages, [
@@ -42,6 +42,7 @@ class BookUser extends ExtensionBase
         ]);
 
         $this->parent->addFillable([
+            'nickname',
             'birthday',
             'show_birthday',
             'country_id',
