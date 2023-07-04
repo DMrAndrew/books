@@ -26,7 +26,7 @@ class Listing extends ComponentBase
 
     protected int $trackInputTime = 620;
 
-    protected int $perPage = 16;
+    protected int $perPage = 12;
 
     public function componentDetails()
     {
