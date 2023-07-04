@@ -1,7 +1,7 @@
 <div class="ui-container">
     <h1 class="listing-book__title ui-text--bold">
         <span class="ui-text-head--2">Книги </span>
-        <span>{{bind.books.count}}</span>
+        <span>{{bind.books.total}}</span>
     </h1>
         <div class="listing-book__sort">
             <input type="hidden" name="sort" value="{{bind.sort.value}}"/>
@@ -221,6 +221,7 @@
             {% for book in bind.books %}
             {% ajaxPartial "bookCard::standard-card" book=book user=bind.user %}
             {% endfor %}
+            {{bind.books.render|raw}}
             {% else %}
             <div class="library-placeholder wrapper">
                 <svg class="square-32">
