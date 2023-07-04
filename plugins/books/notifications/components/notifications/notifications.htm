@@ -20,9 +20,6 @@
 
     {% partial 'site/pagination' records = notifications %}
 
-<script>
-    $('#'+`{{this.param.notification_id}}`)[0].scrollIntoView()
-</script>
 {% else %}
     <div class="popup-menu__placeholder">
         <svg class="square-32">
