@@ -25,27 +25,31 @@ class AgreementService implements AgreementServiceContract
     }
 
     /**
+     * @param bool $verified
+     *
      * @return string
      */
-    public function getAgreementHTML(): string
+    public function getAgreementHTML(bool $verified = false): string
     {
         $withdrawal = $this->user->withdrawalData;
 
+        $heading = !$verified ? 'Заявление' : 'Договор';
         $agreementDate = $withdrawal->approved_at->format('«d» F Y г.');
         $offerUrl = url('/terms-of-use');
         $termsOfUseUrl = url('/privacy-agreement');
 
         $egrip = $withdrawal->employment_register_number ? 'ЕГРИП ' . $withdrawal->employment_register_number : '';
+        $signCode = $verified ? '<b>'.$withdrawal->approve_code.'</b>' : '';
 
         return <<<AGREEMENT
             <div class="agreement">
-            <div class="agreement-title ui-text-head--3 ui-text--bold">Заявление</div>
+            <div class="agreement-title ui-text-head--3 ui-text--bold">{$heading}</div>
             <div class="agreement-head">
             {$agreementDate}<br>
             г. Снежинск
             </div>
             <div class="agreement-body">
-            Я, {$withdrawal->fio}, ознакомился(лась) и согласен(сна) с <a href="{$offerUrl}" target="_blank">офертой сайта<a>, документооборотом, <a href="{$termsOfUseUrl}" target="_blank">соглашением конфиденциальности<a>. Прошу разрешить мне вывод средств на указанный в анкете счет. Гарантирую законность моего авторского контента и уведомлен(а) об ответственности за нарушение авторского права. Даю согласие на обработку своих персональных данных. Гарантирую соблюдение правил сайта, размещенных в открытом доступе.
+            Я, {$withdrawal->fio}, ознакомился(лась) и согласен(сна) с <a href="{$offerUrl}" target="_blank">офертой сайта</a>, документооборотом, <a href="{$termsOfUseUrl}" target="_blank">соглашением конфиденциальности</a>. Прошу разрешить мне вывод средств на указанный в анкете счет. Гарантирую законность моего авторского контента и уведомлен(а) об ответственности за нарушение авторского права. Даю согласие на обработку своих персональных данных. Гарантирую соблюдение правил сайта, размещенных в открытом доступе.
             <table class="agreement-data">
               <tbody>
                 <tr>
@@ -74,7 +78,7 @@ class AgreementService implements AgreementServiceContract
               </tbody>
             </table>
             Подтверждаю правильность всех моих данных и обязуюсь обновлять их в случае изменений.<br>
-            Подпись:
+            Подпись: {$signCode}
             </div>
             </div>
         AGREEMENT;
@@ -86,10 +90,17 @@ class AgreementService implements AgreementServiceContract
      */
     public function getAgreementPDF(): string
     {
-        $agreementHTMLBody = $this->getAgreementHTML();
+        if ($this->user->withdrawalData->agreement_status != WithdrawalAgreementStatusEnum::APPROVED) {
+            throw new Exception('Невозможно скачать договор - договор не подписан или не подтвержден администрацией сайта');
+        }
+
+        $agreementHTMLBody = $this->getAgreementHTML($verified = true);
+        $agreementCSS = "<style>"
+            . file_get_contents(base_path() . '/themes/demo/assets/css/main.min.css')
+            . "</style>";
 
         $mpdf = new HTMLtoPDFConverter(['tempDir' => storage_path('/temp/agreement-downloads')]);
-        $mpdf->WriteHTML($agreementHTMLBody);
+        $mpdf->WriteHTML($agreementCSS . $agreementHTMLBody);
 
         return $mpdf->Output();
     }

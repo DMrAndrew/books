@@ -253,15 +253,22 @@ class WithdrawalForm extends ComponentBase
     }
 
     /**
-     * @return BinaryFileResponse
+     * @return array|BinaryFileResponse
      * @throws BindingResolutionException
      */
-    public function onDownloadAgreement(): BinaryFileResponse
+    public function onDownloadAgreement(): array|BinaryFileResponse
     {
         $agreementService = app()->make(AgreementServiceContract::class, ['user' => $this->user]);
+        try {
+            $pdf = $agreementService->getAgreementPDF();
+        } catch (Exception $ex) {
+            Flash::error($ex->getMessage());
+
+            return [];
+        }
 
         return Response::download(
-            $agreementService->getAgreementPDF(),
+            $pdf,
             null,
             [
                 'Content-Type' => 'application/pdf'

@@ -5,7 +5,7 @@ namespace Books\Withdrawal\Classes\Contracts;
 
 interface AgreementServiceContract
 {
-    public function getAgreementHTML(): string;
+    public function getAgreementHTML(bool $verified = false): string;
 
     public function getAgreementPDF(): string;
 
