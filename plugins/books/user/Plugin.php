@@ -14,13 +14,18 @@ use Books\User\Components\UserSettingsLC;
 use Books\User\Models\Settings;
 use Books\Wallet\Behaviors\WalletBehavior;
 use Books\User\Models\TempAdultPass;
+use Carbon\Carbon;
+use Db;
 use Event;
 use Illuminate\Foundation\AliasLoader;
 use Monarobase\CountryList\CountryList;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use RainLab\Location\Behaviors\LocationModel;
 use RainLab\Location\Models\Country;
+use RainLab\User\Components\Account;
+use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Redirect;
 use System\Classes\PluginBase;
 
 /**
@@ -54,14 +59,24 @@ class Plugin extends PluginBase
      */
     public function register(): void
     {
-        //test
-        Event::listen('rainlab.user.register', function (User $model) {
-            (new UserEventHandler())->afterCreate($model->fresh());
+        Event::listen('mobecan.socialconnect.registerUser', function (array $provider_details, array $user_details) {
+            return Db::transaction(function () use ($provider_details, $user_details) {
+                request()->setMethod('post');
+                request()->request->add(array_merge($user_details, ['password' => str_random()]));
+                return (new Account())->onRegister();
+            });
         });
 
-        Event::listen('rainlab.user.getNotificationVars', function(User $model) {
+        Event::listen('mobecan.socialconnect.handleLogin', function ($provider_details, $provider_response, $user) {
+            if ($user instanceof Redirect) {
+
+                return $user;
+            }
+        });
+        Event::listen('rainlab.user.getNotificationVars', function (User $model) {
             return false;
         });
+
     }
 
     /**

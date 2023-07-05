@@ -8,6 +8,7 @@ use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;
 use Books\Book\Classes\ChapterService;
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Classes\FB2Manager;
 use Books\Book\Classes\Rater;
 use Books\Book\Classes\StatisticService;
@@ -127,6 +128,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('FB2Controller', FB2Controller::class);
         AliasLoader::getInstance()->alias('CookieEnum', CookieEnum::class);
         AliasLoader::getInstance()->alias('SystemMessage', SystemMessage::class);
+        AliasLoader::getInstance()->alias('StatsEnum', StatsEnum::class);
 
         $this->extendBooksController();
 

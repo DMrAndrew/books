@@ -106,8 +106,15 @@ class BookAccount extends Account
                 $user->update(array_merge($data, ['required_post_register' => 0]));
                 $user->profile->update(['username' => $data['nickname']]);
             });
-
-            return $this->makeRedirection();
+            if($user->is_activated){
+                Auth::login($user, $this->useRememberLogin());
+                Flash::success('Вы успешно зарегистрировались');
+            }
+            else{
+                Auth::logout();
+                Flash::success('Данные успешно сохранены. Активируйте аккаунт через указанную почту для входа в учётную запись.');
+            }
+            return $this->makeRedirection(true);
         } catch (Exception $ex) {
             if (Request::ajax()) {
                 throw $ex;

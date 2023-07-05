@@ -36,4 +36,9 @@ enum StatsEnum: string
             default => $this->value
         };
     }
+
+    public static function toArray(): array
+    {
+        return array_column(StatsEnum::cases(), 'value');
+    }
 }

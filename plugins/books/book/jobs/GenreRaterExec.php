@@ -29,7 +29,7 @@ class GenreRaterExec implements ShouldQueue, ShouldBeUnique
      */
     public function handle(): void
     {
-        (new Book())->rater()->setWithDump(true)->applyAllStats()->apply();
+        (new Book())->rater()->setWithDump(true)->applyAllStats()->run();
         (new GenreRater())->compute();
     }
 
