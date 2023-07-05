@@ -14,6 +14,7 @@ use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Query\JoinClause;
 use Kirschbaum\PowerJoins\PowerJoins;
 use Model;
 use October\Rain\Database\Builder;
@@ -160,7 +161,7 @@ class Book extends Model
         'editions' => [Edition::class, 'key' => 'book_id', 'id'],
         'libs' => [Lib::class, 'key' => 'book_id', 'otherKey' => 'id'],
         'awards' => [AwardBook::class, 'key' => 'book_id', 'otherKey' => 'id'],
-        'bookGenre' => [BookGenre::class, 'key' => 'book_id']
+        'bookGenre' => [BookGenre::class, 'key' => 'book_id', 'otherKey' => 'id'],
     ];
 
     public $belongsTo = [
@@ -236,14 +237,22 @@ class Book extends Model
         return $builder->withSum(['awardsItems' => fn($awards) => $awards->when($ofLastDays, fn($b) => $b->ofLastDays($b))], 'rate');
     }
 
-    public static function sortCollectionByPopularGenre($collection)
-    {
-        return $collection->sortBy(fn($book) => $book->genres->pluck('pivot')->min('rate_number') ?: 10000);
-    }
-
     public function scopeOrderByPopularGenres(Builder $builder)
     {
         return $builder->orderByPowerJoinsMin('bookGenre.rate_number');
+    }
+
+    public function scopeOrderByGenresRate(Builder $builder, Genre ...$genres)
+    {
+        if (!count($genres)) {
+            return $builder;
+        }
+        $builder->withAvg(['bookGenre as genres_rate'
+            => fn($g) => $g->whereIn('genre_id', array_pluck($genres, 'id'))]
+            , 'rate_number');
+        $builder->orderByRaw('-genres_rate desc');
+
+        return $builder;
     }
 
     public function rater(): Rater
@@ -337,6 +346,7 @@ class Book extends Model
     {
         return $builder->has('customers');
     }
+
     public function scopeSellsExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
         return $builder->has('sells');
@@ -494,7 +504,7 @@ class Book extends Model
     public function scopeOnlyPublicStatus(Builder $q): Builder|\Illuminate\Database\Eloquent\Builder
     {
         return $q->whereHas('editions', function ($query) {
-            return $query->whereNotIn('status', [BookStatus::HIDDEN->value]);
+            return $query->whereIn('status', [BookStatus::COMPLETE->value, BookStatus::WORKING->value, BookStatus::FROZEN->value]);
         });
     }
 

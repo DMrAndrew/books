@@ -2,11 +2,10 @@
 
 namespace Books\Catalog\Components;
 
+use App\classes\CustomPaginator;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\SortEnum;
 use Books\Book\Classes\Enums\WidgetEnum;
-use Books\Book\Classes\WidgetService;
-use Books\Book\Models\Book;
 use Books\Book\Models\Tag;
 use Books\Catalog\Classes\ListingFilter;
 use Books\Catalog\Classes\ListingService;
@@ -26,6 +25,8 @@ class Listing extends ComponentBase
     protected ListingFilter $filter;
 
     protected int $trackInputTime = 620;
+
+    protected int $perPage = 12;
 
     public function componentDetails()
     {
@@ -68,7 +69,12 @@ class Listing extends ComponentBase
             'trackInputTime' => $this->trackInputTime,
             'sorts' => SortEnum::cases(),
             'user' => Auth::getUser(),
-            'genres_list' => $this->filter->query(Genre::class)->whereNotIn('id', $this->filter->byClass(Genre::class)->pluck('id')->toArray())->get()
+            'genres_list' => $this->filter
+                ->query(Genre::class)
+                ->whereNotIn('id', $this->filter->byClass(Genre::class)
+                    ->pluck('id')
+                    ->toArray())
+                ->get()
         ]);
     }
 
@@ -203,9 +209,15 @@ class Listing extends ComponentBase
     /**
      * @throws Exception
      */
-    public function books()
+    public function books(): \App\classes\CustomPaginator
     {
-        return (new ListingService($this->filter))->books();
+        return CustomPaginator::from(
+            (new ListingService($this->filter))
+                ->applyScopes()
+                ->getBuilder()
+                ->paginate($this->perPage))
+            ->setHandler($this->alias . '::onSearch')
+            ->setScrollToContainer('.book-card');
     }
 
     public function renderOptions(Collection $options, array $itemOptions = []): array

@@ -95,20 +95,16 @@ class BookAccount extends Account
     {
         try {
             $user = Auth::getUser();
-            $data = array_diff_assoc(post(), $user->only($user->getFillable()));
+            $data = post();
             $user->addValidationRule('password', 'nullable');
             $user->addValidationRule('password_confirmation', 'nullable');
             $user->removeValidationRule('password', 'required:create');
             $user->removeValidationRule('email', 'required');
-            if ($user->username) {
-                $user->removeValidationRule('username', 'required');
-            }
+            $user->addValidationRule('nickname', 'required');
 
             Db::transaction(function () use ($user, $data) {
                 $user->update(array_merge($data, ['required_post_register' => 0]));
-                if ($data['username'] ?? false) {
-                    $user->profile->update(['username' => $data['username']]);
-                }
+                $user->profile->update(['username' => $data['nickname']]);
             });
 
             return $this->makeRedirection();

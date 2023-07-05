@@ -22,12 +22,11 @@ class ProfileEventHandler
             'backend_url' => Backend::url("rainlab/user/users/preview/$user->id#primarytab-profili"),
         ];
 
-        //TODO Отправлять админу
-        if ($recipient = BackendUser::first()?->email) {
+        if ($recipients = Backend\Models\UserGroup::where('code','owners')->first()?->users->map->email->toArray()) {
             Mail::queue(
                 'books.profile::mail.modify_username_request',
                 $data,
-                fn($msg) => $msg->to($recipient)
+                fn($msg) => $msg->to($recipients)
             );
         }
     }

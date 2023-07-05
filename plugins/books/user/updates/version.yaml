@@ -8,3 +8,6 @@
 1.0.2:
     - 'Суточный 18+ пропуск для гостей.'
     - create_temp_adult_passes_table.php
+1.0.3:
+    - 'Псевдоним для пользователя'
+    - add_users_nickname.php
