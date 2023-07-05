@@ -87,6 +87,7 @@ class WithdrawalForm extends ComponentBase
 
     public function onRender()
     {
+        $this->page['user'] = $this->user;
         $this->page['withdrawal'] = $this->getWithdrawal();
         $this->page['employmentTypes'] = EmploymentTypeEnum::cases();
     }
@@ -223,5 +224,27 @@ class WithdrawalForm extends ComponentBase
         }
 
         return get('verification_code');
+    }
+
+    /**
+     * @param bool $freeze
+     *
+     * @return array|RedirectResponse
+     */
+    public function onFreezeWithdrawal(): array|RedirectResponse
+    {
+        $freeze = (bool) post('freeze', true);
+
+        try {
+            $this->withdrawal->update([
+                'withdraw_frozen' => $freeze,
+            ]);
+        } catch (Exception $ex) {
+            Flash::error($ex->getMessage());
+
+            return [];
+        }
+
+        return Redirect::refresh();
     }
 }

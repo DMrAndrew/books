@@ -10,6 +10,14 @@
 
     {% partial __SELF__ ~ '::checking' %}
 
+{% elseif withdrawal.agreement_status.value in ['restricted'] %}
+
+    {% partial __SELF__ ~ '::restricted' %}
+
+{% elseif withdrawal.agreement_status.value in ['approved'] %}
+
+{% partial __SELF__ ~ '::approved' %}
+
 {% endif %}
 
 

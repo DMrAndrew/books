@@ -1,0 +1,64 @@
+<div class="commerce wrapper _indent-medium">
+    <div class="ui-grid-gap ui-grid-container personal-area__wrap _indent-large">
+        <div class="ui-col-sm-3">
+            <span class="commerce__subtitle">Вывод средств</span>
+        </div>
+        <div class="ui-col-sm-9">
+            {% if withdrawal.withdraw_frozen == false %}
+                <div class="commerce__status _indent-small">
+                    <span class="ui-text-body--2">{{ withdrawal.withdrawal_status.getLabel }}</span>
+                    <button
+                        type="button"
+                        data-request="onFreezeWithdrawal"
+                        data-request-data="freeze:1"
+                        data-request-flash="true"
+                        class="ui-link _violet">
+                        Заморозить
+                    </button>
+                </div>
+                <div class="commerce__text ui-text-body--3">Вы можете в любое время как заморозить выплату средств, так и разрешить автоматическую выплату накопленных средств</div>
+            {% else %}
+                <div class="commerce__status _indent-small">
+                    <span class="ui-text-body--2">{{ withdrawal.withdrawal_status.getLabel }}, Заморожен</span>
+                </div>
+                <div class="commerce__text ui-text-body--3">Вы заморозили вывод средств. Чтобы разморозить нажмите
+                    <button
+                        type="button"
+                        data-request="onFreezeWithdrawal"
+                        data-request-data="freeze:0"
+                        data-request-flash="true"
+                        class="ui-link _violet">
+                        отмена
+                    </button>
+                </div>
+            {% endif %}
+
+            <div class="commerce__status _indent-small">
+                <svg class="square-16">
+                    <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#pdf-16' | theme }}"></use>
+                </svg>
+                <a href="#" class="ui-link _violet">Подписанный договор.pdf</a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="ui-grid-gap ui-grid-container personal-area__wrap _indent-large">
+        <div class="ui-col-sm-3">
+            <span class="commerce__subtitle">Доступно для вывода</span>
+        </div>
+        <div class="ui-col-sm-9">
+            <span class="commerce__available">{{ user.proxyWallet.balance }} ₽</span>
+        </div>
+    </div>
+
+    <div class="commerce__button-wrapper _indent-medium">
+        <button
+            type="button"
+            data-request="onSetFillingStatus"
+            data-request-flash="true"
+            class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">
+            Изменить анкету
+        </button>
+    </div>
+</div>
