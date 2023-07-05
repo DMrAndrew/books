@@ -34,7 +34,7 @@ class AgreementService implements AgreementServiceContract
         $withdrawal = $this->user->withdrawalData;
 
         $heading = !$verified ? 'Заявление' : 'Договор';
-        $agreementDate = $withdrawal->approved_at->format('«d» F Y г.');
+        $agreementDate = $withdrawal->approved_at->format('«d» F Y г.'); //«05» июль 2023 г.
         $offerUrl = url('/terms-of-use');
         $termsOfUseUrl = url('/privacy-agreement');
 
