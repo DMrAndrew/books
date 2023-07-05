@@ -10,6 +10,8 @@ use Books\Withdrawal\Models\WithdrawalData;
 use Exception;
 use Log;
 use Mail;
+use Mpdf\Mpdf as HTMLtoPDFConverter;
+use Mpdf\MpdfException;
 use RainLab\User\Models\User;
 use Backend\Models\User as AdminUser;
 
@@ -78,9 +80,18 @@ class AgreementService implements AgreementServiceContract
         AGREEMENT;
     }
 
+    /**
+     * @return string
+     * @throws MpdfException
+     */
     public function getAgreementPDF(): string
     {
-        return 'PDF Договора';
+        $agreementHTMLBody = $this->getAgreementHTML();
+
+        $mpdf = new HTMLtoPDFConverter(['tempDir' => storage_path('/temp/agreement-downloads')]);
+        $mpdf->WriteHTML($agreementHTMLBody);
+
+        return $mpdf->Output();
     }
 
     /**

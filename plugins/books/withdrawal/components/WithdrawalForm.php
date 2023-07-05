@@ -16,6 +16,8 @@ use Illuminate\Http\RedirectResponse;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
+use Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use ValidationException;
 use Validator;
 
@@ -230,9 +232,7 @@ class WithdrawalForm extends ComponentBase
         return get('verification_code');
     }
 
-    /**
-     * @param bool $freeze
-     *
+    /**=
      * @return array|RedirectResponse
      */
     public function onFreezeWithdrawal(): array|RedirectResponse
@@ -250,5 +250,22 @@ class WithdrawalForm extends ComponentBase
         }
 
         return Redirect::refresh();
+    }
+
+    /**
+     * @return BinaryFileResponse
+     * @throws BindingResolutionException
+     */
+    public function onDownloadAgreement(): BinaryFileResponse
+    {
+        $agreementService = app()->make(AgreementServiceContract::class, ['user' => $this->user]);
+
+        return Response::download(
+            $agreementService->getAgreementPDF(),
+            null,
+            [
+                'Content-Type' => 'application/pdf'
+            ]
+        );
     }
 }
