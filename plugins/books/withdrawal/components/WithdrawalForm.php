@@ -1,5 +1,6 @@
 <?php namespace Books\Withdrawal\Components;
 
+use Books\Book\Traits\FormatNumberTrait;
 use Books\FileUploader\Components\ImageUploader;
 use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
 use Books\Withdrawal\Classes\Enums\EmploymentTypeEnum;
@@ -25,6 +26,8 @@ use Validator;
  */
 class WithdrawalForm extends ComponentBase
 {
+    use FormatNumberTrait;
+
     protected ?User $user;
     private ?WithdrawalData $withdrawal;
 
@@ -89,6 +92,7 @@ class WithdrawalForm extends ComponentBase
     {
         $this->page['user'] = $this->user;
         $this->page['withdrawal'] = $this->getWithdrawal();
+        $this->page['withdraw_available'] = $this->formatNumber($this->user->proxyWallet()->balance);
         $this->page['employmentTypes'] = EmploymentTypeEnum::cases();
     }
 

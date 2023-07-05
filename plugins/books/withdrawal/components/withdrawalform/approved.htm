@@ -7,14 +7,15 @@
             {% if withdrawal.withdraw_frozen == false %}
                 <div class="commerce__status _indent-small">
                     <span class="ui-text-body--2">{{ withdrawal.withdrawal_status.getLabel }}</span>
-                    <button
+                    <a
+                        href="#"
                         type="button"
                         data-request="onFreezeWithdrawal"
                         data-request-data="freeze:1"
                         data-request-flash="true"
                         class="ui-link _violet">
                         Заморозить
-                    </button>
+                    </a>
                 </div>
                 <div class="commerce__text ui-text-body--3">Вы можете в любое время как заморозить выплату средств, так и разрешить автоматическую выплату накопленных средств</div>
             {% else %}
@@ -22,14 +23,15 @@
                     <span class="ui-text-body--2">{{ withdrawal.withdrawal_status.getLabel }}, Заморожен</span>
                 </div>
                 <div class="commerce__text ui-text-body--3">Вы заморозили вывод средств. Чтобы разморозить нажмите
-                    <button
+                    <a
+                        href="#"
                         type="button"
                         data-request="onFreezeWithdrawal"
                         data-request-data="freeze:0"
                         data-request-flash="true"
                         class="ui-link _violet">
                         отмена
-                    </button>
+                    </a>
                 </div>
             {% endif %}
 
@@ -48,7 +50,7 @@
             <span class="commerce__subtitle">Доступно для вывода</span>
         </div>
         <div class="ui-col-sm-9">
-            <span class="commerce__available">{{ user.proxyWallet.balance }} ₽</span>
+            <span class="commerce__available">{{ withdraw_available }} ₽</span>
         </div>
     </div>
 
