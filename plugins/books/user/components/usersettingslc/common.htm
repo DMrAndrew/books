@@ -9,8 +9,13 @@
         <div class="ui-select-hitn"></div>
         <div class="ui-select-error" data-validate-for="email"></div>
     </div>
-
 </div>
+{% if not user.is_activated %}
+<div class="personal-area__wrap _indent-large _color-gray ui-text-body--3">
+    Электронная почта не подтверждена.
+    <a data-request="bookAccount::onSendActivationEmail" class="ui-link _violet ui-text-body--3" href="#">Отправить письмо</a>
+</div>
+{% endif %}
 
 <div class="personal-area-profile__date personal-area__wrap _indent-large">
     <div class="ui-input">

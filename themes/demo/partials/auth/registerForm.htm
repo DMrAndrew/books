@@ -1,161 +1,146 @@
-{% if user  %}
-{% set action = 'bookAccount::onPostRegister' %}
-{% else %}
-{% set action = 'bookAccount::onRegisterProxy' %}
-{% endif %}
+<div id="auth_popup" class="auth active">
+    <form id="register_form" class="auth__container _large"
+          data-request="bookAccount::onRegister"
+          data-request-validate
+          data-request-flash="true"
 
-<form id="register_form" class="auth__container _large"
-      data-request="{{action}}"
-      data-request-validate
-      data-request-flash="true"
-
->
-    <div class="auth__header _desktop">
-        {% if not user %}
-        <svg onclick="closeForm()" class="square-24 auth__button-back active">
-            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
-        </svg>
-        {% endif %}
-        <div class="auth__title ui-text--bold">Регистрация</div>
-        {% if not user %}
-        <svg onclick="closeForm()" class="auth__button-close square-24">
-            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-        </svg>
-        {% endif %}
-
-    </div>
-    <div class="auth__body">
-        {% if not user %}
-        <a class="auth__button-back-desktop ui-link _violet cursor-pointer" onclick="registerPopup()">
-            <svg class="square-16">
+    >
+        <div class="auth__header _desktop">
+            <svg onclick="closeForm()" class="square-24 auth__button-back active">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
             </svg>
-            <span>Назад</span>
-        </a>
-        {% endif %}
-        <div class="auth__reg-container ui-grid-container ui-grid-gap">
-            <div class="ui-col-sm-6">
-                <div class="ui-input-wrapper">
-                    <div class="ui-input-label">Имя или псевдоним*</div>
-                    <input name="nickname" class="ui-input-item _size-32" type="text" value="{{ user.nickname }}">
-                    <div class="ui-select-hitn"></div>
-                    <div class="ui-select-error" data-validate-for="nickname"></div>
-                </div>
-            </div>
-            <div class="ui-col-sm-6">
-                <div class="ui-input-wrapper">
-                    <div class="ui-input-label">Дата рождения</div>
-                    <input name="birthday" class="ui-input-item _size-32" type="text" id="datepicker"
-                           value="{{ user and user.birthday ? carbon(user.birthday).format('d.m.Y') : ''}}"
-                    >
+            <div class="auth__title ui-text--bold">Регистрация</div>
+            <svg onclick="closeForm()" class="auth__button-close square-24">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+            </svg>
 
-                    <div class="ui-select-hitn"></div>
-                    <div class="ui-select-error" data-validate-for="birthday"></div>
-                </div>
-            </div>
-            <div class="ui-col-sm-12">
-                <div class="personal-area__wrap _indent-large ui-select">
-                    <div class="ui-select-header">
-                        <label class="ui-select-label">Любимые жанры</label>
-                    </div>
-                    <button type="button" class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium"
-                            data-modal="open-recommend">
-                        Изменить
-                    </button>
-                    <div class="ui-select-hint ui-text-body--3">Любимые жанры необязательны для заполнения,
-                        их можно выбрать в настройках пользователя.
-                        Дату рождения можно выбрать только один раз.
+        </div>
+        <div class="auth__body">
+            {% if not user %}
+            <a class="auth__button-back-desktop ui-link _violet cursor-pointer" onclick="registerPopup()">
+                <svg class="square-16">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+                </svg>
+                <span>Назад</span>
+            </a>
+            {% endif %}
+            <div class="auth__reg-container ui-grid-container ui-grid-gap">
+                <div class="ui-col-sm-6">
+                    <div class="ui-input-wrapper">
+                        <div class="ui-input-label">Имя или псевдоним*</div>
+                        <input required name="nickname" class="ui-input-item _size-32" type="text"
+                               value="{{ user.nickname }}">
+                        <div class="ui-select-hitn"></div>
+                        <div class="ui-select-error" data-validate-for="nickname"></div>
                     </div>
                 </div>
+                <div class="ui-col-sm-6">
+                    <div class="ui-input-wrapper">
+                        <div class="ui-input-label">Дата рождения</div>
+                        <input required name="birthday" class="ui-input-item _size-32" type="text" id="datepicker"
+                               value="{{ user and user.birthday ? carbon(user.birthday).format('d.m.Y') : ''}}"
+                        >
 
-
-            </div>
-            <div class="ui-col-sm-12">
-                <div class="ui-input-wrapper">
-                    <div class="ui-input-label">Электронная почта*</div>
-                    <input name="email" class="ui-input-item _size-32" type="text" value="{{ user.email }}">
-
-                    <div class="ui-select-hitn"></div>
-                    <div class="ui-select-error" data-validate-for="email"></div>
-                </div>
-            </div>
-            <div class="ui-col-sm-6">
-                <div class="ui-input-wrapper">
-                    <div class="ui-input-label">Пароль
-                        {% if not user %}
-                        *
-                        {% endif %}
+                        <div class="ui-select-hitn"></div>
+                        <div class="ui-select-error" data-validate-for="birthday"></div>
                     </div>
-                    <div class="password-block">
-                        <input name="password" class="ui-input-item _size-32 personal-area__wrap _indent-small"
-                               type="password">
-                        <button class="password-block__toggle " type="button" onclick="togglePassword(event)">
-                            <svg class="password-block__ico">
-                                <use
-                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-off-stroked-16' | theme}}"></use>
-                            </svg>
-                            <svg class="password-block__ico">
-                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
-                            </svg>
+                </div>
+                <div class="ui-col-sm-12">
+                    <div class="personal-area__wrap _indent-large ui-select">
+                        <div class="ui-select-header">
+                            <label class="ui-select-label">Любимые жанры</label>
+                        </div>
+                        <button type="button" class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium"
+                                data-modal="open-recommend">
+                            Изменить
                         </button>
+                        <div class="ui-select-hint ui-text-body--3">Любимые жанры необязательны для заполнения,
+                            их можно выбрать в настройках пользователя.
+                            Дату рождения можно выбрать только один раз.
+                        </div>
                     </div>
-                    <div class="ui-select-hitn"></div>
-                    <div class="ui-select-error" data-validate-for="password"></div>
+
+
                 </div>
-            </div>
-            <div class="ui-col-sm-6">
-                <div class="ui-input-wrapper">
-                    <div class="ui-input-label">Подтверждение пароля
-                        {% if not user %}
-                        *
-                        {% endif %}
+                <div class="ui-col-sm-12">
+                    <div class="ui-input-wrapper">
+                        <div class="ui-input-label">Электронная почта*</div>
+                        <input required name="email" class="ui-input-item _size-32" type="text"
+                               value="{{ user.email }}">
+
+                        <div class="ui-select-hitn"></div>
+                        <div class="ui-select-error" data-validate-for="email"></div>
                     </div>
-                    <div class="password-block">
-                        <input name="password_confirmation"
-                               class="ui-input-item _size-32 personal-area__wrap _indent-small" type="password">
-                        <button class="password-block__toggle " type="button" onclick="togglePassword(event)">
-                            <svg class="password-block__ico">
-                                <use
-                                    xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-off-stroked-16' | theme}}"></use>
-                            </svg>
-                            <svg class="password-block__ico">
-                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="ui-select-hitn"></div>
-                    <div class="ui-select-error" data-validate-for="password_confirmation"></div>
                 </div>
-            </div>
-            <div class="ui-col-sm-12">
-                <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full">
+                <div class="ui-col-sm-6">
+                    <div class="ui-input-wrapper">
+                        <div class="ui-input-label">Пароль *
+                        </div>
+                        <div class="password-block">
+                            <input required name="password" class="ui-input-item _size-32 personal-area__wrap _indent-small"
+                                   type="password">
+                            <button class="password-block__toggle " type="button" onclick="togglePassword(event)">
+                                <svg class="password-block__ico">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-off-stroked-16' | theme}}"></use>
+                                </svg>
+                                <svg class="password-block__ico">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="ui-select-hitn"></div>
+                        <div class="ui-select-error" data-validate-for="password"></div>
+                    </div>
+                </div>
+                <div class="ui-col-sm-6">
+                    <div class="ui-input-wrapper">
+                        <div class="ui-input-label">Подтверждение пароля *
+                        </div>
+                        <div class="password-block">
+                            <input required name="password_confirmation"
+                                   class="ui-input-item _size-32 personal-area__wrap _indent-small" type="password">
+                            <button class="password-block__toggle " type="button" onclick="togglePassword(event)">
+                                <svg class="password-block__ico">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-off-stroked-16' | theme}}"></use>
+                                </svg>
+                                <svg class="password-block__ico">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-filled-16' | theme}}"></use>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="ui-select-hitn"></div>
+                        <div class="ui-select-error" data-validate-for="password_confirmation"></div>
+                    </div>
+                </div>
+                <div class="ui-col-sm-12">
+                    <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full">
                     <span class="ui-text--medium">
-                         {% if not user  %}
-                        Зарегистрироваться
-                        {% else %}
-                        Сохранить
-                         {% endif %}
+                         Зарегистрироваться
                     </span>
-                </button>
+                    </button>
+                </div>
+            </div>
+
+            {% if not user %}
+            <div class="auth__addition auth__action ">
+                Есть аккаунт? <a class="ui-link _violet cursor-pointer"
+                                 onclick="loginForm()"
+            >Войти</a>
+            </div>
+            {% endif %}
+            <div class="auth__addition ui-text-body--3 _color-gray">
+                Регистрируясь, вы соглашаетесь с <a href="/terms-of-use" target="_blank" class="ui-link _violet">пользовательским
+                соглашением</a> и <a
+                href="/privacy-agreement" target="_blank" class="ui-link _violet">политикой конфиденциальности</a>.
             </div>
         </div>
-
-        {% if not user %}
-        <div class="auth__addition auth__action ">
-            Есть аккаунт? <a class="ui-link _violet cursor-pointer"
-                             onclick="loginForm()"
-        >Войти</a>
-        </div>
-        {% endif %}
-        <div class="auth__addition ui-text-body--3 _color-gray">
-            Регистрируясь, вы соглашаетесь с <a href="/terms-of-use" target="_blank" class="ui-link _violet">пользовательским
-            соглашением</a> и <a
-            href="/privacy-agreement" target="_blank" class="ui-link _violet">политикой конфиденциальности</a>.
-        </div>
-    </div>
-    <script>
-        initDatepicker(`#datepicker`, {yearRange: "c-60:c-0"})
-    </script>
-</form>
-
-{% partial 'modals/recommend' nestedGenres=nestedGenres %}
+        <script>
+            initDatepicker(`#datepicker`, {yearRange: "c-60:c-0"})
+        </script>
+    </form>
+    {% partial 'modals/recommend' nestedGenres=nestedGenres %}
+</div>

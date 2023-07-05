@@ -1,7 +1,9 @@
-#login_popup, #register_popup, #register_form, #login_form, #auth_popup {
-    display: none;
+#login_popup, #register_popup, #register_form, #login_form  {
+    display: block!important;
 }
-
+#auth_popup{
+    display:flex;
+}
 .validation-error {
     color: red;
     font-size: 12px;
