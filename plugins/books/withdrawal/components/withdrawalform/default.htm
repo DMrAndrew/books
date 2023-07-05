@@ -16,7 +16,7 @@
 
 {% elseif withdrawal.agreement_status.value in ['approved'] %}
 
-{% partial __SELF__ ~ '::approved' %}
+    {% partial __SELF__ ~ '::approved' %}
 
 {% endif %}
 
