@@ -7,6 +7,7 @@ use Backend;
 use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
 use Books\Withdrawal\Classes\Enums\WithdrawalAgreementStatusEnum;
 use Books\Withdrawal\Models\WithdrawalData;
+use Carbon\Carbon;
 use Exception;
 use Log;
 use Mail;
@@ -34,7 +35,7 @@ class AgreementService implements AgreementServiceContract
         $withdrawal = $this->user->withdrawalData;
 
         $heading = !$verified ? 'Заявление' : 'Договор';
-        $agreementDate = $withdrawal->approved_at?->format('«d» F Y г.') ?? now()->format('«d» F Y г.'); //«05» июль 2023 г.
+        $agreementDate = $withdrawal->approved_at?->translatedFormat('«d» F Y г.') ?? now()->translatedFormat('«d» F Y г.'); //«05» июль 2023 г.
         $offerUrl = url('/terms-of-use');
         $termsOfUseUrl = url('/privacy-agreement');
 
@@ -49,7 +50,7 @@ class AgreementService implements AgreementServiceContract
             г. Снежинск
             </div>
             <div class="agreement-body">
-            Я, {$withdrawal->fio}, ознакомился(лась) и согласен(сна) с <a href="{$offerUrl}" target="_blank">офертой сайта</a>, документооборотом, <a href="{$termsOfUseUrl}" target="_blank">соглашением конфиденциальности</a>. Прошу разрешить мне вывод средств на указанный в анкете счет. Гарантирую законность моего авторского контента и уведомлен(а) об ответственности за нарушение авторского права. Даю согласие на обработку своих персональных данных. Гарантирую соблюдение правил сайта, размещенных в открытом доступе.
+            Я, {$withdrawal->fio}, ознакомился(лась) и согласен(сна) с офертой сайта (<a href="{$offerUrl}" сlass="ui-link _violet" target="_blank">{$offerUrl}</a>), электронным документооборотом (ссылка на страницу), соглашением конфиденциальности (<a href="{$termsOfUseUrl}" сlass="ui-link _violet" target="_blank">{$termsOfUseUrl}</a>). Прошу разрешить мне вывод средств на указанный в анкете счет. Гарантирую законность моего авторского контента и уведомлен(а) об ответственности за нарушение авторского права. Даю согласие на обработку своих персональных данных. Гарантирую соблюдение правил сайта, размещенных в открытом доступе.
             <table class="agreement-data">
               <tbody>
                 <tr>
