@@ -124,11 +124,15 @@ class WithdrawalForm extends ComponentBase
                 'passport_date' => post('passport_date')
                     ? Carbon::createFromFormat('d.m.Y', post('passport_date'))
                     : null,
+                'employment_register_number' => post('employment_type') == EmploymentTypeEnum::ENTERPRENEUR->value
+                    ? post('employment_register_number')
+                    : null,
             ]);
 
             $validator = Validator::make(
                 $formData,
-                collect((new WithdrawalData())->rules)->toArray()
+                collect((new WithdrawalData())->rules)->toArray(),
+                collect((new WithdrawalData())->customMessages)->toArray(),
             );
             if ($validator->fails()) {
                 throw new ValidationException($validator);
@@ -274,5 +278,22 @@ class WithdrawalForm extends ComponentBase
                 'Content-Type' => 'application/pdf'
             ]
         );
+    }
+
+    /**
+     * @return array
+     */
+    public function onSelectEmploymentType(): array
+    {
+        $employmentType = post('value', '');
+        if ($employmentType == EmploymentTypeEnum::ENTERPRENEUR->value) {
+            return [
+                '#ogrnip-container' => $this->renderPartial('@field_ogrnip', ['withdrawal' => $this->withdrawal]),
+            ];
+        }
+
+        return [
+            '#ogrnip-container' => '',
+        ];
     }
 }

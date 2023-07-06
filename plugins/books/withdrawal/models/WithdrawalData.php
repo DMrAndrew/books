@@ -42,7 +42,7 @@ class WithdrawalData extends Model
 
         'inn' => 'required|min:9|max:12',
         'employment_type' => 'required',
-        'employment_register_number' => 'required', //номер ИП
+        'employment_register_number' => 'required_if:employment_type,enterpreneur', //ОГРНИП
 
         'bank_beneficiary' => 'required', // Банк получатель
         'bank_inn' => 'required',
@@ -54,6 +54,30 @@ class WithdrawalData extends Model
         //'files' => 'sometimes|array',
         //'files.*' => 'mimes:gif,jpg,jpeg,png|max:3072',
         'approve_code' => 'nullable|string',
+    ];
+
+    public $customMessages = [
+        'fio.*' => 'Поле `ФИО` обязательно для заполнения',
+        'email.required' => 'Поле `Email` обязательно для заполнения',
+        'email.email' => 'Поле `Email` должно содержать валидный адрес электронной почты',
+        'birthday.required' => 'Поле `Дата рождения` обязательно для заполнения',
+        'passport_number.*' => 'Поле `Серия и номер паспорта` обязательно для заполнения',
+        'passport_date.required' => 'Поле `Дата выдачи паспорта` обязательно для заполнения',
+        'passport_issued_by.required' => 'Поле `Кем выдан паспорт` обязательно для заполнения',
+        'address.required' => 'Поле `Адрес регистрации` обязательно для заполнения',
+        'inn.required' => 'Поле `ИНН` обязательно для заполнения',
+        'inn.min' => 'Поле `ИНН` должно содержать от 9 до 12 символов i',
+        'inn.max' => 'Поле `ИНН` должно содержать от 9 до 12 символов x',
+        'employment_type.required' => 'Поле `Тип занятости` обязательно для заполнения',
+        'employment_register_number.*' => 'Поле `ОГРНИП` обязательно для типа занятости ИП', //ОГРНИП
+        'bank_beneficiary.required' => 'Поле `Банк-получатель` обязательно для заполнения', // Банк получатель
+        'bank_inn.required' => 'Поле `ИНН Банка` обязательно для заполнения',
+        'bank_inn.numeric' => '`ИНН Банка` должно быть числом',
+        'bank_kpp.required' => 'Поле `КПП Банка` обязательно для заполнения',
+        'bank_receiver.required' => 'Поле `Получатель` обязательно для заполнения', // Получатель
+        'bank_account.required' => 'Поле `Номер счета` обязательно для заполнения',
+        'bank_bik.required' => 'Поле `БИК Банка` обязательно для заполнения',
+        'bank_corr_account.required' => 'Поле `Корр.счет` обязательно для заполнения',
     ];
 
     public $fillable = [
