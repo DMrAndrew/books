@@ -34,11 +34,11 @@ class AgreementService implements AgreementServiceContract
         $withdrawal = $this->user->withdrawalData;
 
         $heading = !$verified ? 'Заявление' : 'Договор';
-        $agreementDate = $withdrawal->approved_at->format('«d» F Y г.'); //«05» июль 2023 г.
+        $agreementDate = $withdrawal->approved_at?->format('«d» F Y г.') ?? now()->format('«d» F Y г.'); //«05» июль 2023 г.
         $offerUrl = url('/terms-of-use');
         $termsOfUseUrl = url('/privacy-agreement');
 
-        $egrip = $withdrawal->employment_register_number ? 'ЕГРИП ' . $withdrawal->employment_register_number : '';
+        $egrip = $withdrawal->employment_register_number ? 'ОГРНИП ' . $withdrawal->employment_register_number : '';
         $signCode = $verified ? '<b>'.$withdrawal->approve_code.'</b>' : '';
 
         return <<<AGREEMENT
@@ -58,12 +58,11 @@ class AgreementService implements AgreementServiceContract
                 </tr>
                 <tr>
                   <td>{$withdrawal->fio}<br>
-                    Дата рождения {$withdrawal->birthday->format('d.m.Y')}<br>
+                    Дата рождения: {$withdrawal->birthday->format('d.m.Y')}<br>
                     {$withdrawal->employment_type->getLabel()} ИНН {$withdrawal->inn} {$egrip}<br>
-                    Паспорт {$withdrawal->passport_number}, выдан {$withdrawal->passport_issued_by}, дата выдачи {$withdrawal->passport_date->format('d.m.Y')}<br>
-                    Зарегистрирован(на) по адресу {$withdrawal->address}<br>
-                    <br>
-            Электронный адрес: {$withdrawal->email}
+                    Паспорт: {$withdrawal->passport_number}, выдан {$withdrawal->passport_issued_by}, дата выдачи {$withdrawal->passport_date->format('d.m.Y')}<br>
+                    Зарегистрирован(на) по адресу: {$withdrawal->address}<br>
+                    Электронный адрес: {$withdrawal->email}
             </td>
                   <td>
             ИНН Банка: {$withdrawal->bank_inn}<br>
