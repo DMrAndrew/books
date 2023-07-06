@@ -31,6 +31,7 @@
         "kirschbaum-development/eloquent-power-joins": "^3.0",
         "books/wallet-plugin": "*",
         "books/payment-plugin": "*",
+        "books/withdrawal-plugin": "*",
         "laracraft-tech/laravel-date-scopes": "^1.1",
         "vdlp/oc-telescope-plugin": "^2.0",
         "vdlp/oc-horizon-plugin": "*"
@@ -128,6 +129,10 @@
         "books/payment-plugin": {
             "type": "path",
             "url": "./plugins/books/payment"
+        },
+        "books/withdrawal-plugin": {
+            "type": "path",
+            "url": "./plugins/books/withdrawal"
         },
         "vdlp/oc-telescope-plugin": {
             "type": "path",

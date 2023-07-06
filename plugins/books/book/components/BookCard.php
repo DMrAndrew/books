@@ -49,7 +49,7 @@ class BookCard extends ComponentBase
             fn($lib) => $lib->remove(),
             fn($lib) => $lib->get() && $lib->interested());
 
-        $this->book->rater()->libs()->apply();
+        $this->book->rater()->libs()->run();
 
         return $this->render();
     }

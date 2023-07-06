@@ -8,6 +8,7 @@ use Books\Comments\Models\Comment;
 use Books\Orders\Models\Order;
 use Books\Profile\Models\OperationHistory;
 use Books\Profile\Models\Profile;
+use Books\User\Classes\UserEventHandler;
 use Books\User\Classes\UserService;
 use Books\User\Models\Settings;
 use Carbon\Carbon;
@@ -21,6 +22,7 @@ class BookUser extends ExtensionBase
 
     public function __construct(protected User $parent)
     {
+        $this->parent->bindEvent('model.afterCreate', fn() => (new UserEventHandler())->afterCreate($this->parent->fresh()));
         $this->parent->hasMany['comments'] = [Comment::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['settings'] = [Settings::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['operations'] = [
@@ -31,10 +33,9 @@ class BookUser extends ExtensionBase
         ];
         $this->parent->hasMany['ownedBooks'] = [UserBook::class];
         $this->parent->hasMany['orders'] = [Order::class];
-        $this->parent->addValidationRule('birthday', 'required');
         $this->parent->addValidationRule('show_birthday', 'boolean');
-//        $this->parent->addValidationRule('username', 'required');
-//        $this->parent->removeValidationRule('username', 'unique:users');
+        $this->parent->addValidationRule('nickname', 'required');
+        $this->parent->addValidationRule('birthday', 'required');
 
         $this->parent->customMessages = array_merge($this->parent->customMessages, [
             'birthday.date' => 'Поле Дата рождения должно быть корректной датой',

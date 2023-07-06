@@ -31,14 +31,8 @@ class RaterExec implements ShouldQueue
     public function handle(): void
     {
         try {
-            $r = new Rater();
-            $r->setBuilder($r->getBuilder()->whereIn('id', $this->data['ids']));
-            $r->setWithDump($this->data['withDump']);
-            $r->setDateBetween($this->data['dateBetween']);
-            foreach ($this->data['closures'] as $closure) {
-                $r->{$closure}();
-            }
-            $r->apply();
+
+            Rater::make($this->data)->run();
 
         } catch (Exception $exception) {
             Log::error($exception->getMessage());

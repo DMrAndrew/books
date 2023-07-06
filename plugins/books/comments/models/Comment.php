@@ -111,4 +111,17 @@ class Comment extends Model
                 Profile::class => '/author-page/',
             } . $this->commentable->id;
     }
+
+    public function scopeWithoutOwner(Builder $builder)
+    {
+        $profile = match (get_class($this->commentable)) {
+            Book::class => $this->commentable->profile()->select((new Profile())->getQualifiedKeyName()),
+            Profile::class => [$this->commentable->id],
+            default => null
+        };
+
+        return $builder->when($profile, fn($b) => $b
+            ->whereDoesntHave('profile', fn($p) => $p->whereIn((new Profile())->getQualifiedKeyName(), $profile)));
+
+    }
 }

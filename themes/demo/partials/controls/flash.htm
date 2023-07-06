@@ -1,8 +1,14 @@
 {% flash %}
+{% if type == 'post_register_required' %}
+<script>
+    oc.ajax('onGetGuestRegisterForm')
+</script>
+{% else %}
 <div data-control="flash-message"
      data-interval="5"
      data-type="{{ type }}"
      class="alert alert-{{ type }}">{{ message
     }}
 </div>
+{% endif %}
 {% endflash %}

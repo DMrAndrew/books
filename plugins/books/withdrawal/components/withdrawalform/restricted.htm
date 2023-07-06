@@ -1,0 +1,30 @@
+<div class="commerce wrapper _indent-medium">
+    <div class="ui-grid-gap ui-grid-container personal-area__wrap _indent-large">
+        <div class="ui-col-sm-3">
+            <span class="commerce__subtitle">Вывод средств</span>
+        </div>
+        <div class="ui-col-sm-9">
+            <div class="commerce__status _indent-small">
+                <span class="ui-text-body--2">Запрещен</span>
+            </div>
+            <div class="commerce__text ui-text-body--3">Некорректно заполнены данные, просим проверить данные
+                <a
+                    href="#"
+                    type="button"
+                    data-request="onSetFillingStatus"
+                    data-request-flash="true"
+                    class="ui-link _violet">
+                    заявления
+                </a></div>
+        </div>
+    </div>
+
+    <div class="ui-grid-gap ui-grid-container personal-area__wrap _indent-large">
+        <div class="ui-col-sm-3">
+            <span class="commerce__subtitle">Доступно для вывода</span>
+        </div>
+        <div class="ui-col-sm-9">
+            <span class="commerce__available">{{ withdraw_available }} ₽</span>
+        </div>
+    </div>
+</div>

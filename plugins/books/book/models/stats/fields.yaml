@@ -48,6 +48,11 @@ fields:
         span: row
         size: tiny
         spanClass: col-2
+    collected_genre_rate:
+        label: Показать для жанров"
+        span: row
+        size: tiny
+        spanClass: col-2
     freq:
         label: Показатель частоты обновлений
         span: row

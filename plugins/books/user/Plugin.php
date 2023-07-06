@@ -5,8 +5,8 @@ namespace Books\User;
 use Books\Reposts\behaviors\CanShare;
 use Books\User\Behaviors\BookUser;
 use Books\User\Behaviors\CountryTranslate;
+use Books\User\Classes\CookieEnum;
 use Books\User\Classes\SearchManager;
-use Books\User\Classes\UserEventHandler;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Components\BookAccount;
 use Books\User\Components\Searcher;
@@ -15,11 +15,13 @@ use Books\User\Models\Settings;
 use Books\Wallet\Behaviors\WalletBehavior;
 use Books\User\Models\TempAdultPass;
 use Event;
+use Flash;
 use Illuminate\Foundation\AliasLoader;
 use Monarobase\CountryList\CountryList;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use RainLab\Location\Behaviors\LocationModel;
 use RainLab\Location\Models\Country;
+use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
@@ -54,14 +56,7 @@ class Plugin extends PluginBase
      */
     public function register(): void
     {
-        //test
-        Event::listen('rainlab.user.register', function (User $model) {
-            (new UserEventHandler())->afterCreate($model->fresh());
-        });
 
-        Event::listen('rainlab.user.getNotificationVars', function(User $model) {
-            return false;
-        });
     }
 
     /**
@@ -71,6 +66,32 @@ class Plugin extends PluginBase
      */
     public function boot(): void
     {
+        Event::listen('rainlab.user.getNotificationVars', function (User $model) {
+            return false;
+        });
+
+
+        Event::listen('mobecan.socialconnect.registerUser', function (array $provider_details, array $user_details) {
+
+            if ($user_details['avatar'] ?? false) {
+                unset($user_details['avatar']);
+            }
+
+            return new User($user_details);
+
+        }, 1);
+
+        Event::listen('mobecan.socialconnect.handleLogin', function ($provider_details, $provider_response, User $user) {
+            if (!$user->exists) {
+                CookieEnum::guest->setForever($user->toArray());
+                Flash::add('post_register_required',1);
+                return redirect()->refresh();
+            }
+        }, 1);
+
+        Event::listen('rainlab.user.beforeRegister', function (&$user) {
+            $user['required_post_register'] = 0;
+        }, 1);
         AliasLoader::getInstance()->alias('User', User::class);
         AliasLoader::getInstance()->alias('Search', Search::class);
         AliasLoader::getInstance()->alias('SearchManager', SearchManager::class);

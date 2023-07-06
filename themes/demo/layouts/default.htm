@@ -12,6 +12,8 @@ requirePassword = 0
 recordsPerView = 11
 [BalanceDeposit]
 [AuthorSupport]
+[session]
+[socialconnect]
 ==
 <!DOCTYPE html>
 <html lang="ru">
@@ -22,10 +24,9 @@ recordsPerView = 11
 </head>
 <body class="{{ 'page-'~this.page.id }}">
 
-<div id='post_register_container' ></div>
-<div id='adult_modal_spawn' ></div>
 <!-- Header -->
 <header id="layout-header" class="header">
+    <div id='modal-spawn'></div>
     {% partial 'site/header' %}
 </header>
 <!-- Content -->
