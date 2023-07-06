@@ -2,7 +2,147 @@
 #  Form Field Definitions
 # ===================================
 
-fields:
-    id:
-        label: ID
-        disabled: true
+tabs:
+    defaultTab: Основная информация
+
+    fields:
+
+        #Основная информация
+        id:
+            label: ID
+            tab: Основная информация
+            span: left
+            disabled: true
+
+        user:
+            label: Пользователь
+            relation: user
+            valueFrom: email
+            disabled: true
+            span: right
+            tab: Основная информация
+
+        agreement_status:
+            label: Статус договора
+            type: dropdown
+            span: left
+            tab: Основная информация
+
+        withdrawal_status:
+            label: Статус вывода
+            type: dropdown
+            span: left
+            tab: Основная информация
+
+        withdraw_frozen:
+            label: Вывод заморожен
+            type: switch
+            disabled: true
+            searchable: true
+
+        created_at:
+            label: Дата создания
+            span: left
+            disabled: true
+
+        approved_at:
+            label: Дата подписания
+            span: left
+            disabled: true
+
+        #Данные
+        fio:
+            label: ФИО
+            span: left
+            tab: Данные
+
+        email:
+            label: Email
+            span: left
+            tab: Данные
+
+        birthday:
+            label: Дата рождения
+            span: left
+            type: datepicker
+            tab: Данные
+
+        passport_number:
+            label: Серия и номер паспорта
+            span: left
+            tab: Данные
+
+        passport_date:
+            label: Дата выдачи паспорта
+            span: left
+            type: datepicker
+            tab: Данные
+
+        passport_issued_by:
+            label: Кем выдан
+            span: left
+            tab: Данные
+
+        address:
+            label: Зарегистрирован
+            span: left
+            tab: Данные
+
+        inn:
+            label: ИНН
+            span: left
+            tab: Данные
+
+        employment_type:
+            label: Зарегистрирован
+            type: dropdown
+            span: left
+            tab: Данные
+
+        employment_register_number:
+            label: Основной государственный регистрационный номер индивидуального предпринимателя
+            span: left
+            tab: Данные
+
+        bank_beneficiary:
+            label: Банк получатель
+            span: left
+            tab: Данные
+
+        bank_inn:
+            label: ИНН Банка
+            span: left
+            tab: Данные
+
+        bank_kpp:
+            label: КПП Банка
+            span: left
+            tab: Данные
+
+        bank_receiver:
+            label: Получатель
+            span: left
+            tab: Данные
+
+        bank_account:
+            label: Номер счета
+            span: left
+            tab: Данные
+
+        bank_bik:
+            label: БИК Банка
+            span: left
+            tab: Данные
+
+        bank_corr_account:
+            label: Корр.счет
+            span: left
+            tab: Данные
+
+        # Сканы паспорта
+        files:
+            label: Скан паспорта
+            span: left
+            type: fileupload
+            mode: image
+            tab: Скан паспорта

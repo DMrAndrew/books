@@ -1,3 +1,6 @@
 1.0.1:
     - 'Withdrawal data'
     - create_withdrawal_datas_table.php
+1.0.2:
+    - 'Withdrawal verification `code` column'
+    - update_withdrawal_datas_add_code.php
