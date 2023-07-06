@@ -6,3 +6,30 @@ columns:
     id:
         label: ID
         searchable: true
+
+    user:
+        label: Пользователь
+        searchable: true
+        relation: user
+        valueFrom: email
+
+    fio:
+        label: ФИО
+        searchable: true
+
+    email:
+        label: Email
+        searchable: true
+
+    agreement_status_name:
+        label: Статус договора
+        searchable: true
+
+    withdrawal_status_name:
+        label: Статус вывода
+        searchable: true
+
+    withdraw_frozen:
+        label: Вывод заморожен
+        type: switch
+        searchable: true

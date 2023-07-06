@@ -11,6 +11,6 @@ trait FormatNumberTrait
      */
     private function formatNumber($number): string
     {
-        return number_format($number, 2, '.', '');
+        return number_format($number, 2, '.', ' ');
     }
 }

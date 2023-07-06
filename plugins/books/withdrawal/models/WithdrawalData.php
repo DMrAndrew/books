@@ -4,6 +4,8 @@ use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
 use Books\Withdrawal\Classes\Enums\EmploymentTypeEnum;
 use Books\Withdrawal\Classes\Enums\WithdrawalAgreementStatusEnum;
 use Books\Withdrawal\Classes\Enums\WithdrawalStatusEnum;
+use Carbon\Carbon;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Model;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
@@ -17,6 +19,8 @@ use System\Models\File;
 class WithdrawalData extends Model
 {
     use Validation;
+
+    const VERIFICATION_CODE_LENGTH = 6;
 
     public $table = 'books_withdrawal_data';
 
@@ -47,8 +51,9 @@ class WithdrawalData extends Model
         'bank_account' => 'required',
         'bank_bik' => 'required',
         'bank_corr_account' => 'required',
-        'files' => 'sometimes|array',
-        'files.*' => 'mimes:gif,jpg,jpeg,png|max:3072',
+        //'files' => 'sometimes|array',
+        //'files.*' => 'mimes:gif,jpg,jpeg,png|max:3072',
+        'approve_code' => 'nullable|string',
     ];
 
     public $fillable = [
@@ -75,12 +80,14 @@ class WithdrawalData extends Model
         'bank_corr_account',
         'approved_at',
         'files',
+        'approve_code',
     ];
 
     protected $dates = [
         'created_at',
         'updated_at',
         'approved_at',
+        'birthday',
         'passport_date',
     ];
 
@@ -101,10 +108,79 @@ class WithdrawalData extends Model
         'files' => File::class,
     ];
 
+    /**
+     * @return string
+     * @throws BindingResolutionException
+     */
     public function agreementHTML(): string
     {
         $agreementService = app()->make(AgreementServiceContract::class, ['user' => $this->user]);
 
         return $agreementService->getAgreementHTML();
+    }
+
+    /**
+     * @return string
+     */
+    public static function generateCode(): string
+    {
+        return substr(
+            strtoupper(hash('xxh32', Carbon::now()->toISOString())),
+            0, self::VERIFICATION_CODE_LENGTH);
+    }
+
+    /**
+     * @return array
+     */
+    public function getAgreementStatusOptions(): array
+    {
+        $options = [];
+        foreach (WithdrawalAgreementStatusEnum::cases() as $case) {
+            $options[$case->value] = $case->getLabel();
+        };
+
+        return $options;
+    }
+
+    /**
+     * @return array
+     */
+    public function getWithdrawalStatusOptions(): array
+    {
+        $options = [];
+        foreach (WithdrawalStatusEnum::cases() as $case) {
+            $options[$case->value] = $case->getLabel();
+        };
+
+        return $options;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEmploymentTypeOptions(): array
+    {
+        $options = [];
+        foreach (EmploymentTypeEnum::cases() as $case) {
+            $options[$case->value] = $case->getLabel();
+        };
+
+        return $options;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAgreementStatusNameAttribute(): ?string
+    {
+        return $this->agreement_status?->getLabel();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getWithdrawalStatusNameAttribute(): ?string
+    {
+        return $this->withdrawal_status?->getLabel();
     }
 }

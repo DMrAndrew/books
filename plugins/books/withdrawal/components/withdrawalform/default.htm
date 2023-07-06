@@ -1,10 +1,22 @@
-{% if withdrawal.agreement_status.value == 'filling' %}
+{% if not withdrawal.agreement_status or withdrawal.agreement_status.value == 'filling' %}
 
     {% partial __SELF__ ~ '::form' %}
 
 {% elseif withdrawal.agreement_status.value in ['signing', 'verifying'] %}
 
     {% partial __SELF__ ~ '::signing' %}
+
+{% elseif withdrawal.agreement_status.value in ['checking'] %}
+
+    {% partial __SELF__ ~ '::checking' %}
+
+{% elseif withdrawal.agreement_status.value in ['restricted'] %}
+
+    {% partial __SELF__ ~ '::restricted' %}
+
+{% elseif withdrawal.agreement_status.value in ['approved'] %}
+
+    {% partial __SELF__ ~ '::approved' %}
 
 {% endif %}
 
