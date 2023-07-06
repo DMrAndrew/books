@@ -61,9 +61,8 @@ class BookCard extends ComponentBase
         }
 
         $this->user->toggleFavorite($this->book);
-        $this->book->rater()
-            ->likes()->apply()
-            ->rate()->queue();
+        $this->book->rater()->likes()->run();
+        $this->book->rater()->rate()->queue();
 
         return $this->render();
     }
