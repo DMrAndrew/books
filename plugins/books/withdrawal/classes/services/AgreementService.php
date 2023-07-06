@@ -38,6 +38,7 @@ class AgreementService implements AgreementServiceContract
         $agreementDate = $withdrawal->approved_at?->translatedFormat('«d» F Y г.') ?? now()->translatedFormat('«d» F Y г.'); //«05» июль 2023 г.
         $offerUrl = url('/terms-of-use');
         $termsOfUseUrl = url('/privacy-agreement');
+        $edocUrl = url('/edoc');
 
         $egrip = $withdrawal->employment_register_number ? 'ОГРНИП ' . $withdrawal->employment_register_number : '';
         $signCode = $verified ? '<b>'.$withdrawal->approve_code.'</b>' : '';
@@ -50,7 +51,7 @@ class AgreementService implements AgreementServiceContract
             г. Снежинск
             </div>
             <div class="agreement-body">
-            Я, {$withdrawal->fio}, ознакомился(лась) и согласен(сна) с офертой сайта (<a href="{$offerUrl}" сlass="ui-link _violet" target="_blank">{$offerUrl}</a>), электронным документооборотом (ссылка на страницу), соглашением конфиденциальности (<a href="{$termsOfUseUrl}" сlass="ui-link _violet" target="_blank">{$termsOfUseUrl}</a>). Прошу разрешить мне вывод средств на указанный в анкете счет. Гарантирую законность моего авторского контента и уведомлен(а) об ответственности за нарушение авторского права. Даю согласие на обработку своих персональных данных. Гарантирую соблюдение правил сайта, размещенных в открытом доступе.
+            Я, {$withdrawal->fio}, ознакомился(лась) и согласен(сна) с <a href="{$offerUrl}" сlass="ui-link _violet" target="_blank">офертой сайта</a>, <a href="{$edocUrl}" сlass="ui-link _violet" target="_blank">электронным документооборотом</a>, <a href="{$termsOfUseUrl}" сlass="ui-link _violet" target="_blank">соглашением конфиденциальности</a>. Прошу разрешить мне вывод средств на указанный в анкете счет. Гарантирую законность моего авторского контента и уведомлен(а) об ответственности за нарушение авторского права. Даю согласие на обработку своих персональных данных. Гарантирую соблюдение правил сайта, размещенных в открытом доступе.
             <table class="agreement-data">
               <tbody>
                 <tr>
