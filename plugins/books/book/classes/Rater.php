@@ -155,7 +155,7 @@ class Rater
         $r->setBuilder($r->getBuilder()->when($payload['ids'] ?? false, fn($b) => $b->whereIn('id', $payload['ids'])));
         $r->setWithDump($payload['withDump'] ?? false);
         $r->setOfLastDays($payload['ofLastDays'] ?? false);
-        $r->applyStats(...collect($payload['closures'] ?? [])->map(fn($i) => StatsEnum::tryFrom($i)))->filter();
+        $r->applyStats(...collect($payload['closures'] ?? [])->map(fn($i) => StatsEnum::tryFrom($i))->filter());
 
         return $r;
 
