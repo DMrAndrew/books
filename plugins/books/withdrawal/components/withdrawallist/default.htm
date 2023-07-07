@@ -33,7 +33,7 @@
                 {% for withdraw in withdrawals %}
                 <tr>
                     <td class="table__col _bold">{{ withdraw.date|date('d.m.Y') }}</td>
-                    <td class="_last">{{ withdraw.amount }}</td>
+                    <td class="table__col _wide _left">{{ formatMoneyAmount(withdraw.amount) }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>

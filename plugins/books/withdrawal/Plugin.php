@@ -109,4 +109,16 @@ class Plugin extends PluginBase
             'books.withdrawal::mail.admin_agreement_verified',
         ];
     }
+
+    /**
+     * @return \string[][]
+     */
+    public function registerMarkupTags(): array
+    {
+        return [
+            'functions' => [
+                'formatMoneyAmount' => 'formatMoneyAmount'
+            ]
+        ];
+    }
 }

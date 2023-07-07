@@ -135,5 +135,17 @@ function restrictProhibited(Book $book): bool
     return (isComDomainRequested() && $book->isProhibited()) ? abort(404) : true;
 }
 
+/**
+ * @param $number
+ *
+ * Форматирование денежной суммы, пример - 2455 => 2 455,00
+ *
+ * @return string
+ */
+function formatMoneyAmount(mixed $number): string
+{
+    return number_format((int)$number, 2, '.', ' ');
+}
+
 ?>
 
