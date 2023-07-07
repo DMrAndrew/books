@@ -13,6 +13,7 @@ class CustomPaginator extends LengthAwarePaginator
 
     /**
      * @param string $handler
+     * @return CustomPaginator
      */
     public function setHandler(string $handler): static
     {
@@ -22,6 +23,7 @@ class CustomPaginator extends LengthAwarePaginator
 
     /**
      * @param string $scrollToContainer
+     * @return CustomPaginator
      */
     public function setScrollToContainer(string $scrollToContainer): static
     {
