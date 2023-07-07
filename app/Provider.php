@@ -61,6 +61,8 @@ class Provider extends AppBase
         $this->app[Kernel::class]
             ->pushMiddleware(TrimStrings::class);
         $this->app[Kernel::class]
+            ->pushMiddleware(\Abordage\LastModified\Middleware\LastModifiedHandling::class);
+        $this->app[Kernel::class]
             ->pushMiddleware(ConvertEmptyStringsToNull::class);
         $this->app[Kernel::class]
             ->pushMiddleware(FetchCheckUp::class);
