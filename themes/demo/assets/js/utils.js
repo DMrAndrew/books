@@ -7,6 +7,8 @@ let closeForm = (id = 'auth_popup') => {
 // let toForm = (id) => {
 //     openForm(), closeContainers(), openContainer(id)
 // }
+
+console.log('13:25 07.07.2023')
 let loginPopup = () => oc.ajax('onGetLoginPopup');
 let registerPopup = () => oc.ajax('onGetRegisterPopup');
 let loginForm = () => oc.ajax('onGetLoginForm');
