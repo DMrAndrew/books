@@ -7,6 +7,7 @@ use Books\Withdrawal\Classes\Enums\WithdrawalStatusEnum;
 use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 use System\Models\File;
@@ -151,6 +152,11 @@ class WithdrawalData extends Model
         return substr(
             strtoupper(hash('xxh32', Carbon::now()->toISOString())),
             0, self::VERIFICATION_CODE_LENGTH);
+    }
+
+    public function scopeApproved(Builder $builder): Builder
+    {
+        return $builder->where('agreement_status', WithdrawalAgreementStatusEnum::APPROVED);
     }
 
     /**

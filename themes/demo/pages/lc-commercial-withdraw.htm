@@ -9,6 +9,7 @@ turbo_cache_control='no-cache'
 security = "user"
 redirect = "/"
 [WithdrawalForm]
+[WithdrawalList]
 ==
 <div style="margin-bottom: 16px"> </div>
 <div class="ui-container">
@@ -20,6 +21,7 @@ redirect = "/"
         <div class="personal-area__container ui-grid-container ui-grid-gap">
             <div class="ui-col-sm-12">
                 {% component 'WithdrawalForm' %}
+                {% component 'WithdrawalList' %}
             </div>
         </div>
     </div>

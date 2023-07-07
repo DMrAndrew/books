@@ -4,6 +4,7 @@ use Backend;
 use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
 use Books\Withdrawal\Classes\Services\AgreementService;
 use Books\Withdrawal\Components\WithdrawalForm;
+use Books\Withdrawal\Components\WithdrawalList;
 use System\Classes\PluginBase;
 
 /**
@@ -51,6 +52,7 @@ class Plugin extends PluginBase
     {
         return [
             WithdrawalForm::class => 'WithdrawalForm',
+            WithdrawalList::class => 'WithdrawalList',
         ];
     }
 

@@ -1,0 +1,47 @@
+{% if approvedAgreementExist %}
+<div class="commerce wrapper">
+    <div class="commerce__block">
+        <div class="commerce__title ui-text-head--3 ui-text--bold">Выплаты</div>
+
+        <!-- <div class="table">
+          <div class="table__head">
+            <div class="table__col _bold"><strong>За период</strong></div>
+            <div class="table__col _wide-last">Сумма</div>
+          </div>
+
+          <div class="table__list">
+            <div class="table__row">
+              <div class="table__col _bold" data-title="За период">01.08.2022-31.08.2022</div>
+              <div class="table__col _wide-last" data-title="Сумма">1 107.20</div>
+            </div>
+            <div class="table__row">
+              <div class="table__col _bold" data-title="За период">29.05.2022-31.07.2022</div>
+              <div class="table__col _wide-last" data-title="Сумма">4 039.05</div>
+            </div>
+          </div>
+        </div> -->
+
+        <div class="table __container-shift">
+            <table class="table-static">
+                <thead>
+                <tr>
+                    <td class="_bold">Дата</td>
+                    <td class="_last">Сумма</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for withdraw in withdrawals %}
+                <tr>
+                    <td class="table__col _bold">{{ withdraw.date|date('d.m.Y') }}</td>
+                    <td class="_last">{{ withdraw.amount }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% partial 'site/pagination' records = withdrawals %}
+
+    </div>
+</div>
+{% endif %}
