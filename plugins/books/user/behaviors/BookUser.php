@@ -20,9 +20,56 @@ class BookUser extends ExtensionBase
 {
     const MIN_BIRTHDAY = '01.01.1940';
 
+    protected array $fillable = [
+        'nickname',
+        'birthday',
+        'show_birthday',
+        'country_id',
+        'required_post_register',
+        'favorite_genres',
+        'loved_genres',
+        'unloved_genres',
+        'exclude_genres',
+        'see_adult',
+        'asked_adult_agreement',
+    ];
+    protected array $rules = [];
+    protected array $cast = [
+        'show_birthday' => 'boolean',
+        'see_adult' => 'boolean',
+        'asked_adult_agreement' => 'boolean',
+        'required_post_register' => 'boolean',
+    ];
+
+    protected array $jsonable = [
+        'favorite_genres',
+        'exclude_genres',
+        'loved_genres',
+        'unloved_genres',
+    ];
+
     public function __construct(protected User $parent)
     {
+        $this->parent->addValidationRule('show_birthday', 'boolean');
+        $this->parent->addValidationRule('birthday', 'required');
+//        $this->parent->addValidationRule('nickname', 'required'); багует
+        $this->parent->addDateAttribute('birthday');
+        $this->parent->addFillable($this->fillable);
+        $this->parent->addCasts($this->cast);
+        $this->parent->addJsonable($this->jsonable);
+
+        $this->bindEvents();
+        $this->bindRelations();
+        $this->bindCustomMessages();
+    }
+
+    protected function bindEvents(): void
+    {
         $this->parent->bindEvent('model.afterCreate', fn() => (new UserEventHandler())->afterCreate($this->parent->fresh()));
+    }
+
+    protected function bindRelations(): void
+    {
         $this->parent->hasMany['comments'] = [Comment::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['settings'] = [Settings::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->parent->hasMany['operations'] = [
@@ -33,40 +80,15 @@ class BookUser extends ExtensionBase
         ];
         $this->parent->hasMany['ownedBooks'] = [UserBook::class];
         $this->parent->hasMany['orders'] = [Order::class];
-        $this->parent->addValidationRule('show_birthday', 'boolean');
-        $this->parent->addValidationRule('birthday', 'required');
+    }
 
+    protected function bindCustomMessages(): void
+    {
         $this->parent->customMessages = array_merge($this->parent->customMessages, [
             'birthday.date' => 'Поле Дата рождения должно быть корректной датой',
             'birthday.required' => 'Поле Дата рождения обязательное для заполнения',
         ]);
 
-        $this->parent->addFillable([
-            'nickname',
-            'birthday',
-            'show_birthday',
-            'country_id',
-            'required_post_register',
-            'favorite_genres',
-            'loved_genres',
-            'unloved_genres',
-            'exclude_genres',
-            'see_adult',
-            'asked_adult_agreement',
-        ]);
-        $this->parent->addCasts([
-            'show_birthday' => 'boolean',
-            'see_adult' => 'boolean',
-            'asked_adult_agreement' => 'boolean',
-            'required_post_register' => 'boolean',
-        ]);
-        $this->parent->addDateAttribute('birthday');
-        $this->parent->addJsonable([
-            'favorite_genres',
-            'exclude_genres',
-            'loved_genres',
-            'unloved_genres',
-        ]);
     }
 
     public function service(): UserService
