@@ -26,7 +26,7 @@ class Comments extends ComponentBase
 
     protected Profile $owner;
 
-    protected int $perPage = 15;
+    protected int $perPage = 16;
 
     protected int $currentPage = 1;
 
@@ -62,7 +62,9 @@ class Comments extends ComponentBase
             $this->page['comments_count'] = $this->queryComments()->count();
             $all = $this->queryComments()->get()->toNested();
             $items = $all->forPage($this->currentPage(), $this->perPage);
-            $this->page['paginator'] = new CustomPaginator($items, $all->count(), $this->perPage, $this->currentPage());
+            $paginator = new CustomPaginator($items, $all->count(), $this->perPage, $this->currentPage());
+            $paginator->setHandler($this->alias.'::onPage')->setScrollToContainer('.comments');
+            $this->page['paginator'] = $paginator;
             $this->page['current_page'] = $this->currentPage();
         }
         $this->page['opened'] = (array) post('opened');
@@ -115,7 +117,7 @@ class Comments extends ComponentBase
         $this->prepareVals();
         $this->currentPage = post('page');
 
-        return $this->render();
+        return $this->renderSpawn();
     }
 
     public function onComment()
@@ -129,7 +131,7 @@ class Comments extends ComponentBase
         }
         $comment = $this->model->addComment($this->user, $payload);
 
-        return $this->render();
+        return $this->renderSpawn();
     }
 
     public function onEdit()
@@ -144,7 +146,7 @@ class Comments extends ComponentBase
         }
         $comment->update(['content' => post('content')]);
 
-        return $this->render();
+        return $this->renderSpawn();
     }
 
     public function onRemove()
@@ -159,7 +161,7 @@ class Comments extends ComponentBase
         }
         $this->model->deleteComment($comment);
 
-        return $this->render();
+        return $this->renderSpawn();
     }
 
     public function validateComment(?Comment $comment): bool
@@ -167,7 +169,7 @@ class Comments extends ComponentBase
         return $comment && ($this->user?->profile->is($this->owner) || $comment->profile?->is($this->user?->profile));
     }
 
-    public function render()
+    public function renderSpawn()
     {
         $this->prepareVals();
 
