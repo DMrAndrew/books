@@ -76,7 +76,7 @@ class ListingService
     public function bindByRater(): void
     {
         $r = new Rater();
-        $r->setDateBetween(match ($this->filter->sort) {
+        $r->setOfLastDays(match ($this->filter->sort) {
             SortEnum::popular_day => 1,
             SortEnum::popular_week => 7,
             SortEnum::popular_month => 30,

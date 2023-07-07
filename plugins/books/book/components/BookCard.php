@@ -49,7 +49,7 @@ class BookCard extends ComponentBase
             fn($lib) => $lib->remove(),
             fn($lib) => $lib->get() && $lib->interested());
 
-        $this->book->rater()->libs()->apply();
+        $this->book->rater()->libs()->run();
 
         return $this->render();
     }
@@ -61,9 +61,8 @@ class BookCard extends ComponentBase
         }
 
         $this->user->toggleFavorite($this->book);
-        $this->book->rater()
-            ->likes()->apply()
-            ->rate()->queue();
+        $this->book->rater()->likes()->run();
+        $this->book->rater()->rate()->queue();
 
         return $this->render();
     }

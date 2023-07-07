@@ -12,6 +12,8 @@ enum CookieEnum: string
     case UNLOVED_GENRES = 'unloved_genres';
     case RECOMMEND = 'recommend';
 
+    case guest = 'guest_user';
+
     public function setForever(string|array|null $value): void
     {
         Cookie::queue(Cookie::forever($this->value, json_encode($value)));
@@ -19,8 +21,11 @@ enum CookieEnum: string
 
     public function get()
     {
+        if(!Cookie::has($this->value)){
+            return null;
+        }
         $c = Cookie::get($this->value);
-        return $c ? json_decode($c) : $c;
+        return $c ? (array)json_decode($c) : $c;
     }
 
     public function forget(): void

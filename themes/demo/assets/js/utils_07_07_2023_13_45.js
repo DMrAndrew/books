@@ -1,17 +1,19 @@
-let openForm = (id = 'auth_popup') => document.getElementById(id).style.display = 'flex'
+// let openForm = (id = 'auth_popup') => document.getElementById(id).style.display = 'flex'
 let closeForm = (id = 'auth_popup') => {
     $('#' + id).hide()
 }
-let closeContainers = () => Array.from(document.getElementsByClassName('auth__container')).forEach(e => e.style.display = 'none')
-let openContainer = (id) => $('#' + id).show()
-let toForm = (id) => {
-    openForm(), closeContainers(), openContainer(id)
-}
-let loginPopup = () => toForm('login_popup');
-let registerPopup = () => toForm('register_popup');
-let loginForm = () => toForm('login_form');
-let registerForm = () => toForm('register_form');
-let orderFormPopup = () => toForm('order_form_popup');
+// let closeContainers = () => Array.from(document.getElementsByClassName('auth__container')).forEach(e => e.style.display = 'none')
+// let openContainer = (id) => $('#' + id).show()
+// let toForm = (id) => {
+//     openForm(), closeContainers(), openContainer(id)
+// }
+
+console.log('13:25 07.07.2023')
+let loginPopup = () => oc.ajax('onGetLoginPopup');
+let registerPopup = () => oc.ajax('onGetRegisterPopup');
+let loginForm = () => oc.ajax('onGetLoginForm');
+let registerForm = () => oc.ajax('onGetRegisterForm');
+// let orderFormPopup = () => toForm('order_form_popup');
 
 let openChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'flex'
 let closeChangerUserNameForm = () => document.getElementById('change_username_form').style.display = 'none'

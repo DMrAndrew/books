@@ -13,8 +13,8 @@ use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
+use Closure;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Query\JoinClause;
 use Kirschbaum\PowerJoins\PowerJoins;
 use Model;
 use October\Rain\Database\Builder;
@@ -357,27 +357,23 @@ class Book extends Model
         return $builder->orderByLeftPowerJoinsCount('editions.sells.id', $asc ? 'asc' : 'desc');
     }
 
-    public function scopeWithCountEditionSells(Builder $builder, ?int $ofLastDays = null): Builder
+    public function scopeWithCountEditionSells(Builder $builder, ?Closure $callback): Builder
     {
-        return $builder->withCount(['sells' => fn($c) => $c->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays))]);
+        return $builder->withCount(['sells' => $callback ?? fn($b) => $b]);
     }
 
-    public function scopeWithReadTime(Builder $builder, ?int $ofLastDays = null, ?int $maxTime = null): Builder
+    public function scopeWithReadTime(Builder $builder, ?Closure $callback = null): Builder
     {
-        return $builder->withSum(['paginationTrackers' =>
-            fn($paginationTrackers) => $paginationTrackers
-                ->when($maxTime, fn($b) => $b->maxTime($maxTime))
-                ->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays))
-        ],
-            'time');
+        return $builder->withSum(['paginationTrackers' => fn($trackers) => $trackers->when($callback, $callback)], 'time');
     }
 
 
-    public function scopeWithReadChaptersTrackersCount(Builder $builder, ?int $ofLastDays = null): Builder
+    public function scopeWithReadChaptersTrackersCount(Builder $builder, ?Closure $callback = null): Builder
     {
-        return $builder->withCount(['chaptersTrackers' => fn($trackers) => $trackers->withoutTodayScope()
+        return $builder->withCount(['chaptersTrackers' => fn($trackers) => $trackers
+            ->withoutTodayScope()
             ->completed()
-            ->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays))]);
+            ->when($callback, $callback)]);
     }
 
     public function scopeWithLastLengthUpdate(Builder $builder): Builder
@@ -554,14 +550,14 @@ class Book extends Model
         return $builder->whereHas('editions', fn($editions) => $editions->whereDate('sales_at', '>=', $date));
     }
 
-    public function scopeLikesCount(Builder $builder, ?int $ofLastDays = null): Builder
+    public function scopeLikesCount(Builder $builder, ?Closure $callback = null): Builder
     {
-        return $builder->withCount(['favorites as likes_count' => fn($f) => $f->when($ofLastDays, fn($favorites) => $favorites->ofLastDays($ofLastDays))]);
+        return $builder->withCount(['favorites as likes_count' => fn($f) => $f->when($callback, $callback)]);
     }
 
-    public function scopeInLibCount(Builder $builder, ?int $ofLastDays = null): Builder
+    public function scopeInLibCount(Builder $builder, ?Closure $callback = null): Builder
     {
-        return $builder->withCount(['libs as in_lib_count' => fn($libs) => $libs->notWatched()->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays))]);
+        return $builder->withCount(['libs as in_lib_count' => fn($libs) => $libs->notWatched()->when($callback, $callback)]);
     }
 
     public function scopeLikeExists(Builder $builder, ?User $user = null): Builder

@@ -34,7 +34,8 @@
         "books/withdrawal-plugin": "*",
         "laracraft-tech/laravel-date-scopes": "^1.1",
         "vdlp/oc-telescope-plugin": "^2.0",
-        "vdlp/oc-horizon-plugin": "*"
+        "vdlp/oc-horizon-plugin": "*",
+        "abordage/laravel-last-modified": "^0.2.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",

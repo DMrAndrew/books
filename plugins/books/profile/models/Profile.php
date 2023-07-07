@@ -348,7 +348,7 @@ class Profile extends Model
     protected function beforeSave()
     {
         if ($this->isDirty('username')) {
-            if ($this->isUsernameExists($this->username)) {
+            if ($this->user->profiles()->username($this->username)->exists()) {
                 throw new ValidationException(['username' => 'Псевдоним уже занят.']);
             }
         }

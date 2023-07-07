@@ -1,0 +1,27 @@
+<div id="auth_popup" class="auth active">
+    <div id="login_popup" class="auth__container _small">
+        <div class="auth__header _desktop">
+            <svg class="square-24 auth__button-back">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+            </svg>
+            <div class="auth__title ui-text--bold">Вход</div>
+            <svg onclick="closeForm()" class="auth__button-close square-24">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+            </svg>
+        </div>
+        <div class="auth__body">
+            <button class="auth-item-sign _indent"
+                    onclick="loginForm()"
+            >
+                <svg class="square-16 _mail">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#mail-filled-16' | theme}}"></use>
+                </svg>
+                <span class="ui-text--medium">Почта</span>
+            </button>
+            {% component 'socialconnect' %}
+            <a class="ui-link _violet cursor-pointer"
+               onclick="registerForm()"
+            >Регистрация</a>
+        </div>
+    </div>
+</div>

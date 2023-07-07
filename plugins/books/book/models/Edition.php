@@ -231,14 +231,6 @@ class Edition extends Model implements ProductInterface
         return $builder->withCount('sells');
     }
 
-    public function editAllowed(): bool
-    {
-        return !$this->isPublished()
-            || $this->isFree()
-            || in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN])
-            || ($this->getOriginal('status') === BookStatus::HIDDEN && !$this->hadCompleted());
-    }
-
     public function isFree(): bool
     {
         return !!!(int)$this->getOriginal('price');
@@ -252,6 +244,14 @@ class Edition extends Model implements ProductInterface
     public function isPublished(): bool
     {
         return (bool)$this->getOriginal('sales_at');
+    }
+
+    public function editAllowed(): bool
+    {
+        return !$this->isPublished()
+            || $this->isFree()
+            || in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN])
+            || ($this->getOriginal('status') === BookStatus::HIDDEN && !$this->hadCompleted());
     }
 
     public function setPublishAt()

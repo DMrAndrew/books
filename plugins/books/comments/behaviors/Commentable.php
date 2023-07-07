@@ -5,6 +5,7 @@ namespace Books\Comments\behaviors;
 use Books\Book\Models\Book;
 use Books\Comments\Models\Comment;
 use Books\Profile\Models\Profile;
+use Closure;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Model;
 use October\Rain\Extension\ExtensionBase;
@@ -47,20 +48,16 @@ class Commentable extends ExtensionBase
         }
     }
 
-    public function scopeCommentsCount(Builder $builder, ?bool $withOutAuthorProfile = false, ?int $ofLastDays = null): Builder
-    {
-        if ($withOutAuthorProfile) {
-            $profile = match (get_class($this->model)) {
-                Book::class => $this->model->profile()->pluck((new Profile())->getQualifiedKeyName()),
-                Profile::class => Profile::query()->whereIn('id', [$this->model->id])->pluck((new Profile())->getQualifiedKeyName()),
-            };
-        }
-        return $builder->withCount(['comments' => function (Builder $comments) use ($withOutAuthorProfile, $profile, $ofLastDays) {
-            return $comments->when($withOutAuthorProfile, function (Builder $c) use ($profile) {
-                return $c->whereDoesntHave('profile', function (Builder $p) use ($profile) {
-                    return $p->whereIn((new Profile())->getQualifiedKeyName(), $profile);
-                });
-            })->when($ofLastDays, fn($b) => $b->ofLastDays($ofLastDays));
-        }]);
-    }
+//    public function scopeWithoutOwner(Builder $builder)
+//    {
+//        $profile = match (get_class($this->model)) {
+//            Book::class => $this->model->profile()->select((new Profile())->getQualifiedKeyName()),
+//            Profile::class => [$this->model->id],
+//            default => null
+//        };
+//
+//        return $builder->when($profile, fn($b) => $b->whereDoesntHave('profile', fn($p) => $p->whereIn((new Profile())->getQualifiedKeyName(), $profile)));
+//
+//    }
+
 }
