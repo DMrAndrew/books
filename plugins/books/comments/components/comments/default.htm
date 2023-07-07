@@ -20,6 +20,7 @@
         <div class="comments__container">
             {% partial '@list' comments=paginator.items() %}
         </div>
+
         {{paginator.render|raw}}
 
     </div>
