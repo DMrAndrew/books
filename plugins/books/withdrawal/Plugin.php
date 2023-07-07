@@ -75,10 +75,24 @@ class Plugin extends PluginBase
         return [
             'withdrawal' => [
                 'label' => 'Вывод средств',
-                'url' => Backend::url('books/withdrawal/withdrawal'),
+                'url' => Backend::url('books/withdrawal/withdrawaldata'),
                 'icon' => 'icon-leaf',
                 'permissions' => ['books.withdrawal.*'],
                 'order' => 500,
+                'sideMenu' => [
+                    'types' => [
+                        'label' => 'Договора',
+                        'icon' => 'icon-leaf',
+                        'url' => Backend::url('books/withdrawal/withdrawaldata'),
+                        'permissions' => ['books.catalog.*'],
+                    ],
+                    'genres' => [
+                        'label' => 'Вывод средств',
+                        'url' => Backend::url('books/withdrawal/withdrawal'),
+                        'icon' => 'icon-leaf',
+                        'permissions' => ['books.withdrawal.*'],
+                    ],
+                ],
             ],
         ];
     }

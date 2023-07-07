@@ -3,16 +3,16 @@
 # ===================================
 
 # Model List Column configuration
-list: $/books/withdrawal/models/withdrawal/columns.yaml
+list: $/books/withdrawal/models/withdrawaldata/columns.yaml
 
 # Model Class name
-modelClass: Books\Withdrawal\Models\Withdrawal
+modelClass: Books\Withdrawal\Models\WithdrawalData
 
 # List Title
-title: Управление Выводом средств
+title: Управление выводом средств
 
 # Link URL for each record
-recordUrl: books/withdrawal/withdrawal/update/:id
+recordUrl: books/withdrawal/withdrawaldata/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records
