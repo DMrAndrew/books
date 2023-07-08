@@ -6,11 +6,13 @@ use App\traits\HasProfileScope;
 use Books\Book\Classes\CodeGenerator;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Prunable;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
+use Str;
 
 /**
  * Promocode Model
@@ -32,6 +34,10 @@ class Promocode extends Model
     use Prunable;
     use HasProfileScope;
 
+    /**
+     * Максимальное количество попыток генерации уникального кода
+     */
+    const MAX_ATTEMPTS = 10;
     const CODE_LENGTH = 8;
 
     /**
@@ -84,21 +90,48 @@ class Promocode extends Model
         parent::boot();
 
         static::creating(function ($promocode) {
-            $promocode->code = static::gen();
+            $promocode->uniqueCodeGenerator();
         });
     }
 
-    public function setCodeAttribute($code): void
+    /**
+     * Генерирует уникальный код для данного объекта.
+     *
+     * Этот метод генерирует уникальный код, вызывая статический метод `gen()`
+     * и проверяет, присутствует ли уже сгенерированный код в базе данных.
+     * Он пытается сгенерировать уникальный код максимум 10 раз.
+     *
+     * @return void
+     * @throws Exception Если уникальный код не может быть сгенерирован после максимального количества попыток.
+     */
+    public function uniqueCodeGenerator(): void
     {
-        while (static::query()->code($code)->exists()) {
+        for ($i = 0; $i < self::MAX_ATTEMPTS; $i++) {
             $code = static::gen();
+            if (!static::query()->code($code)->exists()) {
+                $this->attributes['code'] = $code;
+                return;
+            }
         }
-        $this->attributes['code'] = $code;
+
+        throw new Exception('Не удалось сгенерировать уникальный код после ' . self::MAX_ATTEMPTS . ' попыток');
     }
 
+    /**
+     * Генерирует уникальную строку с использованием текущего времени и случайной строки.
+     * Полученная строка преобразуется в верхний регистр и хэшируется с использованием алгоритма xxh32.
+     *
+     * @return string Сгенерированная уникальная строка.
+     */
     public static function gen(): string
     {
-        return strtoupper(hash('xxh32', Carbon::now()->toISOString()));
+        // Получение текущего времени в формате ISO 8601
+        $timestamp = Carbon::now()->toISOString();
+
+        // Генерация случайной строки
+        $randomString = Str::random(self::CODE_LENGTH);
+
+        return strtoupper(hash('xxh32', $timestamp . $randomString));
     }
 
     public function scopeAlive(Builder $builder)
