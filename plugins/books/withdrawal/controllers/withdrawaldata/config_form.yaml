@@ -6,25 +6,25 @@
 name: Вывод средств
 
 # Model Form Field configuration
-form: $/books/withdrawal/models/withdrawal/fields.yaml
+form: $/books/withdrawal/models/withdrawaldata/fields.yaml
 
 # Model Class name
-modelClass: Books\Withdrawal\Models\Withdrawal
+modelClass: Books\Withdrawal\Models\WithdrawalData
 
 # Default redirect location
-defaultRedirect: books/withdrawal/withdrawal
+defaultRedirect: books/withdrawal/withdrawaldata
 
 # Create page
 create:
     title: backend::lang.form.create_title
-    redirect: books/withdrawal/withdrawal/update/:id
-    redirectClose: books/withdrawal/withdrawal
+    redirect: books/withdrawal/withdrawaldata/update/:id
+    redirectClose: books/withdrawal/withdrawaldata
 
 # Update page
 update:
     title: backend::lang.form.update_title
-    redirect: books/withdrawal/withdrawal
-    redirectClose: books/withdrawal/withdrawal
+    redirect: books/withdrawal/withdrawaldata
+    redirectClose: books/withdrawal/withdrawaldata
 
 # Preview page
 preview:

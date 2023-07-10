@@ -1,0 +1,17 @@
+withdrawals:
+    label: Вывод средств
+    view:
+        list: $/books/withdrawal/models/withdrawal/columns.yaml
+        toolbarButtons: false
+    manage:
+        title: Изменение вывода
+        form: $/books/withdrawal/models/withdrawal/fields.yaml
+
+profiles:
+    label: Профили
+    view:
+        list: $/books/profile/models/profile/columns.yaml
+        toolbarButtons: false
+    manage:
+        title: Обновление профиля
+        form: $/books/profile/models/profile/fields.yaml

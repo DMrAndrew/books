@@ -1,0 +1,29 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    id:
+        label: ID
+        span: left
+        disabled: true
+
+    user:
+        label: Пользователь
+        type: recordfinder
+        span: left
+        list: ~/plugins/rainlab/user/models/user/columns.yaml
+        recordsPerPage: 10
+        title: 'Поиск пользователя'
+        prompt: 'Нажмите на кнопку поиска чтобы найти пользователя'
+        nameFrom: username
+        descriptionFrom: email
+
+    amount:
+        label: Сумма
+        span: left
+
+    date:
+        label: Дата
+        span: left
+        type: datepicker
