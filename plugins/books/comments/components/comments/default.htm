@@ -21,21 +21,8 @@
             {% partial '@list' comments=paginator.items() %}
         </div>
 
-        <nav class="comments__pagination ui-pagination">
-            <ul class="ui-pagination-list">
-                {% for link in paginator.getLinks() %}
-                <li>
-                    <a class="ui-pagination-item cursor-pointer {{ link.active ? 'active' : '' }} "
-                       data-request="{{__SELF__}}::onPage"
-                       data-request-data="page:{{ link.url }}"
-                       data-request-complete=" $('.comments')[0].scrollIntoView() "
-                    >
-                        {{link.label}}
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
-        </nav>
+        {{paginator.render|raw}}
+
     </div>
 </div>
 {% endif %}

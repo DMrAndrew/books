@@ -14,11 +14,14 @@ class EditionService
     {
     }
 
-    public function update(array $payload)
+    /**
+     * @throws ValidationException
+     */
+    public function update(array $payload): void
     {
         $data = collect($payload)->only(['price', 'status', 'free_parts']);
 
-        if ($status = BookStatus::tryFrom($data->get('status')) ?? false) {
+        if ($status = BookStatus::tryFrom($data->get('status') ?? '') ?? false) {
             $data['status'] = $status;
         } else {
             $data->forget('status');
@@ -27,26 +30,25 @@ class EditionService
         $this->edition->fill($data->toArray());
 
         if ($this->edition->isDirty(['status']) && !in_array($this->edition->status, $this->edition->getAllowedStatusCases())) {
-            throw new ValidationException(['status' => 'В данный момент Вы не можете перевести издание в этот статус.']);
+            throw new ValidationException(['status' => 'В данный момент Вы не можете перевести издание в статус `' . $this->edition->status->name . '`']);
         }
-        if ($this->edition->isDirty(['free_parts']) && !$this->edition->editAllowed()) {
-            throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование продаж.']);
+        if ($this->edition->isDirty(['free_parts','price']) && !$this->edition->sellsSettingsEditAllowed()) {
+            throw new ValidationException(['edition' => 'Для книги запрещено редактирование продаж']);
         }
 
         if ($this->edition->price) {
-            $this->edition->addValidationRule('free_parts', 'min:3');
+            $this->edition->addValidationRule('free_parts', 'min:'.config('book.minimal_free_parts'));
             $this->edition->addValidationRule('price', 'min:' . config('book.minimal_price'));
         }
 
-        if (!$this->edition->isPublished()
-            && in_array($data->get('status'), [BookStatus::COMPLETE, BookStatus::WORKING])
-            && ($data->get('sales_free') == 'on' || ($data->has('price') && $data->has('free_parts')))
+        if (!$this->edition->isPublished() && $this->edition->price
+            && in_array($this->edition->status, [BookStatus::COMPLETE, BookStatus::WORKING])
         ) {
             $this->edition->setPublishAt();
         }
 
-        $this->fireEvents($data);
         $this->edition->save();
+        $this->fireEvents($data);
         $this->edition->setFreeParts();
         Event::fire('books.edition.updated', [$this->edition]);
     }
@@ -57,7 +59,7 @@ class EditionService
     public function changeChaptersOrder(array $sequence)
     {
         if (!$this->edition->editAllowed()) {
-            throw new ValidationException(['chapters' => 'В данный момент Вы не можете изменить порядок частей.']);
+            throw new ValidationException(['chapters' => 'Для книги запрещено изменение порядка частей']);
         }
         $this->edition->changeChaptersOrder($sequence);
         Event::fire('books.edition.chapters.order.updated', [$this->edition]);
@@ -88,7 +90,7 @@ class EditionService
         }
 
         // у книги сменился статус и стоимость
-        if ($this->edition->isDirty(['status', 'price'])) {
+        if ($this->edition->isDirty(['status']) && (bool)$this->edition->price) {
             // если перешла в статус "В работе" значит подписка, если "Завершено" значит продажа
             if ($data->get('status') === BookStatus::WORKING) {
                 Event::fire('books.book::book.selling.subs', [$this->edition->book]);

@@ -246,6 +246,11 @@ class Edition extends Model implements ProductInterface
         return (bool)$this->getOriginal('sales_at');
     }
 
+    public function sellsSettingsEditAllowed(): bool
+    {
+        return $this->getOriginal('status') == BookStatus::COMPLETE || $this->editAllowed();
+    }
+
     public function editAllowed(): bool
     {
         return !$this->isPublished()
