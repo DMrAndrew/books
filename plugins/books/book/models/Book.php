@@ -619,7 +619,7 @@ class Book extends Model
     public function refreshAllowedVisits(): int
     {
         $sold_count = $this->editions()->withSellsCount()->pluck('sells_count')->sum();
-        $additional_visits = match ($sold_count) {
+        $additional_visits = match ((int)$sold_count) {
             0 => 0,
             1 => 350,
             50, 100 => 250,

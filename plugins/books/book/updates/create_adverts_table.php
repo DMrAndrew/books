@@ -1,5 +1,6 @@
 <?php namespace Books\Book\Updates;
 
+use Books\Book\Models\Advert;
 use Schema;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
@@ -19,7 +20,7 @@ return new class extends Migration {
             $table->id();
             $table->unsignedTinyInteger('book_id')->index();
             $table->boolean('enabled')->default(false);
-            $table->unsignedInteger('allowed_visit_count')->default(150);
+            $table->unsignedInteger('allowed_visit_count')->default(Advert::DEFAULT_ALLOWED_VISITS_COUNT);
             $table->timestamps();
         });
     }

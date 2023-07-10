@@ -95,7 +95,7 @@ class Promocode extends ComponentBase
              * check promocode limits
              */
             $promoLimiter = new PromocodeGenerationLimiter(profile: $this->user->profile, book: $this->book);
-            if (!$promoLimiter->checkCanGenerate()) {
+            if (!$promoLimiter->canGenerate()) {
                 Flash::error($promoLimiter->getReason());
 
                 return [];

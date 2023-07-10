@@ -46,11 +46,4 @@ class UserBook extends Model
     public $morphTo = [
         'ownable' => []
     ];
-
-    protected function afterCreate()
-    {
-        if ($this->ownable instanceof Edition) {
-            $this->ownable->book->refreshAllowedVisits();
-        }
-    }
 }

@@ -41,7 +41,7 @@ class EditionService
             $this->edition->addValidationRule('price', 'min:' . config('book.minimal_price'));
         }
 
-        if (!$this->edition->isPublished() && $this->edition->price
+        if (!$this->edition->isPublished()
             && in_array($this->edition->status, [BookStatus::COMPLETE, BookStatus::WORKING])
         ) {
             $this->edition->setPublishAt();
