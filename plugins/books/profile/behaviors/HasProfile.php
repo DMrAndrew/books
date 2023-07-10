@@ -2,8 +2,6 @@
 
 namespace Books\Profile\Behaviors;
 
-use Books\Withdrawal\Models\Withdrawal;
-use Books\Withdrawal\Models\WithdrawalData;
 use RainLab\User\Models\User;
 use Books\Profile\Models\Profile;
 use October\Rain\Extension\ExtensionBase;
@@ -15,8 +13,6 @@ class HasProfile extends ExtensionBase
         $this->user->addFillable(['current_profile_id']);
         $this->user->hasMany['profiles'] = [Profile::class, 'key' => 'user_id', 'otherKey' => 'id'];
         $this->user->hasOne['profile'] = [Profile::class, 'key' => 'id', 'otherKey' => 'current_profile_id'];
-        $this->user->hasOne['withdrawalData'] = [WithdrawalData::class, 'key' => 'user_id'];
-        $this->user->hasMany['withdrawals'] = [Withdrawal::class, 'key' => 'user_id'];
     }
 
     public function getProfilesAsOptionsAttribute()
