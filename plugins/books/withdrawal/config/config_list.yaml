@@ -18,7 +18,7 @@ recordUrl: books/withdrawal/withdrawal/update/:id
 noRecordsMessage: backend::lang.list.no_records
 
 # Records to display per page
-recordsPerPage: 20
+recordsPerPage: 2
 
 # Display page numbers with pagination, disable to improve performance
 showPageNumbers: true
