@@ -98,8 +98,7 @@ class AdvertLC extends ComponentBase
             'book' => $this->book,
             'books' => $this->user->profile->books()->get(),
             'sold_count' => $this->book?->ebook->getSoldCountAttribute(),
-            'days_on_sale' => $this->book?->ebook->sells()->latest()
-                ->first()?->created_at
+            'days_on_sale' => $this->book?->ebook->sells()->orderBy('created_at')->first()?->created_at
                 ->diffInDays(Carbon::now()) ?? '-',
             'visited_by_advert' => $this->book?->advert->visits->count(),
             'visits_table' => $visit_table,
