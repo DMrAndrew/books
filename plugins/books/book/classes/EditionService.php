@@ -73,7 +73,7 @@ class EditionService
     {
         // книга была в статусе "Скрыта" перешла в "В работе" или "Завершена"
         if (
-            $this->edition->isDirty(['status']) &&
+            $this->edition->wasChanged(['status']) &&
             $this->edition->getOriginal('status') === BookStatus::HIDDEN &&
             in_array($data->get('status'), [BookStatus::COMPLETE, BookStatus::WORKING], true)
         ) {
@@ -82,7 +82,7 @@ class EditionService
 
         // у электронной книги статус "В работе" перешел в "Завершена"
         if (
-            $this->edition->isDirty(['status']) &&
+            $this->edition->wasChanged(['status']) &&
             $this->edition->getOriginal('status') === BookStatus::WORKING &&
             $data->get('status') === BookStatus::COMPLETE
         ) {
@@ -90,7 +90,7 @@ class EditionService
         }
 
         // у книги сменился статус и стоимость
-        if ($this->edition->isDirty(['status']) && (bool)$this->edition->price) {
+        if ($this->edition->wasChanged(['status']) && (bool)$this->edition->price) {
             // если перешла в статус "В работе" значит подписка, если "Завершено" значит продажа
             if ($data->get('status') === BookStatus::WORKING) {
                 Event::fire('books.book::book.selling.subs', [$this->edition->book]);
