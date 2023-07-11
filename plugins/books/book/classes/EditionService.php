@@ -7,6 +7,7 @@ use Books\Book\Models\Edition;
 use Event;
 use Illuminate\Support\Collection;
 use ValidationException;
+use Validator;
 
 class EditionService
 {
@@ -32,12 +33,12 @@ class EditionService
         if ($this->edition->isDirty(['status']) && !in_array($this->edition->status, $this->edition->getAllowedStatusCases())) {
             throw new ValidationException(['status' => 'В данный момент Вы не можете перевести издание в статус `' . $this->edition->status->name . '`']);
         }
-        if ($this->edition->isDirty(['free_parts','price']) && !$this->edition->sellsSettingsEditAllowed()) {
+        if ($this->edition->isDirty(['free_parts', 'price']) && !$this->edition->sellsSettingsEditAllowed()) {
             throw new ValidationException(['edition' => 'Для книги запрещено редактирование продаж']);
         }
 
         if ($this->edition->price) {
-            $this->edition->addValidationRule('free_parts', 'min:'.config('book.minimal_free_parts'));
+            $this->edition->addValidationRule('free_parts', 'min:' . config('book.minimal_free_parts'));
             $this->edition->addValidationRule('price', 'min:' . config('book.minimal_price'));
         }
 
@@ -47,8 +48,16 @@ class EditionService
             $this->edition->setPublishAt();
         }
 
-        $this->edition->save();
+        $v = Validator::make(
+            $this->edition->toArray(),
+            $this->edition->rules);
+
+        if ($v->fails()) {
+            throw new ValidationException($v);
+        }
+
         $this->fireEvents($data);
+        $this->edition->save();
         $this->edition->setFreeParts();
         Event::fire('books.edition.updated', [$this->edition]);
     }
@@ -71,31 +80,36 @@ class EditionService
      */
     private function fireEvents(Collection $data): void
     {
+
         // книга была в статусе "Скрыта" перешла в "В работе" или "Завершена"
         if (
-            $this->edition->wasChanged(['status']) &&
+            $this->edition->isDirty(['status']) &&
             $this->edition->getOriginal('status') === BookStatus::HIDDEN &&
-            in_array($data->get('status'), [BookStatus::COMPLETE, BookStatus::WORKING], true)
+            in_array($data->get('status'), [BookStatus::COMPLETE, BookStatus::WORKING], true) &&
+            !$this->edition->hasRevisionStatus(BookStatus::COMPLETE, BookStatus::WORKING)
         ) {
             Event::fire('books.book::book.created', [$this->edition->book]);
         }
 
         // у электронной книги статус "В работе" перешел в "Завершена"
         if (
-            $this->edition->wasChanged(['status']) &&
+            $this->edition->isDirty(['status']) &&
             $this->edition->getOriginal('status') === BookStatus::WORKING &&
-            $data->get('status') === BookStatus::COMPLETE
+            $data->get('status') === BookStatus::COMPLETE &&
+            !$this->edition->hadCompleted()
         ) {
             Event::fire('books.book::book.completed', [$this->edition->book]);
         }
 
-        // у книги сменился статус и стоимость
-        if ($this->edition->wasChanged(['status']) && (bool)$this->edition->price) {
-            // если перешла в статус "В работе" значит подписка, если "Завершено" значит продажа
-            if ($data->get('status') === BookStatus::WORKING) {
-                Event::fire('books.book::book.selling.subs', [$this->edition->book]);
-            } elseif ($data->get('status') === BookStatus::COMPLETE) {
-                Event::fire('books.book::book.selling.full', [$this->edition->book]);
+        // у платной книги сменился статус
+        if ($this->edition->isDirty(['status']) && !!$this->edition->price) {
+            $event = match ($this->edition->status) {
+                BookStatus::WORKING => 'books.book::book.selling.subs', // "В работе" - подписка
+                BookStatus::COMPLETE => 'books.book::book.selling.full', // "Завершено" - продажа
+                default => null
+            };
+            if ($event) {
+                Event::fire($event, [$this->edition->book]);
             }
         }
     }
