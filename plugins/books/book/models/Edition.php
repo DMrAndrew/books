@@ -73,6 +73,7 @@ class Edition extends Model implements ProductInterface
         'price',
         'book_id',
         'length',
+        'sales_at'
     ];
 
     protected $casts = [
