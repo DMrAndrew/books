@@ -41,6 +41,7 @@ use System\Models\Revision;
  * * @property  BookStatus status
  * * @property  EditionsEnums type
  * * @property  bool download_allowed
+ * * @property  int price
  */
 class Edition extends Model implements ProductInterface
 {
@@ -60,6 +61,7 @@ class Edition extends Model implements ProductInterface
     public $revisionableLimit = 10000;
 
     public bool $forceRevision = false;
+
 
     public string $trackerChildRelation = 'chapters';
 
@@ -239,7 +241,11 @@ class Edition extends Model implements ProductInterface
 
     public function hadCompleted()
     {
-        return $this->revision_history()->where(['field' => 'status', 'old_value' => BookStatus::COMPLETE->value])->exists();
+        return $this->hasRevisionStatus(BookStatus::COMPLETE);
+    }
+
+    public function hasRevisionStatus(BookStatus ... $status){
+        return $this->revision_history()->where('field','status')->whereIn('old_value', array_pluck($status,'value'))->exists();
     }
 
     public function isPublished(): bool
