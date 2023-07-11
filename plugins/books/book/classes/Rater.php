@@ -131,16 +131,7 @@ class Rater
     {
         $this->performClosures();
 
-        foreach ($this->result->map->stats->map->toArray() as $statArray) {
-
-            $values = ['id' => $statArray['id']];
-            unset($statArray['id']);
-            unset($statArray['history']);
-
-            Stats::upsert($values, $statArray);
-
-        }
-
+        $this->result->map->stats->each->save();
         $this->closures = [];
 
         return $this;
