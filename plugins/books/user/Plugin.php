@@ -4,6 +4,7 @@ namespace Books\User;
 
 use Books\Reposts\behaviors\CanShare;
 use Books\User\Behaviors\BookUser;
+use Books\User\Behaviors\CanWithdraw;
 use Books\User\Behaviors\CountryTranslate;
 use Books\User\Classes\CookieEnum;
 use Books\User\Classes\SearchManager;
@@ -109,6 +110,7 @@ class Plugin extends PluginBase
             $model->implementClassWith(LocationModel::class);
             $model->implementClassWith(CanShare::class);
             $model->implementClassWith(WalletBehavior::class);
+            $model->implementClassWith(CanWithdraw::class);
         });
     }
 
