@@ -152,10 +152,6 @@ class Plugin extends PluginBase
                 ]);
             });
 
-            /*
-             * check numeric
-             * check required
-             */
             /** Откорректировать баланс */
             $controller->addDynamicMethod('onCorrectionBalance', function () use ($controller) {
                 try {
@@ -167,7 +163,6 @@ class Plugin extends PluginBase
                     $user = User::findOrFail($userId);
                     $currentBalanceAmount = $user->proxyWallet()->balance;
 
-                    // check value
                     if (!is_numeric($targetBalance)) {
                         throw new Exception('Баланс должен быть числом');
                     }
