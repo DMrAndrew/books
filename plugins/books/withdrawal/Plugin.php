@@ -6,6 +6,7 @@ use Books\Withdrawal\Classes\Services\AgreementService;
 use Books\Withdrawal\Components\WithdrawalForm;
 use Books\Withdrawal\Components\WithdrawalList;
 use Books\Withdrawal\Models\Withdrawal as WithdrawalModel;
+use Event;
 use Exception;
 use Flash;
 use Input;
@@ -21,7 +22,11 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User', 'Books.Profile'];
+    public $require = [
+        'RainLab.User',
+        'Books.Profile',
+        'Books.Orders'
+    ];
 
     /**
      * pluginDetails about this plugin.
@@ -49,6 +54,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
+        $this->extendOrdersController();
         $this->extendUserPluginBackendForms();
     }
 
@@ -81,6 +87,8 @@ class Plugin extends PluginBase
      */
     public function registerNavigation(): array
     {
+        return [];
+
         return [
             'withdrawal' => [
                 'label' => 'Вывод средств',
@@ -104,6 +112,32 @@ class Plugin extends PluginBase
                 ],
             ],
         ];
+    }
+
+    /**
+     * @return void
+     */
+    public function extendOrdersController(): void
+    {
+        /**
+         * Навигация
+         */
+        Event::listen('backend.menu.extendItems', function ($manager) {
+            $manager->addSideMenuItems('Books.Orders', 'orders', [
+                'types' => [
+                    'label' => 'Договора',
+                    'icon' => 'icon-leaf',
+                    'url' => Backend::url('books/withdrawal/withdrawaldata'),
+                    'permissions' => ['books.catalog.*'],
+                ],
+                'genres' => [
+                    'label' => 'Вывод средств',
+                    'url' => Backend::url('books/withdrawal/withdrawal'),
+                    'icon' => 'icon-leaf',
+                    'permissions' => ['books.withdrawal.*'],
+                ],
+            ]);
+        });
     }
 
     /**

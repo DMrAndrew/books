@@ -89,12 +89,10 @@ class Plugin extends PluginBase
      */
     public function registerPermissions()
     {
-        return []; // Remove this line to activate
-
         return [
-            'books.orders.some_permission' => [
+            'books.orders.orders' => [
                 'tab' => 'Orders',
-                'label' => 'Some permission'
+                'label' => 'Orders permission'
             ],
         ];
     }
@@ -106,15 +104,19 @@ class Plugin extends PluginBase
      */
     public function registerNavigation()
     {
-        return []; // Remove this line to activate
-
         return [
             'orders' => [
-                'label' => 'Orders',
-                'url' => Backend::url('books/orders/mycontroller'),
+                'label' => 'Продажи',
                 'icon' => 'icon-leaf',
-                'permissions' => ['books.orders.*'],
                 'order' => 500,
+                'sideMenu' => [
+                    'orders' => [
+                        'label' => 'Заказы',
+                        'icon' => 'icon-leaf',
+                        'url' => Backend::url('books/orders/orders'),
+                        'permissions' => ['books.orders.*'],
+                    ],
+                ],
             ],
         ];
     }

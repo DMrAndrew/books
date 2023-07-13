@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Order
+
+# Model Form Field configuration
+form: $/books/orders/models/order/fields.yaml
+
+# Model Class name
+modelClass: Books\Orders\Models\Order
+
+# Default redirect location
+defaultRedirect: books/orders/orders
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: books/orders/orders/update/:id
+    redirectClose: books/orders/orders
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/orders/orders
+    redirectClose: books/orders/orders
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title

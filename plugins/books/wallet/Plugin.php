@@ -6,6 +6,7 @@ namespace Books\Wallet;
 
 use Backend;
 use Bavix\Wallet\WalletServiceProvider;
+use Event;
 use Illuminate\Database\ConnectionResolverInterface;
 use System\Classes\PluginBase;
 
@@ -47,6 +48,49 @@ class Plugin extends PluginBase
      */
     public function boot(): void
     {
+        $this->extendOrdersController();
+    }
 
+    /**
+     * registerPermissions used by the backend.
+     */
+    public function registerPermissions()
+    {
+        return [
+            'books.wallet.wallet' => [
+                'tab' => 'Wallet',
+                'label' => 'Wallet permission'
+            ],
+            'books.wallet.transaction' => [
+                'tab' => 'Wallet',
+                'label' => 'Transaction permission'
+            ],
+        ];
+    }
+
+    /**
+     * @return void
+     */
+    public function extendOrdersController(): void
+    {
+        /**
+         * Навигация
+         */
+        Event::listen('backend.menu.extendItems', function ($manager) {
+            $manager->addSideMenuItems('Books.Orders', 'orders', [
+                'wallets' => [
+                    'label' => 'Кошельки',
+                    'icon' => 'icon-leaf',
+                    'url' => Backend::url('books/wallet/wallet'),
+                    'permissions' => ['books.wallet.wallet'],
+                ],
+                'transactions' => [
+                    'label' => 'Транзакции',
+                    'icon' => 'icon-leaf',
+                    'url' => Backend::url('books/wallet/transaction'),
+                    'permissions' => ['books.wallet.transaction'],
+                ],
+            ]);
+        });
     }
 }
