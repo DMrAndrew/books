@@ -89,6 +89,7 @@ class Plugin extends PluginBase
     {
         return [];
 
+        /** @deprecated текущий вариант через расширение Orders - не утвержденный */
         return [
             'withdrawal' => [
                 'label' => 'Вывод средств',
@@ -169,12 +170,13 @@ class Plugin extends PluginBase
             if (!$model instanceof User) {
                 return;
             }
+            /** Вывод средств */
             $form->addTabFields([
                 'balance' => [
                     'type'   => 'partial',
                     'label'   => 'Баланс',
                     'path' => '$/books/withdrawal/controllers/withdrawal/_balance.php',
-                    'tab' => 'Вывод средств'
+                    'tab' => 'Вывод средств',
                 ],
                 'createWithdraw' => [
                     'type'   => 'partial',

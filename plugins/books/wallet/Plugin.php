@@ -8,6 +8,8 @@ use Backend;
 use Bavix\Wallet\WalletServiceProvider;
 use Event;
 use Illuminate\Database\ConnectionResolverInterface;
+use RainLab\User\Controllers\Users as UsersController;
+use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
 /**
@@ -49,6 +51,7 @@ class Plugin extends PluginBase
     public function boot(): void
     {
         $this->extendOrdersController();
+        $this->extendUserPluginBackendForms();
     }
 
     /**
@@ -91,6 +94,44 @@ class Plugin extends PluginBase
                     'permissions' => ['books.wallet.transaction'],
                 ],
             ]);
+        });
+    }
+
+    private function extendUserPluginBackendForms()
+    {
+        UsersController::extendFormFields(function ($form, $model, $context) {
+            if (!$model instanceof User) {
+                return;
+            }
+
+            /** Кошелек */
+            $form->addTabFields([
+                'wallet' => [
+                    'type'   => 'partial',
+                    'label'   => 'Баланс',
+                    'path' => '$/books/wallet/controllers/wallet/_balance.php',
+                    'tab' => 'Кошелек',
+                    'order' => 1100,
+                ],
+//                'createBalanceCorrection' => [
+//                    'type'   => 'partial',
+//                    'label'   => '', //кнопка Корректировка баланса
+//                    'path' => '$/books/withdrawal/views/_add_withdraw_button.htm',
+//                    'tab' => 'Кошелек',
+//                    'order' => 1200,
+//                ],
+                'transactions' => [
+                    'type'   => 'partial',
+                    'label'   => 'Список транзакций',
+                    'path' => '$/books/wallet/views/_transactions_list.htm',
+                    'tab' => 'Кошелек',
+                    'order' => 1300,
+                ],
+            ]);
+        });
+        UsersController::extend(function (UsersController $controller) {
+            $controller->relationConfig = '$/books/wallet/config/config_relation.yaml';
+            $controller->implementClassWith(Backend\Behaviors\RelationController::class);
         });
     }
 }
