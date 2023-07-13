@@ -20,6 +20,7 @@ use ValidationException;
 class Advert extends Model
 {
     use Validation;
+    const DEFAULT_ALLOWED_VISITS_COUNT = 150;
 
     /**
      * @var string table name

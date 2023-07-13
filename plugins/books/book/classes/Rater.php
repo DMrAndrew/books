@@ -5,11 +5,17 @@ namespace Books\Book\Classes;
 use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Jobs\RaterExec;
 use Books\Book\Models\Book;
+use Books\Book\Models\Stats;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Traits\Conditionable;
-use NotFoundException;
 use October\Rain\Database\Collection;
 
+/**
+ * Класс Rater предназначен для рейтинговой системы книг.
+ *
+ * @uses Conditionable
+ */
 class Rater
 {
     use Conditionable;
@@ -19,19 +25,19 @@ class Rater
     protected array $closures = [];
     protected ?Builder $builder = null;
 
+    /**
+     * Создает новый экземпляр класса Rater.
+     *
+     * @param Book|null $book Объект книги.
+     * @param int|null $ofLastDays Длительность в днях.
+     * @param bool $withDump Флаг для определения, включать ли дамп.
+     */
     public function __construct(protected ?Book $book = null,
                                 protected ?int  $ofLastDays = null,
                                 protected bool  $withDump = false)
     {
         $this->setBuilder(Book::query());
     }
-
-    public function __destruct()
-    {
-        $this->result = $this->builder = $this->book = null;
-        $this->closures = [];
-    }
-
 
     /**
      * @param int|null $ofLastDays
@@ -119,10 +125,12 @@ class Rater
         return $this->builder;
     }
 
-    public
-    function run(): static
+    /**
+     */
+    public function run(): static
     {
         $this->performClosures();
+
         $this->result->map->stats->each->save();
         $this->closures = [];
 
@@ -132,17 +140,16 @@ class Rater
     public
     function queue(): static
     {
-        if (!$this->canPerform()) {
-            return $this;
+        if ($this->canPerform()) {
+            RaterExec::dispatch($this->toArray());
         }
-        RaterExec::dispatch($this->toArray());
         return $this;
     }
 
     public function toArray(): array
     {
         return [
-            'ids' => $this->builder->select('id')->get()->pluck('id')->toArray(),
+            'ids' => $this->builder?->select('id')->get()->pluck('id')->toArray() ?? [],
             'closures' => array_keys($this->closures),
             'withDump' => $this->withDump,
             'ofLastDays' => $this->ofLastDays,
@@ -226,14 +233,14 @@ class Rater
     }
 
     /**
-     * @throws NotFoundException
+     * @throws Exception
      */
     public function __call(string $name, array $arguments)
     {
         if (in_array($name, StatsEnum::toArray())) {
             return $this->applyStats(StatsEnum::tryFrom($name), ...$arguments);
         } else {
-            throw new \Exception(__CLASS__.' нет такого метода ('.$name.')');
+            throw new Exception(__CLASS__ . ' нет такого метода (' . $name . ')');
         }
     }
 

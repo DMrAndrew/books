@@ -11,6 +11,11 @@ use October\Rain\Database\Traits\Validation;
  * SellStatistics Model
  *
  * @link https://docs.octobercms.com/3.x/extend/system/models.html
+ *
+ * @method \October\Rain\Database\Relations\BelongsTo profile
+ * @method \October\Rain\Database\Relations\BelongsTo edition
+ * @property Edition edition
+ * @property Profile profile
  */
 class SellStatistics extends Model
 {
@@ -77,4 +82,10 @@ class SellStatistics extends Model
         'profile' => [Profile::class],
         'edition' => [Edition::class, 'key' => 'edition_id'],
     ];
+
+    protected function afterCreate()
+    {
+        $this->edition?->book?->refreshAllowedVisits();
+    }
+
 }

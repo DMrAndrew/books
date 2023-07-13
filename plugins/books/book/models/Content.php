@@ -9,6 +9,8 @@ use Books\Book\Classes\Enums\ContentTypeEnum;
  * Content Model
  *
  * @link https://docs.octobercms.com/3.x/extend/system/models.html
+ *
+ * @property string $body
  */
 class Content extends Model
 {
