@@ -7,9 +7,13 @@ namespace Books\Wallet;
 use Backend;
 use Bavix\Wallet\WalletServiceProvider;
 use Event;
+use Exception;
+use Flash;
 use Illuminate\Database\ConnectionResolverInterface;
+use Input;
 use RainLab\User\Controllers\Users as UsersController;
 use RainLab\User\Models\User;
+use Redirect;
 use System\Classes\PluginBase;
 
 /**
@@ -111,27 +115,88 @@ class Plugin extends PluginBase
                     'label'   => 'Баланс',
                     'path' => '$/books/wallet/controllers/wallet/_balance.php',
                     'tab' => 'Кошелек',
-                    'order' => 1100,
+                    'order' => 1400,
                 ],
-//                'createBalanceCorrection' => [
-//                    'type'   => 'partial',
-//                    'label'   => '', //кнопка Корректировка баланса
-//                    'path' => '$/books/withdrawal/views/_add_withdraw_button.htm',
-//                    'tab' => 'Кошелек',
-//                    'order' => 1200,
-//                ],
+                'createBalanceCorrection' => [
+                    'type'   => 'partial',
+                    'label'   => '', //кнопка Корректировка баланса
+                    'path' => '$/books/wallet/views/_add_balance_correction_button.htm',
+                    'tab' => 'Кошелек',
+                    'order' => 1500,
+                ],
                 'transactions' => [
                     'type'   => 'partial',
                     'label'   => 'Список транзакций',
                     'path' => '$/books/wallet/views/_transactions_list.htm',
                     'tab' => 'Кошелек',
-                    'order' => 1300,
+                    'order' => 1600,
                 ],
             ]);
         });
         UsersController::extend(function (UsersController $controller) {
             $controller->relationConfig = '$/books/wallet/config/config_relation.yaml';
             $controller->implementClassWith(Backend\Behaviors\RelationController::class);
+
+            /** Отобразить форму корректировки баланса */
+            $controller->addDynamicMethod('onDisplayBalanceCorrectionForm', function () use ($controller) {
+
+                $input = Input::all();
+                $userId = (int) $input['userId'];
+
+                $user = User::findOrFail($userId);
+                $currentBalanceAmount = $user->proxyWallet()->balance;
+
+                return $controller->makePartial('$/books/wallet/views/_add_balance_correction_form.php', [
+                    'userId'    => $userId,
+                    'currentBalanceAmount'   => $currentBalanceAmount,
+                ]);
+            });
+
+            /*
+             * check numeric
+             * check required
+             */
+            /** Откорректировать баланс */
+            $controller->addDynamicMethod('onCorrectionBalance', function () use ($controller) {
+                try {
+                    $input = Input::all();
+                    $userId = (int) $input['userId'];
+                    $targetBalance = (int) $input['targetBalance'];
+                    $description = substr(trim((string)$input['balance_correction_description']), 0, 1000);
+
+                    $user = User::findOrFail($userId);
+                    $currentBalanceAmount = $user->proxyWallet()->balance;
+
+                    // check value
+                    if (!is_numeric($targetBalance)) {
+                        throw new Exception('Баланс должен быть числом');
+                    }
+
+                    if ($targetBalance < 0) {
+                        throw new Exception('Баланс не может быть отрицательным');
+                    }
+
+                    // calculate diff
+                    $diffAmount = $targetBalance - $currentBalanceAmount;
+                    $transactionMetaData = mb_strlen($description) > 0
+                        ? ['description' => $description]
+                        : [];
+
+                    if ($diffAmount > 0) {
+                        $user->proxyWallet()->deposit(abs($diffAmount), $transactionMetaData);
+                    } elseif ($diffAmount < 0) {
+                        $user->proxyWallet()->withdraw(abs($diffAmount), $transactionMetaData);
+                    }
+
+                    Flash::success("Выполнена корректировка на сумму {$diffAmount} рублей");
+
+                } catch (Exception $ex) {
+                    Flash::error($ex->getMessage());
+                    return [];
+                }
+
+                return $controller->listRefresh();
+            });
         });
     }
 }

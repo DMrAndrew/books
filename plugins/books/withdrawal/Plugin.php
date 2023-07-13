@@ -177,18 +177,21 @@ class Plugin extends PluginBase
                     'label'   => 'Баланс',
                     'path' => '$/books/withdrawal/controllers/withdrawal/_balance.php',
                     'tab' => 'Вывод средств',
+                    'order' => 1100,
                 ],
                 'createWithdraw' => [
                     'type'   => 'partial',
                     'label'   => '', //кнопка Вывести средства
                     'path' => '$/books/withdrawal/views/_add_withdraw_button.htm',
-                    'tab' => 'Вывод средств'
+                    'tab' => 'Вывод средств',
+                    'order' => 1200,
                 ],
                 'withdrawals' => [
                     'type'   => 'partial',
                     'label'   => 'История выводов средств',
                     'path' => '$/books/withdrawal/views/_withdrawals_list.htm',
-                    'tab' => 'Вывод средств'
+                    'tab' => 'Вывод средств',
+                    'order' => 1300,
                 ],
             ]);
         });
