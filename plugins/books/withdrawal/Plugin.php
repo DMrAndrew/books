@@ -1,11 +1,13 @@
 <?php namespace Books\Withdrawal;
 
 use Backend;
+use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceContract;
 use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
 use Books\Withdrawal\Classes\Services\AgreementService;
 use Books\Withdrawal\Components\WithdrawalForm;
 use Books\Withdrawal\Components\WithdrawalList;
 use Books\Withdrawal\Models\Withdrawal as WithdrawalModel;
+use Event;
 use Exception;
 use Flash;
 use Input;
@@ -21,7 +23,11 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User', 'Books.Profile'];
+    public $require = [
+        'RainLab.User',
+        'Books.Profile',
+        'Books.Orders'
+    ];
 
     /**
      * pluginDetails about this plugin.
@@ -49,6 +55,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
+        $this->extendOrdersController();
         $this->extendUserPluginBackendForms();
     }
 
@@ -71,7 +78,7 @@ class Plugin extends PluginBase
         return [
             'books.withdrawal.withdrawal' => [
                 'tab' => 'withdrawal',
-                'label' => 'Withdrawal permission'
+                'label' => 'Управление выводом средств'
             ],
         ];
     }
@@ -81,6 +88,9 @@ class Plugin extends PluginBase
      */
     public function registerNavigation(): array
     {
+        return [];
+
+        /** @deprecated текущий вариант через расширение Orders - не утвержденный */
         return [
             'withdrawal' => [
                 'label' => 'Вывод средств',
@@ -104,6 +114,32 @@ class Plugin extends PluginBase
                 ],
             ],
         ];
+    }
+
+    /**
+     * @return void
+     */
+    public function extendOrdersController(): void
+    {
+        /**
+         * Навигация
+         */
+        Event::listen('backend.menu.extendItems', function ($manager) {
+            $manager->addSideMenuItems('Books.Orders', 'orders', [
+                'types' => [
+                    'label' => 'Договора',
+                    'icon' => 'icon-leaf',
+                    'url' => Backend::url('books/withdrawal/withdrawaldata'),
+                    'permissions' => ['books.catalog.*'],
+                ],
+                'genres' => [
+                    'label' => 'Вывод средств',
+                    'url' => Backend::url('books/withdrawal/withdrawal'),
+                    'icon' => 'icon-leaf',
+                    'permissions' => ['books.withdrawal.*'],
+                ],
+            ]);
+        });
     }
 
     /**
@@ -135,24 +171,28 @@ class Plugin extends PluginBase
             if (!$model instanceof User) {
                 return;
             }
+            /** Вывод средств */
             $form->addTabFields([
                 'balance' => [
                     'type'   => 'partial',
                     'label'   => 'Баланс',
                     'path' => '$/books/withdrawal/controllers/withdrawal/_balance.php',
-                    'tab' => 'Вывод средств'
+                    'tab' => 'Вывод средств',
+                    'order' => 1100,
                 ],
                 'createWithdraw' => [
                     'type'   => 'partial',
                     'label'   => '', //кнопка Вывести средства
                     'path' => '$/books/withdrawal/views/_add_withdraw_button.htm',
-                    'tab' => 'Вывод средств'
+                    'tab' => 'Вывод средств',
+                    'order' => 1200,
                 ],
                 'withdrawals' => [
                     'type'   => 'partial',
                     'label'   => 'История выводов средств',
                     'path' => '$/books/withdrawal/views/_withdrawals_list.htm',
-                    'tab' => 'Вывод средств'
+                    'tab' => 'Вывод средств',
+                    'order' => 1300,
                 ],
             ]);
         });
@@ -193,6 +233,9 @@ class Plugin extends PluginBase
                         ]);
 
                         $user->proxyWallet()->withdraw($balanceAmount);
+
+                        $operationHistoryService = app(OperationHistoryServiceContract::class);
+                        $operationHistoryService->addWithdrawal($user, $balanceAmount);
 
                     } catch (Exception $ex) {
                         Flash::error($ex->getMessage());

@@ -1,0 +1,23 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+
+    wallet:
+        label: ID
+        valueFrom: wallet[id]
+        searchable: false
+        sortable: false
+
+    email:
+        label: Email
+        valueFrom: email
+        searchable: true
+
+    balance:
+        label: Баланс
+        valueFrom: wallet[balance]
+        searchable: true
+
+

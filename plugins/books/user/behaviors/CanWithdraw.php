@@ -2,6 +2,7 @@
 
 namespace Books\User\Behaviors;
 
+use Books\Wallet\Models\Transaction;
 use Books\Withdrawal\Models\Withdrawal;
 use Books\Withdrawal\Models\WithdrawalData;
 use RainLab\User\Models\User;
@@ -13,5 +14,6 @@ class CanWithdraw extends ExtensionBase
     {
         $this->user->hasOne['withdrawalData'] = [WithdrawalData::class, 'key' => 'user_id'];
         $this->user->hasMany['withdrawals'] = [Withdrawal::class, 'key' => 'user_id'];
+        $this->user->hasMany['transactions'] = [Transaction::class, 'key' => 'payable_id'];
     }
 }
