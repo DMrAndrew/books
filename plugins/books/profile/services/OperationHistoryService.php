@@ -73,13 +73,39 @@ class OperationHistoryService implements OperationHistoryServiceContract
     public function addWithdrawal(User $user, int $withdrawAmount): void
     {
         $params = [
-            'withdraw_amount' => 5000,
+            'withdraw_amount' => $withdrawAmount,
         ];
 
         OperationHistory::create([
             'user_id' => $user->id,
             'type' => OperationType::Withdraw,
             'message' => $this->prepareBody(OperationType::Withdraw, $params),
+        ]);
+    }
+
+    /**
+     * @param User $user
+     * @param int $correctionAmount
+     *
+     * @return void
+     * @throws ApplicationException
+     */
+    public function addBalanceCorrection(User $user, int $correctionAmount): void
+    {
+        if ($correctionAmount == 0) {
+            return;
+        }
+
+        $correctionSign = $correctionAmount > 0 ? '+' : '-';
+
+        $params = [
+            'correction_amount' => $correctionSign . abs($correctionAmount),
+        ];
+
+        OperationHistory::create([
+            'user_id' => $user->id,
+            'type' => OperationType::BalanceCorrection,
+            'message' => $this->prepareBody(OperationType::BalanceCorrection, $params),
         ]);
     }
 

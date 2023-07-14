@@ -16,9 +16,6 @@ interface OperationHistoryService
     /** Получение сертификата анонимно */
     public function addReceivingCertificateAnonymous(Order $order): void;
 
-    /** Вывод средств */
-    public function addWithdrawal(User $user, int $withdrawAmount): void;
-
     /** Покупка книги (оплата) */
     public function addReceivingPurchase(Order $order, OrderProduct $orderProduct): void;
 
@@ -36,4 +33,10 @@ interface OperationHistoryService
 
     /** Покупка награды (оплата) */
     public function addMakingAuthorReward(Order $order, AwardBook $awardBook): void;
+
+    /** Вывод средств */
+    public function addWithdrawal(User $user, int $withdrawAmount): void;
+
+    /** Корректировка баланса */
+    public function addBalanceCorrection(User $user, int $correctionAmount): void;
 }
