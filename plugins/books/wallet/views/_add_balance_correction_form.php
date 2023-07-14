@@ -13,7 +13,7 @@
                 Текущий баланс: <b><?= $currentBalanceAmount ?></b> руб
             </div>
 
-            <div class="form-group span-left">
+            <div class="form-group span-full">
                 <label for="Form-field-User-password" class="form-label">
                     Баланс после корректировки:
                 </label>
@@ -22,8 +22,12 @@
                 <p class="form-text">Введите необходимое значение баланса</p>
             </div>
 
-            <div class="col-12">
-                <textarea name="balance_correction_description" id="balance_correction_description" rows="10" style="width: 100%" maxlength="1000"></textarea>
+            <div class="form-group span-full">
+                <label for="Form-field-User-password" class="form-label">
+                    Дополнительная информация
+                </label>
+                <textarea name="balance_correction_description" id="balance_correction_description" class="form-control" rows="6" style="width: 100%" maxlength="1000"></textarea>
+                <p class="form-text">Пользователь не увидит эту информацию</p>
             </div>
 
         </div>

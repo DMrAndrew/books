@@ -3,16 +3,16 @@
 # ===================================
 
 # Model List Column configuration
-list: $/books/wallet/models/wallet/columns.yaml
+list: $/books/profile/models/operationhistory/columns.yaml
 
 # Model Class name
-modelClass: Books\Wallet\Models\Wallet
+modelClass: Books\Profile\Models\OperationHistory
 
 # List Title
-title: Управление кошельками
+title: Управление историей операций
 
 # Link URL for each record
-recordUrl: books/wallet/wallet/update/:id
+recordUrl: books/profile/operationhistory/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records
@@ -39,6 +39,8 @@ showCheckboxes: true
 
 # Toolbar widget configuration
 toolbar:
+    # Partial for toolbar buttons
+    buttons: list_toolbar
 
     # Search widget configuration
     search:
