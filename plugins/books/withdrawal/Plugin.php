@@ -1,6 +1,7 @@
 <?php namespace Books\Withdrawal;
 
 use Backend;
+use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceContract;
 use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
 use Books\Withdrawal\Classes\Services\AgreementService;
 use Books\Withdrawal\Components\WithdrawalForm;
@@ -232,6 +233,9 @@ class Plugin extends PluginBase
                         ]);
 
                         $user->proxyWallet()->withdraw($balanceAmount);
+
+                        $operationHistoryService = app(OperationHistoryServiceContract::class);
+                        $operationHistoryService->addWithdrawal($user, $balanceAmount);
 
                     } catch (Exception $ex) {
                         Flash::error($ex->getMessage());
