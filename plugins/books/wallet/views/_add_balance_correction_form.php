@@ -17,7 +17,7 @@
                 <label for="Form-field-User-password" class="form-label">
                     Баланс после корректировки:
                 </label>
-                <input type="text" name="targetBalance" id="targetBalance" value="" placeholder="" class="form-control" autocomplete="off" maxlength="255" required>
+                <input type="number" min="0" name="targetBalance" id="targetBalance" value="" placeholder="" class="form-control" autocomplete="off" maxlength="255" required>
 
                 <p class="form-text">Введите необходимое значение баланса</p>
             </div>
@@ -51,12 +51,3 @@
     </div>
     <?= Form::close() ?>
 </div>
-<script>
-    $(function () {
-        $('body').on('keyup', '#targetBalance', function (e) {
-            console.log('keyup');
-            e.preventDefault();
-            this.value = this.value.replace(/[^\d.]/g, '');
-        });
-    });
-</script>
