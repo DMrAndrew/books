@@ -6,6 +6,7 @@ namespace Books\Wallet;
 
 use Backend;
 use Bavix\Wallet\WalletServiceProvider;
+use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceContract;
 use Event;
 use Exception;
 use Flash;
@@ -182,6 +183,9 @@ class Plugin extends PluginBase
                     } elseif ($diffAmount < 0) {
                         $user->proxyWallet()->withdraw(abs($diffAmount), $transactionMetaData);
                     }
+
+                    $operationHistoryService = app(OperationHistoryServiceContract::class);
+                    $operationHistoryService->addBalanceCorrection($user, $diffAmount);
 
                     Flash::success("Выполнена корректировка на сумму {$diffAmount} рублей");
 

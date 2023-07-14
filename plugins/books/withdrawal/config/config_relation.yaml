@@ -10,11 +10,19 @@ profiles:
 withdrawals:
     label: Вывод средств
     view:
-        list: $/books/withdrawal/models/withdrawal/columns.yaml
+        list: $/books/withdrawal/models/withdrawal/columns_in_user_tab.yaml
+        recordsPerPage: 20
         toolbarButtons: false
+        defaultSort:
+            column: id
+            direction: desc
 
 transactions:
     label: Транзакции
     view:
-        list: $/books/wallet/models/transaction/columns.yaml
+        list: $/books/wallet/models/transaction/columns_in_user_tab.yaml
+        recordsPerPage: 20
         toolbarButtons: false
+        defaultSort:
+            column: id
+            direction: desc
