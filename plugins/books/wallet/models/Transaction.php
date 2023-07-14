@@ -41,4 +41,27 @@ class Transaction extends Model
             default => $this->type,
         };
     }
+
+    /**
+     * @return string|null
+     */
+    public function getMetaFormattedAttribute(): ?string
+    {
+        if ($this->meta == null) {
+            return null;
+        }
+
+        // if json string
+        $metaFromJson = json_decode(html_entity_decode($this->meta), true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            $metaString = [];
+            foreach ($metaFromJson as $key => $value) {
+                $metaString[] = $key . ': ' . $value;
+            }
+            return implode('; ', $metaString);
+        }
+
+        // else string
+        return $this->meta;
+    }
 }

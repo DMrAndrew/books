@@ -158,15 +158,16 @@ class Plugin extends PluginBase
                 try {
                     $input = Input::all();
                     $userId = (int) $input['userId'];
+
+                    if (!is_numeric($input['targetBalance'])) {
+                        throw new Exception('Баланс должен быть числом');
+                    }
+
                     $targetBalance = (int) $input['targetBalance'];
                     $description = substr(trim((string)$input['balance_correction_description']), 0, 1000);
 
                     $user = User::findOrFail($userId);
                     $currentBalanceAmount = $user->proxyWallet()->balance;
-
-                    if (!is_numeric($targetBalance)) {
-                        throw new Exception('Баланс должен быть числом');
-                    }
 
                     if ($targetBalance < 0) {
                         throw new Exception('Баланс не может быть отрицательным');
@@ -175,7 +176,7 @@ class Plugin extends PluginBase
                     // calculate diff
                     $diffAmount = $targetBalance - $currentBalanceAmount;
                     $transactionMetaData = mb_strlen($description) > 0
-                        ? ['description' => $description]
+                        ? ['Корректировка баланса' => $description]
                         : [];
 
                     if ($diffAmount > 0) {
