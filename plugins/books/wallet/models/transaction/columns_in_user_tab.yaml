@@ -1,0 +1,29 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+
+    id:
+        label: Транзакция
+        searchable: true
+
+    type:
+        label: Тип
+        valueFrom: type_translated
+        searchable: true
+
+    amount:
+        label: Сумма
+        searchable: true
+
+    created_at:
+        label: Дата
+        searchable: true
+
+    meta:
+        label: Доп.инфо
+        valueFrom: meta_formatted
+        searchable: true
+
+

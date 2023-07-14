@@ -6,6 +6,7 @@ use Books\Book\Models\AwardBook;
 use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderProduct;
 use Books\Profile\Models\Profile;
+use RainLab\User\Models\User;
 
 interface OperationHistoryService
 {
@@ -14,9 +15,6 @@ interface OperationHistoryService
 
     /** Получение сертификата анонимно */
     public function addReceivingCertificateAnonymous(Order $order): void;
-
-    /** Вывод средств */
-    public function addWithdrawal(Order $order): void;
 
     /** Покупка книги (оплата) */
     public function addReceivingPurchase(Order $order, OrderProduct $orderProduct): void;
@@ -35,4 +33,10 @@ interface OperationHistoryService
 
     /** Покупка награды (оплата) */
     public function addMakingAuthorReward(Order $order, AwardBook $awardBook): void;
+
+    /** Вывод средств */
+    public function addWithdrawal(User $user, int $withdrawAmount): void;
+
+    /** Корректировка баланса */
+    public function addBalanceCorrection(User $user, int $correctionAmount): void;
 }

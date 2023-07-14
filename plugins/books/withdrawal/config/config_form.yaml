@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Вывод средств
+
+# Model Form Field configuration
+form: $/books/withdrawal/models/withdrawal/fields.yaml
+
+# Model Class name
+modelClass: Books\Withdrawal\Models\Withdrawal
+
+# Default redirect location
+defaultRedirect: books/withdrawal/withdrawal
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: books/withdrawal/withdrawal/update/:id
+    redirectClose: books/withdrawal/withdrawal
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/withdrawal/withdrawal
+    redirectClose: books/withdrawal/withdrawal
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title

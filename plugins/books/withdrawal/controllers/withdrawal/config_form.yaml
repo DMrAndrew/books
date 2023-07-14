@@ -1,4 +1,4 @@
-# ===================================
+    # ===================================
 #  Form Behavior Config
 # ===================================
 
@@ -6,10 +6,10 @@
 name: Вывод средств
 
 # Model Form Field configuration
-form: $/books/withdrawal/models/withdrawaldata/fields.yaml
+form: $/books/withdrawal/models/withdrawal/fields.yaml
 
 # Model Class name
-modelClass: Books\Withdrawal\Models\WithdrawalData
+modelClass: Books\Withdrawal\Models\Withdrawal
 
 # Default redirect location
 defaultRedirect: books/withdrawal/withdrawal

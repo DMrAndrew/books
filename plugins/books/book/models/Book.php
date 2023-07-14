@@ -239,7 +239,7 @@ class Book extends Model
 
     public function scopeOrderByPopularGenres(Builder $builder)
     {
-        return $builder->orderByPowerJoinsMin('bookGenre.rate_number');
+        return $builder->orderByLeftPowerJoinsMin('bookGenre.rate_number');
     }
 
     public function scopeOrderByGenresRate(Builder $builder, Genre ...$genres)
@@ -603,17 +603,17 @@ class Book extends Model
 
     public function scopeOrderByDiscountAmount(Builder $builder, bool $asc = false)
     {
-        return $builder->orderByPowerJoins('editions.discount.amount', $asc ? 'asc' : 'desc');
+        return $builder->orderByLeftPowerJoins('editions.discount.amount', $asc ? 'asc' : 'desc');
     }
 
     public function scopeOrderBySalesAt(Builder $builder, bool $asc = false)
     {
-        return $builder->orderByPowerJoins('editions.sales_at', $asc ? 'asc' : 'desc');
+        return $builder->orderByLeftPowerJoins('editions.sales_at', $asc ? 'asc' : 'desc');
     }
 
     public function scopeSortByStatValue(Builder $builder, StatsEnum $stat, bool $asc = false)
     {
-        return $builder->orderByPowerJoins('stats.' . $stat->mapStatAttribute(), $asc ? 'asc' : 'desc');
+        return $builder->orderByLeftPowerJoins('stats.' . $stat->mapStatAttribute(), $asc ? 'asc' : 'desc');
     }
 
     public function refreshAllowedVisits(): int

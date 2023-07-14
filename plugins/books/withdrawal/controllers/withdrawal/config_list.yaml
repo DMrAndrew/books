@@ -3,13 +3,13 @@
 # ===================================
 
 # Model List Column configuration
-list: $/books/withdrawal/models/withdrawaldata/columns.yaml
+list: $/books/withdrawal/models/withdrawal/columns.yaml
 
 # Model Class name
-modelClass: Books\Withdrawal\Models\WithdrawalData
+modelClass: Books\Withdrawal\Models\Withdrawal
 
 # List Title
-title: Управление выводом средств
+title: Управление Выводом средств
 
 # Link URL for each record
 recordUrl: books/withdrawal/withdrawal/update/:id
@@ -32,15 +32,13 @@ showSorting: true
 # Default sorting column
 defaultSort:
     column: id
-    direction: asc
+    direction: desc
 
 # Display checkboxes next to each record
 showCheckboxes: true
 
 # Toolbar widget configuration
 toolbar:
-    # Partial for toolbar buttons
-    buttons: list_toolbar
 
     # Search widget configuration
     search:

@@ -1,0 +1,28 @@
+profiles:
+    label: Профили
+    view:
+        list: $/books/profile/models/profile/columns.yaml
+        toolbarButtons: false
+    manage:
+        title: Обновление профиля
+        form: $/books/profile/models/profile/fields.yaml
+
+withdrawals:
+    label: Вывод средств
+    view:
+        list: $/books/withdrawal/models/withdrawal/columns_in_user_tab.yaml
+        recordsPerPage: 20
+        toolbarButtons: false
+        defaultSort:
+            column: id
+            direction: desc
+
+transactions:
+    label: Транзакции
+    view:
+        list: $/books/wallet/models/transaction/columns_in_user_tab.yaml
+        recordsPerPage: 20
+        toolbarButtons: false
+        defaultSort:
+            column: id
+            direction: desc
