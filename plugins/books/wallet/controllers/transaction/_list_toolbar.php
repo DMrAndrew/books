@@ -2,7 +2,7 @@
     <a
         href="<?= Backend::url('books/wallet/transaction/create') ?>"
         class="btn btn-primary oc-icon-plus">
-        <?= e(trans('backend::lang.list.create_button', ['name'=>'Transaction'])) ?>
+        <?= e(trans('backend::lang.list.create_button', ['name'=>'Транзакция'])) ?>
     </a>
 
     <button

@@ -65,12 +65,12 @@ class Plugin extends PluginBase
     {
         return [
             'books.wallet.wallet' => [
-                'tab' => 'Wallet',
-                'label' => 'Wallet permission'
+                'tab' => 'Кошелек',
+                'label' => 'Управление кошельками'
             ],
             'books.wallet.transaction' => [
-                'tab' => 'Wallet',
-                'label' => 'Transaction permission'
+                'tab' => 'Кошелек',
+                'label' => 'Управление транзакциями'
             ],
         ];
     }

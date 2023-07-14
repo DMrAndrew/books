@@ -77,7 +77,7 @@ class Plugin extends PluginBase
         return [
             'books.withdrawal.withdrawal' => [
                 'tab' => 'withdrawal',
-                'label' => 'Withdrawal permission'
+                'label' => 'Управление выводом средств'
             ],
         ];
     }

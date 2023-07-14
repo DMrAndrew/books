@@ -9,7 +9,7 @@ list: $/books/wallet/models/transaction/columns.yaml
 modelClass: Books\Wallet\Models\Transaction
 
 # List Title
-title: Manage Transactions
+title: Управление транзакциями
 
 # Link URL for each record
 recordUrl: books/wallet/transaction/update/:id
