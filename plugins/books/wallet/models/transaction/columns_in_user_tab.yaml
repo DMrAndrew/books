@@ -21,4 +21,9 @@ columns:
         label: Дата
         searchable: true
 
+    meta:
+        label: Доп.инфо
+        valueFrom: meta_formatted
+        searchable: true
+
 
