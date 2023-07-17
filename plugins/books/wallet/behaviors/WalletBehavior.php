@@ -88,4 +88,12 @@ class WalletBehavior extends ModelBehavior
             ->setModel($this->model)
             ->setRawAttributes($this->model->toArray());
     }
+
+    /**
+     * @return Wallet
+     */
+    public function getWalletAttribute(): Wallet
+    {
+        return $this->proxyWallet();
+    }
 }

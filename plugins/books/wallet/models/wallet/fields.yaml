@@ -1,0 +1,23 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+
+    wallet:
+        label: ID
+        valueFrom: wallet[id]
+        span: left
+        disabled: true
+
+    email:
+        label: Email
+        valueFrom: email
+        span: left
+        disabled: true
+
+    balance:
+        label: Баланс
+        valueFrom: wallet[balance]
+        span: left
+        disabled: true

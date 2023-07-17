@@ -1,0 +1,25 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Wallet
+
+# Model Form Field configuration
+form: $/books/wallet/models/wallet/fields.yaml
+
+# Model Class name
+modelClass: RainLab\User\Models\User
+
+# Default redirect location
+defaultRedirect: books/wallet/wallet
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: books/wallet/wallet/update/:id
+    redirectClose: books/wallet/wallet
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title

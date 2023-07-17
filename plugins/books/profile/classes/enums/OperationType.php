@@ -18,6 +18,8 @@ enum OperationType: int
     case SupportMake = 9;
     case SupportReceive = 10;
 
+    case BalanceCorrection = 11;
+
     public function label(): string
     {
         return match ($this) {
@@ -30,6 +32,7 @@ enum OperationType: int
             self::RewardMake => 'Награда', // Вы наградили книгу «Название произведения» на сумму XX ₽
             self::RewardReceive => 'Получение награды', // todo?
             self::Withdraw => 'Вывод средств',
+            self::BalanceCorrection => 'Корректировка баланса',
 
             self::SupportMake => 'Поддержка', // Вы поддержали автора на сумму 300 руб
             self::SupportReceive => 'Получение поддержки', // Вы получили 300 руб от Виктора
@@ -48,6 +51,7 @@ enum OperationType: int
             self::RewardMake => 'reward_make',
             self::RewardReceive => 'reward_receive',
             self::Withdraw => 'withdraw',
+            self::BalanceCorrection => 'balance_correction',
 
             self::SupportMake => 'support_make',
             self::SupportReceive => 'support_receive',

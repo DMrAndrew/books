@@ -1,0 +1,32 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+
+    id:
+        label: Транзакция
+        span: left
+        disabled: true
+
+    email:
+        label: Пользователь
+        valueFrom: user[email]
+        span: left
+        disabled: true
+
+    type:
+        label: Тип
+        valueFrom: type_translated
+        span: left
+        disabled: true
+
+    amount:
+        label: Сумма
+        span: left
+        disabled: true
+
+    created_at:
+        label: Дата
+        span: left
+        disabled: true

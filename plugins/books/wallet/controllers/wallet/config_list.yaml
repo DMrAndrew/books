@@ -3,16 +3,16 @@
 # ===================================
 
 # Model List Column configuration
-list: $/books/withdrawal/models/withdrawal/columns.yaml
+list: $/books/wallet/models/wallet/columns.yaml
 
 # Model Class name
-modelClass: Books\Withdrawal\Models\Withdrawal
+modelClass: RainLab\User\Models\User
 
 # List Title
-title: Управление Выводом средств
+title: Manage Wallets
 
 # Link URL for each record
-recordUrl: books/withdrawal/withdrawal/update/:id
+recordUrl: books/wallet/wallet/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records
@@ -32,7 +32,7 @@ showSorting: true
 # Default sorting column
 defaultSort:
     column: id
-    direction: desc
+    direction: asc
 
 # Display checkboxes next to each record
 showCheckboxes: true

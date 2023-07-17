@@ -1,0 +1,25 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Транзакция
+
+# Model Form Field configuration
+form: $/books/wallet/models/transaction/fields.yaml
+
+# Model Class name
+modelClass: Books\Wallet\Models\Transaction
+
+# Default redirect location
+defaultRedirect: books/wallet/transaction
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/wallet/transaction
+    redirectClose: books/wallet/transaction
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title
