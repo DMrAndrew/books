@@ -33,3 +33,5 @@ nbproject
 docker-compose.local.yml
 /docker/php/8.1/DockerfileLocal
 /docker/nginx/domain.local.conf
+
+/backup

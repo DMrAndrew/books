@@ -26,7 +26,7 @@ class ListingService
         $this->useRater = in_array($this->filter->sort, [SortEnum::popular_day, SortEnum::popular_week, SortEnum::popular_month]);
         $this->useWidgetService = $this->filter->widget?->isListable() ?? false;
         $this->useWidgetSort = $this->useWidgetService && !$this->useRater && $this->filter->widget->mapSortEnum() === $this->filter->sort;
-        $this->builder = Book::query()->public()->defaultEager();
+        $this->builder = Book::query()->public()->defaultEager()->distinct((new Book())->getQualifiedKeyName());
         $this->hasIncludeGenres = $this->filter->includes(Genre::class)->count();
 
     }

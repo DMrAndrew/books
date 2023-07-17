@@ -263,6 +263,7 @@ class WidgetService
                     ->toArray() ?? [])
                     ->diffWithUnloved();
             })
+            ->distinct((new Book())->getQualifiedKeyName())
             ->limit($this->limit)
             ->get();
 
