@@ -108,6 +108,7 @@ class Reader
                 'chapter' => $this->chapter,
                 'paginator' => $this->paginator,
             ],
+            'redirectIfJSIsOff' => !($this->chapter->sort_order === 1 && $this->paginator->page === 1),
             'book' => $this->book->newQuery()->defaultEager()->find($this->book->id),
         ];
     }

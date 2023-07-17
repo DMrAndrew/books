@@ -164,7 +164,7 @@
                             <div class="book-card-full-description__content {{chapter.isFree ? '' : '_disabled'}}">
                                 <a  href="/reader/{{book.id}}/{{chapter.id}}"
                                    class="ui-link _violet {{chapter.isFree ? '' : 'ui-tooltip _disabled'}}"
-                                   {{chapter.isFree ? '': 'data-tooltip="Платный доступ"'}}>{{chapter.title|md}}</a>
+                                   {{chapter.isFree ? '': 'data-tooltip="Платный доступ"'}}>{{chapter.title|raw}}</a>
                                 <span>{{carbon(chapter.published_at).format('d.m.y')}}</span>
                                 {% if not chapter.isFree %}
                                 <svg class="square-16">
