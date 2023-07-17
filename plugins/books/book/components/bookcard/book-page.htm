@@ -15,7 +15,7 @@
             {% partial 'controls/genres-link-list' genres=book.genres linkClass='book-card-full-info__link _desktop' %}
         </div>
 
-        {% if genres[0] %}
+        {% if book.genres[0] %}
         <button class="book-card-full-info__button-raiting" data-modal="open_category_rating">
             <span>Рейтинг в категориях</span>
             <svg class="square-16">
