@@ -22,9 +22,10 @@ use Monarobase\CountryList\CountryList;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use RainLab\Location\Behaviors\LocationModel;
 use RainLab\Location\Models\Country;
-use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
+use ValidationException;
+use Validator;
 
 /**
  * Plugin Information File
@@ -74,25 +75,51 @@ class Plugin extends PluginBase
 
         Event::listen('mobecan.socialconnect.registerUser', function (array $provider_details, array $user_details) {
 
-            if ($user_details['avatar'] ?? false) {
-                unset($user_details['avatar']);
+            try {
+                if ($user_details['avatar'] ?? false) {
+                    unset($user_details['avatar']);
+                }
+
+                $user = new User();
+
+                $v = Validator::make($user_details, [
+                    'email' => $user->rules['email']
+                ], $user->customMessages);
+
+                if ($v->fails()) {
+                    throw new ValidationException($v);
+                }
+
+                $user->fill($user_details);
+                return $user;
+
+
+            } catch (\Exception $exception) {
+                $msg = $exception instanceof ValidationException ?
+                    $exception->getMessage() :
+                    'Не удалось выполнить вход. Обратитесь к администратору.';
+
+                Flash::error($msg);
+                abort(redirect('/'));
             }
 
-            return new User($user_details);
-
-        }, 1);
+        });
 
         Event::listen('mobecan.socialconnect.handleLogin', function ($provider_details, $provider_response, User $user) {
             if (!$user->exists) {
                 CookieEnum::guest->setForever($user->toArray());
-                Flash::add('post_register_required',1);
+                Flash::add('post_register_required', 1);
                 return redirect()->refresh();
             }
-        }, 1);
+        });
 
         Event::listen('rainlab.user.beforeRegister', function (&$user) {
             $user['required_post_register'] = 0;
-        }, 1);
+        });
+        Event::listen('rainlab.user.register', function ($user, $data) {
+            CookieEnum::guest->forget();
+        });
+
         AliasLoader::getInstance()->alias('User', User::class);
         AliasLoader::getInstance()->alias('Search', Search::class);
         AliasLoader::getInstance()->alias('SearchManager', SearchManager::class);

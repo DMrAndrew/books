@@ -4,20 +4,22 @@
 
 fields:
 
-    wallet:
+    id:
         label: ID
-        valueFrom: wallet[id]
         span: left
         disabled: true
 
-    email:
+    user[username]:
+        label: Пользователь
+        span: left
+        disabled: true
+
+    user[email]:
         label: Email
-        valueFrom: email
         span: left
         disabled: true
 
     balance:
         label: Баланс
-        valueFrom: wallet[balance]
         span: left
         disabled: true

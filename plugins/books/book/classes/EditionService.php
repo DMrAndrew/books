@@ -104,12 +104,12 @@ class EditionService
         // у платной книги сменился статус
         if ($this->edition->isDirty(['status']) && !!$this->edition->price) {
             $event = match ($this->edition->status) {
-                BookStatus::WORKING => 'books.book::book.selling.subs', // "В работе" - подписка
-                BookStatus::COMPLETE => 'books.book::book.selling.full', // "Завершено" - продажа
+                BookStatus::WORKING => 'subs', // "В работе" - подписка books.book::book.selling.subs
+                BookStatus::COMPLETE => 'full', // "Завершено" - продажа books.book::book.selling.full
                 default => null
             };
             if ($event) {
-                Event::fire($event, [$this->edition->book]);
+                Event::fire('books.book::book.selling.' . $event, [$this->edition->book]);
             }
         }
     }

@@ -26,3 +26,13 @@ transactions:
         defaultSort:
             column: id
             direction: desc
+
+operations:
+    label: История операций
+    view:
+        list: $/books/profile/models/operationhistory/columns_in_user_tab.yaml
+        recordsPerPage: 20
+        toolbarButtons: false
+        defaultSort:
+            column: id
+            direction: desc

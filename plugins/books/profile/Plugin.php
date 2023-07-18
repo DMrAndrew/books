@@ -106,6 +106,10 @@ class Plugin extends PluginBase
             if (!$model instanceof User) {
                 return;
             }
+
+            /**
+             * Профили
+             */
             $form->addTabFields([
                 'profiles' => [
                     'type' => 'partial',
@@ -114,6 +118,17 @@ class Plugin extends PluginBase
                 ],
             ]);
             $form->removeField('avatar');
+
+            /** История операций */
+            $form->addTabFields([
+                'operationhistory' => [
+                    'type'   => 'partial',
+                    'label'   => 'История операций',
+                    'path' => '$/books/profile/controllers/operationhistory/_history_operation_list.htm',
+                    'tab' => 'История операций',
+                    'order' => 1700,
+                ],
+            ]);
         });
         UsersController::extend(function (UsersController $controller) {
             $controller->formConfig = '$/books/user/config/config_form.yaml';
@@ -143,6 +158,19 @@ class Plugin extends PluginBase
                 }
             });
         });
+    }
+
+    /**
+     * registerPermissions used by the backend.
+     */
+    public function registerPermissions()
+    {
+        return [
+            'books.profile.operationhistory' => [
+                'tab' => 'История операций',
+                'label' => 'Управление историей операций'
+            ],
+        ];
     }
 
     /**

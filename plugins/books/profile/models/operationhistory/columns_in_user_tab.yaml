@@ -3,21 +3,19 @@
 # ===================================
 
 columns:
-
     id:
         label: ID
-        searchable: false
-
-    user[username]:
-        label: Пользователь
         searchable: true
 
-    user[email]:
-        label: Email
+    type:
+        label: Тип
+        valueFrom: type_translated
         searchable: true
 
-    balance:
-        label: Баланс
+    message_without_tags:
+        label: Сообщение
         searchable: true
 
-
+    created_at:
+        label: Дата
+        searchable: true

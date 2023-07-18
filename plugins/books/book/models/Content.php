@@ -1,5 +1,6 @@
 <?php namespace Books\Book\Models;
 
+use Books\Book\Classes\BookUtilities;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
@@ -46,5 +47,10 @@ class Content extends Model
     public function scopeType(Builder $builder, ?ContentTypeEnum $type): Builder
     {
         return $builder->where('type', '=', $type?->value);
+    }
+
+    public function getCleanBodyAttribute(): array|string|null
+    {
+        return BookUtilities::removeDomainFromHtml($this->body,'bookstime.ru');
     }
 }

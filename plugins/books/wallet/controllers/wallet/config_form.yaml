@@ -3,13 +3,13 @@
 # ===================================
 
 # Record name
-name: Wallet
+name: Кошелек
 
 # Model Form Field configuration
 form: $/books/wallet/models/wallet/fields.yaml
 
 # Model Class name
-modelClass: RainLab\User\Models\User
+modelClass: Books\Wallet\Models\Wallet
 
 # Default redirect location
 defaultRedirect: books/wallet/wallet
