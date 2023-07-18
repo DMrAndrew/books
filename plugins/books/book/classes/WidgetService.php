@@ -76,8 +76,10 @@ class WidgetService
     }
 
     /**
-     * @param bool $useSort
-     * @return WidgetService
+     * Sets the value of the $useSort property.
+     *
+     * @param bool $useSort Whether to use sorting or not.
+     * @return static Returns an instance of the class.
      */
     public function setUseSort(bool $useSort): static
     {
@@ -261,6 +263,7 @@ class WidgetService
                     ->toArray() ?? [])
                     ->diffWithUnloved();
             })
+            ->distinct((new Book())->getQualifiedKeyName())
             ->limit($this->limit)
             ->get();
 
