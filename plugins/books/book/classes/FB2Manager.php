@@ -20,10 +20,11 @@ class FB2Manager
         $file = file_get_contents($this->fb2->getLocalPath());
 
         try {
-            $this->parser = new FB2Controller($file);
+            $this->parser = new FB2Controller(html_entity_decode($file, ENT_HTML5, 'UTF-8'));
             $this->parser->withNotes();
             $this->parser->startParse();
         } catch (\Exception $exception) {
+            \Log::error($exception->getMessage());
             throw new FBParserException();
         }
 
