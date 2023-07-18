@@ -51,6 +51,6 @@ class Content extends Model
 
     public function getCleanBodyAttribute(): array|string|null
     {
-        return BookUtilities::removeDomainFromHtml($this->body,env('APP_URL'));
+        return BookUtilities::removeDomainFromHtml($this->body,'bookstime.ru');
     }
 }
