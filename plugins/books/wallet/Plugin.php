@@ -104,6 +104,21 @@ class Plugin extends PluginBase
 
     private function extendUserPluginBackendForms()
     {
+        UsersController::extendListColumns(function ($widget, $model) {
+            if (!$model instanceof User)
+                return;
+
+            $widget->addColumns([
+                'balance_amount' => [
+                    'label' => 'Баланс',
+                    'relation' => 'wallet',
+                    'select' => 'balance',
+                    'searchable' => true,
+                    'sortable' => true,
+                ]
+            ]);
+        });
+
         UsersController::extendFormFields(function ($form, $model, $context) {
             if (!$model instanceof User) {
                 return;
@@ -114,7 +129,7 @@ class Plugin extends PluginBase
                 'wallet' => [
                     'type'   => 'partial',
                     'label'   => 'Баланс',
-                    'path' => '$/books/wallet/controllers/wallet/_balance.php',
+                    'path' => '$/books/wallet/controllers/wallet/_balance_field.php',
                     'tab' => 'Кошелек',
                     'order' => 1400,
                 ],

@@ -20,6 +20,8 @@ class WalletBehavior extends ModelBehavior
     public function __construct($model)
     {
         parent::__construct($model);
+
+        $model->hasOne['wallet'] = [WalletModel::class, 'key' => 'holder_id'];
     }
 
     public function proxyWallet(): Wallet
@@ -87,13 +89,5 @@ class WalletBehavior extends ModelBehavior
         return (new $proxyClass())
             ->setModel($this->model)
             ->setRawAttributes($this->model->toArray());
-    }
-
-    /**
-     * @return Wallet
-     */
-    public function getWalletAttribute(): Wallet
-    {
-        return $this->proxyWallet();
     }
 }
