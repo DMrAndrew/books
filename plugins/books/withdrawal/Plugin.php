@@ -6,7 +6,6 @@ use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
 use Books\Withdrawal\Classes\Services\AgreementService;
 use Books\Withdrawal\Components\WithdrawalForm;
 use Books\Withdrawal\Components\WithdrawalList;
-use Books\Withdrawal\Models\Withdrawal as WithdrawalModel;
 use Event;
 use Exception;
 use Flash;
@@ -167,6 +166,68 @@ class Plugin extends PluginBase
 
     private function extendUserPluginBackendForms()
     {
+        /**
+         * Фильтры по состоянию Договора в списке пользователей
+         */
+        UsersController::extendListFilterScopes(function ($filter) {
+            if (!$filter->model instanceof User) {
+                return;
+            }
+
+            $filter->addScopes(
+                [
+                    'withdrawalData' => [
+                        'label' => 'Вывод средств',
+                        'type' => 'group',
+                        'scope' => 'withdrawalAgreementStateFilter',
+                        'options' => [
+                            'approved' => 'Договор подписан',
+                            'withdraw_allowed' => 'Вывод разрешен',
+                            'withdraw_not_frozen' => 'Не заморожен',
+                        ],
+                    ]
+                ]
+            );
+        });
+
+        /**
+         * Колонки по Договору в списке пользователей
+         */
+        UsersController::extendListColumns(function ($widget, $model) {
+            if (!$model instanceof User)
+                return;
+
+            $widget->addColumns([
+                'agreement_status' => [     // Статус договора
+                    'label' => 'Договор',
+                    'relation' => 'withdrawalData',
+                    'select' => 'agreement_status',
+                    'valueFrom' => 'agreement_status_name',
+                    'searchable' => true,
+                    'sortable' => true,
+                ],
+                'withdrawal_status' => [    // Вывод средств разрешен
+                    'label' => 'Вывод средств',
+                    'relation' => 'withdrawalData',
+                    'select' => 'withdrawal_status',
+                    'valueFrom' => 'withdrawal_status_name',
+                    'searchable' => true,
+                    'sortable' => true,
+                ],
+                'withdraw_frozen' => [     // Вывод средств заморожен пользователем
+                    'label' => 'Заморожен',
+                    'relation' => 'withdrawalData',
+                    'select' => 'withdraw_frozen',
+                    'type' => 'switch',
+                    'searchable' => true,
+                    'sortable' => true,
+                ]
+            ]);
+        });
+
+        /**
+         * Поля в форме пользователя
+         */
         UsersController::extendFormFields(function ($form, $model, $context) {
             if (!$model instanceof User) {
                 return;
@@ -196,9 +257,11 @@ class Plugin extends PluginBase
                 ],
             ]);
         });
+
         UsersController::extend(function (UsersController $controller) {
             $controller->relationConfig = '$/books/withdrawal/config/config_relation.yaml';
             $controller->implementClassWith(Backend\Behaviors\RelationController::class);
+            $controller->implementClassWith(Backend\Behaviors\ListController::class);
 
             /** отобразить форму вывода средств */
             $controller->addDynamicMethod('onDisplayWithdrawForm', function () use ($controller) {

@@ -95,15 +95,17 @@ class WalletBehavior extends ModelBehavior
 
     /**
      * @param Builder $builder
-     * @param int $balanceAmount
+     * @param int $balanceAmountFrom
+     * @param int|null $balanceAmountTo
      *
      * @return Builder
      */
-    public function scopeBalanceAmountGreaterThan (Builder $builder, int $balanceAmountFrom, int $balanceAmountTo = null): Builder
+    public function scopeBalanceAmountInRange(Builder $builder, int $balanceAmountFrom, int $balanceAmountTo = null): Builder
     {
         return $builder
             ->whereHas('wallet', function ($query) use ($balanceAmountFrom, $balanceAmountTo) {
                 $query->where('balance', '>=', $balanceAmountFrom);
+
                 if ($balanceAmountTo) {
                     $query->where('balance', '<=', $balanceAmountTo);
                 }

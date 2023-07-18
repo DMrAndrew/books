@@ -133,7 +133,7 @@ class Plugin extends PluginBase
                     'wallet' => [
                         'label' => 'Баланс',
                         'type' => 'numberrange',
-                        'scope' => 'balanceAmountGreaterThan',
+                        'scope' => 'balanceAmountInRange',
                     ]
                 ]
             );
