@@ -1,0 +1,29 @@
+# ===================================
+# Filter Scope Definitions
+# ===================================
+
+scopes:
+
+    positive_balance:
+
+        # Filter name
+        label: 'Положительный баланс'
+
+        # Filter type
+        type: switch
+
+        # SQL Conditions
+        conditions:
+        -   balance = 0
+        -   balance > 0
+
+    balance_greater:
+
+        # Filter name
+        label: 'Баланс более'
+
+        # Filter type
+        type: number
+
+        # SQL Conditions
+        conditions: balance >= CAST(':filtered' AS UNSIGNED)

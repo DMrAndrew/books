@@ -5,6 +5,9 @@
 # Model List Column configuration
 list: $/books/wallet/models/wallet/columns.yaml
 
+# Filter
+filter: $/books/wallet/models/wallet/scopes.yaml
+
 # Model Class name
 modelClass: Books\Wallet\Models\Wallet
 
