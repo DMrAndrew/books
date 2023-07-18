@@ -5,7 +5,6 @@
 scopes:
 
     positive_balance:
-
         # Filter name
         label: 'Положительный баланс'
 
@@ -18,7 +17,6 @@ scopes:
         -   balance > 0
 
     balance_greater:
-
         # Filter name
         label: 'Баланс более'
 

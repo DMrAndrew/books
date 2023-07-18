@@ -9,7 +9,9 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use October\Rain\Database\Builder;
 use October\Rain\Database\ModelBehavior;
+use RainLab\User\Models\User;
 
 class WalletBehavior extends ModelBehavior
 {
@@ -89,5 +91,22 @@ class WalletBehavior extends ModelBehavior
         return (new $proxyClass())
             ->setModel($this->model)
             ->setRawAttributes($this->model->toArray());
+    }
+
+    /**
+     * @param Builder $builder
+     * @param int $balanceAmount
+     *
+     * @return Builder
+     */
+    public function scopeBalanceAmountGreaterThan (Builder $builder, int $balanceAmountFrom, int $balanceAmountTo = null): Builder
+    {
+        return $builder
+            ->whereHas('wallet', function ($query) use ($balanceAmountFrom, $balanceAmountTo) {
+                $query->where('balance', '>=', $balanceAmountFrom);
+                if ($balanceAmountTo) {
+                    $query->where('balance', '<=', $balanceAmountTo);
+                }
+            });
     }
 }
