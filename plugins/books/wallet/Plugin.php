@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Books\Wallet;
 
 use Backend;
-use Bavix\Wallet\WalletServiceProvider;
 use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceContract;
 use Event;
 use Exception;
@@ -14,7 +13,6 @@ use Illuminate\Database\ConnectionResolverInterface;
 use Input;
 use RainLab\User\Controllers\Users as UsersController;
 use RainLab\User\Models\User;
-use Redirect;
 use System\Classes\PluginBase;
 
 /**
@@ -104,6 +102,46 @@ class Plugin extends PluginBase
 
     private function extendUserPluginBackendForms()
     {
+        /**
+         * Колонка `Баланс кошелька` в списке пользователей
+         */
+        UsersController::extendListColumns(function ($widget, $model) {
+            if (!$model instanceof User)
+                return;
+
+            $widget->addColumns([
+                'balance_amount' => [
+                    'label' => 'Баланс',
+                    'relation' => 'wallet',
+                    'select' => 'balance',
+                    'searchable' => true,
+                    'sortable' => true,
+                ]
+            ]);
+        });
+
+        /**
+         * Фильтры по Балансу в списке пользователей
+         */
+        UsersController::extendListFilterScopes(function ($filter) {
+            if (!$filter->model instanceof User) {
+                return;
+            }
+
+            $filter->addScopes(
+                [
+                    'wallet' => [
+                        'label' => 'Баланс',
+                        'type' => 'numberrange',
+                        'scope' => 'balanceAmountInRange',
+                    ]
+                ]
+            );
+        });
+
+        /**
+         * Поля в форме пользователя
+         */
         UsersController::extendFormFields(function ($form, $model, $context) {
             if (!$model instanceof User) {
                 return;
@@ -114,7 +152,7 @@ class Plugin extends PluginBase
                 'wallet' => [
                     'type'   => 'partial',
                     'label'   => 'Баланс',
-                    'path' => '$/books/wallet/controllers/wallet/_balance.php',
+                    'path' => '$/books/wallet/controllers/wallet/_balance_field.php',
                     'tab' => 'Кошелек',
                     'order' => 1400,
                 ],
@@ -134,9 +172,11 @@ class Plugin extends PluginBase
                 ],
             ]);
         });
+
         UsersController::extend(function (UsersController $controller) {
             $controller->relationConfig = '$/books/wallet/config/config_relation.yaml';
             $controller->implementClassWith(Backend\Behaviors\RelationController::class);
+            $controller->implementClassWith(Backend\Behaviors\ListController::class);
 
             /** Отобразить форму корректировки баланса */
             $controller->addDynamicMethod('onDisplayBalanceCorrectionForm', function () use ($controller) {

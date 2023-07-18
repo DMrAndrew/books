@@ -9,7 +9,9 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use October\Rain\Database\Builder;
 use October\Rain\Database\ModelBehavior;
+use RainLab\User\Models\User;
 
 class WalletBehavior extends ModelBehavior
 {
@@ -20,6 +22,8 @@ class WalletBehavior extends ModelBehavior
     public function __construct($model)
     {
         parent::__construct($model);
+
+        $model->hasOne['wallet'] = [WalletModel::class, 'key' => 'holder_id'];
     }
 
     public function proxyWallet(): Wallet
@@ -90,10 +94,21 @@ class WalletBehavior extends ModelBehavior
     }
 
     /**
-     * @return Wallet
+     * @param Builder $builder
+     * @param int $balanceAmountFrom
+     * @param int|null $balanceAmountTo
+     *
+     * @return Builder
      */
-    public function getWalletAttribute(): Wallet
+    public function scopeBalanceAmountInRange(Builder $builder, int $balanceAmountFrom, int $balanceAmountTo = null): Builder
     {
-        return $this->proxyWallet();
+        return $builder
+            ->whereHas('wallet', function ($query) use ($balanceAmountFrom, $balanceAmountTo) {
+                $query->where('balance', '>=', $balanceAmountFrom);
+
+                if ($balanceAmountTo) {
+                    $query->where('balance', '<=', $balanceAmountTo);
+                }
+            });
     }
 }
