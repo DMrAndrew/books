@@ -8,13 +8,7 @@ vars[howItsMadeCmsTemplate] = 'cms:cms-page:error.htm'
 ==
 <div class="container">
     <div class="banner-404">
-        <h1>
-            {% if this.controller.getStatusCode() == 401 %}
-            Unauthorized
-            {% else %}
-            Error
-            {% endif %}
-        </h1>
+        <h1>Error</h1>
         <p>We're sorry, but something went wrong and the page cannot be displayed.</p>
     </div>
 </div>

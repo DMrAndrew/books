@@ -12,7 +12,7 @@ class Fillable extends ExtensionBase
 {
     public function __construct(protected Model $model)
     {
-        $this->model->morphOne['content'] = [Content::class, 'name' => 'fillable', 'scope' => 'noType'];
+        $this->model->morphOne['content'] = [Content::class, 'name' => 'fillable', 'scope' => 'regular'];
         $this->model->morphOne['deferredContent'] = [Content::class, 'name' => 'fillable', 'scope' => 'deferred'];
         $this->model->bindEvent('model.afterCreate', fn () => $this->afterCreate());
         $this->model->bindEvent('model.afterSave', fn () => $this->afterSave());
