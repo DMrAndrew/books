@@ -51,10 +51,6 @@ class Content extends Model
 
     public function getCleanBodyAttribute(): array|string|null
     {
-        $str = $this->body;
-        foreach (config('book.allowed_reader_domains') ?? [] as $domain) {
-            $str = BookUtilities::removeDomainFromHtml($str, $domain);
-        }
-        return $str;
+        return BookUtilities::removeDomainFromHtml($this->body,env('APP_URL'));
     }
 }
