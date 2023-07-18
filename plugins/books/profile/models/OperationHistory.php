@@ -38,4 +38,20 @@ class OperationHistory extends Model
     protected $casts = [
         'type' => OperationType::class,
     ];
+
+    /**
+     * @return string
+     */
+    public function getTypeTranslatedAttribute(): string
+    {
+        return $this->type->label();
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessageWithoutTagsAttribute(): string
+    {
+        return strip_tags($this->message);
+    }
 }

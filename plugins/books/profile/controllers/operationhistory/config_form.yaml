@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: История операций
+
+# Model Form Field configuration
+form: $/books/profile/models/operationhistory/fields.yaml
+
+# Model Class name
+modelClass: Books\Profile\Models\OperationHistory
+
+# Default redirect location
+defaultRedirect: books/profile/operationhistory
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: books/profile/operationhistory/update/:id
+    redirectClose: books/profile/operationhistory
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/profile/operationhistory
+    redirectClose: books/profile/operationhistory
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title
