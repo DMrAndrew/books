@@ -161,6 +161,19 @@ class Plugin extends PluginBase
     }
 
     /**
+     * registerPermissions used by the backend.
+     */
+    public function registerPermissions()
+    {
+        return [
+            'books.profile.operationhistory' => [
+                'tab' => 'История операций',
+                'label' => 'Управление историей операций'
+            ],
+        ];
+    }
+
+    /**
      * Registers any front-end components implemented in this plugin.
      *
      * @return array
