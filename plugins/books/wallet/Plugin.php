@@ -114,7 +114,7 @@ class Plugin extends PluginBase
                     'label' => 'Баланс',
                     'relation' => 'wallet',
                     'select' => 'balance',
-                    'searchable' => true,
+                    'searchable' => false,
                     'sortable' => true,
                 ]
             ]);
