@@ -8,6 +8,7 @@ use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Jobs\Paginate;
 use Books\Book\Jobs\Reading;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Model;
 use October\Rain\Database\Builder;
@@ -47,6 +48,7 @@ use System\Models\File;
  * @property  ChapterStatus status
  * @property  ChapterSalesType sales_type
  * @property  int sort_order
+ * @property  Carbon published_at
  */
 class Chapter extends Model
 {

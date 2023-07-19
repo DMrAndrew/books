@@ -1,6 +1,6 @@
 {% if redirectIfJSIsOff %}
 <noscript>
-    <meta http-equiv="refresh" content="0;url=https://bookstime.ru">
+    <meta http-equiv="refresh" content="0;url={{config('app.url')}}">
 </noscript>
 {% endif %}
 <input type="hidden" name="paginator_id" value="{{reader.paginator.id}}"/>
