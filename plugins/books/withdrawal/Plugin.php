@@ -203,7 +203,7 @@ class Plugin extends PluginBase
                     'relation' => 'withdrawalData',
                     'select' => 'agreement_status',
                     'valueFrom' => 'agreement_status_name',
-                    'searchable' => true,
+                    'searchable' => false,
                     'sortable' => true,
                 ],
                 'withdrawal_status' => [    // Вывод средств разрешен
@@ -211,7 +211,7 @@ class Plugin extends PluginBase
                     'relation' => 'withdrawalData',
                     'select' => 'withdrawal_status',
                     'valueFrom' => 'withdrawal_status_name',
-                    'searchable' => true,
+                    'searchable' => false,
                     'sortable' => true,
                 ],
                 'withdraw_frozen' => [     // Вывод средств заморожен пользователем
@@ -219,7 +219,7 @@ class Plugin extends PluginBase
                     'relation' => 'withdrawalData',
                     'select' => 'withdraw_frozen',
                     'type' => 'switch',
-                    'searchable' => true,
+                    'searchable' => false,
                     'sortable' => true,
                 ]
             ]);
