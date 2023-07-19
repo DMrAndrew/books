@@ -91,6 +91,11 @@ class ChapterService
         return Db::transaction(function () use ($data) {
             $data = $this->dataPrepare($data);
             $this->chapter->fill($data);
+
+            if (!$this->chapter->isDirty('status')) {
+                $this->chapter->published_at = $this->chapter->getOriginal('published_at');
+            }
+
             $this->chapter->save();
             Event::fire('books.chapter.updated', [$this->chapter]);
 

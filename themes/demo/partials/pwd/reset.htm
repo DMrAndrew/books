@@ -17,11 +17,11 @@
             </div>
             <div class="auth__form-container">
                 <div class="ui-input-wrapper">
-                    <input class="ui-input-item _size-32" name="code" type="text" id="resetCode" placeholder="Введите код" value="{{ __SELF__.code }}">
+                    <input class="ui-input-item _size-32"  autocomplete="false" name="code" type="text" id="resetCode" placeholder="Введите код" value="{{ __SELF__.code }}">
                     <span class="validation-error" data-validate-for="code"></span>
                 </div>
                 <div class="ui-input-wrapper">
-                    <input class="ui-input-item _size-32" name="password" type="password" id="resetPassword" placeholder="Введите новый пароль">
+                    <input class="ui-input-item _size-32" name="password" autocomplete="false" type="password" id="resetPassword" placeholder="Введите новый пароль">
                     <span class="validation-error" data-validate-for="password"></span>
                 </div>
             </div>
@@ -33,3 +33,8 @@
         </div>
     </form>
 </div>
+<style>
+    body{
+        background-color: white;
+    }
+</style>
