@@ -1,0 +1,36 @@
+<div class="referral__copy">
+    <div class="referral__input ui-input">
+         <label class="ui-input-label">Реферальная ссылка</label>
+        <input id="referralLink" class="ui-input-item _size-32" type="text" value="{{ referrer_link }}" disabled readonly>
+    </div>
+
+    <button id="copyReferralLink" class="ui-button ui-button-size--32 ui-button-view--2">
+        <span class="ui-text--medium">Скопировать</span>
+    </button>
+
+    <span id="messageCopied" class="personal-area__wrap _indent-medium _color-gray ui-text-body--3 hidden" style="display: none">
+        Ссылка скопирована в буфер обмена
+    </span>
+</div>
+<script>
+    $('#copyReferralLink').click(function(){
+        copyTextToClipboard( $('#referralLink').val() );
+        toggleMessageCopied();
+    });
+
+    function copyTextToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            console.log('Async: Copying to clipboard was successful!');
+        }, function(err) {
+            console.error('Async: Could not copy text: ', err);
+        });
+    }
+
+    function toggleMessageCopied() {
+        let message = $('#messageCopied');
+        message.css("display", "inline");
+        setTimeout(function(){
+            message.css("display", "none");
+        }, 2000);
+    }
+</script>
