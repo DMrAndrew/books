@@ -33,10 +33,11 @@
 
                             {% partial '@chapter-status' chapter=chapter %}
 
+                            {% if chapter.status.value != 'draft' %}
                             <div class="chapter-book__status">
                                 <span>{{chapter.sales_type.getLabel()}}</span>
                             </div>
-
+                            {% endif %}
                             {% if chapter.published_at %}
                             <div class="chapter-book__status">
                                 <span>{{carbon(chapter.published_at).format('d.m.y')}}</span>
