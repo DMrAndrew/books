@@ -10,7 +10,7 @@ use RainLab\User\Models\User;
 use Redirect;
 
 /**
- * BecomeReferrer Component
+ * LCReferrer Component
  *
  * @link https://docs.octobercms.com/3.x/extend/cms-components.html
  */
@@ -21,7 +21,7 @@ class LCReferrer extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name' => 'BecomeReferrer Component',
+            'name' => 'LCReferrer Component',
             'description' => 'No description provided yet...'
         ];
     }

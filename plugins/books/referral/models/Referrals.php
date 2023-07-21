@@ -73,6 +73,6 @@ class Referrals extends Model
      */
     public function scopeActive(Builder $builder): Builder
     {
-        return $this->where('valid_till', '<=', now());
+        return $this->where('valid_till', '>=', now());
     }
 }

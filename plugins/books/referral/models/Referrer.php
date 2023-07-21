@@ -16,7 +16,7 @@ class Referrer extends Model
     use Validation;
 
     const REFERRAL_PARTNER_CODE_LENGTH = 6;
-    const MAX_ATTEMPTS = 10;
+    const MAX_CREATE_CODE_ATTEMPTS = 10;
 
     /**
      * @var string table name
@@ -44,7 +44,7 @@ class Referrer extends Model
     ];
 
     public $hasMany = [
-        'referrals' => User::class,
+        'referrals' => Referrals::class,
         'visits' => ReferralVisit::class,
     ];
 
@@ -66,7 +66,7 @@ class Referrer extends Model
      */
     public function uniqueCodeGenerator(): void
     {
-        for ($i = 0; $i < self::MAX_ATTEMPTS; $i++) {
+        for ($i = 0; $i < self::MAX_CREATE_CODE_ATTEMPTS; $i++) {
             $code = static::gen();
             if (!static::query()->code($code)->exists()) {
                 $this->attributes['code'] = $code;
@@ -74,7 +74,7 @@ class Referrer extends Model
             }
         }
 
-        throw new Exception('Не удалось сгенерировать код партнера после ' . self::MAX_ATTEMPTS . ' попыток');
+        throw new Exception('Не удалось сгенерировать код партнера после ' . self::MAX_CREATE_CODE_ATTEMPTS . ' попыток');
     }
 
     /**

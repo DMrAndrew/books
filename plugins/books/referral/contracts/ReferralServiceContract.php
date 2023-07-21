@@ -18,4 +18,10 @@ interface ReferralServiceContract
     public function processReferralCookie(): void;
 
     public function addReferral(Referrer $refferer, User $referral): Referrals;
+
+    public function getActiveReferrerOfCustomer(User $user): ?Referrer;
+
+    public function getRewardPercent(): int;
+
+    public function saveReferralSellStatistic(): void;
 }

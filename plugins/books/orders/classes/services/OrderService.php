@@ -17,6 +17,7 @@ use Books\Orders\Models\Order;
 use Books\Orders\Models\OrderPromocode;
 use Books\Profile\Models\Profile;
 use Books\Profile\Contracts\OperationHistoryService as OperationHistoryServiceContract;
+use Books\Referral\Contracts\ReferralServiceContract;
 use Carbon\Carbon;
 use Db;
 use Exception;
@@ -157,6 +158,9 @@ class OrderService implements OrderServiceContract
 
         // зачислить пополнение баланса пользователю
         $this->transferDepositToUserBalance($order);
+
+        // бонус по реферальной программе
+        $this->rewardReferrer($order);
 
         // заказ оплачен
         $this->updateOrderstatus($order, OrderStatusEnum::PAID);
@@ -556,5 +560,25 @@ class OrderService implements OrderServiceContract
     public function getAuthorRewardCoefficient(): float
     {
         return (int)config('orders.author_reward_percentage') / 100;
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return void
+     */
+    private function rewardReferrer(Order $order): void
+    {
+        $referralService = app(ReferralServiceContract::class);
+
+        $referrer = $referralService->getActiveReferrerOfCustomer($order->user);
+        if ($referrer) {
+            $rewardByEdition = $this->calculateAuthorsOrderRewardFromEdition($order);
+            if ($rewardByEdition) {
+                $rewardPercent = $referralService->getRewardPercent();
+                $referrerRewardPartRounded = intdiv(($rewardByEdition * $rewardPercent), 100);
+                $referrer->user->proxyWallet()->deposit($referrerRewardPartRounded, ['Реферальная программа' => "Заказ №{$order->id}"]);
+            }
+        }
     }
 }

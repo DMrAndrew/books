@@ -21,7 +21,8 @@ class Plugin extends PluginBase
 {
     public $require = [
         'RainLab.User',
-        'RainLab.Orders',
+        //'RainLab.Orders',
+        //'RainLab.Wallet',
     ];
 
     /**
@@ -42,7 +43,7 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-        $this->app->singleton(ReferralServiceContract::class, ReferralService::class);
+        $this->app->bind(ReferralServiceContract::class, ReferralService::class);
     }
 
     /**
@@ -60,7 +61,7 @@ class Plugin extends PluginBase
                 $referralService->processReferralCookie();
                 $referralService->forgetReferralCookie();
             } catch (Exception $e) {
-                Log::info($e->getMessage());
+                Log::error($e->getMessage());
             }
         });
     }

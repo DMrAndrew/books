@@ -13,6 +13,7 @@ use RainLab\User\Models\User;
 class ReferralService implements ReferralServiceContract
 {
     const REFERRAL_COOKIE_NAME = 'referrer_partner';
+    const REFERRAL_REWARD_PERCENT = 3;
 
     /**
      * @param string $code
@@ -68,9 +69,44 @@ class ReferralService implements ReferralServiceContract
      */
     public function addReferral(Referrer $refferer, User $referral): Referrals
     {
-        return Referrals::create([
+        /**
+         * Если пользователь переходит по иной ссылке в этот период,
+         * то он прикрепляется к другому владельцу ссылки и счетчик в 2 недели включается для другого пользователя заново
+         */
+        return Referrals::createOrUpdate([
             'user_id' => $referral->id,
+        ],[
             'referrer_id' => $refferer->id,
+            'valid_till' => now()->addDays(Referrals::REFERRAL_LIVE_TIME_DAYS),
         ]);
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return Referrer|null
+     */
+    public function getActiveReferrerOfCustomer(User $user): ?Referrer
+    {
+        return Referrer
+            ::whereHas('referrals', function ($query) use ($user) {
+                $query
+                    ->active()
+                    ->where('user_id', $user->id);
+            })
+            ->first();
+    }
+
+    /**
+     * @return int
+     */
+    public function getRewardPercent(): int
+    {
+        return self::REFERRAL_REWARD_PERCENT;
+    }
+
+    public function saveReferralSellStatistic(): void
+    {
+        // TODO: Implement saveReferralSellStatistic() method.
     }
 }
