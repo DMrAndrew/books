@@ -1,11 +1,10 @@
 <?php namespace Books\Referral\Models;
 
-use Carbon\Carbon;
 use Exception;
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
-use Str;
 
 /**
  * Referrer Model
@@ -25,10 +24,18 @@ class Referrer extends Model
     public $table = 'books_referral_referrers';
 
     /**
-     * @var array rules for validation
+     * @var array
+     */
+    public $fillable = [
+        'code',
+        'user_id',
+    ];
+
+    /**
+     * @var array
      */
     public $rules = [
-        'code' => 'required|unique:code',
+        'code' => 'string|unique:books_referral_referrers,code',
         'user_id' => 'required|integer',
     ];
 
@@ -38,6 +45,7 @@ class Referrer extends Model
 
     public $hasMany = [
         'referrals' => User::class,
+        'visits' => ReferralVisit::class,
     ];
 
     public static function boot(): void
@@ -45,7 +53,7 @@ class Referrer extends Model
         parent::boot();
 
         static::creating(function ($referrer) {
-            $referrer->checkUserAge();
+            $referrer->checkReferrerRequirements();
             $referrer->uniqueCodeGenerator();
         });
     }
@@ -54,7 +62,7 @@ class Referrer extends Model
      * Генерирует уникальный код партнера
      *
      * @return void
-     * @throws Exception Если уникальный код не может быть сгенерирован после максимального количества попыток.
+     * @throws Exception
      */
     public function uniqueCodeGenerator(): void
     {
@@ -70,28 +78,47 @@ class Referrer extends Model
     }
 
     /**
-     * Генерирует уникальную строку с использованием текущего времени и случайной строки.
-     * Полученная строка преобразуется в верхний регистр и хэшируется с использованием алгоритма xxh32.
+     * Генерирует уникальную строку (для ссылки партнера реферальной программы)
      *
-     * @return string Сгенерированная уникальная строка.
+     * @param int $length
+     *
+     * @return string
+     * @throws Exception
      */
-    public static function gen(): string
+    public static function gen(int $length = self::REFERRAL_PARTNER_CODE_LENGTH): string
     {
-        // Получение текущего времени в формате ISO 8601
-        $timestamp = Carbon::now()->toISOString();
+        // из чисел
+        $characters = '0123456789';
 
-        // Генерация случайной строки
-        $randomString = Str::random(self::REFERRAL_PARTNER_CODE_LENGTH);
-
-        return strtoupper(hash('xxh32', $timestamp . $randomString));
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+        return $randomString;
     }
 
-    public function checkUserAge(): void
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function checkReferrerRequirements(): void
     {
-        dd($this->user);
+        $minAge = 18;
+        $userAdulthood = $this->user->birthday->addYears($minAge);
+        if ($userAdulthood->greaterThan(now())) {
+            throw new Exception("Минимальный возраст для участия в реферальной программе составляет {$minAge} лет");
+        }
+    }
 
-        return;
-
-        //throw new Exception('Минимальный возраст для участия в реферальной программе составляет - 18 лет');
+    /**
+     * @param Builder $builder
+     * @param string $code
+     *
+     * @return Builder
+     */
+    public function scopeCode(Builder $builder, string $code): Builder
+    {
+        return $builder->where('code', $code);
     }
 }

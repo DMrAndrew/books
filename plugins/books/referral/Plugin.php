@@ -2,6 +2,13 @@
 
 use Backend;
 use Books\Referral\Behaviours\ReferralProgram;
+use Books\Referral\Components\LCReferrer;
+use Books\Referral\Components\ReferralLink;
+use Books\Referral\Contracts\ReferralServiceContract;
+use Books\Referral\Services\ReferralService;
+use Event;
+use Exception;
+use Log;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
@@ -14,6 +21,7 @@ class Plugin extends PluginBase
 {
     public $require = [
         'RainLab.User',
+        'RainLab.Orders',
     ];
 
     /**
@@ -34,7 +42,7 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-        //
+        $this->app->singleton(ReferralServiceContract::class, ReferralService::class);
     }
 
     /**
@@ -45,6 +53,16 @@ class Plugin extends PluginBase
         User::extend(function (User $model) {
             $model->implementClassWith(ReferralProgram::class);
         });
+
+        Event::listen('rainlab.user.login', function($user) {
+            try {
+                $referralService = app(ReferralServiceContract::class);
+                $referralService->processReferralCookie();
+                $referralService->forgetReferralCookie();
+            } catch (Exception $e) {
+                Log::info($e->getMessage());
+            }
+        });
     }
 
     /**
@@ -52,10 +70,9 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
         return [
-            'Books\Referral\Components\MyComponent' => 'myComponent',
+            LCReferrer::class => 'LCReferrer',
+            ReferralLink::class => 'ReferralLink',
         ];
     }
 
@@ -77,6 +94,8 @@ class Plugin extends PluginBase
      */
     public function registerNavigation()
     {
+        return [];
+
         return [
             'referral' => [
                 'label' => 'Партнеры реферальной программы',

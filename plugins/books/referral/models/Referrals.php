@@ -14,6 +14,8 @@ class Referrals extends Model
 {
     use Validation;
 
+    const REFERRAL_LIVE_TIME_DAYS = 14;
+
     /**
      * @var string table name
      */
@@ -40,8 +42,29 @@ class Referrals extends Model
 
     public $belongsTo = [
         'user' => User::class,
-        'referrer_id' => Referrer::class,
+        'referrer' => Referrer::class,
     ];
+
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function ($referral) {
+            $referral->setValidTill();
+        });
+    }
+
+    /**
+     * @return void
+     */
+    public function setValidTill(): void
+    {
+        if (!isset($this->attributes['valid_till']) || $this->attributes['valid_till'] == null) {
+            $this->attributes['valid_till'] = now()->addDays(self::REFERRAL_LIVE_TIME_DAYS);
+        }
+
+        return;
+    }
 
     /**
      * @param Builder $builder

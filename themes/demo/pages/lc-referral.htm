@@ -1,30 +1,36 @@
-url = "/lc-commercial"
+url = "/lc-referral"
 layout = "default"
-title = "Коммерческий кабинет - профиль"
-description = "Коммерческий кабинет"
-meta_title = "Коммерческий кабинет"
-meta_description = "Коммерческий кабинет"
+title = "Коммерческий кабинет - Реферальная программа"
+description = "Реферальная программа"
+meta_title = "Реферальная программа"
+meta_description = "Реферальная программа"
 turbo_cache_control='no-cache'
 [session]
 security = "user"
 redirect = "/"
-[CommercialSales]
+[LCReferrer]
 ==
-{% partial 'profile/personal_area_header' %}
+<div style="margin-bottom: 16px"> </div>
+<div class="ui-container">
+    <div class="personal-area__title ui-text-head--2 ui-text--bold">Реклама</div>
+</div>
+
 <div class="personal-area">
     <div class="ui-container-fluid">
-        <div class="personal-area__container ui-grid-container ui-grid-gap">
+        <div class="referral wrapper">
 
-            {% partial "profile/sidebarmenu" %}
-            <div class="ui-col-sm-9">
-                <div class="personal-area__subtitle">
-                    <span class="ui-text-head--3 ui-text--bold">Коммерческий кабинет</span>
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-                    </svg>
-                </div>
-                {% component 'CommercialSales' %}
-            </div>
+            <div class="referral__subtitle ui-text-head--3 ui-text--bold">Правила</div>
+            <p class="referral__text ui-text-body--2">Реферальная программа - это возможность зарабатывать, приводя на сайт Время книг рефералов. Ваши рефералы - это новые пользователи, которые зарегистрировались по вашей реферальной ссылке.</p>
+
+            <div class="referral__subtitle ui-text-head--3 ui-text--bold">Регистрация в реферальной программе</div>
+            <p class="referral__text ui-text-body--2">Участником реферальной программы может стать любой совершеннолетний пользователь Сайта. Для участия в реферальной программе зарегистрируйтесь на сайте Время книг.</p>
+
+            <div class="referral__subtitle ui-text-head--3 ui-text--bold">Доступные партнерские программы</div>
+            <p class="referral__text ui-text-body--2">В течении 2-х недель после того, как любой пользователь перейдет на Время книг по вашей реферальной ссылке, вы будете получать 3% с каждой его покупки.</p>
+            <p class="referral__text ui-text-body--2">Важно! Если в течение 2-ух недель этот пользователь перейдет по реферальной ссылке другого партнера, то его покупки станут приносить доход вашему коллеге, а у вас этот % исчезнет. </p>
+
+            {% component 'LCReferrer' %}
+
         </div>
     </div>
 </div>
