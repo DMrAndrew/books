@@ -179,7 +179,7 @@ class AgreementService implements AgreementServiceContract
             $data = [
                 'name' => $this->user->username,
                 'email' => $adminEmails,
-                'moderationUrl' => Backend::url("books/withdrawal/withdrawal/update/{$this->user->withdrawalData->id}"),
+                'moderationUrl' => Backend::url("books/withdrawal/withdrawaldata/update/{$this->user->withdrawalData->id}"),
             ];
 
             // пользователю
