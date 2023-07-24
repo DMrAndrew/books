@@ -44,8 +44,9 @@ function plainText($text, $allowed_tags = '<br><p><li>')
 
 class WordForm
 {
-    public function __construct(public readonly string $first, public readonly string $second, public readonly string $third)
+    public function __construct(public readonly string $first, public readonly string $second, public ?string $third = null)
     {
+        $this->third ??= $this->second;
     }
 
     public function getCorrectSuffix(int $number): string
@@ -63,7 +64,12 @@ class WordForm
     }
 }
 
-function redirectIfUnauthorized()
+function word_form(array $words, int $count): string
+{
+    return (new WordForm(...$words))->getCorrectSuffix($count);
+}
+
+function redirectIfUnauthorized(): bool|\Illuminate\Http\RedirectResponse
 {
     if (!Auth::getUser()) {
         return Redirect::to('/');
@@ -95,17 +101,20 @@ function comDomain(): ?string
 
 function getFreqString(int $count, int $days): string
 {
-    return $count
-        . ' '
-        . (new WordForm(...['раз', 'раза', 'раз']))->getCorrectSuffix($count)
-        . ' в '
-        . str_replace('неделя', 'неделю', CarbonInterval::days($days)
-            ->cascade()
-            ->forHumans(['parts' => 1, 'aUnit' => true]));
+    $text = "%s %s в %d";
+    $forHumans = CarbonInterval::days($days)->cascade()
+        ->forHumans(['parts' => 1, 'aUnit' => true]);
+
+    return sprintf($text,
+        $count,
+        word_form(['раз', 'раза', 'раз'], $count),
+        str_replace('неделя', 'неделю', $forHumans)
+    );
 }
 
 function getUnlovedFromCookie(): array
 {
+    return CookieEnum::UNLOVED_GENRES->get() ?? [];
     return Cookie::has(CookieEnum::UNLOVED_GENRES->value) ?
         json_decode(Cookie::get(CookieEnum::UNLOVED_GENRES->value))
         : [];
@@ -113,6 +122,7 @@ function getUnlovedFromCookie(): array
 
 function getLovedFromCookie(): array
 {
+    return CookieEnum::LOVED_GENRES->get() ?? [];
     return Cookie::has(CookieEnum::LOVED_GENRES->value) ?
         json_decode(Cookie::get(CookieEnum::LOVED_GENRES->value))
         : [];

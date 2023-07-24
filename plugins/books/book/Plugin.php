@@ -49,7 +49,7 @@ use Books\Book\Models\SystemMessage;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
 use Books\Collections\Models\Lib;
-use Books\Notifications\Console\NotifyUsersAboutTodaysDiscounts;
+use Books\Notifications\Console\NotifyUsersAboutTodayDiscounts;
 use Books\Profile\Behaviors\Slavable;
 use Books\Reposts\behaviors\Shareable;
 use Books\User\Classes\CookieEnum;
@@ -96,7 +96,7 @@ class Plugin extends PluginBase
         parent::register();
 
         $this->registerConsoleCommand('model:prune', PruneCommand::class);
-        $this->registerConsoleCommand('book:discounts:notify_user_about_todays_discounts', NotifyUsersAboutTodaysDiscounts::class);
+        $this->registerConsoleCommand('book:discounts:notify_user_about_today_discounts', NotifyUsersAboutTodayDiscounts::class);
     }
 
     /**
@@ -302,6 +302,6 @@ class Plugin extends PluginBase
             '--model' => [Models\Promocode::class, Lib::class],
         ])->dailyAt('03:00');
 
-        $schedule->command('book:discounts:notify_user_about_todays_discounts')->dailyAt('03:10');
+        $schedule->command('book:discounts:notify_user_about_today_discounts')->dailyAt('03:10');
     }
 }
