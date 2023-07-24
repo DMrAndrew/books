@@ -4,13 +4,15 @@ function initEditor(inputName, options = []) {
     let {toolbarItems = []} = options
     CKEDITOR.ClassicEditor.create(document.querySelector(`#${inputName}`), {
         language: 'ru',
-
+        extraPlugins:[SpecialCharactersEmoji],
         toolbar: {
             items: ['undo', 'redo',
                 'heading', '|',
                 '|', 'bold', 'italic','strikethrough', 'underline',
-                '|', 'numberedList', 'bulletedList',
-                '|', 'link', 'blockQuote',].concat(toolbarItems)
+                '|','alignment', 'numberedList', 'bulletedList',
+                '|', 'link', 'blockQuote',"removeFormat",'horizontalLine']
+                .concat(toolbarItems)
+                .concat(['|',"specialCharacters","findAndReplace","selectAll"])
         },
         removePlugins: [
             // These two are commercial, but you can try them out without registering to a trial.
@@ -47,4 +49,29 @@ function initEditor(inputName, options = []) {
         ]
     })
     // .then(editor => console.log(Array.from(editor.ui.componentFactory.names())));
+
+}
+function SpecialCharactersEmoji( editor ) {
+    editor.plugins.get( 'SpecialCharacters' ).addItems( 'Emoji', [
+        { title: 'smiley face', character: '😊' },
+        { title: 'heart', character: '❤️' },
+        { title: 'thumbs up', character: '👍' },
+        { title: 'clapping hands', character: '👏' },
+        { title: 'laughing', character: '😂' },
+        { title: 'winking face', character: '😉' },
+        { title: 'blushing face', character: '😳' },
+        { title: 'grinning face with sweat', character: '😅' },
+        { title: 'rolling on the floor laughing', character: '🤣' },
+        { title: 'face with tears of joy', character: '😂' },
+        { title: 'thinking face', character: '🤔' },
+        { title: 'face with monocle', character: '🧐' },
+        { title: 'face blowing a kiss', character: '😘' },
+        { title: 'exploding head', character: '🤯' },
+        { title: 'cowboy hat face', character: '🤠' },
+        { title: 'partying face', character: '🥳' },
+        { title: 'face with sunglasses', character: '😎' },
+        { title: 'hot face', character: '🥵' },
+        { title: 'cold face', character: '🥶' },
+        { title: 'face screaming in fear', character: '😱' }
+    ], { label: 'Emoticons' } );
 }
