@@ -71,7 +71,9 @@
 
 <script>
 
-    initEditor('chapter_content')
+    initEditor('chapter_content',{
+        toolbarItems:['uploadImage',]
+    })
     $(function () {
         if(document.querySelector('input[class = "chapter-action-radio"]:checked').id == 'published_at_radio'){
             $('#published_at_input').show()
