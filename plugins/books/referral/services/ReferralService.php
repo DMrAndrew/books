@@ -22,7 +22,7 @@ class ReferralService implements ReferralServiceContract
      */
     public function saveReferralCookie(string $code): void
     {
-        $cookie = Cookie::forever(self::REFERRAL_COOKIE_NAME, $code);
+        $cookie = Cookie::make(self::REFERRAL_COOKIE_NAME, $code, minutes: 60 * 24 * Referrals::COOKIE_LIVE_TIME_DAYS);
         Cookie::queue($cookie);
     }
 
@@ -63,22 +63,32 @@ class ReferralService implements ReferralServiceContract
 
     /**
      * @param Referrer $refferer
-     * @param User $referral
+     * @param User $user
      *
      * @return Referrals
      */
-    public function addReferral(Referrer $refferer, User $referral): Referrals
+    public function addReferral(Referrer $refferer, User $user): Referrals
     {
         /**
-         * Если пользователь переходит по иной ссылке в этот период,
-         * то он прикрепляется к другому владельцу ссылки и счетчик в 2 недели включается для другого пользователя заново
+         * Если пользователь переходит по ссылке другого партнера,
+         * то он прикрепляется к нему и счетчик в 2 недели включается дзаново
          */
-        return Referrals::createOrUpdate([
-            'user_id' => $referral->id,
-        ],[
-            'referrer_id' => $refferer->id,
-            'valid_till' => now()->addDays(Referrals::REFERRAL_LIVE_TIME_DAYS),
-        ]);
+        $referral = Referrals::where('user_id', $user->id)->first();
+
+        if ($referral) {
+            $referral->update([
+                'referrer_id' => $refferer->id,
+                'valid_till' => now()->addDays(Referrals::REFERRAL_LIVE_TIME_DAYS),
+            ]);
+        } else {
+            $referral = Referrals::create([
+                'user_id' => $user->id,
+                'referrer_id' => $refferer->id,
+                'valid_till' => now()->addDays(Referrals::REFERRAL_LIVE_TIME_DAYS),
+            ]);
+        }
+
+        return $referral;
     }
 
     /**

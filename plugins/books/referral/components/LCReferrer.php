@@ -1,5 +1,6 @@
 <?php namespace Books\Referral\Components;
 
+use App;
 use Books\Referral\Models\Referrer;
 use Cms\Classes\ComponentBase;
 use Exception;
@@ -63,7 +64,26 @@ class LCReferrer extends ComponentBase
     public function onGenerateReferralLink(): array|RedirectResponse
     {
         try {
-            $this->user->referrer()->create();
+            $targetLink = post('target_link');
+            $this->validateTargetLink($targetLink);
+
+            /**
+             * Если на целевую страницу уже существует реферальная ссылка - вернуть ее
+             */
+            $referrer = $this->user->referrer()->where('target_link', $targetLink)->first();
+            if ($referrer) {
+                $referrer->touch();
+            }
+
+            /**
+             * Иначе - создать новую реферальную ссылку
+             */
+            else {
+                $this->user->referrer()->create([
+                    'target_link' => $targetLink,
+                ]);
+            }
+
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
 
@@ -85,5 +105,56 @@ class LCReferrer extends ComponentBase
         }
 
         return url('/referral', ['code' => $referrer->code]);
+    }
+
+    /**
+     * @param mixed $targetLink
+     *
+     * @return void
+     * @throws Exception
+     */
+    private function validateTargetLink(mixed $targetLink): void
+    {
+        $targetLink = trim($targetLink);
+
+        /**
+         * Ссылка обязательная
+         */
+        if ($targetLink == null || mb_strlen($targetLink) == 0) {
+            throw new Exception('Необходимо указать ссылку на целевую страницу');
+        }
+
+        /**
+         * Ссылка должна быть валидным URL адресом
+         */
+        if(!filter_var($targetLink, FILTER_VALIDATE_URL))
+        {
+            throw new Exception('Введенная ссылка не является корректным URL-адресом');
+        }
+
+        $urlParts = parse_url($targetLink);
+
+        /**
+         * Ссылка должна иметь https протокол
+         */
+        if (App::environment() === 'production') {
+            if ($urlParts['scheme'] != 'https') {
+                throw new Exception('Ссылка должна использовать защищенный HTTPS-протокол');
+            }
+        }
+
+        /**
+         * Ссылки могут вести только на сам сервиc (домен должен принадлежать сайту)
+         */
+        $allowedDomains = [
+            config('app.url'),
+            config('app.com_url'),
+        ];
+
+        //if (App::environment() !== 'local') {
+            if (!in_array($urlParts['host'], $allowedDomains)) {
+                throw new Exception("Ссылка может вести только на внутренние страницы сайта Время книг");
+            }
+        //}
     }
 }

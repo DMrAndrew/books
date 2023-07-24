@@ -14,12 +14,13 @@ class Referrals extends Model
 {
     use Validation;
 
+    const COOKIE_LIVE_TIME_DAYS = 14;
     const REFERRAL_LIVE_TIME_DAYS = 14;
 
     /**
      * @var string table name
      */
-    public $table = 'books_referral_referrals';
+    protected $table = 'books_referral_referrals';
 
     /**
      * @var array

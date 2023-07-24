@@ -44,6 +44,12 @@ class ReferralLink extends ComponentBase
             return $redirect;
         }
 
+        if ($this->referrer) {
+            // todo: save referral visit statistic
+
+            return Redirect::to($this->referrer->target_link);
+        }
+
         return Redirect::to('/');
     }
 

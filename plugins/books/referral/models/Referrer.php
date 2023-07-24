@@ -21,13 +21,14 @@ class Referrer extends Model
     /**
      * @var string table name
      */
-    public $table = 'books_referral_referrers';
+    protected $table = 'books_referral_referrers';
 
     /**
      * @var array
      */
     public $fillable = [
         'code',
+        'target_link',
         'user_id',
     ];
 
@@ -36,6 +37,7 @@ class Referrer extends Model
      */
     public $rules = [
         'code' => 'string|unique:books_referral_referrers,code',
+        'target_link' => 'required|string',
         'user_id' => 'required|integer',
     ];
 

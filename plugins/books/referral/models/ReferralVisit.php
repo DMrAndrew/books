@@ -15,7 +15,7 @@ class ReferralVisit extends Model
     /**
      * @var string table name
      */
-    public $table = 'books_referral_referral_visits';
+    protected $table = 'books_referral_referral_visits';
 
     /**
      * @var array
