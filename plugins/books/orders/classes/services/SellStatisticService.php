@@ -53,6 +53,8 @@ class SellStatisticService implements SellStatisticServiceContract
                 ? SellStatisticSellTypeEnum::SELL
                 : SellStatisticSellTypeEnum::SUBSCRIBE;
 
+            $price = intdiv(($order->editions->sum('amount') * $author->percent), 100);
+
             SellStatistics::create([
                 'profile_id' => $profile->id,
                 'edition_id' => $edition->id,
@@ -60,7 +62,7 @@ class SellStatisticService implements SellStatisticServiceContract
                 'sell_at' => Carbon::now(),
                 'edition_status' => $edition->status->value,
                 'sell_type' => $sellType,
-                'price' => $order->editions->sum('amount'),
+                'price' => $price,
                 'reward_rate' => intval($rewardTaxedCoefficient * 100),
                 'reward_value' => $authorRewardPartTaxed,
                 'tax_rate' => intval(100 - ($rewardTaxedCoefficient * 100)),
