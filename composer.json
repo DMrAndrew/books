@@ -32,6 +32,7 @@
         "books/wallet-plugin": "*",
         "books/payment-plugin": "*",
         "books/withdrawal-plugin": "*",
+        "books/referral-plugin": "*",
         "laracraft-tech/laravel-date-scopes": "^1.1",
         "vdlp/oc-telescope-plugin": "^2.0",
         "vdlp/oc-horizon-plugin": "*",
@@ -134,6 +135,10 @@
         "books/withdrawal-plugin": {
             "type": "path",
             "url": "./plugins/books/withdrawal"
+        },
+        "books/referral-plugin": {
+            "type": "path",
+            "url": "./plugins/books/referral"
         },
         "vdlp/oc-telescope-plugin": {
             "type": "path",

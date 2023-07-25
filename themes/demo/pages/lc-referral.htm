@@ -1,0 +1,41 @@
+url = "/lc-referral"
+layout = "default"
+title = "Коммерческий кабинет - Реферальная программа"
+description = "Реферальная программа"
+meta_title = "Реферальная программа"
+meta_description = "Реферальная программа"
+turbo_cache_control='no-cache'
+[session]
+security = "user"
+redirect = "/"
+[LCReferrer]
+[LCReferralStatistics]
+==
+<div style="margin-bottom: 16px"> </div>
+<div class="ui-container">
+    <div class="personal-area__title ui-text-head--2 ui-text--bold">Реклама</div>
+</div>
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="referral wrapper">
+
+            <div class="referral__subtitle ui-text-head--3 ui-text--bold">Правила</div>
+            <p class="referral__text ui-text-body--2">Реферальная программа - это возможность зарабатывать, приводя на сайт Время книг рефералов. Ваши рефералы - это новые пользователи, которые зарегистрировались по вашей реферальной ссылке.</p>
+
+            <div class="referral__subtitle ui-text-head--3 ui-text--bold">Регистрация в реферальной программе</div>
+            <p class="referral__text ui-text-body--2">Участником реферальной программы может стать любой совершеннолетний пользователь Сайта. Для участия в реферальной программе зарегистрируйтесь на сайте Время книг.</p>
+
+            <div class="referral__subtitle ui-text-head--3 ui-text--bold">Доступные партнерские программы</div>
+            <p class="referral__text ui-text-body--2">В течении 2-х недель после того, как любой пользователь перейдет на Время книг по вашей реферальной ссылке, вы будете получать 3% с каждой его покупки.</p>
+            <p class="referral__text ui-text-body--2">Важно! Если в течение 2-ух недель этот пользователь перейдет по реферальной ссылке другого партнера, то его покупки станут приносить доход вашему коллеге, а у вас этот % исчезнет. </p>
+
+            <div class="referral__subtitle ui-text-head--3 ui-text--bold">Вывод средств</div>
+            <p class="referral__text ui-text-body--2">Для вывода средств необходимо подписать <a href="/lc-commercial-withdraw" target="_blank" class="ui-link _violet">заявление</a></p>
+
+            <div class="referral__subtitle ui-text-head--3 ui-text--bold">Реферальная ссылка</div>
+            {% component 'LCReferrer' %}
+
+        </div>
+    </div>
+</div>
