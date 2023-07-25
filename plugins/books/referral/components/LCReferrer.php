@@ -151,10 +151,8 @@ class LCReferrer extends ComponentBase
             config('app.com_url'),
         ];
 
-        //if (App::environment() !== 'local') {
-            if (!in_array($urlParts['host'], $allowedDomains)) {
-                throw new Exception("Ссылка может вести только на внутренние страницы сайта Время книг");
-            }
-        //}
+        if (!in_array($urlParts['host'], $allowedDomains)) {
+            throw new Exception("Ссылка может вести только на внутренние страницы сайта Время книг");
+        }
     }
 }

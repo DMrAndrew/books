@@ -2,6 +2,7 @@
 
 use Books\Orders\Models\Order;
 use Model;
+use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 
 /**
@@ -11,6 +12,8 @@ use RainLab\User\Models\User;
  */
 class ReferralStatistics extends Model
 {
+    use Validation;
+
     /**
      * @var string table name
      */
@@ -21,8 +24,8 @@ class ReferralStatistics extends Model
      */
     public $rules = [
         'user_id' => 'required|exists:users,id',
-        'referrer_id' => 'required|books_referral_referrers:users,id',
-        'order_id' => 'required|books_orders_orders:users,id',
+        'referrer_id' => 'required|exists:books_referral_referrers,id',
+        'order_id' => 'required|exists:books_orders_orders,id',
         'sell_at' => 'required',
         'price' => 'required',
         'reward_rate' => 'required',

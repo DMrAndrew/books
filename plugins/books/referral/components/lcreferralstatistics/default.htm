@@ -1,0 +1,49 @@
+{{ form_ajax('LCReferralStatistics::onFilterStatistics',{
+'data-request-flash':1,'data-request-validate':'1','data-request-complete':'iniSelect()'}) }}
+<div class="commerce-control">
+    <div class="commerce-control__columns _flex-end _indent-large">
+        <div class="commerce-control__input _max-width ui-select">
+            <div class="ui-select-header">
+                <label class="ui-select-label">Период</label>
+            </div>
+            <div class="ui-input-container">
+                <svg class="ui-input-item-icon _fake">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                </svg>
+                <input type="text" name="dates" class="ui-input-item _size-32" size="32">
+            </div>
+        </div>
+
+        <div class="commerce-control__input">
+            <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium ui-button--full-mobile">Искать</button>
+        </div>
+    </div>
+</div>
+{{ form_close() }}
+
+<div class="commerce__category">
+    <div id="statisticsDataTable"></div>
+</div>
+
+<script>
+    $('input[name="dates"]').daterangepicker({
+        startDate:`{{from}}`,
+        endDate:'`{{to}}`',
+        "locale": {
+            "format": "DD.MM.YYYY",
+            "separator": " - ",
+            "applyLabel": "Применить",
+            "cancelLabel": "Отменить",
+            "fromLabel": "С",
+            "toLabel": "По",
+            "customRangeLabel": "Custom",
+            "weekLabel": "W",
+            "daysOfWeek": ["Вс","Пн","Вт","Ср","Th","Пт","Сб"],
+            "monthNames": ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"],
+            "firstDay": 1
+        },
+        'buttonClasses': 'ui-button ui-button-size--32',
+        'cancelButtonClasses': 'ui-button-view--3',
+        'applyButtonClasses': 'ui-button-view--2'
+    });
+</script>

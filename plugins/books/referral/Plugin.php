@@ -2,6 +2,7 @@
 
 use Backend;
 use Books\Referral\Behaviours\ReferralProgram;
+use Books\Referral\Components\LCReferralStatistics;
 use Books\Referral\Components\LCReferrer;
 use Books\Referral\Components\ReferralLink;
 use Books\Referral\Contracts\ReferralServiceContract;
@@ -21,8 +22,8 @@ class Plugin extends PluginBase
 {
     public $require = [
         'RainLab.User',
-        //'RainLab.Orders',
-        //'RainLab.Wallet',
+        'RainLab.Orders',
+        'RainLab.Wallet',
     ];
 
     /**
@@ -74,6 +75,7 @@ class Plugin extends PluginBase
         return [
             LCReferrer::class => 'LCReferrer',
             ReferralLink::class => 'ReferralLink',
+            LCReferralStatistics::class => 'LCReferralStatistics',
         ];
     }
 
