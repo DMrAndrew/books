@@ -21,7 +21,7 @@ class Referrer extends Model
     /**
      * @var string table name
      */
-    protected $table = 'books_referral_referrers';
+    public $table = 'books_referral_referrers';
 
     /**
      * @var array

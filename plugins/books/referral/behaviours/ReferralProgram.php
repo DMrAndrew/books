@@ -3,9 +3,8 @@
 namespace Books\Referral\Behaviours;
 
 use Books\Referral\Models\Referrals;
+use Books\Referral\Models\ReferralStatistics;
 use Books\Referral\Models\Referrer;
-use October\Rain\Database\Builder;
-use October\Rain\Database\Relations\HasOne;
 use October\Rain\Extension\ExtensionBase;
 use RainLab\User\Models\User;
 
@@ -21,6 +20,7 @@ class ReferralProgram extends ExtensionBase
         ];
 
         $this->user->hasMany['referrals'] = [Referrals::class, 'key' => 'user_id'];
+        $this->user->hasMany['statistic'] = [ReferralStatistics::class, 'key' => 'user_id'];
     }
 
     /**
