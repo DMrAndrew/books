@@ -113,7 +113,7 @@ class LCReferralStatistics extends ComponentBase
             });
 
             /**
-             * Collapse items with same [title, type, price]
+             * Collapse items with same [partner code, etc]
              */
             foreach ($statisticsData[$day] as $keyI => $itemI) {
                 foreach ($statisticsData[$day] as &$itemJ) {

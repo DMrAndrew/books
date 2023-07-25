@@ -573,12 +573,8 @@ class OrderService implements OrderServiceContract
 
         $referrer = $referralService->getActiveReferrerOfCustomer($order->user);
         if ($referrer) {
-            $rewardByEdition = $this->calculateAuthorsOrderRewardFromEdition($order);
-            if ($rewardByEdition) {
-                $rewardPercent = $referralService->getRewardPercent();
-                $referrerRewardPartRounded = intdiv(($rewardByEdition * $rewardPercent), 100);
-                $referrer->user->proxyWallet()->deposit($referrerRewardPartRounded, ['Реферальная программа' => "Заказ №{$order->id}"]);
-            }
+            $referralService->saveReferralSellStatistic($order, $referrer);
+            $referralService->rewardReferrer($order);
         }
     }
 }

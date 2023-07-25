@@ -3,9 +3,14 @@ declare(strict_types=1);
 
 namespace Books\Referral\Services;
 
+use App;
+use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
+use Books\Orders\Models\Order;
 use Books\Referral\Contracts\ReferralServiceContract;
 use Books\Referral\Models\Referrals;
+use Books\Referral\Models\ReferralStatistics;
 use Books\Referral\Models\Referrer;
+use Carbon\Carbon;
 use Cookie;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -62,28 +67,28 @@ class ReferralService implements ReferralServiceContract
     }
 
     /**
-     * @param Referrer $refferer
+     * @param Referrer $referrer
      * @param User $user
      *
      * @return Referrals
      */
-    public function addReferral(Referrer $refferer, User $user): Referrals
+    public function addReferral(Referrer $referrer, User $user): Referrals
     {
         /**
          * Если пользователь переходит по ссылке другого партнера,
-         * то он прикрепляется к нему и счетчик в 2 недели включается дзаново
+         * то он прикрепляется к нему и счетчик в 2 недели включается заново
          */
         $referral = Referrals::where('user_id', $user->id)->first();
 
         if ($referral) {
             $referral->update([
-                'referrer_id' => $refferer->id,
+                'referrer_id' => $referrer->id,
                 'valid_till' => now()->addDays(Referrals::REFERRAL_LIVE_TIME_DAYS),
             ]);
         } else {
             $referral = Referrals::create([
                 'user_id' => $user->id,
-                'referrer_id' => $refferer->id,
+                'referrer_id' => $referrer->id,
                 'valid_till' => now()->addDays(Referrals::REFERRAL_LIVE_TIME_DAYS),
             ]);
         }
@@ -98,13 +103,10 @@ class ReferralService implements ReferralServiceContract
      */
     public function getActiveReferrerOfCustomer(User $user): ?Referrer
     {
-        return Referrer
-            ::whereHas('referrals', function ($query) use ($user) {
-                $query
-                    ->active()
-                    ->where('user_id', $user->id);
-            })
-            ->first();
+        return Referrals
+            ::where('user_id', $user->id)
+            ->first()
+            ?->referrer;
     }
 
     /**
@@ -115,8 +117,54 @@ class ReferralService implements ReferralServiceContract
         return self::REFERRAL_REWARD_PERCENT;
     }
 
-    public function saveReferralSellStatistic(): void
+    /**
+     * @param Order $order
+     * @param Referrer $referrer
+     *
+     * @return void
+     */
+    public function saveReferralSellStatistic(Order $order, Referrer $referrer): void
     {
-        // TODO: Implement saveReferralSellStatistic() method.
+        $orderService = app(OrderServiceContract::class);
+        $rewardByEdition = $orderService->calculateAuthorsOrderRewardFromEdition($order);
+
+        $rewardPercent = $this->getRewardPercent();
+
+        if ($rewardByEdition) {
+            $referrerRewardPartRounded = intdiv(($rewardByEdition * $rewardPercent), 100);
+        } else {
+            $referrerRewardPartRounded = 0;
+        }
+
+        $data = [
+            'user_id' => $referrer->user->id,
+            'referrer_id' => $referrer->id,
+            'order_id' => $order->id,
+            'sell_at' => now(),
+            'price' => $rewardByEdition,
+            'reward_rate' => $rewardPercent,
+            'reward_value' => $referrerRewardPartRounded,
+        ];
+
+        ReferralStatistics::create($data);
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return void
+     */
+    public function rewardReferrer(Order $order): void
+    {
+        $referrer = $this->getActiveReferrerOfCustomer($order->user);
+        if ($referrer) {
+            $orderService = app(OrderServiceContract::class);
+            $rewardByEdition = $orderService->calculateAuthorsOrderRewardFromEdition($order);
+            if ($rewardByEdition) {
+                $rewardPercent = $this->getRewardPercent();
+                $referrerRewardPartRounded = intdiv(($rewardByEdition * $rewardPercent), 100);
+                $referrer->user->proxyWallet()->deposit($referrerRewardPartRounded, ['Реферальная программа' => "Заказ №{$order->id}"]);
+            }
+        }
     }
 }
