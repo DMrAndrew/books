@@ -92,3 +92,6 @@
 1.0.27:
     - 'Системные сообщения'
     - create_system_messages_table.php
+1.0.28:
+    - 'Отложенное обновление контента'
+    - add_fields_content.php

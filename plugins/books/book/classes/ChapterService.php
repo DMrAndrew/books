@@ -51,18 +51,22 @@ class ChapterService
     {
         if ($payload instanceof \Tizis\FB2\Model\Chapter) {
             if ((int)$this->parseContentToCollection($payload->getContent())->sum('length')) {
-                return $this->create([
+                $data = [
                     'title' => $payload->getTitle(),
                     'content' => $payload->getContent(),
                     'status' => ChapterStatus::PUBLISHED,
-                ]);
+                ];
+            } else {
+                return null;
             }
-
-            return null;
+        } else {
+            $data = $payload;
         }
 
-        if (is_array($payload) || $payload instanceof Collection) {
-            return $this->{$this->isNew() ? 'create' : 'update'}(is_array($payload) ? $payload : $payload->toArray());
+
+        if (is_array($data) || $data instanceof Collection) {
+            $data = $this->dataPrepare(is_array($data) ? $data : $data->toArray());
+            return $this->isNew() ? $this->create($data) : $this->update($data);
         }
         throw new UnknownFormatException();
     }
@@ -75,7 +79,7 @@ class ChapterService
         if (!$this->edition->id) {
             throw new Exception('Edition required.');
         }
-        $this->chapter->fill($this->dataPrepare($data));
+        $this->chapter->fill($data);
         $this->chapter->sort_order ??= $this->edition->nextChapterSortOrder();
         $this->chapter->sales_type ??= ChapterSalesType::PAY;
         $this->chapter['edition_id'] = $this->edition->id;
@@ -89,7 +93,6 @@ class ChapterService
     protected function update(array $data): Chapter
     {
         return Db::transaction(function () use ($data) {
-            $data = $this->dataPrepare($data);
             $this->chapter->fill($data);
 
             if (!$this->chapter->isDirty('status')) {
@@ -103,6 +106,19 @@ class ChapterService
         });
     }
 
+    public function mergeDeferred(): void
+    {
+        if ($content = $this->chapter->deferredContentOpened) {
+            Db::transaction(function () use ($content) {
+                $this->update(['new_content' => $content->body]);
+                $this->chapter->deferredContentOpened->markMerged();
+            });
+        }
+    }
+
+    /**
+     * @throws ValidationException
+     */
     public function delete(): void
     {
         if (!$this->chapter->edition->editAllowed()) {
@@ -111,12 +127,23 @@ class ChapterService
         $this->chapter->delete();
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function dataPrepare(array|Collection $data): array
     {
-        if (!$this->edition->editAllowed()) {
-            throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование глав.']);
-        }
         $data = collect($data);
+        if (!$this->edition->editAllowed()) {
+            if ($this->edition->shouldDeferredUpdate()) {
+                if($this->chapter->deferredContentOpened()->requested()->exists()) {
+                    throw new ValidationException(['edition' => 'На время модерации администратором редактирование контента части запрещено.']);
+                }
+                $data = $data->only(['content']);
+            } else {
+                throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование глав.']);
+            }
+        }
+
 
         if ($data->has('status')) {
             $data['status'] = $data['status'] instanceof ChapterStatus ? $data['status'] : (ChapterStatus::tryFrom($data->get('status')) ?? ChapterStatus::DRAFT);
@@ -145,7 +172,7 @@ class ChapterService
         }
 
         if ($data->has('content')) {
-            $data['new_content'] = $data['content'];
+            $data[$this->edition?->shouldDeferredUpdate() ? 'deferred_content' : 'new_content'] = $data['content'];
             $data->forget('content');
         }
 
@@ -178,7 +205,7 @@ class ChapterService
         return null;
     }
 
-    public function paginate()
+    public function paginate(): void
     {
         $chunks = $this->chunkContent();
         $pages = $chunks->map(function ($chunk, $index) {

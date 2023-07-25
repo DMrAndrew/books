@@ -3,6 +3,12 @@
 # ===================================
 
 columns:
-    id:
-        label: ID
+    requested_at:
+        label: Дата запроса
         searchable: true
+    BookInfo:
+        label: ID книги - Книга - Часть
+    merge_at:
+        label: Дата слияния
+        searchable: true
+

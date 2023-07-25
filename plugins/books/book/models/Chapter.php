@@ -8,8 +8,9 @@ use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Jobs\Paginate;
 use Books\Book\Jobs\Reading;
-use Carbon\Carbon;
+use Db;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
@@ -37,6 +38,8 @@ use System\Models\File;
  * * @method AttachOne picture
  * @method HasOne next
  * @method HasOne prev
+ * @method MorphMany deferredContent все отложенные обновления
+ * @method MorphMany deferredContentOpened отложенные обновления без слияния
  *
  * @property ?Chapter prev
  * @property ?Chapter next
@@ -48,7 +51,6 @@ use System\Models\File;
  * @property  ChapterStatus status
  * @property  ChapterSalesType sales_type
  * @property  int sort_order
- * @property  Carbon published_at
  */
 class Chapter extends Model
 {
@@ -68,7 +70,7 @@ class Chapter extends Model
      */
     protected $guarded = ['*'];
 
-    protected $purgeable = ['new_content'];
+    protected $purgeable = ['new_content', 'deferred_content'];
 
     public string $trackerChildRelation = 'pagination';
 
@@ -76,7 +78,7 @@ class Chapter extends Model
      * @var array fillable attributes are mass assignable
      */
     protected $fillable = [
-        'title', 'edition_id', 'published_at', 'new_content', 'length', 'sort_order', 'status', 'sales_type', 'type',
+        'title', 'edition_id', 'published_at', 'new_content', 'deferred_content', 'length', 'sort_order', 'status', 'sales_type', 'type',
         'next_id', 'prev_id',
     ];
 
@@ -208,6 +210,32 @@ class Chapter extends Model
         return $query->where('status', ChapterStatus::PUBLISHED);
     }
 
+    public function scopeWithDeferredState(Builder $builder)
+    {
+        return $builder
+            ->withDeferredExists()
+            ->withDeferredMergeUnRequestedExists()
+            ->withDeferredMergeRequestedExists();
+    }
+
+    public function scopeWithDeferredExists(Builder $builder): Builder
+    {
+        return $builder->withExists(['deferredContentOpened as deferred_content_exists']);
+
+    }
+
+    public function scopeWithDeferredMergeUnRequestedExists(Builder $builder): Builder
+    {
+        return $builder->withExists(['deferredContentOpened as deferred_content_unrequested_exists' => fn($content) => $content->notRequested()]);
+
+    }
+
+    public function scopeWithDeferredMergeRequestedExists(Builder $builder): Builder
+    {
+        return $builder->withExists(['deferredContentOpened as deferred_content_requested_exists' => fn($content) => $content->requested()]);
+
+    }
+
     public function scopeType(Builder $builder, ChapterStatus ...$status): Builder
     {
         return $builder->whereIn('status', collect($status)->pluck('value')->toArray());
@@ -241,6 +269,7 @@ class Chapter extends Model
         }
     }
 
+
     protected function afterCreate()
     {
         $this->edition->setFreeParts();
@@ -261,6 +290,13 @@ class Chapter extends Model
 
     public function getContent()
     {
-        return $this->deferredContent ?? $this->content;
+        return $this->deferredContent()->notMerged()->first() ?? $this->content;
     }
+
+    public function getDeferredContentDiff()
+    {
+        return $this->content->getDiff($this->deferredContent);
+    }
+
+
 }

@@ -48,7 +48,7 @@ class EBooker extends ComponentBase
 
     public function fresh()
     {
-        $this->ebook = Auth::getUser()?->profile->books()->with('chapters')->find($this->property('book_id'))?->ebook;
+        $this->ebook = Auth::getUser()?->profile->books()->with(['chapters' => fn($chapters) => $chapters->withDeferredState()])->find($this->property('book_id'))?->ebook;
         if (!$this->ebook) {
             throw new ApplicationException('Электронное издание книги не найден.');
         }

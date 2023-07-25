@@ -6,3 +6,14 @@ fields:
     id:
         label: ID
         disabled: true
+    body:
+        label: Body
+        type: textarea
+        size: small
+        disabled: true
+    requested_at:
+        label: Requested At
+        disabled: true
+    merge_at:
+        label: Merge At
+        disabled: true

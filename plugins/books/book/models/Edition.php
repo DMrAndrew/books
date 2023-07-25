@@ -302,7 +302,7 @@ class Edition extends Model implements ProductInterface
     public function shouldRevisionLength(): bool
     {
         return $this->isDirty('length')
-            && !$this->shouldDeferredUpdate()
+//            && !$this->shouldDeferredUpdate()
             && in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN, BookStatus::COMPLETE]);
     }
 

@@ -1,12 +1,11 @@
 <?php namespace Books\Book\Models;
 
 use Jfcherng\Diff\DiffHelper;
-use Jfcherng\Diff\Factory\RendererFactory;
-use Jfcherng\Diff\Renderer\RendererConstant;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 use Books\Book\Classes\Enums\ContentTypeEnum;
+use Twig\Markup;
 
 /**
  * Content Model
@@ -39,8 +38,9 @@ class Content extends Model
         'merged_at'
     ];
 
+
     public $morphTo = [
-        'fillable' => []
+        'contentable' => []
     ];
 
     public function scopeRegular(Builder $builder): Builder
@@ -48,6 +48,10 @@ class Content extends Model
         return $builder->whereNull('type');
     }
 
+    public function getBookInfoAttribute(){
+        $book = $this->contentable?->edition?->book;
+        return implode(' - ',[$book->id,$book->title,strip_tags($this->contentable->title)]);
+    }
     public function scopeDeferred(Builder $builder)
     {
         return $builder->type(ContentTypeEnum::DEFERRED);
@@ -58,75 +62,188 @@ class Content extends Model
         return $builder->where('type', '=', array_pluck($type, 'value'));
     }
 
-    public function getDiff(?self $content = null)
+    public function scopeNotRequested(Builder $builder): Builder
     {
-        $rendererName = 'Inline';
-        $differOptions =             [
-            // show how many neighbor lines
-            // Differ::CONTEXT_ALL can be used to show the whole file
-            'context' => 3,
-            // ignore case difference
-            'ignoreCase' => false,
-            // ignore line ending difference
-            'ignoreLineEnding' => false,
-            // ignore whitespace difference
-            'ignoreWhitespace' => false,
-            // if the input sequence is too long, it will just gives up (especially for char-level diff)
-            //'lengthLimit' => 2000,
-        ];
-        $rendererOptions =             [
-            // how detailed the rendered HTML in-line diff is? (none, line, word, char)
-            'detailLevel' => 'line',
-            // renderer language: eng, cht, chs, jpn, ...
-            // or an array which has the same keys with a language file
-            // check the "Custom Language" section in the readme for more advanced usage
-            'language' => 'eng',
-            // show line numbers in HTML renderers
-            'lineNumbers' => true,
-            // show a separator between different diff hunks in HTML renderers
-            'separateBlock' => true,
-            // show the (table) header
-            'showHeader' => true,
-            // the frontend HTML could use CSS "white-space: pre;" to visualize consecutive whitespaces
-            // but if you want to visualize them in the backend with "&nbsp;", you can set this to true
-            'spacesToNbsp' => false,
-            // HTML renderer tab width (negative = do not convert into spaces)
-            'tabSize' => 4,
-            // this option is currently only for the Combined renderer.
-            // it determines whether a replace-type block should be merged or not
-            // depending on the content changed ratio, which values between 0 and 1.
-            'mergeThreshold' => 0.8,
-            // this option is currently only for the Unified and the Context renderers.
-            // RendererConstant::CLI_COLOR_AUTO = colorize the output if possible (default)
-            // RendererConstant::CLI_COLOR_ENABLE = force to colorize the output
-            // RendererConstant::CLI_COLOR_DISABLE = force not to colorize the output
-            'cliColorization' => RendererConstant::CLI_COLOR_AUTO,
-            // this option is currently only for the Json renderer.
-            // internally, ops (tags) are all int type but this is not good for human reading.
-            // set this to "true" to convert them into string form before outputting.
-            'outputTagAsString' => false,
-            // this option is currently only for the Json renderer.
-            // it controls how the output JSON is formatted.
-            // see available options on https://www.php.net/manual/en/function.json-encode.php
-            'jsonEncodeFlags' => \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE,
-            // this option is currently effective when the "detailLevel" is "word"
-            // characters listed in this array can be used to make diff segments into a whole
-            // for example, making "<del>good</del>-<del>looking</del>" into "<del>good-looking</del>"
-            // this should bring better readability but set this to empty array if you do not want it
-            'wordGlues' => [' ', '-'],
-            // change this value to a string as the returned diff if the two input strings are identical
-            'resultForIdenticals' => null,
-            // extra HTML classes added to the DOM of the diff container
-            'wrapperClasses' => ['diff-wrapper'],
-        ];
+        return $builder->whereNull('requested_at');
+    }
+    public function scopeRequested(Builder $builder): Builder
+    {
+        return $builder->whereNotNull('requested_at');
+    }
 
-//        $content ??= Content::query()->inRandomOrder()->first();
+    public function scopeNotMerged(Builder $builder): Builder
+    {
+        return $builder->whereNull('merged_at');
+    }
+    public function scopeMerged(Builder $builder): Builder
+    {
+        return $builder->whereNotNull('merged_at');
+    }
 
+    public function scopeDeferredOpened(Builder $builder)
+    {
+        return $builder->deferred()->notMerged();
+    }
 
-        // custom usage
-        return $differ = DiffHelper::calculate('Пирливет это я', 'Пирливет это  не я был', $rendererName,$differOptions,$rendererOptions);
-        $renderer = RendererFactory::make($rendererName, $rendererOptions); // or your own renderer object
-        $result = $renderer->render($differ);
+    public function markRequest()
+    {
+        $this->requested_at = now();
+        $this->save();
+    }
+
+    public function markMerged()
+    {
+        $this->merged_at = now();
+        $this->save();
+    }
+
+    public function getContentDiff(?self $content = null): string
+    {
+        $config = config('books . book::content_diff');
+        $options = [$config['rendererName'], $config['differOptions'], $config['rendererOptions']];
+
+        if (!$content) {
+            return DiffHelper::calculate('', '', ...$options);
+        }
+        return DiffHelper::calculate($this->body, $content->body, ...$options);
+    }
+
+    public function text1()
+    {
+        return 'Ллойд застелил белый ковер одноразовыми пеленками и поставил манеж в спальне(прищемив себе пальцы в процессе сборки), потом уселся за стол у себя в кабинете, включил компьютер, нашел в Интернете большую статью под названием «У вас новый щенок!» и принялся ее изучать . Где - то на середине статьи он почувствовал на себе чей - то пристальный взгляд . Лори тихонько сидела рядом с его ногой и смотрела на него, задрав мордочку кверху . Он решил ее покормить и обнаружил лужицу мочи в проходе под аркой между гостиной и кухней, дюймах в шести от ближайшей пеленки . Он подхватил Лори на руки, посадил рядом с лужей и строго сказал:
+
+– Не здесь .  – Потом перенес ее на нетронутую пеленку .  – Вот здесь .
+
+    Она посмотрела на него, затем проковыляла в кухню, улеглась рядом с плитой, положив мордочку на передние лапы, и снова уставилась на Ллойда своими большими янтарными глазами . Ллойд отмотал от рулона сразу несколько бумажных полотенец . Он уже понял, что в ближайшую пару недель таких полотенец ему понадобится немало .
+
+    Вытерев лужу(совсем - совсем маленькую), он высыпал в миску четверть чашки сухого собачьего корма – рекомендуемая дозировка, согласно статье «У вас новый щенок!», – и смешал его с йогуртом . Лори вполне охотно принялась за еду . Ллойд наблюдал, как она ест, и тут затрезвонил телефон . Бет звонила из зоны отдыха, расположенной где - то вдоль Аллеи аллигаторов .
+
+    – Обязательно покажи ее ветеринару . Я забыла тебе сказать .
+
+    – Я знаю, Бетти .
+
+    Об этом тоже писали в статье «У вас новый щенок!» .
+
+    Она продолжала, словно он вообще ничего не сказал . Ллойд хорошо знал и эту привычку сестры . Она никогда не слушала, что ей говорят .
+
+    – Как я понимаю, ей будут нужны витамины . И что - нибудь от глистов . И, наверное, от блох и клещей… Кажется, есть такие таблетки, их подмешивают в еду . И ее надо будет кастрировать . В смысле, стерилизовать . Но это точно не в ближайшую пару месяцев .
+
+    – Да, – сказал он .  – Если я оставлю ее у себя .
+
+    Лори закончила есть и пошла в гостиную . Теперь, с туго набитым животиком, она ковыляла еще сильнее . Словно чуть пьяная, подумал Ллойд .
+
+    – Не забывай с ней гулять .
+
+    – Не забуду .  – Каждые четыре часа, согласно статье «У вас новый щенок!» . Это, конечно, смешно . Он не собирался подскакивать в два часа ночи, чтобы сводить на прогулку свою незваную гостью .
+
+    Его сестра всегда умела читать мысли . Вот и теперь она сказала:
+
+– Ты, наверное, думаешь, что тебя напрягает просыпаться посреди ночи .
+
+    – Такая мысль приходила мне в голову .
+
+    Бетти снова его не услышала . Как всегда .
+
+    – Ты же сам говорил, что у тебя затяжная бессонница после смерти Мэриан . Если ты не соврал, то никаких трудностей здесь быть не должно .
+
+    – Бетти, ты очень чуткая и любящая сестра .
+
+    – Посмотрим, как все пойдет . Вот я о чем . Дай девочке шанс .  – Она секунду помедлила .  – Дай себе шанс, раз уж на то пошло . Я за тебя беспокоюсь, Ллойд . Я почти сорок лет проработала в страховой компании и знаю, что мужчины твоего возраста, к тому же еще и вдовцы, больше подвержены различным заболеваниям . Да и смертность среди них выше .
+
+    На это он ничего не сказал .
+
+    – Ну, что ?
+
+        – Что «ну, что» ?  – А то он не знал .
+
+    – Ты дашь ей шанс ?
+
+        Бет пыталась заставить его взять на себя обязательство, к которому он был не готов . Ллойд огляделся по сторонам, словно в поисках вдохновения, и увидел коричневую колбаску – маленькую собачью какашку – как раз на том месте, где была лужа . В шести дюймах от ближайшей пеленки .
+
+    – Ну, пока что она со мной, – сказал он, по - прежнему не давая никаких обещаний .  – Ты там аккуратнее за рулем . Не гони .
+
+    – Я никогда не гоню . Шестьдесят пять миль в час всю дорогу . Меня все обгоняют, многие мне сигналят, но я уже не доверяю своим реакциям на больших скоростях .
+
+    Он попрощался с сестрой, отмотал от рулона несколько бумажных полотенец и убрал с пола коричневую колбаску . Лори наблюдала за ним, сверкая янтарными глазами . Он вынес собачку на улицу, где она ничего не сделала . Минут через двадцать, когда Ллойд закончил читать еще одну большую статью о том, как ухаживать за щенком, он обнаружил еще одну лужу в проходе под аркой .
+
+    В шести дюймах от ближайшей пеленки .
+
+    Он наклонился над ней, держась руками за колени . Спина, как всегда, протестующе хрустнула .
+
+    – Ну что, собаченция ? Кому жить надоело ?
+
+        Она смотрела на него .
+
+    Как будто его изучала . ';
+    }
+
+    public function text2()
+    {
+        return 'Ллойд застелил белый ковер одноразовыми пеленками и поставил манеж в спальне(прищемив себе пальцы в процессе сборки), потом уселся за стол у себя в кабинете, включил компьютер, нашел в Интернете большую статью под названием «У вас новый щенок!» и принялся ее изучать . Где - то на середине статьи он почувствовал на себе чей - то пристальный взгляд . Лори тихонько сидела рядом с его ногой и смотрела на него, задрав мордочку кверху . Он решил ее покормить и обнаружил лужицу мочи в проходе под аркой между гостиной и кухней, дюймах в шести от ближайшей пеленки . Он подхватил Лори на руки, посадил рядом с лужей и строго сказал:
+
+– Не здесь .  – Потом перенес ее на нетронутую пеленку .  – Вот здесь .
+
+    Она посмотрела на него, затем проковыляла в кухню, улеглась рядом с плитой, положив мордочку на передние лапы, и снова уставилась на Ллойда своими большими янтарными глазами . Ллойд отмотал от рулона сразу несколько бумажных полотенец . Он уже понял, что в ближайшую пару недель таких полотенец ему понадобится немало .
+
+    Вытерев лужу(совсем - совсем маленькую), он высыпал в миску четверть чашки сухого собачьего корма – рекомендуемая дозировка, согласно статье «У вас новый щенок!», – и смешал его с йогуртом . Лори вполне охотно принялась за еду . Ллойд наблюдал, как она ест, и тут затрезвонил телефон . Бет звонила из зоны отдыха, расположенной где - то вдоль Аллеи аллигаторов .
+
+    – Обязательно покажи ее ветеринару . Я забыла тебе сказать .
+
+    – Я знаю, Бетти .
+
+    Об этом тоже писали в статье «У вас новый щенок!» .
+
+    Она продолжала, словно он вообще ничеsdsdго не сказал . Ллойд хорошо знал и эту привычку сестры . Она никогда не слушала, что ей говорят .
+
+    – Как я понимаю, ей будут нужны витамины . И что - нибудь от глистов . И, наверное, от блох и клещей… Кажется, есть такие таблетки, их подмешивают в еду . И ее надо будет кастрировать . В смысле, стерилизовать . Но это точно не в ближайшую пару месяцев .
+
+    – Да, – сказал он .  – Если я оставлю ее у себя .
+
+    Лори закончила есть и пошла в гостиную . Теперь, с туго набитым животиком, она ковыляла еще сильнее . Словно чуть пьяная, подумал Ллойд .
+
+    – Не забывай с ней гулять .
+
+    – Не забуду .  – Каждые четsdsdыре часа, согласно статье «У вас нов222ый щенок!» . Это, конечно, смешно . Он не собирался подскакивать в два часа ночи, чтобы сводить на прогулку свою незваную гостью .
+
+    Его сестра всегда умела читать мысли . Вот и теперь она сказала:
+
+– Ты, наверное, думаешь, что тебя напрягает просыпаться посреди ночи .
+
+    – Такая мысль приходила мне в голову .
+
+    Бетти снова его не услышала . Как всегда .
+
+    – Ты же сам говорил, что у тебя затяжная бессонница после смерти Мэриан . Если ты не соврал, то никаких трудностей здесь быть не должно .
+
+    – Бетти, ты очень чуткая и любящая сестра .
+
+    – Посм Ллойд . Я почти сорок лет проработала в страховой компании и знаю, что мужчины твоего возраста, к тому же еще и вдовцы, больше подвержены различным заболеваниям . Да и смертность среди них выше .
+
+    На это он ничего не сказал .
+
+    – Ну, что ?
+
+        – Что «ну, что» ?  – А то он не знал .
+
+    – Ты дашь ей шанс ?
+
+        Бет пыталась заставить его взять на себя обязательство, к которому он был не готов . Ллойд огляделся по сторонам, словно в поисках вдохновения, и увидел коричневую колбаску – маленькую собачью какашку – как раз на том месте, где была лужа . В шести дюймах от ближайшей пеленки .
+
+    – Ну, пока  мной, – сказал он, по - прежнему не давая никаких222 обещаний .  – Ты там аккуратнее за рулем . Не гони .
+
+    – Я никогда не гоню . Шестьдесят пять миль в час сю дорогу . Меня все обгоняют, многие мне сигналят, но я уже не доверяю своим реакциям на больших скоростях .
+
+    Он попрощался с сестрой, отмотал от рулона несколько бумажных полотенец и убрал с пола коричневую колбаску . Лори наблюдала за ним, сверкая янтарными глазами . Он вынес собачку на улицу, где она ничего не сделала . Минут через двадцать, когда Ллойд закончил читать еще одну большую статью о том, как ухаживать за щенком, он обнаружил еще одну лужу в проходе под аркой .
+
+    В шести дюймах от ближайшей пеленки .
+
+    Он наклонился над ней, держась рукам колени . Спина, как всегда, протестующе хрустнула .
+
+    – Ну что, собаченция ? Кому  надоело ?
+
+        Она смотрела на него .
+
+    Как будто его изучала . ';
     }
 
 }

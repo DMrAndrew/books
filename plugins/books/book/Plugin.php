@@ -2,7 +2,7 @@
 
 namespace Books\Book;
 
-use Books\Book\Behaviors\Fillable;
+use Books\Book\Behaviors\Contentable;
 use Books\Book\Behaviors\Prohibitable;
 use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;
@@ -63,6 +63,7 @@ use RainLab\Location\Behaviors\LocationModel;
 use System\Classes\PluginBase;
 use Tizis\FB2\FB2Controller;
 use Backend;
+use Books\Book\Models\Content as ContentModel;
 
 /**
  * Plugin Information File
@@ -129,6 +130,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('CookieEnum', CookieEnum::class);
         AliasLoader::getInstance()->alias('SystemMessage', SystemMessage::class);
         AliasLoader::getInstance()->alias('StatsEnum', StatsEnum::class);
+        AliasLoader::getInstance()->alias('Content', ContentModel::class);
 
         $this->extendBooksController();
 
@@ -155,7 +157,7 @@ class Plugin extends PluginBase
 
         foreach ([Chapter::class, Pagination::class] as $class) {
             $class::extend(function ($model) {
-                $model->implementClassWith(Fillable::class);
+                $model->implementClassWith(Contentable::class);
             });
         }
 
@@ -250,6 +252,12 @@ class Plugin extends PluginBase
                     'icon' => 'icon-leaf',
                     'url' => Backend::url('books/book/systemmessage'),
                     'permissions' => ['books.book.systemmessage'],
+                ],
+                'content' => [
+                    'label' => 'Контент',
+                    'icon' => 'icon-leaf',
+                    'url' => Backend::url('books/book/content'),
+                    'permissions' => ['books.book.content'],
                 ],
             ]);
         });

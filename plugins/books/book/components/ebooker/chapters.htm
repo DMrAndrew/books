@@ -46,6 +46,23 @@
                             <div class="chapter-book__status">
                                 <span>{{chapter.length}} зн.</span>
                             </div>
+
+                            {% if chapter.deferred_content_exists %}
+                            <div class="chapter-book__status {{ chapter.deferred_content_unrequested_exists ? '_draft' : '' }}">
+                                <svg class="square-16">
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
+                                </svg>
+
+                                {% if chapter.deferred_content_unrequested_exists %}
+                                Есть контент
+                                {% endif %}
+
+                                {% if chapter.deferred_content_requested_exists %}
+                                Есть контент
+                                {% endif %}
+
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="chapter-book__action dropdown-menu">
