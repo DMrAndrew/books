@@ -188,7 +188,6 @@ class LCReferralStatistics extends ComponentBase
         /**
          * Visits stats
          */
-        $referrerIds = $referralStatistics->pluck('referrer_id')->unique()->toArray();
         $referralVisits = ReferralVisit
             ::whereIn('referrer_id', $referrerIds)
             ->whereDate('created_at', '>=', $periodFrom)
