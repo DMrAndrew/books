@@ -1,0 +1,54 @@
+# ===================================
+# Filter Scope Definitions
+# ===================================
+
+scopes:
+
+    book_id:
+        # Filter name
+        label: ID книги
+        type: text
+        # Filter scope
+        scope: filterByBookId
+        conditions:
+            exact: true
+    book_title:
+        # Filter name
+        label: Название книги
+        type: text
+        # Filter scope
+        scope: filterByBookTitle
+        conditions:
+            contains: true
+    chapter_id:
+        # Filter name
+        label: ID части
+        type: text
+        # Filter scope
+        scope: filterByChapterId
+        conditions:
+            exact: true
+    chapter_title:
+        # Filter name
+        label: Название части
+        type: text
+        # Filter scope
+        scope: filterByChapterTitle
+        conditions:
+            contains: true
+#    status:
+#        type: dropdown
+#        default: 0
+#        options:
+#            0: Ожидает проверки
+#            3: Слияние выполнено
+#            2: Отклонён
+    is_requested:
+        label: Ожидает проверки
+        type: checkbox
+        conditions: requested_at <> true
+        default: 1
+    is_merged:
+        label: Слияние выполнено
+        type: checkbox
+        conditions: merged_at <> true
