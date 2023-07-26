@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6ea066d835340010d09c75e5160fcd43",
+    "content-hash": "53e498248b5929e3d78721e1669ea12d",
     "packages": [
         {
             "name": "abordage/laravel-last-modified",
@@ -160,7 +160,7 @@
         },
         {
             "name": "books/book-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "plugins/books/book",
@@ -184,7 +184,7 @@
         },
         {
             "name": "books/collections-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/collections",
@@ -201,7 +201,7 @@
         },
         {
             "name": "books/comments-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/comments",
@@ -218,7 +218,7 @@
         },
         {
             "name": "books/fileuploader-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/fileuploader",
@@ -246,7 +246,7 @@
         },
         {
             "name": "books/notifications-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/notifications",
@@ -263,7 +263,7 @@
         },
         {
             "name": "books/payment-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/payment",
@@ -280,7 +280,7 @@
         },
         {
             "name": "books/profile-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/profile",
@@ -296,8 +296,25 @@
             }
         },
         {
+            "name": "books/referral-plugin",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./plugins/books/referral",
+                "reference": "cf83b056ea9bff2b53d7ee6354c5eb880dda5bf0"
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "october-plugin",
+            "description": "No description provided yet...",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "books/reviews-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/reviews",
@@ -315,7 +332,7 @@
         },
         {
             "name": "books/wallet-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/wallet",
@@ -333,11 +350,11 @@
         },
         {
             "name": "books/withdrawal-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/withdrawal",
-                "reference": "2e9d89cde675b6c20a8ea055c57b08a94184eabc"
+                "reference": "2f30a28c2e6a021b402925181efe4a2953b0bc5b"
             },
             "require": {
                 "composer/installers": "~1.0",
@@ -3164,16 +3181,16 @@
         },
         {
             "name": "laravel/horizon",
-            "version": "v5.17.0",
+            "version": "v5.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/horizon.git",
-                "reference": "569c7154033679a1ca05b43bfa640cc60aa3b37b"
+                "reference": "b14498a09af826035e46ae8d6b013d0ec849bdb7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/horizon/zipball/569c7154033679a1ca05b43bfa640cc60aa3b37b",
-                "reference": "569c7154033679a1ca05b43bfa640cc60aa3b37b",
+                "url": "https://api.github.com/repos/laravel/horizon/zipball/b14498a09af826035e46ae8d6b013d0ec849bdb7",
+                "reference": "b14498a09af826035e46ae8d6b013d0ec849bdb7",
                 "shasum": ""
             },
             "require": {
@@ -3236,9 +3253,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/horizon/issues",
-                "source": "https://github.com/laravel/horizon/tree/v5.17.0"
+                "source": "https://github.com/laravel/horizon/tree/v5.18.0"
             },
-            "time": "2023-06-13T20:49:30+00:00"
+            "time": "2023-06-30T15:11:51+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -3302,16 +3319,16 @@
         },
         {
             "name": "laravel/socialite",
-            "version": "v5.6.3",
+            "version": "v5.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/socialite.git",
-                "reference": "00ea7f8630673ea49304fc8a9fca5a64eb838c7e"
+                "reference": "50148edf24b6cd3e428aa9bc06a5d915b24376bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/socialite/zipball/00ea7f8630673ea49304fc8a9fca5a64eb838c7e",
-                "reference": "00ea7f8630673ea49304fc8a9fca5a64eb838c7e",
+                "url": "https://api.github.com/repos/laravel/socialite/zipball/50148edf24b6cd3e428aa9bc06a5d915b24376bb",
+                "reference": "50148edf24b6cd3e428aa9bc06a5d915b24376bb",
                 "shasum": ""
             },
             "require": {
@@ -3368,20 +3385,20 @@
                 "issues": "https://github.com/laravel/socialite/issues",
                 "source": "https://github.com/laravel/socialite"
             },
-            "time": "2023-06-06T13:42:43+00:00"
+            "time": "2023-07-14T14:22:58+00:00"
         },
         {
             "name": "laravel/telescope",
-            "version": "v4.15.0",
+            "version": "v4.15.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/telescope.git",
-                "reference": "572a19b4c9b09295848de9a2352737a756a0fb05"
+                "reference": "5d74ae4c9f269b756d7877ad1527770c59846e14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/telescope/zipball/572a19b4c9b09295848de9a2352737a756a0fb05",
-                "reference": "572a19b4c9b09295848de9a2352737a756a0fb05",
+                "url": "https://api.github.com/repos/laravel/telescope/zipball/5d74ae4c9f269b756d7877ad1527770c59846e14",
+                "reference": "5d74ae4c9f269b756d7877ad1527770c59846e14",
                 "shasum": ""
             },
             "require": {
@@ -3437,9 +3454,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/telescope/issues",
-                "source": "https://github.com/laravel/telescope/tree/v4.15.0"
+                "source": "https://github.com/laravel/telescope/tree/v4.15.2"
             },
-            "time": "2023-06-08T13:57:22+00:00"
+            "time": "2023-07-13T20:06:27+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -5093,12 +5110,12 @@
         },
         {
             "name": "october/backend",
-            "version": "v3.4.6",
+            "version": "v3.4.10",
             "dist": {
                 "type": "zip",
-                "url": "https://gateway.octobercms.com/composer/dist/october/backend/october-backend-v3.4.6-e2313a.zip",
-                "reference": "caba8f1f64682b8231153523ef642c644e8b7ab9",
-                "shasum": "ae9754c5de5e19d6e4ffaa977fcc27c67b930d91"
+                "url": "https://gateway.octobercms.com/composer/dist/october/backend/october-backend-v3.4.10-738e62.zip",
+                "reference": "6573e7cf5f0b17a6e54a82f94c52ddfab802a44c",
+                "shasum": "bab06f5ae86383ee1a4444975e7500935d8c0441"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -5121,16 +5138,16 @@
                 "october",
                 "october cms"
             ],
-            "time": "2023-07-05T07:28:39+00:00"
+            "time": "2023-07-12T01:30:21+00:00"
         },
         {
             "name": "october/cms",
-            "version": "v3.4.6",
+            "version": "v3.4.10",
             "dist": {
                 "type": "zip",
-                "url": "https://gateway.octobercms.com/composer/dist/october/cms/october-cms-v3.4.6-9d81fa.zip",
-                "reference": "e429eae7ce68f3c482537b5a7696fbacf46eae63",
-                "shasum": "5c4c6d645b88bd2b278ffed015712adb2002fdb3"
+                "url": "https://gateway.octobercms.com/composer/dist/october/cms/october-cms-v3.4.10-8fded9.zip",
+                "reference": "049d222ae62e61ebb90631ed0b28ae63792e236f",
+                "shasum": "8c78052463945f063f7cbd8d9000b7c2ebd182c7"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -5153,16 +5170,16 @@
                 "october",
                 "october cms"
             ],
-            "time": "2023-07-04T05:42:13+00:00"
+            "time": "2023-07-18T01:56:26+00:00"
         },
         {
             "name": "october/editor",
-            "version": "v3.4.6",
+            "version": "v3.4.10",
             "dist": {
                 "type": "zip",
-                "url": "https://gateway.octobercms.com/composer/dist/october/editor/october-editor-v3.4.6-91d17a.zip",
-                "reference": "0bacdb0555e994fd331b8956b0fa6edce94b5f81",
-                "shasum": "10a9fe3384be118ed1ed17ebe090247b06a897c4"
+                "url": "https://gateway.octobercms.com/composer/dist/october/editor/october-editor-v3.4.10-622523.zip",
+                "reference": "4e17ff5f3e6e17ef69c0ff619b335ef0ad636e10",
+                "shasum": "02f1360e8e65336ec802c20be9490764cff68b34"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -5185,16 +5202,16 @@
                 "october",
                 "october cms"
             ],
-            "time": "2023-06-20T01:51:31+00:00"
+            "time": "2023-07-12T00:58:39+00:00"
         },
         {
             "name": "october/media",
-            "version": "v3.4.6",
+            "version": "v3.4.10",
             "dist": {
                 "type": "zip",
-                "url": "https://gateway.octobercms.com/composer/dist/october/media/october-media-v3.4.6-a0502a.zip",
-                "reference": "8a0161a3b77b3f8ebfeca4bab2f8cce08563fe68",
-                "shasum": "5d5fc4be5f9dfd2ca4997b7285a1314f698a0092"
+                "url": "https://gateway.octobercms.com/composer/dist/october/media/october-media-v3.4.10-100796.zip",
+                "reference": "00ea0f5e588c4b2a81b02062fc9ca85134b8a67d",
+                "shasum": "f12f58954038e478c083fca8ae98afe60ce62bba"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -5217,20 +5234,20 @@
                 "october",
                 "october cms"
             ],
-            "time": "2023-06-27T04:03:14+00:00"
+            "time": "2023-07-12T00:58:39+00:00"
         },
         {
             "name": "october/rain",
-            "version": "v3.4.3",
+            "version": "v3.4.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/octobercms/library.git",
-                "reference": "e663d3f8af59ef6c0b96543fcf592d036d9d2122"
+                "reference": "35dff9660ca59c9c3cdc99b9e135eec7041c43f0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/octobercms/library/zipball/e663d3f8af59ef6c0b96543fcf592d036d9d2122",
-                "reference": "e663d3f8af59ef6c0b96543fcf592d036d9d2122",
+                "url": "https://api.github.com/repos/octobercms/library/zipball/35dff9660ca59c9c3cdc99b9e135eec7041c43f0",
+                "reference": "35dff9660ca59c9c3cdc99b9e135eec7041c43f0",
                 "shasum": ""
             },
             "require": {
@@ -5298,18 +5315,18 @@
                 "rain"
             ],
             "support": {
-                "source": "https://github.com/octobercms/library/tree/v3.4.3"
+                "source": "https://github.com/octobercms/library/tree/v3.4.10"
             },
-            "time": "2023-06-30T12:17:31+00:00"
+            "time": "2023-07-19T08:24:16+00:00"
         },
         {
             "name": "october/system",
-            "version": "v3.4.6",
+            "version": "v3.4.10",
             "dist": {
                 "type": "zip",
-                "url": "https://gateway.octobercms.com/composer/dist/october/system/october-system-v3.4.6-89eab1.zip",
-                "reference": "2abd1e6258710e389005a659802e252877860541",
-                "shasum": "6626b23c73ed32b7dfa758928197d31f1bbc853a"
+                "url": "https://gateway.octobercms.com/composer/dist/october/system/october-system-v3.4.10-e72c07.zip",
+                "reference": "c5b91e9ac99694ff5baa2f72e13c0b2364e41c94",
+                "shasum": "bc6c7be85c3c64a254bf547320f9ec71d7ff3adb"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -5332,16 +5349,16 @@
                 "october cms",
                 "system"
             ],
-            "time": "2023-07-05T01:48:34+00:00"
+            "time": "2023-07-20T00:13:48+00:00"
         },
         {
             "name": "october/tailor",
-            "version": "v3.4.6",
+            "version": "v3.4.10",
             "dist": {
                 "type": "zip",
-                "url": "https://gateway.octobercms.com/composer/dist/october/tailor/october-tailor-v3.4.6-5aa585.zip",
-                "reference": "289f43ef8edfbd4514ab6dc4fdf97589aa26bd56",
-                "shasum": "b10bc898f5486295a037406975c4fa3402c1fccc"
+                "url": "https://gateway.octobercms.com/composer/dist/october/tailor/october-tailor-v3.4.10-a034b9.zip",
+                "reference": "81521fd63b82d222481a771e0730e8d17344f0a4",
+                "shasum": "eee62aa3a92f4dece9e96b199793d94564ca7623"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -5364,7 +5381,7 @@
                 "october cms",
                 "tailor"
             ],
-            "time": "2023-07-05T04:33:25+00:00"
+            "time": "2023-07-18T01:18:14+00:00"
         },
         {
             "name": "offline/oc-sentry-plugin",
@@ -5523,16 +5540,16 @@
         },
         {
             "name": "php-http/discovery",
-            "version": "1.19.0",
+            "version": "1.19.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/discovery.git",
-                "reference": "1856a119a0b0ba8da8b5c33c080aa7af8fac25b4"
+                "reference": "57f3de01d32085fea20865f9b16fb0e69347c39e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/discovery/zipball/1856a119a0b0ba8da8b5c33c080aa7af8fac25b4",
-                "reference": "1856a119a0b0ba8da8b5c33c080aa7af8fac25b4",
+                "url": "https://api.github.com/repos/php-http/discovery/zipball/57f3de01d32085fea20865f9b16fb0e69347c39e",
+                "reference": "57f3de01d32085fea20865f9b16fb0e69347c39e",
                 "shasum": ""
             },
             "require": {
@@ -5595,9 +5612,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-http/discovery/issues",
-                "source": "https://github.com/php-http/discovery/tree/1.19.0"
+                "source": "https://github.com/php-http/discovery/tree/1.19.1"
             },
-            "time": "2023-06-19T08:45:36+00:00"
+            "time": "2023-07-11T07:02:26+00:00"
         },
         {
             "name": "php-http/httplug",
@@ -6393,16 +6410,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.11.18",
+            "version": "v0.11.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "4f00ee9e236fa6a48f4560d1300b9c961a70a7ec"
+                "reference": "1724ceff278daeeac5a006744633bacbb2dc4706"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/4f00ee9e236fa6a48f4560d1300b9c961a70a7ec",
-                "reference": "4f00ee9e236fa6a48f4560d1300b9c961a70a7ec",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/1724ceff278daeeac5a006744633bacbb2dc4706",
+                "reference": "1724ceff278daeeac5a006744633bacbb2dc4706",
                 "shasum": ""
             },
             "require": {
@@ -6463,9 +6480,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.11.18"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.11.19"
             },
-            "time": "2023-05-23T02:31:11+00:00"
+            "time": "2023-07-15T19:42:19+00:00"
         },
         {
             "name": "rainlab/blog-plugin",
@@ -6629,6 +6646,10 @@
                 "octobercms",
                 "pages"
             ],
+            "support": {
+                "source": "https://github.com/rainlab/pages-plugin/tree/v1.5.12",
+                "issues": "https://github.com/rainlab/pages-plugin/issues"
+            },
             "time": "2023-06-30T08:09:20+00:00"
         },
         {
@@ -11629,16 +11650,16 @@
         },
         {
             "name": "laravel/pint",
-            "version": "v1.10.3",
+            "version": "v1.10.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "c472786bca01e4812a9bb7933b23edfc5b6877b7"
+                "reference": "a458fb057bfa2f5a09888a8aa349610be807b0c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/c472786bca01e4812a9bb7933b23edfc5b6877b7",
-                "reference": "c472786bca01e4812a9bb7933b23edfc5b6877b7",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/a458fb057bfa2f5a09888a8aa349610be807b0c3",
+                "reference": "a458fb057bfa2f5a09888a8aa349610be807b0c3",
                 "shasum": ""
             },
             "require": {
@@ -11649,9 +11670,9 @@
                 "php": "^8.1.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.18.0",
+                "friendsofphp/php-cs-fixer": "^3.21.1",
                 "illuminate/view": "^10.5.1",
-                "laravel-zero/framework": "^10.0.2",
+                "laravel-zero/framework": "^10.1.1",
                 "mockery/mockery": "^1.5.1",
                 "nunomaduro/larastan": "^2.5.1",
                 "nunomaduro/termwind": "^1.15.1",
@@ -11691,7 +11712,7 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2023-06-20T15:55:03+00:00"
+            "time": "2023-07-14T10:26:01+00:00"
         },
         {
             "name": "lemax10/asail",
@@ -12252,16 +12273,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.6.9",
+            "version": "9.6.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "a9aceaf20a682aeacf28d582654a1670d8826778"
+                "reference": "a6d351645c3fe5a30f5e86be6577d946af65a328"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a9aceaf20a682aeacf28d582654a1670d8826778",
-                "reference": "a9aceaf20a682aeacf28d582654a1670d8826778",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a6d351645c3fe5a30f5e86be6577d946af65a328",
+                "reference": "a6d351645c3fe5a30f5e86be6577d946af65a328",
                 "shasum": ""
             },
             "require": {
@@ -12335,7 +12356,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.9"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.10"
             },
             "funding": [
                 {
@@ -12351,7 +12372,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-06-11T06:13:56+00:00"
+            "time": "2023-07-10T04:04:23+00:00"
         },
         {
             "name": "sebastian/cli-parser",

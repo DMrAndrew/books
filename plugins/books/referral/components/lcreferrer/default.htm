@@ -1,0 +1,9 @@
+{% if not referrer %}
+    {% partial __SELF__ ~ '::generate_link' %}
+{% else %}
+    {% partial __SELF__ ~ '::link' %}
+
+    {% partial __SELF__ ~ '::statistics' %}
+{% endif %}
+
+
