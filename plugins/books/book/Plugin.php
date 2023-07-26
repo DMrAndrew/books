@@ -35,6 +35,7 @@ use Books\Book\Components\Promocode;
 use Books\Book\Components\Reader;
 use Books\Book\Components\ReadStatistic;
 use Books\Book\Components\Widget;
+use Books\Book\FormWidgets\ContentDiff;
 use Books\Book\Jobs\GenreRaterExec;
 use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
@@ -311,5 +312,12 @@ class Plugin extends PluginBase
         ])->dailyAt('03:00');
 
         $schedule->command('book:discounts:notify_user_about_today_discounts')->dailyAt('03:10');
+    }
+
+    public function registerFormWidgets()
+    {
+        return [
+            ContentDiff::class => 'book_content_diff',
+        ];
     }
 }

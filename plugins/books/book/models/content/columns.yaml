@@ -3,12 +3,26 @@
 # ===================================
 
 columns:
+    book_info:
+        label: Название книги
+        displayFrom: book_info
+        sortable: false
+    chapter_info:
+        label: Название части
+        displayFrom: chapter_info
+        sortable: false
+    status_label:
+        label: Статус
+        displayFrom: status_label
+        sortable: false
     requested_at:
-        label: Дата запроса
-        searchable: true
-    BookInfo:
-        label: ID книги - Книга - Часть
-    merge_at:
+        label: Дата запроса проверки
+        type: timetense
+    merged_at:
         label: Дата слияния
-        searchable: true
+        type: timetense
+
+
+
+
 

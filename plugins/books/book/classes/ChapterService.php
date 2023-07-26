@@ -4,6 +4,7 @@ namespace Books\Book\Classes;
 
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\ChapterStatus;
+use Books\Book\Classes\Enums\ContentStatus;
 use Books\Book\Classes\Exceptions\UnknownFormatException;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
@@ -135,7 +136,7 @@ class ChapterService
         $data = collect($data);
         if (!$this->edition->editAllowed()) {
             if ($this->edition->shouldDeferredUpdate()) {
-                if($this->chapter->deferredContentOpened()->requested()->exists()) {
+                if ($this->chapter->deferredContentOpened()->requested()->exists()) {
                     throw new ValidationException(['edition' => 'На время модерации администратором редактирование контента части запрещено.']);
                 }
                 $data = $data->only(['content']);

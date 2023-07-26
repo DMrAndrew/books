@@ -16,10 +16,18 @@ return new class extends Migration {
         Schema::table($this->table(), function (Blueprint $table) {
             $table->timestamp('requested_at')->nullable();
             $table->timestamp('merged_at')->nullable();
-            $table->renameColumn('fillable_type', 'contentable_type');
-            $table->renameColumn('fillable_id', 'contentable_id');
-            $table->index('type');
             $table->json('data')->nullable();
+            $table->unsignedTinyInteger('status')->nullable();
+
+        });
+        if (Schema::hasColumn($this->table(), 'fillable_type')) {
+            Schema::table($this->table(), function (Blueprint $table) {
+                $table->renameColumn('fillable_type', 'contentable_type');
+                $table->renameColumn('fillable_id', 'contentable_id');
+            });
+        }
+        Schema::table($this->table(), function (Blueprint $table) {
+            $table->index('type');
         });
     }
 
@@ -28,7 +36,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        foreach (['requested_at', 'merged_at', 'data'] as $column) {
+        foreach (['requested_at', 'merged_at', 'data', 'status'] as $column) {
             if (Schema::hasColumn($this->table(), $column)) {
                 Schema::dropColumns($this->table(), $column);
             }
@@ -37,6 +45,7 @@ return new class extends Migration {
             Schema::table($this->table(), function (Blueprint $table) {
                 $table->renameColumn('contentable_type', 'fillable_type');
                 $table->renameColumn('contentable_id', 'fillable_id');
+                $table->dropIndex(['type']);
             });
         }
 

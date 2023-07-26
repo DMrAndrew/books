@@ -3,6 +3,8 @@
 use BackendMenu;
 use Backend\Classes\Controller;
 use Books\Book\Models\Content as ContentModel;
+use Flash;
+use Redirect;
 
 /**
  * Content Backend Controller
@@ -45,6 +47,29 @@ class Content extends Controller
     {
         $query->deferred()
             ->with('contentable.edition.book')
-            ->orderBy('requested_at', 'desc');
+            ->latest();
+    }
+
+    public function onAccept($recordId = null){
+        if ($model = ContentModel::find($recordId)) {
+            $model->contentable?->service()?->mergeDeferred();
+            Flash::success('Сохранено');
+
+            return Redirect::refresh();
+        }
+
+        return Flash::error('Контент не найден');
+    }
+
+    public function onReject($recordId = null){
+
+        if ($model = ContentModel::find($recordId)) {
+            $model->markRejected();
+            Flash::success('Сохранено');
+
+            return Redirect::refresh();
+        }
+
+        return Flash::error('Контент не найден');
     }
 }

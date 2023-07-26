@@ -17,13 +17,13 @@ return [
 
     ],
     'content_diff' => [
-        'rendererName' => 'Inline',
+        'rendererName' => 'Combined',
         'differOptions' => [
             // show how many neighbor lines
             // Differ::CONTEXT_ALL can be used to show the whole file
-            'context' => 3,
+            'context' => 4,
             // ignore case difference
-            'ignoreCase' => false,
+            'ignoreCase' => true,
             // ignore line ending difference
             'ignoreLineEnding' => false,
             // ignore whitespace difference
@@ -33,7 +33,7 @@ return [
         ],
         'rendererOptions' => [
             // how detailed the rendered HTML in-line diff is? (none, line, word, char)
-            'detailLevel' => 'line',
+            'detailLevel' => 'char',
             // renderer language: eng, cht, chs, jpn, ...
             // or an array which has the same keys with a language file
             // check the "Custom Language" section in the readme for more advanced usage
@@ -70,7 +70,7 @@ return [
             // characters listed in this array can be used to make diff segments into a whole
             // for example, making "<del>good</del>-<del>looking</del>" into "<del>good-looking</del>"
             // this should bring better readability but set this to empty array if you do not want it
-            'wordGlues' => [' ', '-'],
+            'wordGlues' => [],
             // change this value to a string as the returned diff if the two input strings are identical
             'resultForIdenticals' => null,
             // extra HTML classes added to the DOM of the diff container

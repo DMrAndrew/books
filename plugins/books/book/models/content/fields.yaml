@@ -6,14 +6,44 @@ fields:
     id:
         label: ID
         disabled: true
-    body:
-        label: Body
-        type: textarea
-        size: small
+        span: row
+        size: tiny
+        spanClass: col-2
+    book_info:
+        label: Название книги
+        displayFrom: book_info
         disabled: true
+        span: row
+        size: tiny
+        spanClass: col-2
+    chapter_info:
+        label: Название части
+        displayFrom: chapter_info
+        disabled: true
+        span: row
+        size: tiny
+        spanClass: col-2
+    status_label:
+        label: Статус
+        disabled: true
+        valueFrom: status_label
+        span: row
+        size: tiny
+        spanClass: col-2
     requested_at:
-        label: Requested At
+        label: Запрос
         disabled: true
-    merge_at:
-        label: Merge At
+        span: row
+        size: tiny
+        spanClass: col-2
+    merged_at:
+        label: Слияние
         disabled: true
+        span: row
+        size: tiny
+        spanClass: col-2
+    content_diff:
+        label: Изменения
+        type: book_content_diff
+        size: small
+
