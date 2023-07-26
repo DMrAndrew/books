@@ -34,9 +34,6 @@ class ReferralLink extends ComponentBase
     }
 
     public function onRun()
-    {}
-
-    public function onRender()
     {
         $this->processReferralLink();
 
