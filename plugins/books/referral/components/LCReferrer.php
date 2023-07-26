@@ -147,8 +147,8 @@ class LCReferrer extends ComponentBase
          * Ссылки могут вести только на сам сервиc (домен должен принадлежать сайту)
          */
         $allowedDomains = [
-            config('app.url'),
-            config('app.com_url'),
+            parse_url(config('app.url'), PHP_URL_HOST),
+            parse_url(config('app.com_url'), PHP_URL_HOST),
         ];
 
         if (!in_array($urlParts['host'], $allowedDomains)) {
