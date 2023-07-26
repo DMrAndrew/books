@@ -82,12 +82,62 @@ class LCReferralStatistics extends ComponentBase
         $periodFrom = Carbon::createFromFormat('d.m.Y', $dateFrom);
         $periodTo = Carbon::createFromFormat('d.m.Y', $dateTo);
 
-        $referralStatisticsQuery = ReferralStatistics
+        /**
+         * Limit select range to 3 months
+         */
+        $periodStartFrom = $periodTo->copy()->subMonths(3);
+        if ($periodFrom->lessThan($periodStartFrom)) {
+            $periodFrom = $periodStartFrom;
+            Flash::warning('Максимальный период для построения отчета составляет 3 месяца. Показаны последние 3 месяца выбранного периода');
+        }
+
+        /**
+         * Dates from visits and sell statistic
+         */
+        $referrerIds = $this->user->referrers->pluck('id')->toArray();
+
+        $datesByVisits = ReferralVisit
+            ::whereIn('referrer_id', $referrerIds)
+            ->whereDate('created_at', '>=', $periodFrom)
+            ->whereDate('created_at', '<=', $periodTo)
+            ->select(
+                DB::raw("DATE_FORMAT(created_at, '%d.%m.%Y') as `day`"),
+                DB::raw("`created_at` as `sort_time`"),
+            );
+
+        $datesBySellStatistics = ReferralStatistics
+            ::whereIn('referrer_id', $referrerIds)
+            ->whereDate('sell_at', '>=', $periodFrom)
+            ->whereDate('sell_at', '<=', $periodTo)
+            ->select(
+                DB::raw("DATE_FORMAT(sell_at, '%d.%m.%Y') as `day`"),
+                DB::raw("`sell_at` as `sort_time`"),
+            );
+
+        $unionDates = $datesBySellStatistics
+            ->union($datesByVisits)
+            ->orderByDesc('sort_time')
+            ->get();
+
+        $days = $unionDates->pluck('day')->unique()->toArray();
+
+        $statisticsData = [];
+        foreach ($days as $day) {
+            $statisticsData[$day][] = [
+                'date' => $day,
+                'sells_count' => 0,
+                'visits_count' => 0,
+                'reward' => formatMoneyAmount(0),
+            ];
+        }
+
+        /**
+         * Sales stats
+         */
+        $referralStatistics = ReferralStatistics
             ::where('user_id', $this->user->id)
             ->whereDate('sell_at', '>=', $periodFrom)
-            ->whereDate('sell_at', '<=', $periodTo);
-
-        $referralStatistics = $referralStatisticsQuery
+            ->whereDate('sell_at', '<=', $periodTo)
             ->orderBy('sell_at', 'desc')
             ->orderBy('price', 'desc')
             ->get();
@@ -100,10 +150,10 @@ class LCReferralStatistics extends ComponentBase
         });
         $groupedByDay = $referralStatistics->groupBy('day')->sortByDesc(fn($group) => $group->first()->sell_at);
 
-        $statisticsData = [];
+        $sellStatisticsData = [];
         foreach ($groupedByDay as $day => $group) {
-            $group->each(function ($sell) use (&$statisticsData, $day) {
-                $statisticsData[$day][] = [
+            $group->each(function ($sell) use (&$sellStatisticsData, $day) {
+                $sellStatisticsData[$day][] = [
                     'id' => $sell->id,
                     'date' => $sell->day,
                     'sells_count' => 1,
@@ -115,22 +165,28 @@ class LCReferralStatistics extends ComponentBase
             /**
              * Collapse items with same [partner code, etc]
              */
-            foreach ($statisticsData[$day] as $keyI => $itemI) {
-                foreach ($statisticsData[$day] as &$itemJ) {
+            foreach ($sellStatisticsData[$day] as $keyI => $itemI) {
+                foreach ($sellStatisticsData[$day] as &$itemJ) {
                     if (
                         $itemI['id'] !== $itemJ['id']
                     ) {
                         $itemJ['reward'] = formatMoneyAmount((int)$itemJ['reward'] + (int)$itemI['reward']);
                         $itemJ['sells_count'] ++;
 
-                        unset($statisticsData[$day][$keyI]);
+                        unset($sellStatisticsData[$day][$keyI]);
                     }
                 }
             }
         }
 
+        foreach ($statisticsData as $day => &$statisticsDay) {
+            if (isset($sellStatisticsData[$day])) {
+                $statisticsDay = $sellStatisticsData[$day];
+            }
+        }
+
         /**
-         * Referral visits count
+         * Visits stats
          */
         $referrerIds = $referralStatistics->pluck('referrer_id')->unique()->toArray();
         $referralVisits = ReferralVisit
@@ -176,6 +232,8 @@ class LCReferralStatistics extends ComponentBase
      */
     private function prepareStatisticDates()
     {
+        /*
+        // статистика на основании имеющихся продаж
         $sellAtRange = ReferralStatistics
             ::where('user_id', $this->user->id)
             ->select(DB::raw('MIN(sell_at) AS start_year, MAX(sell_at) AS end_year'))
@@ -188,5 +246,10 @@ class LCReferralStatistics extends ComponentBase
             $this->from = Carbon::createFromFormat('Y-m-d H:i:s', $sellAtRange->start_year);
             $this->to = Carbon::createFromFormat('Y-m-d H:i:s', $sellAtRange->end_year);
         }
+        */
+
+        // последний месяц
+        $this->to = Carbon::now()->endOfDay();
+        $this->from = Carbon::now()->subMonth()->endOfDay();
     }
 }
