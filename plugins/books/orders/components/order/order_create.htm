@@ -102,11 +102,6 @@
                 {% if order.promocodes|length %}
                     <div class="buy-book-modal__wrapper">
                     {% for orderpromocode in order.promocodes %}
-<!--                        <div class="buy-book-modal__wrapper-item">-->
-<!--                            <div class="buy-book-modal__text">Скидка по промокоду</div>-->
-<!--                            <div class="buy-book-modal__price">{{orderpromocode.promocode.promoable.priceTag.price}} ₽</div>-->
-<!--                        </div>-->
-
                         <div class="buy-book-modal__wrapper-item">
                             <span class="ui-checkbox-text">Промокод</span>
                         </div>
@@ -142,29 +137,6 @@
             </button>
         </div>
 
-                <!-- промокод -->
-<!--                <div class="">-->
-<!--                    <div class="">-->
-<!--                        <div class="buy-book-modal__promocode">-->
-<!--                            <input class="" type="text" id="promocode" name="promocode" placeholder="Промокод" maxlength="8">-->
-<!--                            <button type="button" id="promocodeSubmit" class="ui-text-body&#45;&#45;2">-->
-<!--                                Применить-->
-<!--                            </button>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-<!--                    <div class="buy-book-modal__wrapper-item listing-book-info__block">-->
-<!--                        <div class="buy-book-modal__text" id="orderPromocodeApplied"></div>-->
-<!--                        <div class="buy-book-modal__text" id="orderPromocodeAppliedResult"></div>-->
-<!--                    </div>-->
-
-<!--                    {% for orderpromocode in order.promocodes %}-->
-<!--                    <div class="buy-book-modal__wrapper-item">-->
-<!--                        <div class="buy-book-modal__text">{{orderpromocode.promocode.code}}</div>-->
-<!--                        <div class="buy-book-modal__text">Применен</div>-->
-<!--                    </div>-->
-<!--                    {% endfor %}-->
-<!--                </div>-->
         </div>
         {{ form_close()}}
     </div>
