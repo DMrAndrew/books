@@ -169,17 +169,6 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
 .book-mini-card__image{
     border-radius:4px!important;
 }
-.notification-menu__wrapper a {
-    text-decoration: none;
-    color: var(--color-dark-violet);
-}
-.notification-menu__wrapper a:hover {
-    text-decoration: underline;
-    color: var(--color-violet);
-}
-.notification-menu__content-wrapper p{
-    word-break: break-word!important;
-}
 .reader{
     -moz-user-select: none;
     -webkit-user-select: none;

@@ -73,13 +73,54 @@
                     <div class="buy-book-modal__wrapper-item"></div>
                 </div>
 
+            </div>
+
+            <div class="buy-book-modal__wrap">
+                <!-- промокод поле ввода -->
+                {% if not order.promocodes|length %}
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <span class="ui-checkbox-text">Промокод</span>
+                    </div>
+                    <div class="buy-book-modal__wrapper-item ">
+                        <div class="ui-input ui-input--line">
+                            <input class="ui-input-item _size-32" type="text" id="promocode" name="promocode" value="" placeholder="Введите промокод">
+                            <button id="promocodeSubmit" class="ui-button ui-button-size--32 ui-button-view--2">
+                                <span class="ui-text--medium">Применить</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="buy-book-modal__wrapper-item listing-book-info__block">
+                        <div class="buy-book-modal__text" id="orderPromocodeApplied"></div>
+                        <div class="buy-book-modal__text" id="orderPromocodeAppliedResult"></div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- промокод уже примененный-->
                 {% if order.promocodes|length %}
                     <div class="buy-book-modal__wrapper">
                     {% for orderpromocode in order.promocodes %}
+<!--                        <div class="buy-book-modal__wrapper-item">-->
+<!--                            <div class="buy-book-modal__text">Скидка по промокоду</div>-->
+<!--                            <div class="buy-book-modal__price">{{orderpromocode.promocode.promoable.priceTag.price}} ₽</div>-->
+<!--                        </div>-->
+
                         <div class="buy-book-modal__wrapper-item">
-                            <div class="buy-book-modal__text">Скидка по промокоду</div>
-                            <div class="buy-book-modal__price">{{orderpromocode.promocode.promoable.priceTag.price}} ₽</div>
+                            <span class="ui-checkbox-text">Промокод</span>
                         </div>
+                        <div class="buy-book-modal__wrapper-item ">
+                            <div class="ui-input ui-input--line">
+                                <input class="ui-input-item _size-32" type="text" value="{{orderpromocode.promocode.code}}" disabled="" readonly="">
+                                <button class="ui-button ui-button-size--32 ui-button-view--2" disabled="">
+                                    <span class="ui-text--medium">Применить</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="buy-book-modal__text _green">Промокод активирован</div>
+
                     {% endfor %}
                     </div>
                 {% endif %}
@@ -92,42 +133,38 @@
                     </div>
                 </div>
 
-                <!-- продолжить -->
-                <div class="buy-book-modal__wrapper">
-                    <div class="buy-book-modal__wrapper-item">
-                        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full"
-                                data-request="onOrderSubmit">
-                            <span class="ui-text--medium">Продолжить</span>
-                        </button>
-                    </div>
-                </div>
+            </div>
+
+            <!-- продолжить -->
+            <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full"
+                    data-request="onOrderSubmit">
+                <span class="ui-text--medium">Продолжить</span>
+            </button>
+        </div>
 
                 <!-- промокод -->
-                <div class="">
-                    <div class="">
-                        <div class="buy-book-modal__promocode">
-                            <input class="" type="text" id="promocode" name="promocode" placeholder="Промокод" maxlength="8">
-                            <button type="button" id="promocodeSubmit" class="ui-text-body--2">
-                                Применить
-                            </button>
-                        </div>
-                    </div>
+<!--                <div class="">-->
+<!--                    <div class="">-->
+<!--                        <div class="buy-book-modal__promocode">-->
+<!--                            <input class="" type="text" id="promocode" name="promocode" placeholder="Промокод" maxlength="8">-->
+<!--                            <button type="button" id="promocodeSubmit" class="ui-text-body&#45;&#45;2">-->
+<!--                                Применить-->
+<!--                            </button>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="buy-book-modal__wrapper-item listing-book-info__block">
-                        <div class="buy-book-modal__text" id="orderPromocodeApplied"></div>
-                        <div class="buy-book-modal__text" id="orderPromocodeAppliedResult"></div>
-                    </div>
+<!--                    <div class="buy-book-modal__wrapper-item listing-book-info__block">-->
+<!--                        <div class="buy-book-modal__text" id="orderPromocodeApplied"></div>-->
+<!--                        <div class="buy-book-modal__text" id="orderPromocodeAppliedResult"></div>-->
+<!--                    </div>-->
 
-                    {% for orderpromocode in order.promocodes %}
-                    <div class="buy-book-modal__wrapper-item">
-                        <div class="buy-book-modal__text">{{orderpromocode.promocode.code}}</div>
-                        <div class="buy-book-modal__text">Применен</div>
-                    </div>
-                    {% endfor %}
-
-                </div>
-
-            </div>
+<!--                    {% for orderpromocode in order.promocodes %}-->
+<!--                    <div class="buy-book-modal__wrapper-item">-->
+<!--                        <div class="buy-book-modal__text">{{orderpromocode.promocode.code}}</div>-->
+<!--                        <div class="buy-book-modal__text">Применен</div>-->
+<!--                    </div>-->
+<!--                    {% endfor %}-->
+<!--                </div>-->
         </div>
         {{ form_close()}}
     </div>
