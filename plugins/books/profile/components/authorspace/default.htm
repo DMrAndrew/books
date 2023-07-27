@@ -36,10 +36,12 @@
                     {% endif %}
                     <!--                    <button-->
                     <!--                        class="author-promo-info__button _half ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3">Сообщение</button>-->
+                    {% if hasBooks %}
                     <button class="author-promo-info__button _full ui-button ui-button-size--32 ui-button-view--3"
                             data-request="AuthorSupport::onAuthorSupportCreate">
                         Поддержать автора
                     </button>
+                    {% endif %}
                     {% endif %}
                     {% endif %}
                 </div>

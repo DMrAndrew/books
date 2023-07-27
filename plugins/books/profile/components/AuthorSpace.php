@@ -83,6 +83,7 @@ class AuthorSpace extends ComponentBase
             'isLoggedIn' => (bool)$this->authUser,
             'isOwner' => $isOwner,
             'sameAccount' => $sameAccount,
+            'hasBooks' => (bool) $this->profile->books?->count(),
             'hasContacts' => !$this->profile->isContactsEmpty(),
             'should_call_fit_profile' => $isOwner && $this->profile->isEmpty(),
             'profile' => $this->profile,
