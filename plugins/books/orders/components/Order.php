@@ -189,9 +189,18 @@ class Order extends ComponentBase
         $order = $this->getOrder($this->getUser(), $this->book);
         $promocodeIsApplied = $this->orderService->applyPromocode($order, (string)post('promocode'));
 
+        if (!$promocodeIsApplied) {
+            return [
+                '#orderPromocodeAppliedResult' => 'Не действителен',
+            ];
+        }
+
         return [
-            '#orderPromocodeApplied' => (string)post('promocode'),
-            '#orderPromocodeAppliedResult' => $promocodeIsApplied ? 'Применен' : 'Не действителен',
+            '#order_form' => $this->renderPartial('@order_create', [
+                'order' => $order,
+                'book' => $this->book,
+                'availableAwards' => $this->getAvailableAwards(),
+            ]),
             '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
         ];
     }
