@@ -1,0 +1,5 @@
+v1.0.1:
+    - 'First version of Blacklists'
+    - create_comments_blacklists_table.php
+    - create_chat_blacklists_table.php
+
