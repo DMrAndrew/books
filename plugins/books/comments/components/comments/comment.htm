@@ -55,7 +55,7 @@
                     </div>
                 </div>
 
-                {% elseif not comment.isDeleted() or owner %}
+                {% elseif not comment.isDeleted() or owner and user and user.profile.id == owner.id %}
                 <div class="comments-comment__action-wrapper" data-tippy-continer data-tippy-offset="[0, 0]">
                     <svg class="square-16" data-tippy-init>
                         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>

@@ -13,7 +13,7 @@ class Blacklistable extends ExtensionBase
         /**
          * Comments
          */
-        $this->profile->hasManyThrough['comments_blacklisted_for_profiles'] = [
+        $this->profile->hasManyThrough['profiles_blacklisted_in_comments'] = [
             Profile::class,
             'key' => 'owner_profile_id',
             'through' => CommentsBlacklist::class,
@@ -43,7 +43,7 @@ class Blacklistable extends ExtensionBase
      */
     public function isCommentsBlacklistedFor(Profile $banned): bool
     {
-        return $this->profile->comments_blacklisted_for_profiles()
+        return $this->profile->profiles_blacklisted_in_comments()
             ->where('banned_profile_id', $banned->id)
             ->exists();
     }
@@ -65,7 +65,7 @@ class Blacklistable extends ExtensionBase
      *
      * @return void
      */
-    public function blacklistProfileInComments(Profile $banProfile): void
+    public function blackListCommentsFor(Profile $banProfile): void
     {
         if (! $this->isCommentsBlacklistedFor($banProfile)) {
             CommentsBlacklist::create([
@@ -80,7 +80,7 @@ class Blacklistable extends ExtensionBase
      *
      * @return void
      */
-    public function unBlacklistProfileInComments(Profile $unBanProfile): void
+    public function unBlackListCommentsFor(Profile $unBanProfile): void
     {
         if ($this->isCommentsBlacklistedFor($unBanProfile)) {
             CommentsBlacklist::where([

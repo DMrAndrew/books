@@ -29,13 +29,35 @@ class Blacklist extends ComponentBase
      */
     public function defineProperties()
     {
-        return [];
+        return [
+            'recordsPerPage' => [
+                'title' => 'Количество профилей на странице',
+                'comment' => 'Количество профилей отображаемых на одной странице',
+                'default' => 16,
+            ],
+        ];
     }
 
     public function init()
     {
         $authUser = Auth::getUser();
         $this->profile = Profile::query()->find($this->profile_id ?? $authUser?->profile->id);
+    }
+
+    public function onRender()
+    {
+        foreach ($this->vals() as $key => $val) {
+            $this->page[$key] = $val;
+        }
+    }
+
+    public function vals()
+    {
+        return [
+            'comments_blacklisted_profiles' => $this->profile
+                ->profiles_blacklisted_in_comments()
+                ->paginate((int) $this->property('recordsPerPage', 16)),
+        ];
     }
 
     /**
@@ -49,7 +71,7 @@ class Blacklist extends ComponentBase
 
         try {
             $banProfile = Profile::findOrFail(post('profile_id'));
-            $this->profile->blacklistProfileInComments($banProfile);
+            $this->profile->blackListCommentsFor($banProfile);
         } catch (\Exception $e) {
             Flash::error($e->getMessage());
             return [];
@@ -71,7 +93,7 @@ class Blacklist extends ComponentBase
 
         try {
             $unBanProfile = Profile::findOrFail(post('profile_id'));
-            $this->profile->unBlacklistProfileInComments($unBanProfile);
+            $this->profile->unBlackListCommentsFor($unBanProfile);
         } catch (\Exception $e) {
             Flash::error($e->getMessage());
             return [];

@@ -1,3 +1,95 @@
-<p>This is the default markup for component Blacklist</p>
+<div class="ui-col-sm-9">
+    <div class="personal-area__subtitle">
+        <span class="ui-text-head--3 ui-text--bold">Черный список</span>
+        <svg class="square-16">
+            <use xlink:href="./assets/icon-sprite/svg-sprite.svg#chevron-down-16"></use>
+        </svg>
+    </div>
 
-<small>You can delete this file if you want</small>
+    <form class="personal-area-blacklist__container">
+        <div class="ui-tabs">
+            <div class="ui-tabs-header js-container">
+                <div class="ui-tabs-line"></div>
+                <div class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
+                    <div class="ui-tabs-link active" data-tab="1">Комментарии</div>
+<!--                    <div class="ui-tabs-link" data-tab="2">Чае</div>-->
+                </div>
+            </div>
+            <div class="ui-tabs-body" data-tabs="1">
+                <div class="ui-tabs-content wrapper active" data-tab-content="1">
+
+                    {% for bannedProfile in comments_blacklisted_profiles %}
+                    <div class="personal-area-blacklist ">
+                        <div class="comments-comment__avatar square-40">
+                            {% if bannedProfile.avatar %}
+                            <img class="square-40" src="{{bannedProfile.avatar.getThumb(40,40)}}" alt="avatar">
+                            {% else %}
+                            <span class="ui-text-body--1 ui-text--bold">{{ bannedProfile.firstLatter }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="personal-area-blacklist__name">
+                            <a href="/author-page/{{bannedProfile.id}}">{{ bannedProfile.getAttribute('username') }}</a>
+                        </div>
+                        <div class="personal-area-blacklist__action">
+                            <svg class="square-16">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
+                            </svg>
+                            <div class="personal-area-blacklist-action">
+                                <div class="personal-area-blacklist-action__wrapper">
+                                    <div class="ui-dropdown-item active"
+                                         onclick="oc.ajax('Blacklist::onRemoveFromCommentsBlacklist',{data:{profile_id:'{{bannedProfile.id}}'}, flash: true})">
+                                        <span>Убрать из черного списка</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+
+                    {% partial 'site/pagination' records = comments_blacklisted_profiles %}
+
+                </div>
+<!--                <div class="ui-tabs-content wrapper" data-tab-content="2">-->
+<!--                    <div class="personal-area-blacklist ">-->
+<!--                        <div class="personal-area-blacklist__avatar">-->
+<!--                            &lt;!&ndash; Показывается сообщение или плейсхолдер &ndash;&gt;-->
+<!--                            <img src="./assets/images/author/avatar-placeholder.png" alt="">-->
+<!--                            &lt;!&ndash; <span class="ui-text&#45;&#45;bold">A</span> &ndash;&gt;-->
+<!--                        </div>-->
+<!--                        <div class="personal-area-blacklist__name">Александр </div>-->
+<!--                        <div class="personal-area-blacklist__action">-->
+<!--                            <svg class="square-16">-->
+<!--                                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>-->
+<!--                            </svg>-->
+<!--                            <div class="personal-area-blacklist-action">-->
+<!--                                <div class="personal-area-blacklist-action__wrapper">-->
+<!--                                    <button class="personal-area-blacklist-action__item">Убрать из черного списка</button>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="personal-area-blacklist">-->
+<!--                        <div class="personal-area-blacklist__avatar">-->
+<!--                            &lt;!&ndash; Показывается сообщение или плейсхолдер &ndash;&gt;-->
+<!--                            &lt;!&ndash; <img src="./assets/images/author/avatar-placeholder.png" alt=""> &ndash;&gt;-->
+<!--                            <span class="ui-text&#45;&#45;bold">A</span>-->
+<!--                        </div>-->
+<!--                        <div class="personal-area-blacklist__name">Александр Алексон</div>-->
+<!--                        <div class="personal-area-blacklist__action">-->
+<!--                            <svg class="square-16">-->
+<!--                                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>-->
+<!--                            </svg>-->
+<!--                            <div class="personal-area-blacklist-action">-->
+<!--                                <div class="personal-area-blacklist-action__wrapper">-->
+<!--                                    <button class="personal-area-blacklist-action__item">Убрать из черного списка</button>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+            </div>
+        </div>
+
+    </form>
+</div>
