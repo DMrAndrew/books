@@ -2,6 +2,7 @@
 
 use Backend;
 use Books\Blacklists\Behaviors\Blacklistable;
+use Books\Blacklists\Components\Blacklist;
 use Books\Profile\Models\Profile;
 use System\Classes\PluginBase;
 
@@ -48,10 +49,8 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
         return [
-            'Books\Blacklists\Components\MyComponent' => 'myComponent',
+            Blacklist::class => 'Blacklist',
         ];
     }
 

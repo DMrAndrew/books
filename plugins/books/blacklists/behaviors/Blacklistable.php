@@ -59,4 +59,34 @@ class Blacklistable extends ExtensionBase
             ->where('owner_profile_id', $owner->id)
             ->exists();
     }
+
+    /**
+     * @param Profile $banProfile
+     *
+     * @return void
+     */
+    public function blacklistProfileInComments(Profile $banProfile): void
+    {
+        if (! $this->isCommentsBlacklistedFor($banProfile)) {
+            CommentsBlacklist::create([
+                'owner_profile_id' => $this->profile->id,
+                'banned_profile_id' => $banProfile->id,
+            ]);
+        }
+    }
+
+    /**
+     * @param Profile $unBanProfile
+     *
+     * @return void
+     */
+    public function unBlacklistProfileInComments(Profile $unBanProfile): void
+    {
+        if ($this->isCommentsBlacklistedFor($unBanProfile)) {
+            CommentsBlacklist::where([
+                'owner_profile_id' => $this->profile->id,
+                'banned_profile_id' => $unBanProfile->id,
+            ])->delete();
+        }
+    }
 }
