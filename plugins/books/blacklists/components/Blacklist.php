@@ -45,7 +45,7 @@ class Blacklist extends ComponentBase
         $this->profile = Profile::query()->find($this->profile_id ?? $authUser?->profile->id);
     }
 
-    public function onRender()
+    public function onRun()
     {
         foreach ($this->vals() as $key => $val) {
             $this->page[$key] = $val;
@@ -73,7 +73,7 @@ class Blacklist extends ComponentBase
         try {
             $banProfile = Profile::findOrFail(post('profile_id'));
             $this->profile->blackListCommentsFor($banProfile);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Flash::error($e->getMessage());
             return [];
         }
