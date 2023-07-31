@@ -33,6 +33,7 @@
         "books/payment-plugin": "*",
         "books/withdrawal-plugin": "*",
         "books/referral-plugin": "*",
+        "books/blacklists-plugin": "dev-main",
         "laracraft-tech/laravel-date-scopes": "^1.1",
         "vdlp/oc-telescope-plugin": "^2.0",
         "vdlp/oc-horizon-plugin": "*",
@@ -139,6 +140,10 @@
         "books/referral-plugin": {
             "type": "path",
             "url": "./plugins/books/referral"
+        },
+        "books/blacklists-plugin": {
+            "type": "path",
+            "url": "./plugins/books/blacklists"
         },
         "vdlp/oc-telescope-plugin": {
             "type": "path",
