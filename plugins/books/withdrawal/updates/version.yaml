@@ -7,3 +7,6 @@
 1.0.3:
     - 'Withdrawal model'
     - create_withdrawals_table.php
+1.0.4:
+    - 'Withdrawal update birthday field type'
+    - update_birthday_field_type.php
