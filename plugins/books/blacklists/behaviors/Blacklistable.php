@@ -2,6 +2,7 @@
 
 namespace Books\Blacklists\Behaviors;
 
+use Books\Blacklists\Models\ChatBlacklist;
 use Books\Blacklists\Models\CommentsBlacklist;
 use Books\Profile\Models\Profile;
 use October\Rain\Extension\ExtensionBase;
@@ -33,7 +34,22 @@ class Blacklistable extends ExtensionBase
         /**
          * Chat
          */
-        // todo
+        $this->profile->hasManyThrough['profiles_blacklisted_in_chat'] = [
+            Profile::class,
+            'key' => 'owner_profile_id',
+            'through' => ChatBlacklist::class,
+            'throughKey' => 'id',
+            'otherKey' => 'id',
+            'secondOtherKey' => 'banned_profile_id',
+        ];
+        $this->profile->hasManyThrough['chat_blacklisted_by'] = [
+            Profile::class,
+            'key' => 'banned_profile_id',
+            'through' => ChatBlacklist::class,
+            'throughKey' => 'id',
+            'otherKey' => 'id',
+            'secondOtherKey' => 'owner_profile_id',
+        ];
     }
 
     /**
