@@ -1,7 +1,8 @@
 {% set action = item ? 'onEdit' : 'onComment' %}
 <form method="POST" accept-charset="UTF-8" class="comments-form__container"
       onsubmit="oc.request(this,`{{action}}`,{
-          data:getUnCollapsed()
+          data:getUnCollapsed(),
+          flash: true
       });return false;">
 
     <input type="hidden" name="parent_id" value="{{parent_id}}">

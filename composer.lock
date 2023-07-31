@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "53e498248b5929e3d78721e1669ea12d",
+    "content-hash": "e254ab5ad9b011a7b1c94b71d4133496",
     "packages": [
         {
             "name": "abordage/laravel-last-modified",
@@ -157,6 +157,23 @@
                 "source": "https://github.com/bavix/laravel-wallet/tree/8.4.3"
             },
             "time": "2023-02-05T14:06:59+00:00"
+        },
+        {
+            "name": "books/blacklists-plugin",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./plugins/books/blacklists",
+                "reference": "2a45c3a20feeeaba4443ff6a249a373c13f9ec7b"
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "october-plugin",
+            "description": "No description provided yet...",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "books/book-plugin",

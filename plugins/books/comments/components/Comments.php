@@ -9,6 +9,7 @@ use Books\Profile\Models\Profile;
 use Closure;
 use Cms\Classes\ComponentBase;
 use Exception;
+use Flash;
 use October\Rain\Database\Model;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -125,6 +126,16 @@ class Comments extends ComponentBase
         if (! $this->user) {
             return;
         }
+
+        /**
+         * Check if blacklisted
+         */
+        if ($this->user->profile->isCommentsBlacklistedBy($this->owner)) {
+            Flash::error('Автор ограничил вам доступ к публикации комментариев');
+
+            return [];
+        }
+
         $payload = post();
         if (! $this->queryComments()->find(post('parent_id'))) {
             unset($payload['parent_id']);
