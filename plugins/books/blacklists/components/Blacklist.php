@@ -2,6 +2,7 @@
 
 use Books\Profile\Models\Profile;
 use Cms\Classes\ComponentBase;
+use Exception;
 use Flash;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -94,7 +95,7 @@ class Blacklist extends ComponentBase
         try {
             $unBanProfile = Profile::findOrFail(post('profile_id'));
             $this->profile->unBlackListCommentsFor($unBanProfile);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Flash::error($e->getMessage());
             return [];
         }

@@ -37,7 +37,7 @@
             <div class="comments-comment__action">
                 <button onclick="toggleTextArea('#replay_{{comment.id}}')">Ответить</button>
 
-                {# Автор книги #}
+                {# Владелец модели (автор книги/автор на своей странице) #}
                 {% if not comment.isDeleted()
                 and(owner and user and user.profile.id == owner.id)
                 %}
