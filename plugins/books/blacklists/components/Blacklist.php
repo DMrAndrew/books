@@ -55,8 +55,7 @@ class Blacklist extends ComponentBase
     public function vals()
     {
         return [
-            'comments_blacklisted_profiles' => $this->profile
-                ->profiles_blacklisted_in_comments()
+            'comments_blacklisted_profiles' => $this->profile?->profiles_blacklisted_in_comments()
                 ->paginate((int) $this->property('recordsPerPage', 16)),
         ];
     }
