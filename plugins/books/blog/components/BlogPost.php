@@ -32,9 +32,9 @@ class BlogPost extends ComponentBase
 
     public function init()
     {
-        $this->post = Post::findOrFail($this->param('post_id'));
+        $this->post = Post::where('slug', $this->param('post_slug'))->firstOrFail();
 
-        $this->page['post'] = $this->post; //dd($this->post->isClassExtendedWith(Commentable::class));
+        $this->page['post'] = $this->post;
 
         $comments = $this->addComponent(Comments::class, 'comments');
         $comments->bindModel($this->post);
