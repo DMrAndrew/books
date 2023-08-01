@@ -2,7 +2,7 @@
     <a href="/lc-blog/create" class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Добавить новую запись</a>
 </div>
 
-<br>
+<div class="book-card-full-description _indent"></div>
 
 <div class="lc-books__listing-container">
     <ul class="ui-sortable">
@@ -21,10 +21,15 @@
                     </div>
 
                     <div class="cb-mini-card__wrapper">
-                        <div class="">{{ post.profile.username }}</a>
-                        </div>
+                        <div class="">{{ post.profile.username }}</div>
                         <div class="cb-mini-card__date">{{post.created_at.diffForHumans}}</div>
-                        <div class="product-card__header">{{post.title}}</div>
+
+                        <div class="book-card-full-description _indent"></div>
+
+                        <a data-turbo="false" href="{{ 'blog/blog-post'|page({post_id: post.id}) }}" class="book-card__title ui-text-head--3 ui-text--bold">
+                            {{post.title}}
+                        </a>
+
                         <div class="cb-mini-card__text">
                             {{post.preview|raw}}
                         </div>
@@ -40,7 +45,10 @@
                                 <a href="/lc-blog/edit/{{post.id}}" class="personal-area-blacklist-action__item">
                                     Редактировать
                                 </a>
-                                <button onclick="oc.ajax('BlogLC::onDeletePost',{data:{id:'{{post.id}}'}})" class="personal-area-blacklist-action__item">
+                                <button onclick="oc.ajax('BlogLC::onDeletePost',{
+                                    data:{post_id:'{{post.id}}'},
+                                    flash: true,
+                                    confirm:'Вы уверены, что хотите удалить эту публикацию? Это действие необратимо!'})" class="personal-area-blacklist-action__item">
                                     Удалить
                                 </button>
                             </div>

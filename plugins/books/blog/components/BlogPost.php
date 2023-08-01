@@ -1,5 +1,6 @@
 <?php namespace Books\Blog\Components;
 
+use Books\Blog\Models\Post;
 use Cms\Classes\ComponentBase;
 
 /**
@@ -7,12 +8,12 @@ use Cms\Classes\ComponentBase;
  *
  * @link https://docs.octobercms.com/3.x/extend/cms-components.html
  */
-class Blog extends ComponentBase
+class BlogPost extends ComponentBase
 {
     public function componentDetails()
     {
         return [
-            'name' => 'Blog Component',
+            'name' => 'BlogPost Component',
             'description' => 'No description provided yet...'
         ];
     }
@@ -24,4 +25,10 @@ class Blog extends ComponentBase
     {
         return [];
     }
+
+    public function init()
+    {
+        $this->page['post'] = Post::findOrFail($this->param('post_id'));
+    }
+
 }

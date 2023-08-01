@@ -5,6 +5,7 @@ use Books\Profile\Models\Profile;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
+use Illuminate\Http\RedirectResponse;
 use RainLab\User\Facades\Auth;
 use Redirect;
 use ValidationException;
@@ -64,7 +65,10 @@ class BlogLC extends ComponentBase
         $this->page['profile'] = $this->profile;
     }
 
-    public function onSavePost()
+    /**
+     * @return RedirectResponse|array
+     */
+    public function onSavePost(): RedirectResponse|array
     {
         try {
             $data = collect(post());
@@ -111,17 +115,16 @@ class BlogLC extends ComponentBase
         }
     }
 
-    public function onDeletePost()
+    /**
+     * @return RedirectResponse|array
+     */
+    public function onDeletePost(): RedirectResponse|array
     {
         try {
             $data = collect(post());
 
-            /**
-             * Save
-             */
             if (isset($data['post_id'])) {
                 $post = $this->profile->posts()->findOrFail($data['post_id']);
-
                 $post->delete();
             }
 

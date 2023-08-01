@@ -2,8 +2,8 @@
 
 use Backend;
 use Books\Blog\Behaviors\HasBlog;
-use Books\Blog\Components\Blog;
-
+use Books\Blog\Components\BlogList;
+use Books\Blog\Components\BlogPost;
 use Books\Blog\Components\BlogLC;
 use Books\Blog\Components\BlogLCList;
 use Books\Profile\Models\Profile;
@@ -57,7 +57,8 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            Blog::class => 'Blog',
+            BlogPost::class => 'BlogPost',
+            BlogList::class => 'BlogList',
             BlogLC::class => 'BlogLC',
             BlogLCList::class => 'BlogLCList',
         ];
