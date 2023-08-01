@@ -1,20 +1,16 @@
-title = "Личный кабинет - Блог"
+title = "Блог"
 layout = "default"
-url = "/lc-blog"
-meta_title = "Личный кабинет - Блог"
+url = "/blog"
+meta_title = "Блог"
 [session]
-security = "user"
-redirect = "/"
-[BlogLC]
-[BlogLCList]
+[BlogList]
 ==
-{% partial 'profile/personal_area_header' %}
+<div style="margin-bottom: 16px"></div>
 
 <div class="personal-area">
     <div class="ui-container-fluid">
         <div class="personal-area__container ui-grid-container ui-grid-gap">
-            {% partial "profile/sidebarmenu" %}
-            <div class="ui-col-sm-9">
+            <div class="ui-col-sm-12">
                 <div class="personal-area__subtitle">
                     <span class="ui-text-head--3 ui-text--bold">Блог</span>
                     <svg class="square-16">
@@ -23,7 +19,7 @@ redirect = "/"
                 </div>
 
                 <div id="comments-spawn">
-                    {% component 'BlogLCList' %}
+                    {% component 'BlogList' %}
                 </div>
             </div>
         </div>

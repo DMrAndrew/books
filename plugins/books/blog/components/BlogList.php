@@ -1,23 +1,19 @@
 <?php namespace Books\Blog\Components;
 
-use Books\Profile\Models\Profile;
+use Books\Blog\Models\Post;
 use Cms\Classes\ComponentBase;
-use RainLab\User\Facades\Auth;
 
 /**
- * BlogLC Component
+ * BlogList Component
  *
  * @link https://docs.octobercms.com/3.x/extend/cms-components.html
  */
-class BlogLCList extends ComponentBase
+class BlogList extends ComponentBase
 {
-    protected Profile $profile;
-    protected int $postsCount;
-
     public function componentDetails()
     {
         return [
-            'name' => 'BlogLCList Component',
+            'name' => 'BlogList Component',
             'description' => 'No description provided yet...'
         ];
     }
@@ -38,21 +34,8 @@ class BlogLCList extends ComponentBase
 
     public function init()
     {
-        if ($redirect = redirectIfUnauthorized()) {
-            return $redirect;
-        }
-        $user = Auth::getUser();
-        $this->profile = $user->profile;
-
-        $this->postsCount = $this->profile->posts()->count();
-
-        $this->prepareVals();
-    }
-
-    public function prepareVals()
-    {
-        $this->page['profile'] = $this->profile;
-        $this->page['postsCount'] = $this->postsCount;
-        $this->page['posts'] = $this->profile->posts()->orderByDesc('created_at')->paginate((int) $this->property('recordsPerPage', 16));
+        $this->page['posts'] = Post
+            ::orderByDesc('created_at')
+            ->paginate((int) $this->property('recordsPerPage', 16));
     }
 }
