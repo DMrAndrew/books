@@ -72,7 +72,12 @@
 <script>
 
     initEditor('chapter_content',{
-        toolbarItems:['uploadImage',]
+        toolbarItems:['uploadImage'],
+        thenFn:(editor) => oc.ajax('onInitEditor',{
+            data:{
+                body:editor.getData()
+            }
+        })
     })
     $(function () {
         if(document.querySelector('input[class = "chapter-action-radio"]:checked').id == 'published_at_radio'){

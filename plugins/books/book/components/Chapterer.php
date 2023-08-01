@@ -90,13 +90,13 @@ class Chapterer extends ComponentBase
                     case 'published_at':
 
                         $data['status'] = ChapterStatus::PLANNED;
-                        if (! isset($data['published_at_date'])) {
+                        if (!isset($data['published_at_date'])) {
                             new ValidationException(['published_at' => 'Укажите дату публикации.']);
                         }
-                        if (! isset($data['published_at_time'])) {
+                        if (!isset($data['published_at_time'])) {
                             new ValidationException(['published_at' => 'Укажите время публикации.']);
                         }
-                        if (! Carbon::canBeCreatedFromFormat($data['published_at_date'] ?? '', 'd.m.Y')) {
+                        if (!Carbon::canBeCreatedFromFormat($data['published_at_date'] ?? '', 'd.m.Y')) {
                             throw new ValidationException(['published_at' => 'Не удалось получить дату публикации. Укажите дату в формате d.m.Y']);
                         }
                         $data['published_at'] = Carbon::createFromFormat('d.m.Y', $data['published_at_date'])->setTimeFromTimeString($data['published_at_time']);
@@ -128,10 +128,21 @@ class Chapterer extends ComponentBase
 
             $this->chapter = $this->chapterManager->setEdition($this->ebook)->from($data->toArray());
 
-            return Redirect::to('/about-book/'.$this->book->id)->withFragment('#electronic')->setLastModified(now());
+            return Redirect::to('/about-book/' . $this->book->id)->withFragment('#electronic')->setLastModified(now());
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
             return [];
         }
+    }
+
+    public function onInitEditor()
+    {
+        if ($this->chapterManager->isNew()) {
+            return [];
+        }
+        if ($body = post('body')) {
+            return ['answer' => $this->chapterManager->initUpdateBody($body)];
+        }
+        return [];
     }
 }

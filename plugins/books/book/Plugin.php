@@ -6,6 +6,7 @@ use Books\Book\Behaviors\Contentable;
 use Books\Book\Behaviors\Prohibitable;
 use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;
+use Books\Book\Classes\BookUtilities;
 use Books\Book\Classes\ChapterService;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\StatsEnum;
@@ -36,6 +37,7 @@ use Books\Book\Components\Reader;
 use Books\Book\Components\ReadStatistic;
 use Books\Book\Components\Widget;
 use Books\Book\FormWidgets\ContentDiff;
+use Books\Book\FormWidgets\DeferredComments;
 use Books\Book\Jobs\GenreRaterExec;
 use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
@@ -132,6 +134,7 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('SystemMessage', SystemMessage::class);
         AliasLoader::getInstance()->alias('StatsEnum', StatsEnum::class);
         AliasLoader::getInstance()->alias('Content', ContentModel::class);
+        AliasLoader::getInstance()->alias('BUtils', BookUtilities::class);
 
         $this->extendBooksController();
 
@@ -255,7 +258,7 @@ class Plugin extends PluginBase
                     'permissions' => ['books.book.systemmessage'],
                 ],
                 'content' => [
-                    'label' => 'Контент',
+                    'label' => 'Отложенное редактирование',
                     'icon' => 'icon-leaf',
                     'url' => Backend::url('books/book/content'),
                     'permissions' => ['books.book.content'],

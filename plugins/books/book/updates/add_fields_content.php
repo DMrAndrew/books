@@ -2,10 +2,10 @@
 
 namespace Books\Book\Updates;
 
+use Schema;
 use Books\Book\Models\Content;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
-use Schema;
 
 return new class extends Migration {
     /**
@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->timestamp('merged_at')->nullable();
             $table->json('data')->nullable();
             $table->unsignedTinyInteger('status')->nullable();
+            $table->boolean('saved_from_editor')->default(false);
 
         });
         if (Schema::hasColumn($this->table(), 'fillable_type')) {
@@ -36,7 +37,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        foreach (['requested_at', 'merged_at', 'data', 'status'] as $column) {
+        foreach (['requested_at', 'merged_at', 'data', 'status','saved_from_editor'] as $column) {
             if (Schema::hasColumn($this->table(), $column)) {
                 Schema::dropColumns($this->table(), $column);
             }
@@ -48,7 +49,6 @@ return new class extends Migration {
                 $table->dropIndex(['type']);
             });
         }
-
     }
 
     public function table(): string

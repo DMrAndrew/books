@@ -60,3 +60,8 @@ system_message:
     event: Books\Notifications\Classes\Events\SystemMessage
     items:
         - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+deferred_applied:
+    name: Отложенное редактирование
+    event: Books\Notifications\Classes\Events\DeferredApplied
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction

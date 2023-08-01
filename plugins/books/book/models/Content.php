@@ -1,14 +1,20 @@
 <?php namespace Books\Book\Models;
 
+use Backend;
+use Books\Book\Classes\BookUtilities;
+use Books\Book\Classes\ContentService;
 use Books\Book\Classes\Enums\ContentStatus;
-use DiDom\Document;
+use Carbon\Carbon;
+use Event;
+use Exception;
 use Jfcherng\Diff\DiffHelper;
-use Jfcherng\Diff\Exception\UnsupportedFunctionException;
-use Jfcherng\Diff\Factory\RendererFactory;
+use Mail;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 use Books\Book\Classes\Enums\ContentTypeEnum;
+use RainLab\User\Facades\Auth;
+use ValidationException;
 
 /**
  * Content Model
@@ -28,7 +34,7 @@ class Content extends Model
      */
     public $table = 'books_book_contents';
 
-    protected $fillable = ['body', 'type', 'requested_at', 'merged_at', 'data', 'status'];
+    protected $fillable = ['body', 'type', 'requested_at', 'merged_at', 'data', 'status', 'saved_from_editor'];
     /**
      * @var array rules for validation
      */
@@ -39,7 +45,7 @@ class Content extends Model
 
     protected $casts = [
         'type' => ContentTypeEnum::class,
-        'status' => ContentStatus::class
+        'status' => ContentStatus::class,
     ];
     protected $jsonable = ['data'];
 
@@ -53,9 +59,23 @@ class Content extends Model
         'contentable' => []
     ];
 
+    public function service(): ContentService
+    {
+        return new ContentService($this,...func_get_args());
+    }
     public function scopeRegular(Builder $builder): Builder
     {
         return $builder->whereNull('type');
+    }
+
+    public function scopeNotRegular(Builder $builder): Builder
+    {
+        return $builder->whereNotNull('type');
+    }
+
+    public function scopeOnDeleteType(Builder $builder): Builder
+    {
+        return $builder->type(ContentTypeEnum::DEFERRED_DELETE);
     }
 
     public function getBookInfoAttribute(): string
@@ -101,33 +121,44 @@ class Content extends Model
 
     public function scopeDeferred(Builder $builder)
     {
-        return $builder->type(ContentTypeEnum::DEFERRED);
+        return $builder->type(ContentTypeEnum::DEFERRED_UPDATE);
     }
 
     public function scopeType(Builder $builder, ContentTypeEnum ...$type): Builder
     {
-        return $builder->where('type', '=', array_pluck($type, 'value'));
+        return $builder->whereIn('type', array_pluck($type, 'value'));
     }
+
+    public function scopeStatus(Builder $builder, ContentStatus ...$status): Builder
+    {
+        return $builder->whereIn('status', array_pluck($status, 'value'));
+    }
+
+    public function scopeStatusNot(Builder $builder, ContentStatus ...$status): Builder
+    {
+        return $builder->where(fn($where) => $where->whereNull('status')->orWhereNotIn('status', array_pluck($status, 'value')));
+    }
+
 
     public function scopeNotRequested(Builder $builder): Builder
     {
-        return $builder->whereNull('requested_at');
+        return $builder->statusNot(ContentStatus::Pending);
     }
 
 
     public function scopeRequested(Builder $builder): Builder
     {
-        return $builder->whereNotNull('requested_at');
+        return $builder->status(ContentStatus::Pending);
     }
 
     public function scopeNotMerged(Builder $builder): Builder
     {
-        return $builder->whereNull('merged_at');
+        return $builder->statusNot(ContentStatus::Merged);
     }
 
     public function scopeMerged(Builder $builder): Builder
     {
-        return $builder->whereNotNull('merged_at');
+        return $builder->status(ContentStatus::Merged);
     }
 
     public function scopeDeferredOpened(Builder $builder)
@@ -135,30 +166,79 @@ class Content extends Model
         return $builder->deferred()->notMerged();
     }
 
-    public function allowedMarkAsRequested(): bool
+    public function scopeOnDeleteOpened(Builder $builder)
     {
-        return !in_array($this->status, [ContentStatus::Pending, ContentStatus::Merged]);
+        return $builder->onDeleteType()->requested()->notMerged();
     }
 
-    public function markRequested(): void
+    public function allowedMarkAsRequested(): bool
+    {
+        return !in_array($this->getOriginal('status'), [ContentStatus::Pending, ContentStatus::Merged]);
+    }
+
+    public function canBeCanceled(): bool
+    {
+        return $this->status === ContentStatus::Pending;
+    }
+
+    public function markRequested(?string $comment = null)
     {
         $this->requested_at = now();
         $this->status = ContentStatus::Pending;
-        $this->save();
+        $comment && $this->addComment($comment);
+        return $this->save();
     }
 
 
-    public function markMerged(): void
+    public function addComment(?string $comment = null)
+    {
+        if ($comment) {
+            $data = $this->data;
+            $data['comments'][] = [
+                'user' => (Auth::getUser() ?? \Backend\Controllers\Auth::getUser()),
+                'comment' => $comment,
+                'created_at' => now()
+            ];
+            $this->data = $data;
+        }
+    }
+
+    public function getDeferredCommentsAttribute()
+    {
+        return collect($this->data['comments'] ?? [])
+            ->map(fn($comment) => [
+                'created_at' => ($comment['created_at'] ?? false) ? Carbon::parse($comment['created_at'])->format('H:i d.m.y') : '',
+                'user' => $comment['user']['email'] ?? '',
+                'comment' => $comment['comment'] ?? '',
+            ])
+            ->map(fn($i) => implode(PHP_EOL, $i))
+            ->reverse()
+            ->join(PHP_EOL . PHP_EOL);
+    }
+
+
+    public function markMerged(?string $comment = null)
     {
         $this->merged_at = now();
         $this->status = ContentStatus::Merged;
-        $this->save();
+        $comment && $this->addComment($comment);
+        return $this->save();
     }
 
-    public function markRejected(): void
+    /**
+     * @throws Exception
+     */
+    public function markCanceled()
+    {
+        $this->status = ContentStatus::Cancelled;
+        return $this->save();
+    }
+
+    public function markRejected(?string $comment = null)
     {
         $this->status = ContentStatus::Rejected;
-        $this->save();
+        $comment && $this->addComment($comment);
+        return $this->save();
     }
 
     public function getStatusLabelAttribute(): ?string
@@ -166,33 +246,36 @@ class Content extends Model
         return $this->status?->label();
     }
 
+    public function getTypeLabelAttribute(): ?string
+    {
+        return $this->type?->label();
+    }
+
     protected function afterSave()
     {
-        if ($this->isDirty('body') && $this->type === ContentTypeEnum::DEFERRED) {
+        if ($this->type === ContentTypeEnum::DEFERRED_UPDATE && $this->isDirty('body')) {
             $this->storeDiff();
         }
     }
 
-    public function storeDiff()
+    public function storeDiff(): void
     {
-        if (!($this->contentable?->content?->body)) {
+        if (!($this->contentable?->content)) {
             return;
         }
-        $config = config('books.book::content_diff');
 
         $diff = DiffHelper::calculate(
-            (new Document())->loadHtml($this->contentable?->content?->body)->html(),
-            (new Document())->loadHtml($this->body)->html(),
-            config('books.book::content_diff')['rendererName']  ?? 'Inline',
-            config('books.book::content_diff')['differOptions'] ?? [], $config['rendererOptions'] ?? []);
-        $this->fresh()->update(['data' => $diff]);
+            BookUtilities::prepareForDiff($this->contentable->content->body),
+            BookUtilities::prepareForDiff($this->body),
+            ...(config('books.book::content_diff') ?? []));
 
+        $this->fresh()->update(['data' => array_replace($this->data ?? [], ['diff' => $diff])]);
     }
 
     public function getContentDiffAttribute(): string
     {
-        return $this->data ?? '-';
-
+        return $this->data['diff'] ?? '';
     }
+
 
 }

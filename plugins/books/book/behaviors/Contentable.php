@@ -15,6 +15,7 @@ class Contentable extends ExtensionBase
         $this->model->morphOne['content'] = [Content::class, 'name' => 'contentable', 'scope' => 'regular'];
         $this->model->morphMany['deferredContent'] = [Content::class, 'name' => 'contentable', 'scope' => 'deferred'];
         $this->model->morphOne['deferredContentOpened'] = [Content::class, 'name' => 'contentable', 'scope' => 'deferredOpened'];
+        $this->model->morphOne['deletedContent'] = [Content::class, 'name' => 'contentable', 'scope' => 'onDeleteOpened'];
         $this->model->bindEvent('model.afterCreate', fn() => $this->afterCreate());
         $this->model->bindEvent('model.afterSave', fn() => $this->afterSave());
     }
@@ -28,11 +29,10 @@ class Contentable extends ExtensionBase
 
     public function afterSave()
     {
-
         if ($content = $this->model->getOriginalPurgeValue('new_content')) {
             $this->model->content->fill(['body' => $content]);
-            $this->model->content->save();
-            if ($this->model->content->wasChanged(['body'])) {
+            if ($this->model->content->isDirty('body')) {
+                $this->model->content->save();
                 if ($this->model instanceof Chapter) {
                     $this->model->paginateContent();
                 }
@@ -41,7 +41,21 @@ class Contentable extends ExtensionBase
 
         if ($content = $this->model->getOriginalPurgeValue('deferred_content')) {
 
-            $this->model->deferredContent()->deferredOpened()->updateOrCreate(['type' => ContentTypeEnum::DEFERRED->value], ['body' => $content]);
+            if ($deferred = $this->model->deferredContentOpened) {
+                $deferred->fill(['body' => $content]);
+                if ($deferred->isDirty('body')) {
+                    $deferred->save();
+                }
+            } else {
+                if (strcasecmp($content, $this->model->content->body) === 0) {
+                    return;
+                }
+
+                $this->model->deferredContentOpened()->create([
+                    'type' => ContentTypeEnum::DEFERRED_UPDATE->value,
+                    'body' => $content
+                ]);
+            }
         }
     }
 }

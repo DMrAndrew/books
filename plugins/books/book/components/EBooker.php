@@ -2,13 +2,18 @@
 
 namespace Books\Book\Components;
 
+use App\classes\PartialSpawns;
 use ApplicationException;
 use Books\Book\Classes\EditionService;
+use Books\Book\Classes\Enums\ContentTypeEnum;
 use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
+use Illuminate\Http\RedirectResponse;
+use Log;
 use RainLab\User\Facades\Auth;
+use Redirect;
 use ValidationException;
 
 /**
@@ -42,13 +47,9 @@ class EBooker extends ComponentBase
         $this->service = new EditionService($this->ebook);
     }
 
-    public function onRun()
-    {
-    }
-
     public function fresh()
     {
-        $this->ebook = Auth::getUser()?->profile->books()->with(['chapters' => fn($chapters) => $chapters->withDeferredState()])->find($this->property('book_id'))?->ebook;
+        $this->ebook = Auth::getUser()?->profile->books()->with(['ebook.chapters' => fn($chapters) => $chapters->withDeferredState()])->find($this->property('book_id'))?->ebook;
         if (!$this->ebook) {
             throw new ApplicationException('Электронное издание книги не найден.');
         }
@@ -134,8 +135,8 @@ class EBooker extends ComponentBase
 
             return [
                 '#about-header' => $this->renderPartial('book/about-header'),
-                '#ebooker-chapters' => $this->renderPartial('@chapters'),
-                '#ebook-settings' => $this->renderPartial('@settings'),
+                PartialSpawns::SPAWN_EDIT_EBOOK_CHAPTERS->value => $this->renderPartial('@chapters'),
+                PartialSpawns::SPAWN_EDIT_EBOOK_SETTINGS->value => $this->renderPartial('@settings'),
             ];
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
@@ -145,5 +146,58 @@ class EBooker extends ComponentBase
                 '#ebook-settings' => $this->renderPartial('@settings'),
             ];
         }
+    }
+
+    public function onRequestDeferredModal()
+    {
+        return [
+            PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('modals/deferred_chapters_request', ['chapter' => $this->ebook->chapters()->find($this->postChapterId())]),
+        ];
+    }
+
+    public function onRequestDeferred()
+    {
+        $this->ebook
+            ->chapters()->whereHas('deferredContentOpened', fn($q) => $q->deferredOpened()->notRequested())
+            ->where('id', $this->postChapterId())
+            ->first()
+            ->deferredContentOpened?->service()->markRequested(post('comment'));
+        return Redirect::refresh();
+        $this->vals();
+        return [
+            PartialSpawns::SPAWN_MODAL->value => '',
+            PartialSpawns::SPAWN_EDIT_EBOOK_CHAPTERS->value => $this->renderPartial('@chapters'),
+        ];
+    }
+
+    public function onCancelRequestDeferred(): array|RedirectResponse
+    {
+        return $this->onCancel(ContentTypeEnum::DEFERRED_UPDATE);
+    }
+
+    public function onCancelDeleting(): array|RedirectResponse
+    {
+        return $this->onCancel(ContentTypeEnum::DEFERRED_DELETE);
+    }
+
+    public function onCancel(ContentTypeEnum $typeEnum): array|RedirectResponse
+    {
+        try {
+            $relation = match ($typeEnum) {
+                ContentTypeEnum::DEFERRED_UPDATE => 'deferredContentOpened',
+                ContentTypeEnum::DEFERRED_DELETE => 'deletedContent',
+            };
+            $this->ebook->chapters()->find($this->postChapterId())?->{$relation}?->service()->markCanceled();
+            return Redirect::refresh();
+        } catch (Exception $exception) {
+            Flash::error($exception instanceof ValidationException ? $exception->getMessage() : 'Не удалось выполнить запрос');
+            Log::error($exception->getMessage());
+            return [];
+        }
+    }
+
+    public function postChapterId()
+    {
+        return post('chapter_id');
     }
 }

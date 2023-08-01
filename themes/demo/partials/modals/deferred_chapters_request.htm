@@ -1,0 +1,56 @@
+<div data-modal="request_deferred" class="buy-book-modal ui-modal active">
+
+    <div class="ui-modal-container">
+        {{ form_ajax('onRequestDeferred') }}
+        <input type="hidden" name="chapter_id" value="{{chapter.id}}">
+        <div class="buy-book-modal__container ui-modal-content">
+
+            <!-- заголовок -->
+            <div class="buy-book-modal__header">
+                <div class="ui-text-head--2 ui-text--bold">Запрос слияния контента</div>
+                <svg class="square-24" data-modal="close">
+                    <use
+                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                </svg>
+            </div>
+
+            <div class="buy-book-modal__wrap">
+
+                <!-- часть -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <label class="ui-checkbox">
+                            <span class="ui-checkbox-text">{{chapter.title|raw}}</span>
+                        </label>
+                        <div class="buy-book-modal__price"></div>
+                    </div>
+                    <div class="buy-book-modal__wrapper-item"></div>
+                </div>
+
+                <!-- Комментарий -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <textarea class="ui-input-textarea" rows="3" name="comment" placeholder="Комментарий"
+                                  type="text"></textarea>
+                    </div>
+                </div>
+                <!-- продолжить -->
+                <div class="buy-book-modal__wrapper">
+                    <div class="buy-book-modal__wrapper-item">
+                        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full">
+                            <span class="ui-text--medium">Запросить</span>
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        {{ form_close()}}
+    </div>
+</div>
+<script>
+    // modal
+    openModal('[data-modal="request_deferred"]', '[data-modal="request_deferred_open"]');
+    document.body.style.overflow = 'hidden';
+</script>

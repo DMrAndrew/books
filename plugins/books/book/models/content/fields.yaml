@@ -23,6 +23,13 @@ fields:
         span: row
         size: tiny
         spanClass: col-2
+    type_label:
+        label: Тип
+        disabled: true
+        valueFrom: type_label
+        span: row
+        size: tiny
+        spanClass: col-2
     status_label:
         label: Статус
         disabled: true
@@ -31,13 +38,13 @@ fields:
         size: tiny
         spanClass: col-2
     requested_at:
-        label: Запрос
+        label: Дата запроса
         disabled: true
         span: row
         size: tiny
         spanClass: col-2
     merged_at:
-        label: Слияние
+        label: Дата слияния
         disabled: true
         span: row
         size: tiny
@@ -46,4 +53,11 @@ fields:
         label: Изменения
         type: book_content_diff
         size: small
+    deferred_comments:
+        label: Комментарии
+        type: textarea
+        disabled: true
+    new_comment:
+        label: Оставить комментарий
+        type: textarea
 

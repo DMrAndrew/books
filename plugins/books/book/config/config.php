@@ -17,17 +17,17 @@ return [
 
     ],
     'content_diff' => [
-        'rendererName' => 'Combined',
+        'renderer' => 'Combined',
         'differOptions' => [
             // show how many neighbor lines
             // Differ::CONTEXT_ALL can be used to show the whole file
-            'context' => 4,
+            'context' => 1,
             // ignore case difference
             'ignoreCase' => true,
             // ignore line ending difference
             'ignoreLineEnding' => false,
             // ignore whitespace difference
-            'ignoreWhitespace' => false,
+            'ignoreWhitespace' => true,
             // if the input sequence is too long, it will just gives up (especially for char-level diff)
             //'lengthLimit' => 2000,
         ],
@@ -70,9 +70,9 @@ return [
             // characters listed in this array can be used to make diff segments into a whole
             // for example, making "<del>good</del>-<del>looking</del>" into "<del>good-looking</del>"
             // this should bring better readability but set this to empty array if you do not want it
-            'wordGlues' => [],
+            'wordGlues' => [' ','-'],
             // change this value to a string as the returned diff if the two input strings are identical
-            'resultForIdenticals' => null,
+            'resultForIdenticals' => '',
             // extra HTML classes added to the DOM of the diff container
             'wrapperClasses' => ['diff-wrapper'],
         ]

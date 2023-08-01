@@ -3,6 +3,9 @@
 # ===================================
 
 columns:
+    id:
+        label: ID
+        sortable: true
     book_info:
         label: Название книги
         displayFrom: book_info
@@ -11,15 +14,25 @@ columns:
         label: Название части
         displayFrom: chapter_info
         sortable: false
+    type_label:
+        label: Тип
+        displayFrom: type_label
     status_label:
         label: Статус
         displayFrom: status_label
-        sortable: false
+    updated_at:
+        label: Дата обновления
+        sortable: true
+        type: timetense
+        sortableDefault: desc
     requested_at:
         label: Дата запроса проверки
         type: timetense
     merged_at:
         label: Дата слияния
+        type: timetense
+    created_at:
+        label: Дата создания
         type: timetense
 
 

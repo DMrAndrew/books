@@ -212,24 +212,31 @@ class Chapter extends Model
     public function scopeWithDeferredState(Builder $builder)
     {
         return $builder
-            ->withDeferredExists()
-            ->withDeferredMergeUnRequestedExists()
-            ->withDeferredMergeRequestedExists();
+            ->withDeferredUpdateExists()
+            ->withDeferredUpdateUnRequestedExists()
+            ->withDeferredUpdateRequestedExists()
+            ->withOnDeleteExists();
     }
 
-    public function scopeWithDeferredExists(Builder $builder): Builder
+    public function scopeWithOnDeleteExists(Builder $builder): Builder
+    {
+        return $builder->withExists(['deletedContent as on_delete_exists']);
+
+    }
+
+    public function scopeWithDeferredUpdateExists(Builder $builder): Builder
     {
         return $builder->withExists(['deferredContentOpened as deferred_content_exists']);
 
     }
 
-    public function scopeWithDeferredMergeUnRequestedExists(Builder $builder): Builder
+    public function scopeWithDeferredUpdateUnRequestedExists(Builder $builder): Builder
     {
         return $builder->withExists(['deferredContentOpened as deferred_content_unrequested_exists' => fn($content) => $content->notRequested()]);
 
     }
 
-    public function scopeWithDeferredMergeRequestedExists(Builder $builder): Builder
+    public function scopeWithDeferredUpdateRequestedExists(Builder $builder): Builder
     {
         return $builder->withExists(['deferredContentOpened as deferred_content_requested_exists' => fn($content) => $content->requested()]);
 

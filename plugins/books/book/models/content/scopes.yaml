@@ -3,7 +3,10 @@
 # ===================================
 
 scopes:
-
+    id:
+        label: ID
+        type: text
+        conditions: id = :value
     book_id:
         # Filter name
         label: ID книги
@@ -36,19 +39,19 @@ scopes:
         scope: filterByChapterTitle
         conditions:
             contains: true
-#    status:
-#        type: dropdown
-#        default: 0
-#        options:
-#            0: Ожидает проверки
-#            3: Слияние выполнено
-#            2: Отклонён
-    is_requested:
-        label: Ожидает проверки
-        type: checkbox
-        conditions: requested_at <> true
-        default: 1
-    is_merged:
-        label: Слияние выполнено
-        type: checkbox
-        conditions: merged_at <> true
+    type:
+        type: dropdown
+        default:
+        options:
+            1: Обновление контента
+            2: Удаление части
+        emptyOption: Тип
+    status:
+        type: dropdown
+        default:
+        options:
+            0: Ожидает проверки
+            3: Слияние выполнено
+            2: Отклонён
+            7: Отменён
+        emptyOption: Статус

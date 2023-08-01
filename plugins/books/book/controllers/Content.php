@@ -45,14 +45,14 @@ class Content extends Controller
 
     public function listExtendQuery($query)
     {
-        $query->deferred()
+        $query->notRegular()
             ->with('contentable.edition.book')
-            ->latest();
+            ->orderByDesc('updated_at');
     }
 
     public function onAccept($recordId = null){
         if ($model = ContentModel::find($recordId)) {
-            $model->contentable?->service()?->mergeDeferred();
+            $model->contentable?->service()?->mergeDeferred($this->getPostComment());
             Flash::success('Сохранено');
 
             return Redirect::refresh();
@@ -64,12 +64,16 @@ class Content extends Controller
     public function onReject($recordId = null){
 
         if ($model = ContentModel::find($recordId)) {
-            $model->markRejected();
+            $model->service()->markRejected($this->getPostComment());
             Flash::success('Сохранено');
 
             return Redirect::refresh();
         }
 
         return Flash::error('Контент не найден');
+    }
+
+    public function getPostComment(){
+        return post('Content.new_comment');
     }
 }
