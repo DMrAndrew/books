@@ -109,10 +109,10 @@ class Comment extends Model
     public function toCommentableLink(): string
     {
         return match (get_class($this->commentable)) {
-                Book::class => '/book-card/',
-                Profile::class => '/author-page/',
-                Post::class => '/blog/',
-            } . $this->commentable->id;
+                Book::class => '/book-card/' . $this->commentable->id,
+                Profile::class => '/author-page/'. $this->commentable->id,
+                Post::class => '/blog/'. $this->commentable->slug,
+            };
     }
 
     public function scopeWithoutOwner(Builder $builder)
