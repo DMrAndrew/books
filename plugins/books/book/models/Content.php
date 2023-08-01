@@ -11,6 +11,7 @@ use Jfcherng\Diff\DiffHelper;
 use Mail;
 use Model;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\Validation;
 use Books\Book\Classes\Enums\ContentTypeEnum;
 use RainLab\User\Facades\Auth;
@@ -29,6 +30,7 @@ use ValidationException;
 class Content extends Model
 {
     use Validation;
+    use Revisionable;
 
     /**
      * @var string table name
@@ -36,6 +38,7 @@ class Content extends Model
     public $table = 'books_book_contents';
 
     protected $fillable = ['body', 'type', 'requested_at', 'merged_at', 'data', 'status', 'saved_from_editor'];
+    protected $revisionable = ['status','requested_at','merged_at'];
     /**
      * @var array rules for validation
      */

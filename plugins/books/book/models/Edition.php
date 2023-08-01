@@ -337,7 +337,7 @@ class Edition extends Model implements ProductInterface
     public function shouldRevisionLength(): bool
     {
         return $this->isDirty('length')
-//            && !$this->shouldDeferredUpdate()
+            && !$this->shouldDeferredUpdate()
             && in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN, BookStatus::COMPLETE]);
     }
 
@@ -346,11 +346,6 @@ class Edition extends Model implements ProductInterface
         if (!$this->shouldRevisionLength()) {
             $this->revisionable = array_diff_key($this->revisionable, ['length']);
         }
-    }
-
-    protected function afterUpdate()
-    {
-
     }
 
     public function scopeNotEmpty(Builder $builder): Builder
