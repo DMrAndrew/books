@@ -160,14 +160,9 @@ class EBooker extends ComponentBase
         $this->ebook
             ->chapters()->whereHas('deferredContentOpened', fn($q) => $q->deferredOpened()->notRequested())
             ->where('id', $this->postChapterId())
-            ->first()
-            ->deferredContentOpened?->service()->markRequested(post('comment'));
+            ->first()?->deferredContentOpened?->service()
+            ->markRequested(post('comment'));
         return Redirect::refresh();
-        $this->vals();
-        return [
-            PartialSpawns::SPAWN_MODAL->value => '',
-            PartialSpawns::SPAWN_EDIT_EBOOK_CHAPTERS->value => $this->renderPartial('@chapters'),
-        ];
     }
 
     public function onCancelRequestDeferred(): array|RedirectResponse

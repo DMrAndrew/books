@@ -8,7 +8,7 @@
       data-request-validate>
     <div class="personal-area__wrap _indent-large ui-input">
         <label class="ui-input-label">Название части</label>
-        <input class="ui-input-item _size-32" value="{{chapter.title}}" name="title" type="text">
+        <input class="ui-input-item _size-32" value="{{chapter.title}}" name="title" type="text" {{ ebook.shouldDeferredUpdate ? 'disabled' : ''}}>
         <div class="ui-select-hitn"></div>
         <div class="ui-select-error" data-validate-for="title"></div>
     </div>
@@ -22,11 +22,12 @@
     <div class="ui-select-error" data-validate-for="content"></div>
 
 
+    {% if not ebook.shouldDeferredUpdate%}
     <div class="personal-area__wrap _indent-large">
         <label class="personal-area__wrap _indent-medium ui-radio">
             <input type="radio" name="action" value="publish_now" class="chapter-action-radio"
                    {{ chapter.status.value == 'published'? 'checked':'' }}
-            hidden>
+            hidden/>
             <div class="ui-radio-checker"></div>
             <span class="ui-radio-text">Опубликовать сейчас</span>
         </label>
@@ -34,14 +35,14 @@
             <input type="radio" name="action" value="save_as_draft" class="chapter-action-radio"
                    {{ chapter.id ? (chapter.status.value == 'draft' ? 'checked':'') : 'checked' }}
 
-                   hidden>
+                   hidden/>
             <div class="ui-radio-checker"></div>
             <span class="ui-radio-text">Сохранить как черновик</span>
         </label>
         <label class="personal-area__wrap _indent-medium ui-radio">
             <input type="radio" id="published_at_radio" value="published_at" class="chapter-action-radio"
                    {{ chapter.status.value == 'planned' ? 'checked':'' }}
-            name="action" hidden>
+            name="action" hidden/>
             <div class="ui-radio-checker"></div>
             <span class="ui-radio-text">Назначить дату публикации</span>
         </label>
@@ -65,6 +66,33 @@
         <div class="ui-select-hitn"></div>
         <div class="ui-select-error" data-validate-for="action"></div>
     </div>
+    <script>
+        $(function () {
+            if(document.querySelector('input[class = "chapter-action-radio"]:checked').id == 'published_at_radio'){
+                $('#published_at_input').show()
+            }
+            $('.chapter-action-radio').on('change', function (e) {
+                let input = $('#published_at_input')
+                if (e.target.id === 'published_at_radio') {
+                    input.show()
+                } else {
+                    input.hide()
+                }
+            })
+            initDatepicker("#datepicker")
+        });
+        new SlimSelect({
+            select: '#multiple',
+        })
+
+        new SlimSelect({
+            select: '#time',
+            settings: {
+                showSearch: false
+            }
+        })
+    </script>
+    {% endif %}
 
     <button href="#" class="ui-button ui-button-size--32 ui-button-view--2" >{{ chapter.id ? 'Сохранить' : 'Добавить' }}</button>
 </form>
@@ -78,30 +106,6 @@
                 body:editor.getData()
             }
         })
-    })
-    $(function () {
-        if(document.querySelector('input[class = "chapter-action-radio"]:checked').id == 'published_at_radio'){
-            $('#published_at_input').show()
-        }
-        $('.chapter-action-radio').on('change', function (e) {
-            let input = $('#published_at_input')
-            if (e.target.id === 'published_at_radio') {
-                input.show()
-            } else {
-                input.hide()
-            }
-        })
-        initDatepicker("#datepicker")
-    });
-    new SlimSelect({
-        select: '#multiple',
-    })
-
-    new SlimSelect({
-        select: '#time',
-        settings: {
-            showSearch: false
-        }
     })
 
 </script>

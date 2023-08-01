@@ -26,10 +26,10 @@ columns:
         type: timetense
         sortableDefault: desc
     requested_at:
-        label: Дата запроса проверки
+        label: Дата запроса
         type: timetense
     merged_at:
-        label: Дата слияния
+        label: Дата проверки
         type: timetense
     created_at:
         label: Дата создания

@@ -44,7 +44,7 @@ fields:
         size: tiny
         spanClass: col-2
     merged_at:
-        label: Дата слияния
+        label: Дата проверки
         disabled: true
         span: row
         size: tiny

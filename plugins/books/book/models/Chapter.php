@@ -220,31 +220,31 @@ class Chapter extends Model
 
     public function scopeWithOnDeleteExists(Builder $builder): Builder
     {
-        return $builder->withExists(['deletedContent as on_delete_exists']);
+        return $builder->withExists(['deletedContent as on_delete_exists' => fn($content) => $content->onDeleteOpened()]);
 
     }
 
     public function scopeWithDeferredUpdateExists(Builder $builder): Builder
     {
-        return $builder->withExists(['deferredContentOpened as deferred_content_exists']);
+        return $builder->withExists(['deferredContentOpened as deferred_content_exists' => fn($content) => $content->deferredOpened()]);
 
     }
 
     public function scopeWithDeferredUpdateUnRequestedExists(Builder $builder): Builder
     {
-        return $builder->withExists(['deferredContentOpened as deferred_content_unrequested_exists' => fn($content) => $content->notRequested()]);
+        return $builder->withExists(['deferredContentOpened as deferred_content_unrequested_exists' => fn($content) => $content->deferredOpened()->notRequested()]);
 
     }
 
     public function scopeWithDeferredUpdateRequestedExists(Builder $builder): Builder
     {
-        return $builder->withExists(['deferredContentOpened as deferred_content_requested_exists' => fn($content) => $content->requested()]);
+        return $builder->withExists(['deferredContentOpened as deferred_content_requested_exists' => fn($content) => $content->deferredOpened()->requested()]);
 
     }
 
     public function scopeType(Builder $builder, ChapterStatus ...$status): Builder
     {
-        return $builder->whereIn('status', collect($status)->pluck('value')->toArray());
+        return $builder->whereIn('status', array_pluck($status,'value'));
     }
 
     public function lengthRecount()

@@ -24,6 +24,7 @@ use ValidationException;
  * @property string $body
  * @property ContentStatus $status
  * @property ContentTypeEnum $type
+ * @property $contentable
  */
 class Content extends Model
 {
@@ -59,25 +60,6 @@ class Content extends Model
         'contentable' => []
     ];
 
-    public function service(): ContentService
-    {
-        return new ContentService($this,...func_get_args());
-    }
-    public function scopeRegular(Builder $builder): Builder
-    {
-        return $builder->whereNull('type');
-    }
-
-    public function scopeNotRegular(Builder $builder): Builder
-    {
-        return $builder->whereNotNull('type');
-    }
-
-    public function scopeOnDeleteType(Builder $builder): Builder
-    {
-        return $builder->type(ContentTypeEnum::DEFERRED_DELETE);
-    }
-
     public function getBookInfoAttribute(): string
     {
         if ($this->contentable instanceof Chapter) {
@@ -93,6 +75,26 @@ class Content extends Model
             return sprintf('%s (ID:%s)', strip_tags($this->contentable->title), $this->contentable->id);
         }
         return '';
+    }
+
+    public function service(): ContentService
+    {
+        return new ContentService($this, ...func_get_args());
+    }
+
+    public function scopeRegular(Builder $builder): Builder
+    {
+        return $builder->whereNull('type');
+    }
+
+    public function scopeNotRegular(Builder $builder): Builder
+    {
+        return $builder->whereNotNull('type');
+    }
+
+    public function scopeOnDeleteType(Builder $builder): Builder
+    {
+        return $builder->type(ContentTypeEnum::DEFERRED_DELETE);
     }
 
     public function scopeFilterByChapterTitle(Builder $builder, string $value)
@@ -136,7 +138,7 @@ class Content extends Model
 
     public function scopeStatusNot(Builder $builder, ContentStatus ...$status): Builder
     {
-        return $builder->where(fn($where) => $where->whereNull('status')->orWhereNotIn('status', array_pluck($status, 'value')));
+        return $builder->where(fn($q) => $q->whereNotIn('status', array_pluck($status, 'value'))->orWhereNull('status'));
     }
 
 
@@ -171,38 +173,6 @@ class Content extends Model
         return $builder->onDeleteType()->requested()->notMerged();
     }
 
-    public function allowedMarkAsRequested(): bool
-    {
-        return !in_array($this->getOriginal('status'), [ContentStatus::Pending, ContentStatus::Merged]);
-    }
-
-    public function canBeCanceled(): bool
-    {
-        return $this->status === ContentStatus::Pending;
-    }
-
-    public function markRequested(?string $comment = null)
-    {
-        $this->requested_at = now();
-        $this->status = ContentStatus::Pending;
-        $comment && $this->addComment($comment);
-        return $this->save();
-    }
-
-
-    public function addComment(?string $comment = null)
-    {
-        if ($comment) {
-            $data = $this->data;
-            $data['comments'][] = [
-                'user' => (Auth::getUser() ?? \Backend\Controllers\Auth::getUser()),
-                'comment' => $comment,
-                'created_at' => now()
-            ];
-            $this->data = $data;
-        }
-    }
-
     public function getDeferredCommentsAttribute()
     {
         return collect($this->data['comments'] ?? [])
@@ -216,27 +186,61 @@ class Content extends Model
             ->join(PHP_EOL . PHP_EOL);
     }
 
+    public function addComment(?string $comment = null): void
+    {
+        if ($comment) {
+            $data = $this->data;
+            $data['comments'][] = [
+                'user' => (Auth::getUser() ?? \Backend\Controllers\Auth::getUser()),
+                'comment' => $comment,
+                'created_at' => now()
+            ];
+            $this->data = $data;
+        }
+    }
 
-    public function markMerged(?string $comment = null)
+
+    public function allowedMarkAs(ContentStatus $status): bool
+    {
+        $original_status = $this->getOriginal('status');
+        return match($status){
+            ContentStatus::Rejected, ContentStatus::Merged => !is_null($original_status) && ($original_status !== ContentStatus::Cancelled),
+            ContentStatus::Cancelled => $original_status === ContentStatus::Pending,
+            ContentStatus::Pending => !in_array($original_status, [ContentStatus::Merged]),
+            default => false
+        };
+    }
+
+    public function markRequested(?string $comment = null): bool
+    {
+        $this->requested_at = now();
+        $this->status = ContentStatus::Pending;
+        $this->addComment($comment);
+        return $this->save();
+    }
+
+
+    public function markMerged(?string $comment = null): bool
     {
         $this->merged_at = now();
         $this->status = ContentStatus::Merged;
-        $comment && $this->addComment($comment);
+        $this->addComment($comment);
         return $this->save();
     }
 
     /**
      * @throws Exception
      */
-    public function markCanceled()
+    public function markCanceled(): bool
     {
         $this->status = ContentStatus::Cancelled;
         return $this->save();
     }
 
-    public function markRejected(?string $comment = null)
+    public function markRejected(?string $comment = null): bool
     {
         $this->status = ContentStatus::Rejected;
+        $this->merged_at = now();
         $comment && $this->addComment($comment);
         return $this->save();
     }

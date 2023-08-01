@@ -107,18 +107,16 @@ class ChapterService
             return $this->chapter;
         });
     }
-    public function mergeDeferred(?string $comment = null): void
+
+    public function mergeDeferred(): Chapter|bool
     {
         if ($content = $this->chapter->deferredContentOpened) {
-            Db::transaction(function () use ($content,$comment) {
-                $this->update(['new_content' => $content->body]);
-                $this->chapter->deferredContentOpened->markMerged($comment);
-                Event::fire('books.book::content.deferred.merged', [$content,$comment]);
-            });
+            return $this->update(['new_content' => $content->body]);
         }
+        return false;
     }
 
-    public function initUpdateBody(string $content)
+    public function initUpdateBody(string $content): bool|int
     {
         if (!$this->chapter->content->saved_from_editor) {
             return Content::query()->where('id', '=', $this->chapter->content->id)->update([
@@ -132,28 +130,37 @@ class ChapterService
     /**
      * @throws ValidationException
      */
-    public function delete(): void
+    public function delete()
     {
         if (!$this->chapter->edition->editAllowed()) {
             if ($this->edition->shouldDeferredUpdate()) {
-                $this->chapter->deletedContent()->firstOrCreate(['type' => ContentTypeEnum::DEFERRED_DELETE,'status' => ContentStatus::Pending]);
-                return;
+                $content = $this->chapter->deletedContent()->firstOrCreate(['type' => ContentTypeEnum::DEFERRED_DELETE, 'status' => ContentStatus::Pending]);
+                return $content->service()->markRequested();
             } else {
                 throw new ValidationException(['chapter' => 'В данный момент Вы не можете удалять главы книг.']);
             }
         }
-        $this->chapter->delete();
+        return $this->actionDelete();
     }
 
-    public function markCanceledDeferredUpdate(){
-        if($this->chapter->deferredContentOpened?->canBeCanceled()){
-            $this->chapter->deferredContentOpened->markCanceled();
-        }
+    /**
+     * :(
+     *
+     * @return bool
+     */
+    public function actionDelete(): bool
+    {
+        return $this->chapter->delete();
     }
-    public function markCanceledDeletedContent(){
-        if($this->chapter->deletedContent?->canBeCanceled()){
-            $this->chapter->deletedContent->markCanceled();
-        }
+
+    public function markCanceledDeferredUpdate()
+    {
+        return $this->chapter->deferredContentOpened?->service()->markCanceled();
+    }
+
+    public function markCanceledDeletedContent()
+    {
+        return $this->chapter->deletedContent?->service()->markCanceled();
     }
 
     /**

@@ -12,6 +12,7 @@ class Contentable extends ExtensionBase
 {
     public function __construct(protected Model $model)
     {
+        $this->model->morphMany['contents'] = [Content::class, 'name' => 'contentable'];
         $this->model->morphOne['content'] = [Content::class, 'name' => 'contentable', 'scope' => 'regular'];
         $this->model->morphMany['deferredContent'] = [Content::class, 'name' => 'contentable', 'scope' => 'deferred'];
         $this->model->morphOne['deferredContentOpened'] = [Content::class, 'name' => 'contentable', 'scope' => 'deferredOpened'];

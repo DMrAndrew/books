@@ -46,13 +46,13 @@ class Content extends Controller
     public function listExtendQuery($query)
     {
         $query->notRegular()
-            ->with('contentable.edition.book')
+            ->with(['contentable' => fn($q) => $q->withTrashed(),'contentable.edition.book'])
             ->orderByDesc('updated_at');
     }
 
     public function onAccept($recordId = null){
         if ($model = ContentModel::find($recordId)) {
-            $model->contentable?->service()?->mergeDeferred($this->getPostComment());
+            $model->service()->markMerged($this->getPostComment());
             Flash::success('Сохранено');
 
             return Redirect::refresh();

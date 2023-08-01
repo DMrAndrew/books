@@ -10,7 +10,7 @@ enum ContentTypeEnum: int
     {
         return match ($this) {
             self::DEFERRED_UPDATE => 'Обновление контента',
-            self::DEFERRED_DELETE => 'Удаление части',
+            self::DEFERRED_DELETE => 'Удаление',
         };
     }
 }
