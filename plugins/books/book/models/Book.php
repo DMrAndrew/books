@@ -78,7 +78,6 @@ class Book extends Model
     use HasRelationships;
     use PowerJoins;
 
-
     /**
      * @var string table associated with the model
      */

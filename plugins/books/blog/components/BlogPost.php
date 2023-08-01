@@ -1,6 +1,8 @@
 <?php namespace Books\Blog\Components;
 
 use Books\Blog\Models\Post;
+use Books\Comments\behaviors\Commentable;
+use Books\Comments\Components\Comments;
 use Cms\Classes\ComponentBase;
 
 /**
@@ -10,6 +12,8 @@ use Cms\Classes\ComponentBase;
  */
 class BlogPost extends ComponentBase
 {
+    protected Post $post;
+
     public function componentDetails()
     {
         return [
@@ -28,7 +32,12 @@ class BlogPost extends ComponentBase
 
     public function init()
     {
-        $this->page['post'] = Post::findOrFail($this->param('post_id'));
-    }
+        $this->post = Post::findOrFail($this->param('post_id'));
 
+        $this->page['post'] = $this->post; //dd($this->post->isClassExtendedWith(Commentable::class));
+
+        $comments = $this->addComponent(Comments::class, 'comments');
+        $comments->bindModel($this->post);
+        $comments->bindModelOwner($this->post->profile);
+    }
 }
