@@ -1,7 +1,6 @@
 <?php namespace Books\Blog\Components;
 
 use Books\Blog\Models\Post;
-use Books\Comments\behaviors\Commentable;
 use Books\Comments\Components\Comments;
 use Cms\Classes\ComponentBase;
 
