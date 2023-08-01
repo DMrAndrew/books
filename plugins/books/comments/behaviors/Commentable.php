@@ -4,9 +4,6 @@ namespace Books\Comments\behaviors;
 
 use Books\Book\Models\Book;
 use Books\Comments\Models\Comment;
-use Books\Profile\Models\Profile;
-use Closure;
-use October\Rain\Database\Builder;
 use October\Rain\Database\Model;
 use October\Rain\Extension\ExtensionBase;
 use RainLab\User\Models\User;
