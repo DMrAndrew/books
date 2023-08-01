@@ -1,0 +1,16 @@
+v1.0.1:
+    - 'Реферальная программа'
+    - create_referrers_table.php
+    - create_referrals_table.php
+v1.0.2:
+    - 'Переходы по реферальной ссылке'
+    - create_referral_visits_table.php
+v1.0.3:
+    - 'Целевая страница по реферальной ссылке'
+    - update_referrer_add_target_link.php
+v1.0.4:
+    - 'Статистика реферальных продаж'
+    - create_referral_statistics_table.php
+v1.0.5:
+    - 'Seed referral statistics for dev'
+    - seed_referral_statistics.php

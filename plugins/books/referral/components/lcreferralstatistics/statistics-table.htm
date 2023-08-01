@@ -1,0 +1,72 @@
+<!--<div class="referral-stat">-->
+<!--    <div class="referral-stat__head">-->
+<!--        <div class="referral-stat__col">Дата</div>-->
+<!--        <div class="referral-stat__col">Кол-во переходов</div>-->
+<!--        <div class="referral-stat__col referral-stat__col&#45;&#45;double">Вознаграждение</div>-->
+<!--    </div>-->
+
+<!--    <div class="referral-stat__list">-->
+<!--        <div class="referral-stat__row">-->
+<!--            <div class="referral-stat__col">13.10.22</div>-->
+<!--            <div class="referral-stat__col">456</div>-->
+<!--            <div class="referral-stat__col referral-stat__col&#45;&#45;double">20 ₽</div>-->
+<!--        </div>-->
+<!--        <div class="referral-stat__row">-->
+<!--            <div class="referral-stat__col">12.10.22</div>-->
+<!--            <div class="referral-stat__col">360</div>-->
+<!--            <div class="referral-stat__col referral-stat__col&#45;&#45;double">10 ₽</div>-->
+<!--        </div>-->
+<!--        <div class="referral-stat__row">-->
+<!--            <div class="referral-stat__col">11.10.22</div>-->
+<!--            <div class="referral-stat__col">590</div>-->
+<!--            <div class="referral-stat__col referral-stat__col&#45;&#45;double">50 ₽</div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<div class="table">
+    {% if data|length > 0 %}
+    <div class="table __container-shift">
+        <table class="table-static">
+            <thead>
+            <tr>
+                <td class="table__col _left">Дата</td>
+                <td class="table__col _left">Кол-во переходов</td>
+                <td class="table__col _left">Кол-во продаж</td>
+                <td class="table__col _left">Вознаграждение</td>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for dayGroup in data %}
+                {% for record in dayGroup %}
+                <tr>
+                    <td>{{ record.date == previousDay ? '' : record.date }}</td>
+                    <td class="table__col _left">{{ record.visits_count }}</td>
+                    <td class="table__col _left">{{ record.sells_count }}</td>
+                    <td class="table__col _left">{{ record.reward }}</td>
+                </tr>
+                {% set previousDay = record.date %}
+                {% endfor %}
+            {% endfor %}
+
+            <tr>
+                <td></td>
+                <td class="table__col _wide"><div class="table__col _right _wide _bold">Итого:</td>
+                <td class="table__col _bold _left">{{ summary.sells_count }}</td>
+                <td class="table__col _bold _left">{{ summary.sells_reward_amount }}</td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+    <div class="table__list">
+        <div class="table__row">
+            <div class="table__col _not-found">Ничего не найдено</div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
