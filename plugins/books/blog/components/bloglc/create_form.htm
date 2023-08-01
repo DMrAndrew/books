@@ -1,0 +1,32 @@
+<div class="ui-container">
+    <div class="create-book__title ui-text-head--2 ui-text--bold">Новая запись в блоге</div>
+</div>
+
+<form class="lc-book-text ui-container-fluid wrapper"
+      data-request-flash
+      data-request="{{__SELF__}}::onSavePost"
+      data-request-validate>
+    <div class="personal-area__wrap _indent-large ui-input">
+        <label class="ui-input-label">Заголовок</label>
+        <input class="ui-input-item _size-32" value="{{post.title}}" name="title" type="text">
+        <div class="ui-select-hitn"></div>
+        <div class="ui-select-error" data-validate-for="title"></div>
+    </div>
+
+    <div class="personal-area__wrap _indent-large typographical-block">
+        <textarea  id="content" name="content">{{post.getContent().body}}</textarea>
+    </div>
+    <div class="ui-select-hitn"></div>
+    <div class="ui-select-error" data-validate-for="content"></div>
+    </div>
+
+    <a href="/lc-blog" class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--3">Отмена</a>
+    <button href="#" class="ui-button ui-button-size--32 ui-button-view--2" >{{ post.id ? 'Сохранить' : 'Опубликовать' }}</button>
+</form>
+
+
+<script>
+    initEditor('content',{
+        toolbarItems:['uploadImage',]
+    })
+</script>
