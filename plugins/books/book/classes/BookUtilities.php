@@ -2,7 +2,11 @@
 
 namespace Books\Book\Classes;
 
-use Books\Book\Models\Content;
+use DiDom\Document;
+use DiDom\Element;
+use Html;
+use Illuminate\Support\Collection;
+use Str;
 
 class BookUtilities
 {
@@ -161,4 +165,67 @@ class BookUtilities
 
         return $str;
     }
+
+    public static function parseStringToParagraphCollection(?string $content, SaveHtmlMode $mode = SaveHtmlMode::STANDARD): Collection
+    {
+        $dom = self::stringToDiDom($content);
+
+        if ($mode === SaveHtmlMode::STANDARD) {
+            return collect($dom->getDocument()->childNodes)->map(fn($node) => [
+                'html' => $dom->getDocument()->saveHTML($node),
+                'length' => self::countContentLength($node->textContent)
+            ]);
+        }
+        if ($mode === SaveHtmlMode::WITH_WRAP) {
+            return collect($dom->toElement()->children())->map(fn($node) => [
+                'html' => $node->html(),
+                'length' => self::countContentLength($node->text())
+            ]);
+        }
+    }
+
+    public static function countContentLength(string $str): bool|int
+    {
+        return iconv_strlen(trim(Str::squish($str)));
+    }
+
+    public static function stringToDiDom(?string $content): Document
+    {
+        $diDom = new Document();
+        $content = $content ?: '<p></p>';
+        $content = Html::clean(trim(Str::squish($content)));
+        $diDom->loadHtml($content, LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
+        return $diDom;
+    }
+
+    public static function str_remove(string $str, array $items = []): array|string|null
+    {
+        foreach ($items as $item) {
+            $str = str_replace($item, '', $str);
+        }
+        return $str;
+    }
+
+    /**
+     * Добавляет PHP_EOL после каждого закрывающего тэга
+     */
+    public static function eolAfterCloseTag($str): array|string|null
+    {
+        return preg_replace('/(<\/[^>]+>)/', '$1' . PHP_EOL, $str);
+    }
+
+    public static function prepareForDiff(string $string): array|string|null
+    {
+        $blacklist = ['<br>', '<br/>', '<p><br></p>', '<p> </p>', '<p>&nbsp;</p>', '&nbsp;'];
+
+        return self::str_remove(self::eolAfterCloseTag($string), $blacklist);
+    }
+
+
+}
+
+enum SaveHtmlMode: int
+{
+    case WITH_WRAP = 1;
+    case STANDARD = 2;
 }

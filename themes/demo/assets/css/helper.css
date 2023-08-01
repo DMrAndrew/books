@@ -187,3 +187,6 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
 .comments-comment__info{
     width:100%;
 }
+.chapter-book__info-container:not(:last-child){
+    margin-bottom: 12px;
+}

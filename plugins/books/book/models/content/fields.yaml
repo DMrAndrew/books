@@ -6,3 +6,58 @@ fields:
     id:
         label: ID
         disabled: true
+        span: row
+        size: tiny
+        spanClass: col-2
+    book_info:
+        label: Название книги
+        displayFrom: book_info
+        disabled: true
+        span: row
+        size: tiny
+        spanClass: col-2
+    chapter_info:
+        label: Название части
+        displayFrom: chapter_info
+        disabled: true
+        span: row
+        size: tiny
+        spanClass: col-2
+    type_label:
+        label: Тип
+        disabled: true
+        valueFrom: type_label
+        span: row
+        size: tiny
+        spanClass: col-2
+    status_label:
+        label: Статус
+        disabled: true
+        valueFrom: status_label
+        span: row
+        size: tiny
+        spanClass: col-2
+    requested_at:
+        label: Дата запроса
+        disabled: true
+        span: row
+        size: tiny
+        spanClass: col-2
+    merged_at:
+        label: Дата проверки
+        disabled: true
+        span: row
+        size: tiny
+        spanClass: col-2
+    content_diff:
+        label: Изменения
+        type: book_content_diff
+        size: small
+    deferred_comments:
+        label: Комментарии
+        type: textarea
+        disabled: true
+    new_comment:
+        label: Оставить комментарий
+        type: textarea
+

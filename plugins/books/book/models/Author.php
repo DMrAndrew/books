@@ -15,6 +15,7 @@ use October\Rain\Database\Traits\Validation;
  *
  * @method BelongsTo book
  * @method BelongsTo profile
+ * @property  Profile profile
  */
 class Author extends Model
 {

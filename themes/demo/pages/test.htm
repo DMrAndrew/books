@@ -1,0 +1,14 @@
+url = "/test"
+layout = "default"
+title = "Тест"
+meta_title = "Тест"
+==
+function onStart()
+{
+$this['hello'] = Books\Book\Models\Content::query()->whereNotNull('body')->first();
+}
+==
+<link href="{{ 'assets/css/diff-table.css' | theme }}" rel="stylesheet">
+
+{{hello.getDiff|raw}}
+

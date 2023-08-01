@@ -5,4 +5,37 @@
 columns:
     id:
         label: ID
-        searchable: true
+        sortable: true
+    book_info:
+        label: Название книги
+        displayFrom: book_info
+        sortable: false
+    chapter_info:
+        label: Название части
+        displayFrom: chapter_info
+        sortable: false
+    type_label:
+        label: Тип
+        displayFrom: type_label
+    status_label:
+        label: Статус
+        displayFrom: status_label
+    updated_at:
+        label: Дата обновления
+        sortable: true
+        type: timetense
+        sortableDefault: desc
+    requested_at:
+        label: Дата запроса
+        type: timetense
+    merged_at:
+        label: Дата проверки
+        type: timetense
+    created_at:
+        label: Дата создания
+        type: timetense
+
+
+
+
+

@@ -11,7 +11,7 @@
     <h2 class="ui-text-head--3-em ui-text--bold">{{reader.chapter.title|raw}}</h2>
     {% endif %}
     {% if not ask_adult %}
-    {{ reader.paginator.content.cleanBody|raw }}
+    {{ reader.paginator.content.body|raw }}
     {% endif %}
 </div>
 {% partial '@pagination' %}

@@ -12,6 +12,8 @@ use Books\User\Classes\UserEventHandler;
 use Books\User\Classes\UserService;
 use Books\User\Models\Settings;
 use Carbon\Carbon;
+use Exception;
+use Log;
 use October\Rain\Extension\ExtensionBase;
 use RainLab\User\Models\User;
 use ValidationException;
@@ -51,6 +53,7 @@ class BookUser extends ExtensionBase
     public function __construct(protected User $parent)
     {
         $this->parent->addValidationRule('show_birthday', 'boolean');
+        $this->parent->addValidationRule('birthday', 'required');
         $this->parent->addValidationRule('birthday', 'required');
 //        $this->parent->addValidationRule('nickname', 'required'); багует
         $this->parent->addDateAttribute('birthday');
@@ -111,7 +114,13 @@ class BookUser extends ExtensionBase
             return;
         }
 
-        $date = Carbon::parse($value);
+        try {
+            $date = Carbon::parse($value);
+        }
+        catch (Exception $exception){
+            Log::error($exception->getMessage());
+            throw new ValidationException(['birthday' => 'Некорректная дата рождения']);
+        }
         $date->lessThan(today()) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть больше текущего дня']);
         $date->gte(Carbon::parse(self::MIN_BIRTHDAY)) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть меньше ' . self::MIN_BIRTHDAY]);
         $this->parent->attributes['birthday'] = $date;

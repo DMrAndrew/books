@@ -33,11 +33,12 @@
         "books/payment-plugin": "*",
         "books/withdrawal-plugin": "*",
         "books/referral-plugin": "*",
-        "books/blacklists-plugin": "dev-main",
+        "books/blacklists-plugin": "*",
         "laracraft-tech/laravel-date-scopes": "^1.1",
         "vdlp/oc-telescope-plugin": "^2.0",
         "vdlp/oc-horizon-plugin": "*",
-        "abordage/laravel-last-modified": "^0.2.0"
+        "abordage/laravel-last-modified": "^0.2.0",
+        "jfcherng/php-diff": "^6.15"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",

@@ -1,0 +1,57 @@
+# ===================================
+# Filter Scope Definitions
+# ===================================
+
+scopes:
+    id:
+        label: ID
+        type: text
+        conditions: id = :value
+    book_id:
+        # Filter name
+        label: ID книги
+        type: text
+        # Filter scope
+        scope: filterByBookId
+        conditions:
+            exact: true
+    book_title:
+        # Filter name
+        label: Название книги
+        type: text
+        # Filter scope
+        scope: filterByBookTitle
+        conditions:
+            contains: true
+    chapter_id:
+        # Filter name
+        label: ID части
+        type: text
+        # Filter scope
+        scope: filterByChapterId
+        conditions:
+            exact: true
+    chapter_title:
+        # Filter name
+        label: Название части
+        type: text
+        # Filter scope
+        scope: filterByChapterTitle
+        conditions:
+            contains: true
+    type:
+        type: dropdown
+        default:
+        options:
+            1: Обновление контента
+            2: Удаление
+        emptyOption: Тип
+    status:
+        type: dropdown
+        default:
+        options:
+            0: Ожидает проверки
+            3: Принято
+            2: Отклонено
+            7: Отменён пользователем
+        emptyOption: Статус

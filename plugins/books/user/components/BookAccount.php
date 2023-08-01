@@ -2,16 +2,14 @@
 
 namespace Books\User\Components;
 
+use App\classes\PartialSpawns;
 use Books\User\Classes\CookieEnum;
 use Books\User\Classes\UserService;
 use Books\User\Models\TempAdultPass;
 use Cookie;
 use RainLab\User\Components\Account;
-use RainLab\User\Models\Settings as UserSettings;
 use RainLab\User\Models\User;
 use Redirect;
-use ValidationException;
-use Validator;
 
 class BookAccount extends Account
 {
@@ -44,7 +42,7 @@ class BookAccount extends Account
     {
         if ($data = CookieEnum::guest->get()) {
             return [
-                '#modal-spawn' => $this->renderPartial('auth/registerForm', ['user' => new User($data)]),
+                PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/registerForm', ['user' => new User($data)]),
             ];
         }
         return [];
@@ -53,7 +51,7 @@ class BookAccount extends Account
     public function onGetRegisterForm()
     {
         return [
-            '#modal-spawn' => $this->renderPartial('auth/registerForm'),
+            PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/registerForm'),
         ];
 
     }
@@ -61,7 +59,7 @@ class BookAccount extends Account
     public function onGetLoginPopup()
     {
         return [
-            '#modal-spawn' => $this->renderPartial('auth/loginPopup'),
+            PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/loginPopup'),
         ];
 
     }
@@ -69,7 +67,7 @@ class BookAccount extends Account
     public function onGetRegisterPopup()
     {
         return [
-            '#modal-spawn' => $this->renderPartial('auth/registerPopup'),
+            PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/registerPopup'),
         ];
 
     }
@@ -77,7 +75,7 @@ class BookAccount extends Account
     public function onGetLoginForm()
     {
         return [
-            '#modal-spawn' => $this->renderPartial('auth/loginForm'),
+            PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/loginForm'),
         ];
 
     }
@@ -85,7 +83,7 @@ class BookAccount extends Account
     public function onFetch(): array
     {
         if ($this->user()?->requiredAskAdult()) {
-            return ['#modal-spawn' => $this->renderPartial('auth/adult-modal', ['active' => 1])];
+            return [PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/adult-modal', ['active' => 1])];
         }
 
         return [];
