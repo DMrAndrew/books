@@ -15,6 +15,7 @@ use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\Validation;
 use Books\Book\Classes\Enums\ContentTypeEnum;
 use RainLab\User\Facades\Auth;
+use System\Models\Revision;
 use ValidationException;
 
 /**
@@ -61,6 +62,10 @@ class Content extends Model
 
     public $morphTo = [
         'contentable' => []
+    ];
+
+    public $morphMany = [
+        'revision_history' => [Revision::class, 'name' => 'revisionable']
     ];
 
     public function getBookInfoAttribute(): string
