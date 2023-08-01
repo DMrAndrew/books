@@ -56,7 +56,7 @@ class Post extends Model
     ];
 
     public $attachMany = [
-        'pictures' => File::class,
+        'content_images' => File::class,
     ];
 
     public static function boot(): void
