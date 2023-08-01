@@ -110,7 +110,7 @@ class ContentService
                 'nickname' => $chapter->edition->book->author->profile->username,
                 'title' => strip_tags($chapter->title),
                 'book' => $chapter->edition->book->title,
-                'type' => $this->content->type,
+                'type_label' => $this->content->type->label(),
                 'content' => $this,
                 'comment' => $comment,
                 'backend_url' => Backend::url(sprintf("books/book/content/update/%s", $this->content->id)),
