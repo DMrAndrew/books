@@ -18,6 +18,8 @@ use Validator;
 class BlogLC extends ComponentBase
 {
     protected Profile $profile;
+    protected int $postsCount;
+    protected ?Post $post;
 
     public function componentDetails()
     {
@@ -43,17 +45,21 @@ class BlogLC extends ComponentBase
         $user = Auth::getUser();
         $this->profile = $user->profile;
 
-        $this->post = Post
-                ::where('id', $this->param('post_id'))
-                ->where('profile_id', $this->profile->id)
-                ->first()
-            ?? new Post();
+        $this->postsCount = $this->profile->posts()->count();
+
+        if ($this->param('post_id') !== null) {
+            $postId = $this->param('post_id');
+            $this->post = $this->profile->posts()->findOrFail($postId);
+        } else {
+            $this->post = null;
+        }
 
         $this->prepareVals();
     }
 
     public function prepareVals()
     {
+        $this->page['postsCount'] = $this->postsCount;
         $this->page['post'] = $this->post;
         $this->page['profile'] = $this->profile;
     }
@@ -63,6 +69,9 @@ class BlogLC extends ComponentBase
         try {
             $data = collect(post());
 
+            /**
+             * Validate
+             */
             $validator = Validator::make(
                 $data->toArray(),
                 collect((new Post())->rules)->only([
@@ -73,26 +82,50 @@ class BlogLC extends ComponentBase
                 throw new ValidationException($validator);
             }
 
-            //dd($this->post);
+            /**
+             * Save
+             */
             if (isset($data['post_id'])) {
-                $post = Post
-                    ::where('id', $data['post_id'])
-                    ->where('profile_id', $this->profile->id)
-                    ->firstOrFail();
+                $post = $this->profile->posts()->findOrFail($data['post_id']);
 
                 $post->update([
                     'title' => $data['title'],
-                    'content' => $data['title'],
+                    'content' => $data['content'],
                 ]);
             } else {
-                $post = Post::create([
-                    'profile_id' => $this->profile->id,
+                $post = $this->profile->posts()->create([
                     'title' => $data['title'],
                     'content' => $data['content'],
                 ]);
             }
 
+            /**
+             * Open Post
+             */
             return Redirect::to('/blog/' . $post->slug)->setLastModified(now());
+
+        } catch (Exception $e) {
+            Flash::error($e->getMessage());
+
+            return [];
+        }
+    }
+
+    public function onDeletePost()
+    {
+        try {
+            $data = collect(post());
+
+            /**
+             * Save
+             */
+            if (isset($data['post_id'])) {
+                $post = $this->profile->posts()->findOrFail($data['post_id']);
+
+                $post->delete();
+            }
+
+            return Redirect::to('/lc-blog/');
 
         } catch (Exception $e) {
             Flash::error($e->getMessage());
