@@ -5,7 +5,7 @@ meta_title = "Личный кабинет - Блог"
 [session]
 security = "user"
 redirect = "/"
-[BlogLC]
+[BlogLCList]
 ==
 {% partial 'profile/personal_area_header' %}
 
@@ -22,7 +22,7 @@ redirect = "/"
                 </div>
 
                 <div id="comments-spawn">
-                    {% component 'BlogLC' %}
+                    {% component 'BlogLCList' %}
                 </div>
             </div>
         </div>

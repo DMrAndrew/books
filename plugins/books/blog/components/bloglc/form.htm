@@ -1,20 +1,29 @@
 <div class="ui-container">
-    <div class="create-book__title ui-text-head--2 ui-text--bold">Новая запись в блоге</div>
+    <div class="create-book__title ui-text-head--2 ui-text--bold">
+        {% if post %}
+        Редактирование публикации "{{ post.title }}"
+        {% else %}
+        Новая запись в блоге
+        {% endif %}
+    </div>
 </div>
 
 <form class="lc-book-text ui-container-fluid wrapper"
       data-request-flash
       data-request="{{__SELF__}}::onSavePost"
       data-request-validate>
+
+    <input type="hidden" name="post_id" value="{{post.id}}">
+
     <div class="personal-area__wrap _indent-large ui-input">
         <label class="ui-input-label">Заголовок</label>
-        <input class="ui-input-item _size-32" value="{{post.title}}" name="title" type="text">
+        <input class="ui-input-item _size-32" value="{{ post.title }}" name="title" type="text">
         <div class="ui-select-hitn"></div>
         <div class="ui-select-error" data-validate-for="title"></div>
     </div>
 
     <div class="personal-area__wrap _indent-large typographical-block">
-        <textarea  id="content" name="content">{{post.getContent().body}}</textarea>
+        <textarea  id="content" name="content">{{ post.content|raw }}</textarea>
     </div>
     <div class="ui-select-hitn"></div>
     <div class="ui-select-error" data-validate-for="content"></div>

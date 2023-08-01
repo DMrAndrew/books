@@ -1,0 +1,58 @@
+<div class="ui-container">
+    <a href="/lc-blog/create" class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Добавить новую запись</a>
+</div>
+
+<br>
+
+<div class="lc-books__listing-container">
+    <ul class="ui-sortable">
+        {% for post in posts %}
+        <li>
+            <div class="book-card">
+            <div class="personal-area-blacklist__container">
+                <div class="cb-mini-card _avatar">
+
+                    <div class="comments-comment__avatar square-40">
+                        {% if post.profile.avatar %}
+                        <img class="square-40" src="{{post.profile.avatar.getThumb(40,40)}}" alt="avatar">
+                        {% else %}
+                        <span class="ui-text-body--1 ui-text--bold">{{ post.profile.firstLatter }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="cb-mini-card__wrapper">
+                        <div class="">{{ post.profile.username }}</a>
+                        </div>
+                        <div class="cb-mini-card__date">{{post.created_at.diffForHumans}}</div>
+                        <div class="product-card__header">{{post.title}}</div>
+                        <div class="cb-mini-card__text">
+                            {{post.preview|raw}}
+                        </div>
+                    </div>
+
+                    {# actions #}
+                    <div class="personal-area-blacklist__action">
+                        <svg class="square-16">
+                            <use xlink:href="http://localhost/themes/demo/assets/icon-sprite/svg-sprite.svg#more-16"></use>
+                        </svg>
+                        <div class="personal-area-blacklist-action">
+                            <div class="personal-area-blacklist-action__wrapper">
+                                <a href="/lc-blog/edit/{{post.id}}" class="personal-area-blacklist-action__item">
+                                    Редактировать
+                                </a>
+                                <button onclick="oc.ajax('BlogLC::onDeletePost',{data:{id:'{{post.id}}'}})" class="personal-area-blacklist-action__item">
+                                    Удалить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% partial 'site/pagination' records = posts %}

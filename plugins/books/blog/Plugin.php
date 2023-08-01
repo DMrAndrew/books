@@ -1,10 +1,12 @@
 <?php namespace Books\Blog;
 
 use Backend;
+use Books\Blog\Behaviors\HasBlog;
 use Books\Blog\Components\Blog;
+
 use Books\Blog\Components\BlogLC;
-use Books\Blog\Components\LCBlog;
-use Books\User\Components\BookAccount;
+use Books\Blog\Components\BlogLCList;
+use Books\Profile\Models\Profile;
 use System\Classes\PluginBase;
 
 /**
@@ -44,7 +46,9 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-        //
+        Profile::extend(function (Profile $model) {
+            $model->implementClassWith(HasBlog::class);
+        });
     }
 
     /**
@@ -55,6 +59,7 @@ class Plugin extends PluginBase
         return [
             Blog::class => 'Blog',
             BlogLC::class => 'BlogLC',
+            BlogLCList::class => 'BlogLCList',
         ];
     }
 
