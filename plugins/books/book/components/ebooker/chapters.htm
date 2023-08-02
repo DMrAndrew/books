@@ -1,10 +1,20 @@
 <div id="ebooker-chapters">
     {% if ebook.chapters.count() %}
 
+    {% if ebook.shouldDeferredUpdate %}
+    {% if collect(ebook.chapters).where('deferred_content_unrequested_exists',1).count() %}
+    <a style="display: none" href="#" data-request="onRequestDeferredModal" data-modal="request_deferred_open">
+        <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Запросить слияние
+        </button>
+    </a>
+    {% endif %}
+    {% else %}
     <a href="/book-add-text/{{book.id}}">
         <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Добавить текст
         </button>
     </a>
+    {% endif %}
+
     <div class="about-book__chapter-container">
         <ul id="sortable">
             {% for chapter in ebook.chapters %}
@@ -20,7 +30,7 @@
                         <div class="chapter-book__title ui-text-head--3">
                             <a class="ui-link _violet" href="/book-add-text/{{book.id}}/{{chapter.id}}">
                     <span class="ui-text--bold chapter-title">
-                        {{chapter.title|raw}}
+                        {{ chapter.title|raw }}
                     </span>
                             </a>
                             {% if not chapter.isFree %}
@@ -46,6 +56,66 @@
                             <div class="chapter-book__status">
                                 <span>{{chapter.length}} зн.</span>
                             </div>
+
+
+                        </div>
+                        <div class="chapter-book__info-container">
+                            {% if chapter.deferred_content_exists %}
+                            <div class="chapter-book__status ">
+                                <svg class="square-16">
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
+                                </svg>
+
+                                {% if chapter.deferred_content_unrequested_exists %}
+                                <span >Есть новый контент &nbsp;</span>
+                                <span  onclick="oc.ajax('onRequestDeferredModal',{
+                                    data:{
+                                        flash:true,
+                                        chapter_id:`{{chapter.id}}`
+                                    }
+                                })"  class="ui-tooltip square-16 attention" data-tooltip="Запросить слияние">
+                                <svg class="square-16 " >
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme}}"></use>
+                                </svg>
+                            </span>
+                                {% endif %}
+
+                                {% if chapter.deferred_content_requested_exists %}
+                                Изменения на проверке  <span onclick="oc.ajax('onCancelRequestDeferred',{
+                                    data:{
+                                        flash:true,
+                                        chapter_id:`{{chapter.id}}`
+                                    }
+                                })"  class="ui-tooltip square-16" data-tooltip="Отменить">
+                                <svg class="square-16 " >
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                                </svg>
+                            </span>
+
+                                {% endif %}
+                            </div>
+                            {% endif %}
+
+                            {% if chapter.on_delete_exists %}
+                            <div class="chapter-book__status _draft">
+                                <svg class="square-16">
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
+                                </svg>
+                                Запрошено удаление части <span onclick="oc.ajax('onCancelDeleting',{
+                                    data:{
+                                        flash:true,
+                                        chapter_id:`{{chapter.id}}`
+                                    }
+                                })"  class="ui-tooltip square-16" data-tooltip="Отменить">
+                                <svg class="square-16 " >
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                                </svg>
+                            </span>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="chapter-book__action dropdown-menu">
@@ -64,19 +134,6 @@
                             </div>
                         </div>
                     </div>
-                    <!--                    <div class="chapter-book__action">-->
-                    <!--                        <a data-dropdown="button" >-->
-                    <!--                            <svg class="square-16">-->
-                    <!--                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>-->
-                    <!--                            </svg>-->
-                    <!--                            <div class="dropdown-menu__container" data-dropdown="menu">-->
-                    <!--                                <div class="dropdown-menu__wrapper">-->
-                    <!--                                    <div class="dropdown-menu__item"  data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">Редактировать</div>-->
-                    <!--                                    <div class="dropdown-menu__item">Удалить</div>-->
-                    <!--                                </div>-->
-                    <!--                            </div>-->
-                    <!--                        </a>-->
-                    <!--                    </div>-->
                 </div>
             </li>
             {% endfor %}

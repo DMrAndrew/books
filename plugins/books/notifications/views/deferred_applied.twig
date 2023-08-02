@@ -1,0 +1,10 @@
+<div class="notification-menu__text notification-menu__content-wrapper">
+    {{ type_label}} главы "{{ chapter_title }}"
+    книги "<a href="{{ 'about-book' | page({book_id: book.id}) }}" class="ui-link _violet">{{ book.title }}</a>"
+    {{ status_label|str_lower }}.
+    {%  if comment %}
+    <br>
+    Комментарий:
+    <span>{{ comment }}</span>
+    {% endif %}
+</div>

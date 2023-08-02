@@ -2,10 +2,11 @@
 
 namespace Books\Book;
 
-use Books\Book\Behaviors\Fillable;
+use Books\Book\Behaviors\Contentable;
 use Books\Book\Behaviors\Prohibitable;
 use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;
+use Books\Book\Classes\BookUtilities;
 use Books\Book\Classes\ChapterService;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\StatsEnum;
@@ -35,6 +36,8 @@ use Books\Book\Components\Promocode;
 use Books\Book\Components\Reader;
 use Books\Book\Components\ReadStatistic;
 use Books\Book\Components\Widget;
+use Books\Book\FormWidgets\ContentDiff;
+use Books\Book\FormWidgets\DeferredComments;
 use Books\Book\Jobs\GenreRaterExec;
 use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
@@ -63,6 +66,7 @@ use RainLab\Location\Behaviors\LocationModel;
 use System\Classes\PluginBase;
 use Tizis\FB2\FB2Controller;
 use Backend;
+use Books\Book\Models\Content as ContentModel;
 
 /**
  * Plugin Information File
@@ -129,6 +133,8 @@ class Plugin extends PluginBase
         AliasLoader::getInstance()->alias('CookieEnum', CookieEnum::class);
         AliasLoader::getInstance()->alias('SystemMessage', SystemMessage::class);
         AliasLoader::getInstance()->alias('StatsEnum', StatsEnum::class);
+        AliasLoader::getInstance()->alias('Content', ContentModel::class);
+        AliasLoader::getInstance()->alias('BUtils', BookUtilities::class);
 
         $this->extendBooksController();
 
@@ -155,7 +161,7 @@ class Plugin extends PluginBase
 
         foreach ([Chapter::class, Pagination::class] as $class) {
             $class::extend(function ($model) {
-                $model->implementClassWith(Fillable::class);
+                $model->implementClassWith(Contentable::class);
             });
         }
 
@@ -251,6 +257,12 @@ class Plugin extends PluginBase
                     'url' => Backend::url('books/book/systemmessage'),
                     'permissions' => ['books.book.systemmessage'],
                 ],
+                'content' => [
+                    'label' => 'Отложенное редактирование',
+                    'icon' => 'icon-leaf',
+                    'url' => Backend::url('books/book/content'),
+                    'permissions' => ['books.book.content'],
+                ],
             ]);
         });
     }
@@ -303,5 +315,12 @@ class Plugin extends PluginBase
         ])->dailyAt('03:00');
 
         $schedule->command('book:discounts:notify_user_about_today_discounts')->dailyAt('03:10');
+    }
+
+    public function registerFormWidgets()
+    {
+        return [
+            ContentDiff::class => 'book_content_diff',
+        ];
     }
 }

@@ -13,6 +13,7 @@ use Books\Book\Jobs\ParseFB2;
 use Books\Orders\Classes\Contracts\ProductInterface;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use DateTime;
 use Db;
 use Model;
 use October\Rain\Database\Builder;
@@ -36,6 +37,7 @@ use System\Models\Revision;
  * * @method AttachOne fb2
  * * @method BelongsTo book
  * * @method MorphMany customers Аккаунты, у которых есть книга (включая покупки по промокоду)
+ * * @method MorphMany revision_history
  *
  * * @property  Book book
  * * @property  BookStatus status
@@ -51,12 +53,20 @@ class Edition extends Model implements ProductInterface
 
     const UPDATE_CHUNK_LENGTH = 4999;
 
+    const LAST_LENGTH_UPDATE_NOTIFICATION_AT_FIELD = 'last_notification_at';
+
     /**
      * @var string table name
      */
     public $table = 'books_book_editions';
 
+    /**
+     * @var array guarded attributes aren't mass assignable
+     */
+    protected $guarded = ['*'];
+
     protected $revisionable = ['length', 'status', 'price'];
+
 
     public $revisionableLimit = 10000;
 
@@ -75,7 +85,7 @@ class Edition extends Model implements ProductInterface
         'price',
         'book_id',
         'length',
-        'sales_at'
+        'last_notification_at'
     ];
 
     protected $casts = [
@@ -88,7 +98,7 @@ class Edition extends Model implements ProductInterface
         'status' => BookStatus::class,
     ];
 
-    protected $dates = ['sales_at'];
+    protected $dates = ['sales_at', 'last_notification_at'];
 
     /**
      * @var array rules for validation
@@ -143,6 +153,30 @@ class Edition extends Model implements ProductInterface
     public function service(): EditionService
     {
         return new EditionService($this);
+    }
+
+
+    public function markLastLengthUpdateNotificationAt(): void
+    {
+        $toSave = ([
+            'field' => self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_FIELD,
+            'revisionable_type' => self::class,
+            'revisionable_id' => $this->getKey(),
+            'user_id' => $this->revisionableGetUser(),
+            'created_at' => new DateTime,
+            'updated_at' => new DateTime
+        ]);
+        $this->revision_history()->insert($toSave);
+
+    }
+
+    public function getLastLengthUpdateNotificationAtAttribute(): ?Carbon
+    {
+
+        return $this->revision_history()
+            ->where('field', '=', self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_FIELD)
+            ->latest('id')
+            ->first()?->created_at;
     }
 
     public function allowedDownload(ElectronicFormats $format = ElectronicFormats::FB2): bool
@@ -244,8 +278,9 @@ class Edition extends Model implements ProductInterface
         return $this->hasRevisionStatus(BookStatus::COMPLETE);
     }
 
-    public function hasRevisionStatus(BookStatus ... $status){
-        return $this->revision_history()->where('field','status')->whereIn('old_value', array_pluck($status,'value'))->exists();
+    public function hasRevisionStatus(BookStatus ...$status)
+    {
+        return $this->revision_history()->where('field', 'status')->whereIn('old_value', array_pluck($status, 'value'))->exists();
     }
 
     public function isPublished(): bool
@@ -311,11 +346,6 @@ class Edition extends Model implements ProductInterface
         if (!$this->shouldRevisionLength()) {
             $this->revisionable = array_diff_key($this->revisionable, ['length']);
         }
-    }
-
-    protected function afterUpdate()
-    {
-
     }
 
     public function scopeNotEmpty(Builder $builder): Builder
