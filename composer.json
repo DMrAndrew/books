@@ -34,6 +34,7 @@
         "books/withdrawal-plugin": "*",
         "books/referral-plugin": "*",
         "books/blacklists-plugin": "*",
+        "books/blog-plugin": "*",
         "laracraft-tech/laravel-date-scopes": "^1.1",
         "vdlp/oc-telescope-plugin": "^2.0",
         "vdlp/oc-horizon-plugin": "*",
@@ -145,6 +146,10 @@
         "books/blacklists-plugin": {
             "type": "path",
             "url": "./plugins/books/blacklists"
+        },
+        "books/blog-plugin": {
+            "type": "path",
+            "url": "./plugins/books/blog"
         },
         "vdlp/oc-telescope-plugin": {
             "type": "path",

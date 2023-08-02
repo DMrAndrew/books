@@ -1,0 +1,43 @@
+<div class="ui-container-fluid">
+    <div class="personal-area__container ui-grid-container ui-grid-gap">
+        <div class="ui-col-sm-12">
+            <div class="personal-area__subtitle">
+                <span class="ui-text-head--3 ui-text--bold">{{ post.title }}</span>
+                <svg class="square-16">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                </svg>
+            </div>
+
+            <div class="book-card">
+                <div class="personal-area-blacklist__container">
+                    <div class="cb-mini-card _avatar">
+
+                        <div class="comments-comment__avatar square-40">
+                            {% if post.profile.avatar %}
+                            <img class="square-40" src="{{post.profile.avatar.getThumb(40,40)}}" alt="avatar">
+                            {% else %}
+                            <span class="ui-text-body--1 ui-text--bold">{{ post.profile.firstLatter }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="cb-mini-card__wrapper">
+                            <div class="">{{ post.profile.username }}</div>
+                            <div class="cb-mini-card__date">{{post.created_at.diffForHumans}}</div>
+
+                            <div class="book-card-full-description _indent"></div>
+
+                            <div class="cb-mini-card__text">
+                                {{post.content|raw}}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {% component 'comments' %}
+
+            </div>
+        </div>
+    </div>
+</div>

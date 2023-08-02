@@ -3,6 +3,7 @@
 namespace Books\Comments\Models;
 
 use App\traits\HasUserScope;
+use Books\Blog\Models\Post;
 use Books\Book\Models\Book;
 use Books\Profile\Models\Profile;
 use Model;
@@ -101,15 +102,17 @@ class Comment extends Model
         return match (get_class($this->commentable)) {
             Book::class => 'к книге ' . $this->commentable->title,
             Profile::class => 'в профиле пользователя ' . $this->commentable->username,
+            Post::class => 'к посту ' . $this->commentable->title,
         };
     }
 
     public function toCommentableLink(): string
     {
         return match (get_class($this->commentable)) {
-                Book::class => '/book-card/',
-                Profile::class => '/author-page/',
-            } . $this->commentable->id;
+                Book::class => '/book-card/' . $this->commentable->id,
+                Profile::class => '/author-page/'. $this->commentable->id,
+                Post::class => '/blog/'. $this->commentable->slug,
+            };
     }
 
     public function scopeWithoutOwner(Builder $builder)
@@ -117,6 +120,7 @@ class Comment extends Model
         $profile = match (get_class($this->commentable)) {
             Book::class => $this->commentable->profile()->select((new Profile())->getQualifiedKeyName()),
             Profile::class => [$this->commentable->id],
+            Post::class => $this->commentable->profile()->select((new Profile())->getQualifiedKeyName()),
             default => null
         };
 
