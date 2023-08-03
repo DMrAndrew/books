@@ -8,7 +8,9 @@
             {% endif %}
         </div>
         <div class="">
-            <div class="ui-text--bold">{{ post.profile.username }}</div>
+            <div class="ui-text--bold">
+                {{ post.profile.username }}
+            </div>
             <span>{{ post.created_at.diffForHumans }}</span>
         </div>
     </div>
