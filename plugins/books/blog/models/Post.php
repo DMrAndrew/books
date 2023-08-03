@@ -1,5 +1,6 @@
 <?php namespace Books\Blog\Models;
 
+use Books\Blog\Classes\Enums\PostStatus;
 use Books\Profile\Models\Profile;
 use Exception;
 use Illuminate\Support\Str;
@@ -42,6 +43,7 @@ class Post extends Model
      */
     protected $fillable = [
         'profile_id',
+        'status',
         'title',
         'content',
     ];
@@ -49,6 +51,11 @@ class Post extends Model
     protected $dates = [
         'created_at',
         'updated_at',
+        'published_at',
+    ];
+
+    protected $casts = [
+        'status' => PostStatus::class,
     ];
 
     public $belongsTo = [
@@ -116,5 +123,15 @@ class Post extends Model
     public function scopeSlug(Builder $builder, string $slug): Builder
     {
         return $builder->where('slug', $slug);
+    }
+
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', PostStatus::PUBLISHED);
     }
 }

@@ -1,3 +1,7 @@
 v1.0.1:
     - Blog posts
     - create_blog_posts_table.php
+v1.0.2:
+    - "Blog posts add columns: status, published_at, deleted_at"
+    - update_blog_table_add_fields.php
+
