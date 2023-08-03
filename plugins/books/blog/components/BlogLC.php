@@ -1,7 +1,10 @@
 <?php namespace Books\Blog\Components;
 
+use Books\Blog\Classes\Enums\PostStatus;
 use Books\Blog\Models\Post;
 use Books\Profile\Models\Profile;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
@@ -63,6 +66,7 @@ class BlogLC extends ComponentBase
         $this->page['postsCount'] = $this->postsCount;
         $this->page['post'] = $this->post;
         $this->page['profile'] = $this->profile;
+        $this->page['times'] = collect(CarbonPeriod::create(today(), '1 hour', today()->copy()->addHours(23))->toArray())->map->format('H:i');
     }
 
     /**
@@ -73,13 +77,45 @@ class BlogLC extends ComponentBase
         try {
             $data = collect(post());
 
+            if ($status = $data['action'] ?? false) {
+                switch ($status) {
+                    case 'published_at':
+
+                        $data['status'] = PostStatus::PLANNED;
+                        if (!isset($data['published_at_date'])) {
+                            new ValidationException(['published_at' => 'Укажите дату публикации.']);
+                        }
+                        if (!isset($data['published_at_time'])) {
+                            new ValidationException(['published_at' => 'Укажите время публикации.']);
+                        }
+                        if (!Carbon::canBeCreatedFromFormat($data['published_at_date'] ?? '', 'd.m.Y')) {
+                            throw new ValidationException(['published_at' => 'Не удалось получить дату публикации. Укажите дату в формате d.m.Y']);
+                        }
+                        $data['published_at'] = Carbon::createFromFormat('d.m.Y', $data['published_at_date'])->setTimeFromTimeString($data['published_at_time']);
+                        if (Carbon::now()->gte($data->get('published_at'))) {
+                            throw new ValidationException(['published_at' => 'Дата и время публикации должны быть больше текущего времени.']);
+                        }
+                        break;
+
+                    case 'save_as_draft':
+
+                        $data['status'] = PostStatus::DRAFT;
+                        break;
+
+                    case 'publish_now':
+
+                        $data['status'] = PostStatus::PUBLISHED;
+                        break;
+                }
+            }
+
             /**
              * Validate
              */
             $validator = Validator::make(
                 $data->toArray(),
                 collect((new Post())->rules)->only([
-                    'title', 'content',
+                    'title', 'content', 'published_at'
                 ])->toArray()
             );
             if ($validator->fails()) {
@@ -92,15 +128,9 @@ class BlogLC extends ComponentBase
             if (isset($data['post_id'])) {
                 $post = $this->profile->posts()->findOrFail($data['post_id']);
 
-                $post->update([
-                    'title' => $data['title'],
-                    'content' => $data['content'],
-                ]);
+                $post->update($data->toArray());
             } else {
-                $post = $this->profile->posts()->create([
-                    'title' => $data['title'],
-                    'content' => $data['content'],
-                ]);
+                $post = $this->profile->posts()->create($data->toArray());
             }
 
             /**

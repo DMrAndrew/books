@@ -31,7 +31,10 @@ class BlogPost extends ComponentBase
 
     public function init()
     {
-        $this->post = Post::where('slug', $this->param('post_slug'))->firstOrFail();
+        $this->post = Post
+            ::where('slug', $this->param('post_slug'))
+            ->published()
+            ->firstOrFail();
 
         $this->page['post'] = $this->post;
 
