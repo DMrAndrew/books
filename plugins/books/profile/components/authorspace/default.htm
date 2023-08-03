@@ -67,8 +67,8 @@
                             {% endif %}
                         </div>
                         <div class="ui-tabs-link " data-tab="5">Блог
-                            {% if posts.count %}
-                            <span>{{posts.count?:''}}</span>
+                            {% if posts_paginator.total %}
+                            <span>{{posts_paginator.total?:''}}</span>
                             {% endif %}
                         </div>
                         <!--                        <div class="ui-tabs-link " data-tab="6">Видеоблог</div>-->
@@ -121,7 +121,7 @@
         </div>
         <div class="author-cycles ui-tabs-content" data-tab-content="5">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Блог <span
-                class="ui-text-body--2">{{posts.count}}</span></div>
+                class="ui-text-body--2">{{posts_paginator.total?:''}}</span></div>
         </div>
         <div class="ui-tabs-content" data-tab-content="7">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписки <span
@@ -240,26 +240,8 @@
                     {% endif %}
                 </div>
                 <!-- Блог -->
-                <div class="author-blog ui-tabs-content" data-tab-content="5">
-                    {% if not posts[0] %}
-                    <div class="author__placeholder _indent">
-                        <svg class="square-32">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#users-stroked-32' | theme}}"></use>
-                        </svg>
-                        <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
-                            одной публикации
-                        </div>
-                        <span>Когда они появятся, вы увидите их здесь</span>
-                    </div>
-                    {% else %}
-                    <div class="author__placeholder _indent">
-                        <div class="author-blog__container">
-                            {% for post in posts %}
-                            {% partial "BlogPostCard::card" post=post %}
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
+                <div class="author-blog ui-tabs-content" id="author-posts" data-tab-content="5">
+                    {% partial 'author_space::author-blog-tab' posts_paginator=posts_paginator %}
                 </div>
                 <!-- Подписки -->
                 <div class="author-blog ui-tabs-content" data-tab-content="7">
