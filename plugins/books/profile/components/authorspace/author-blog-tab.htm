@@ -13,12 +13,11 @@
     <span>Когда они появятся, вы увидите их здесь</span>
 </div>
 {% else %}
-<div class="author__placeholder _indent">
-    <div class="author-blog__container">
-        {% for post in posts %}
-        {% partial "BlogPostCard::card" post=post %}
-        {% endfor %}
-    </div>
+
+<div class="author-blog__container">
+    {% for post in posts %}
+    {% partial "BlogPostCard::card" post=post %}
+    {% endfor %}
 </div>
 {% endif %}
 
