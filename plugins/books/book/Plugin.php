@@ -2,6 +2,7 @@
 
 namespace Books\Book;
 
+use Books\Blog\Models\Post;
 use Books\Book\Behaviors\Contentable;
 use Books\Book\Behaviors\Prohibitable;
 use Books\Book\Behaviors\Trackable;

@@ -1,10 +1,13 @@
 <?php namespace Books\Blog\Models;
 
+use App\traits\HasUserScope;
+use Books\Blog\Classes\Enums\PostStatus;
 use Books\Profile\Models\Profile;
 use Exception;
 use Illuminate\Support\Str;
 use Model;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
 use System\Models\File;
 
@@ -16,6 +19,8 @@ use System\Models\File;
 class Post extends Model
 {
     use Validation;
+    use SoftDelete;
+    use HasUserScope;
 
     const TITLE_MAX_LENGTH = 60;
     const PREVIEW_MAX_LENGTH = 200;
@@ -30,25 +35,35 @@ class Post extends Model
      * @var array
      */
     public $rules = [
+        'user_id' => 'nullable|integer|exists:users,id',
         'profile_id' => 'required|exists:books_profile_profiles,id',
         'title'   => 'required|string|max:' . self::TITLE_MAX_LENGTH,
         'slug'    => ['string', 'regex:/^[a-z0-9\/\:_\-\*\[\]\+\?\|]*$/i', 'unique:books_blog_posts,slug'],
         'preview' => 'string',
         'content' => 'required',
+        'published_at' => 'nullable|date',
     ];
 
     /**
      * @var array fillable attributes are mass assignable
      */
     protected $fillable = [
+        'user_id',
         'profile_id',
+        'status',
         'title',
         'content',
+        'published_at',
     ];
 
     protected $dates = [
         'created_at',
         'updated_at',
+        'published_at',
+    ];
+
+    protected $casts = [
+        'status' => PostStatus::class,
     ];
 
     public $belongsTo = [
@@ -116,5 +131,25 @@ class Post extends Model
     public function scopeSlug(Builder $builder, string $slug): Builder
     {
         return $builder->where('slug', $slug);
+    }
+
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', PostStatus::PUBLISHED);
+    }
+
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopePLanned(Builder $query): Builder
+    {
+        return $query->where('status', PostStatus::PLANNED);
     }
 }
