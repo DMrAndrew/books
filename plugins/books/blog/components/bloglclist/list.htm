@@ -40,10 +40,11 @@
                         <svg class="square-16">
                             <use xlink:href="http://localhost/themes/demo/assets/icon-sprite/svg-sprite.svg#more-16"></use>
                         </svg>
+
                         <div class="personal-area-blacklist-action">
                             <div class="personal-area-blacklist-action__wrapper">
-                                <a href="/lc-blog/edit/{{post.id}}" class="personal-area-blacklist-action__item">
-                                    Редактировать
+                                <a href="/lc-blog/edit/{{post.id}}">
+                                    <button class="personal-area-blacklist-action__item">Редактировать</button>
                                 </a>
                                 <button onclick="oc.ajax('BlogLC::onDeletePost',{
                                     data:{post_id:'{{post.id}}'},
@@ -53,6 +54,7 @@
                                 </button>
                             </div>
                         </div>
+
                     </div>
 
                 </div>
