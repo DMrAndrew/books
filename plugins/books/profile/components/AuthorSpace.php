@@ -91,7 +91,7 @@ class AuthorSpace extends ComponentBase
             'cycles' => $this->profile->cyclesWithShared()
                 ->booksEager()
                 ->get(),
-            'posts' => $this->profile->posts,
+            'posts' => $this->profile->posts()->published()->get(),
             'subscribers' => $this->profile->subscribers->groupBy(fn($i) => $i->books_count ? 'authors' : 'readers'),
             'subscriptions' => $this->profile->subscriptions,
             'reposts' => $this->profile?->user?->reposts,

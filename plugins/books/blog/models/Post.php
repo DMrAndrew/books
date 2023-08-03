@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Str;
 use Model;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
 use System\Models\File;
 
@@ -17,6 +18,7 @@ use System\Models\File;
 class Post extends Model
 {
     use Validation;
+    use SoftDelete;
 
     const TITLE_MAX_LENGTH = 60;
     const PREVIEW_MAX_LENGTH = 200;
@@ -36,6 +38,7 @@ class Post extends Model
         'slug'    => ['string', 'regex:/^[a-z0-9\/\:_\-\*\[\]\+\?\|]*$/i', 'unique:books_blog_posts,slug'],
         'preview' => 'string',
         'content' => 'required',
+        'published_at' => 'nullable|date',
     ];
 
     /**
@@ -46,6 +49,7 @@ class Post extends Model
         'status',
         'title',
         'content',
+        'published_at',
     ];
 
     protected $dates = [
