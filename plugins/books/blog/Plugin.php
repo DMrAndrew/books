@@ -6,6 +6,7 @@ use Books\Blog\Components\BlogList;
 use Books\Blog\Components\BlogPost;
 use Books\Blog\Components\BlogLC;
 use Books\Blog\Components\BlogLCList;
+use Books\Blog\Components\BlogPostCard;
 use Books\Profile\Models\Profile;
 use System\Classes\PluginBase;
 
@@ -16,10 +17,6 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
-    public $require = [
-        'Books.Profile',
-    ];
-
     /**
      * pluginDetails about this plugin.
      */
@@ -58,6 +55,7 @@ class Plugin extends PluginBase
     {
         return [
             BlogPost::class => 'BlogPost',
+            BlogPostCard::class => 'BlogPostCard',
             BlogList::class => 'BlogList',
             BlogLC::class => 'BlogLC',
             BlogLCList::class => 'BlogLCList',
