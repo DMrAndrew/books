@@ -138,4 +138,14 @@ class Post extends Model
     {
         return $query->where('status', PostStatus::PUBLISHED);
     }
+
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopePLanned(Builder $query): Builder
+    {
+        return $query->where('status', PostStatus::PLANNED);
+    }
 }

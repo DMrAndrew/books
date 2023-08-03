@@ -2,6 +2,7 @@
 
 use Backend;
 use Books\Blog\Behaviors\HasBlog;
+use Books\Blog\Classes\Services\PostService;
 use Books\Blog\Components\BlogList;
 use Books\Blog\Components\BlogPost;
 use Books\Blog\Components\BlogLC;
@@ -93,5 +94,12 @@ class Plugin extends PluginBase
                 'order' => 500,
             ],
         ];
+    }
+
+    public function registerSchedule($schedule): void
+    {
+        $schedule->call(function () {
+            PostService::delayedPublications();
+        })->everyMinute();
     }
 }
