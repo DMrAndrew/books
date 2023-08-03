@@ -28,6 +28,8 @@ class AuthorSpace extends ComponentBase
 
     protected $commentsCurrentPage = 1;
 
+    protected $blogPostsCurrentPage = 1;
+
     protected int $perPage = 15;
 
     /**
@@ -91,13 +93,16 @@ class AuthorSpace extends ComponentBase
             'cycles' => $this->profile->cyclesWithShared()
                 ->booksEager()
                 ->get(),
-            'posts' => $this->profile->posts()->published()->get(),
+            //'posts' => $this->profile->posts()->published()->get(),
             'subscribers' => $this->profile->subscribers->groupBy(fn($i) => $i->books_count ? 'authors' : 'readers'),
             'subscriptions' => $this->profile->subscriptions,
             'reposts' => $this->profile?->user?->reposts,
             'received_awards_count' => $this->profile?->received_awards_count,
             'left_awards_count' => $this->profile?->left_awards_count,
-        ], $this->getAuthorComments());
+        ],
+            $this->getAuthorComments(),
+            $this->getAuthorBlogPosts()
+        );
     }
 
     /**
@@ -122,10 +127,29 @@ class AuthorSpace extends ComponentBase
         ];
     }
 
+    public function getAuthorBlogPosts(): array
+    {
+        $can_see_blog_posts = $this->profile->canSeeBlogPosts($this->authUser?->profile);
+
+        return [
+            'can_see_blog_posts' => $can_see_blog_posts,
+            'posts_paginator' => $can_see_blog_posts ? CustomPaginator::from(
+                $this->profile->postsThroughProfiler()->published()->orderBy('published_at', 'desc')->paginate(perPage: $this->perPage, currentPage: $this->blogPostsCurrentPage())
+            ) : collect(),
+        ];
+    }
+
     public function onCommentsPage()
     {
         return [
             '#author-comments' => $this->renderPartial('@author-comments-tab', $this->getAuthorComments()),
+        ];
+    }
+
+    public function onBlogPage()
+    {
+        return [
+            '#author-posts' => $this->renderPartial('@author-blog-tab', $this->getAuthorBlogPosts()),
         ];
     }
 
@@ -139,5 +163,10 @@ class AuthorSpace extends ComponentBase
     public function commentsCurrentPage(): int
     {
         return (int)(post('page') ?? $this->commentsCurrentPage);
+    }
+
+    public function blogPostsCurrentPage(): int
+    {
+        return (int)(post('blog-page') ?? $this->blogPostsCurrentPage);
     }
 }

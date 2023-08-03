@@ -17,6 +17,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('books_blog_posts', function(Blueprint $table) {
+            $table->unsignedBigInteger('user_id')->after('id');
             $table->string('status')->default('draft')->after('profile_id');
             $table->timestamp('published_at')->nullable()->after('content');
             $table->softDeletes();
@@ -29,6 +30,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('books_blog_posts', function(Blueprint $table) {
+            $table->dropColumn('user_id');
             $table->dropColumn('status');
             $table->dropColumn('published_at');
             $table->dropColumn('deleted_at');

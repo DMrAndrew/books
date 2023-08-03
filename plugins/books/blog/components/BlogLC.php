@@ -76,6 +76,7 @@ class BlogLC extends ComponentBase
     {
         try {
             $data = collect(post());
+            $data['user_id'] = $this->profile->user->id;
 
             if ($status = $data['action'] ?? false) {
                 switch ($status) {
