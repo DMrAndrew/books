@@ -108,7 +108,7 @@ class Book extends Model
     public $rules = [
         'title' => 'required|between:2,100',
         'annotation' => 'nullable|string',
-        'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:3072|dimensions:min_width=168,min_height=244',
+        'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:3072|dimensions:min_width=104,min_height=150',
         'cycle_id' => 'nullable|integer|exists:books_book_cycles,id',
     ];
 
@@ -227,6 +227,14 @@ class Book extends Model
 
     public $attachMany = [];
 
+    public static function findForPublic(int $book_id, ?User $user = null){
+           return  Book::query()->public()->find($book_id) // открыта в публичной зоне
+            ?? $user?->profile->books()->find($book_id) // пользователь автор книги
+            ?? ($user ? Book::query()
+               ->whereHas('ebook' , fn($ebook) => $ebook->whereHas('customers', fn($customers) => $customers->where('user_id',$user->id)))
+               ->find($book_id)
+               : null); // пользователь купил книгу
+    }
     public function awardsItems()
     {
         return $this->hasManyDeepFromRelations($this->awards(), (new AwardBook())->award());

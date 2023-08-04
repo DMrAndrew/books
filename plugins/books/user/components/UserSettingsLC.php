@@ -48,10 +48,6 @@ class UserSettingsLC extends ComponentBase
         }
         $this->user = Auth::getUser();
         $this->service = new UserService($this->user);
-    }
-
-    public function onRun()
-    {
         $this->vals();
     }
 
@@ -97,13 +93,5 @@ class UserSettingsLC extends ComponentBase
                 '#common-form' => $this->renderPartial('@common'),
             ]);
         }
-    }
-
-    public function onChangePassword()
-    {
-    }
-
-    public function onForgetPassword()
-    {
     }
 }

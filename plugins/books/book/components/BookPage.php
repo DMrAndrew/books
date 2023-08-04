@@ -52,10 +52,8 @@ class BookPage extends ComponentBase
     {
         $this->user = Auth::getUser();
         $this->book_id = (int)$this->param('book_id') ?? abort(404);
-        $this->book = Book::query()->public()->find($this->book_id) ?? $this->user?->profile->books()->find($this->book_id);
-
-        $this->tryInjectAdultModel();
-
+        $this->book = Book::findForPublic($this->book_id, $this->user);
+        $this->tryInjectAdultModal();
         $this->user?->library($this->book)->get(); //Добавить в библиотеку
         $this->book = Book::query()
             ->withChapters()
@@ -112,7 +110,7 @@ class BookPage extends ComponentBase
         ];
     }
 
-    public function buyBtn()
+    public function buyBtn(): bool
     {
         /**
          * Авторизованным пользователям
@@ -143,17 +141,11 @@ class BookPage extends ComponentBase
         return true;
     }
 
-    public function readBtn()
+    public function readBtn(): bool
     {
-        $hasFreeChapters = fn() => $this->book->ebook->chapters->some->isFree();
-
-        if (!$this->user) {
-            return $this->book->ebook->isFree() || $hasFreeChapters();
-        }
-
         return $this->book->ebook->isFree()
-            || $this->book->ebook->isSold($this->user)
-            || $hasFreeChapters();
+            || ($this->user && $this->book->ebook->isSold($this->user))
+            || $this->book->ebook->chapters->some->isFree();
     }
 
     /**

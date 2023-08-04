@@ -51,18 +51,18 @@ final class Plugin extends PluginBase
         ];
     }
 
-    public function registerNavigation(): array
-    {
-        return [
-            'dashboard' => [
-                'label' => 'Telescope',
-                'url' => $this->backend->url('vdlp/telescope/dashboard'),
-                'iconSvg' => '/plugins/vdlp/telescope/assets/icons/telescope.svg',
-                'permissions' => ['vdlp.telescope.access_dashboard'],
-                'order' => 510,
-            ],
-        ];
-    }
+//    public function registerNavigation(): array
+//    {
+//        return [
+//            'dashboard' => [
+//                'label' => 'Telescope',
+//                'url' => $this->backend->url('vdlp/telescope/dashboard'),
+//                'iconSvg' => '/plugins/vdlp/telescope/assets/icons/telescope.svg',
+//                'permissions' => ['vdlp.telescope.access_dashboard'],
+//                'order' => 510,
+//            ],
+//        ];
+//    }
 
     /**
      * Register the access gate service.

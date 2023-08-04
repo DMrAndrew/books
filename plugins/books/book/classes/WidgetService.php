@@ -6,6 +6,7 @@ use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
+use Books\Catalog\Models\Genre;
 use Books\Collections\classes\CollectionEnum;
 use Books\Collections\Models\Lib;
 use Cache;
@@ -377,7 +378,7 @@ class WidgetService
             ->whereNotIn('id', [$this->book->id])
             ->whereHas('author', fn($author) => $author->where('profile_id', '=', $this->book->author()->value('profile_id')))
             ->whereHas('genres', fn($genres) => $genres
-                ->whereIn('id', $this->user?->loved_genres ?? getUnlovedFromCookie()));
+                ->whereIn((new Genre())->getQualifiedKeyName(), $this->user?->loved_genres ?? getLovedFromCookie()));
     }
 
     public function readingWithThisOne()

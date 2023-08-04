@@ -9,6 +9,7 @@ enum CollectionEnum: int
     case READING = 3;
     case READ = 4;
     case LOVED = 5;
+    case BOUGHT = 6;
 
     public static function default(): CollectionEnum
     {
@@ -23,6 +24,7 @@ enum CollectionEnum: int
             self::READING => 'Читаю сейчас',
             self::READ => 'Прочитано',
             self::LOVED => 'Любимые',
+            self::BOUGHT => 'Купленные'
         };
     }
 }

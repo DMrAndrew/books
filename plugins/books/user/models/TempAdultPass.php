@@ -3,7 +3,7 @@
 use App\traits\HasIPScope;
 use Books\User\Classes\CookieEnum;
 use Carbon\Carbon;
-use Cookie;
+use Exception;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
@@ -54,7 +54,7 @@ class TempAdultPass extends Model
 
     public static function lookUp()
     {
-        return static::query()->findByCredential(request()->ip(), Cookie::get(CookieEnum::ADULT_ULID->value));
+        return static::query()->findByCredential(request()->ip(), CookieEnum::ADULT_ULID->get());
     }
 
     public static function make($attributes = [])
@@ -67,6 +67,14 @@ class TempAdultPass extends Model
     protected function beforeCreate()
     {
         $this->expire_in = Carbon::now()->copy()->addDay();
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function afterCreate()
+    {
+        CookieEnum::ADULT_ULID->set($this->id); //queue cookie
     }
 
     protected function beforeSave()

@@ -90,11 +90,11 @@ class Recommends extends ComponentBase
     {
         if ($this->user) {
             $this->manager->save($this->user);
-            Flash::success('Любимые жанры успешно сохранены');
             $this->prepareVals();
         } else {
-            CookieEnum::RECOMMEND->setForever(post('recommend'));
+            CookieEnum::RECOMMEND->set(post('recommend'));
         }
+        Flash::success('Сохранено');
 
         return ['.recommend_spawn' => $this->renderPartial('personal-area/recommend_section', [
             'loved_genres' => $this->loved_genres,
