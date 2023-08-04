@@ -16,6 +16,7 @@ use Books\Notifications\Classes\Events\CommentCreated;
 use Books\Notifications\Classes\Events\CommentReplied;
 use Books\Notifications\Classes\Events\DeferredApplied;
 use Books\Notifications\Classes\Events\DiscountCreated;
+use Books\Notifications\Classes\Events\PostPublished;
 use Books\Notifications\Classes\Events\SystemMessage;
 use Books\Notifications\Classes\Services\NotificationService;
 use Books\Notifications\Components\Notifications;
@@ -99,6 +100,7 @@ class Plugin extends PluginBase
                 DiscountCreated::class,
                 SystemMessage::class,
                 DeferredApplied::class,
+                PostPublished::class,
             ],
             'groups' => [
                 'user' => [
@@ -143,6 +145,7 @@ class Plugin extends PluginBase
             'books.book::edition.discounted' => DiscountCreated::class,
             'books.book::content.deferred.merged' => DeferredApplied::class,
             'books.book::content.deferred.rejected' => DeferredApplied::class,
+            'books.blog::post.published' => PostPublished::class,
             'system::message' => SystemMessage::class,
         ]);
     }

@@ -4,65 +4,10 @@
 
 <div class="book-card-full-description _indent"></div>
 
-<div class="lc-books__listing-container">
-    <ul class="ui-sortable">
-        {% for post in posts %}
-        <li>
-            <div class="book-card">
-            <div class="personal-area-blacklist__container">
-                <div class="cb-mini-card _avatar">
-
-                    <div class="comments-comment__avatar square-40">
-                        {% if post.profile.avatar %}
-                        <img class="square-40" src="{{post.profile.avatar.getThumb(40,40)}}" alt="avatar">
-                        {% else %}
-                        <span class="ui-text-body--1 ui-text--bold">{{ post.profile.firstLatter }}</span>
-                        {% endif %}
-                    </div>
-
-                    <div class="cb-mini-card__wrapper">
-                        <div class="">{{ post.profile.username }}</div>
-                        <div class="cb-mini-card__date">{{post.created_at.diffForHumans}}</div>
-
-                        <div class="book-card-full-description _indent"></div>
-
-                        <a data-turbo="false" href="{{ 'blog/blog-post'|page({post_slug: post.slug}) }}" class="book-card__title ui-text-head--3 ui-text--bold">
-                            {{post.title}}
-                        </a>
-
-                        <div class="cb-mini-card__text">
-                            {{post.preview|raw}}
-                        </div>
-                    </div>
-
-                    {# actions #}
-                    <div class="personal-area-blacklist__action">
-                        <svg class="square-16">
-                            <use xlink:href="http://localhost/themes/demo/assets/icon-sprite/svg-sprite.svg#more-16"></use>
-                        </svg>
-
-                        <div class="personal-area-blacklist-action">
-                            <div class="personal-area-blacklist-action__wrapper">
-                                <a href="/lc-blog/edit/{{post.id}}">
-                                    <button class="personal-area-blacklist-action__item">Редактировать</button>
-                                </a>
-                                <button onclick="oc.ajax('BlogLC::onDeletePost',{
-                                    data:{post_id:'{{post.id}}'},
-                                    flash: true,
-                                    confirm:'Вы уверены, что хотите удалить эту публикацию? Это действие необратимо!'})" class="personal-area-blacklist-action__item">
-                                    Удалить
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-            </div>
-        </li>
-        {% endfor %}
-    </ul>
+<div class="author-blog__container">
+    {% for post in posts %}
+        {% partial "BlogLCList::card" post=post %}
+    {% endfor %}
 </div>
 
 {% partial 'site/pagination' records = posts %}

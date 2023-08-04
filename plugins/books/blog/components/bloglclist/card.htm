@@ -1,0 +1,53 @@
+<div class="blog-card wrapper _indent">
+    <div class="blog-card__header">
+
+        {# author #}
+        <div class="comments-comment__avatar square-40">
+            {% if post.profile.avatar %}
+            <img class="square-40" src="{{post.profile.avatar.getThumb(40,40)}}" alt="avatar">
+            {% else %}
+            <span class="ui-text-body--1 ui-text--bold">{{ post.profile.firstLatter }}</span>
+            {% endif %}
+        </div>
+        <div class="">
+            <div class="ui-text--bold">{{ post.profile.username }}</div>
+            <span class="blog-card__header-date">{{ post.published_at.diffForHumans }}</span>
+        </div>
+
+        {# actions #}
+        <div class="personal-subscribe__controls personal-area-blacklist__action">
+            <svg class="square-16" data-tippy-init="">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
+            </svg>
+            <div class="personal-area-blacklist-action">
+                <div class="personal-area-blacklist-action__wrapper">
+                    <a href="/lc-blog/edit/{{post.id}}">
+                        <button class="personal-area-blacklist-action__item">Редактировать</button>
+                    </a>
+                    <button onclick="oc.ajax('BlogLC::onDeletePost',{
+                        data:{post_id:'{{post.id}}'},
+                        flash: true,
+                        confirm:'Вы уверены, что хотите удалить эту публикацию? Это действие необратимо!'})" class="personal-area-blacklist-action__item">
+                        Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# preview content #}
+    <div class="blog-card__body">
+        <a href="{{ 'blog/blog-post'|page({post_slug: post.slug}) }}" class="blog-card__title ui-text-head--3 ui-text--bold _indent-small">{{ post.title }}</a>
+        <p class="blog-card__text _crop">
+            {{ post.preview|raw }}
+        </p>
+    </div>
+
+    {# comments #}
+    <div class="blog-card__footer">
+        <svg class="square-16">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>
+        </svg>
+        <span>{{ post.comments.count }}</span>
+    </div>
+</div>

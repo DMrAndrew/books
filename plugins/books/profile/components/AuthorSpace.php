@@ -134,7 +134,7 @@ class AuthorSpace extends ComponentBase
         return [
             'can_see_blog_posts' => $can_see_blog_posts,
             'posts_paginator' => $can_see_blog_posts ? CustomPaginator::from(
-                $this->profile->postsThroughProfiler()->published()->orderBy('published_at', 'desc')->paginate(perPage: $this->perPage, currentPage: $this->blogPostsCurrentPage())
+                $this->profile->postsThroughProfiler()->published()->orderByDesc('id')->paginate(perPage: $this->perPage, currentPage: $this->blogPostsCurrentPage())
             ) : collect(),
         ];
     }
