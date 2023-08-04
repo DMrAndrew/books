@@ -60,6 +60,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% if  item.type.value != 6 %}
                                 <div data-tippy-continer data-tippy-offset="[0, 0]">
                                     <div class="book-mini-card__action" data-tippy-init>
                                         <svg class="square-16">
@@ -138,6 +139,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% endif %}
                                 {% set last_length_update = lib.book.editions.first.updateHistory.items.first.value %}
                                 {% if last_length_update %}
                                 <div class="book-mini-card__addition">+{{last_length_update}} зн.</div>
