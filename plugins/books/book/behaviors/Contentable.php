@@ -17,6 +17,7 @@ class Contentable extends ExtensionBase
         $this->model->morphMany['deferredContent'] = [Content::class, 'name' => 'contentable', 'scope' => 'deferred'];
         $this->model->morphOne['deferredContentOpened'] = [Content::class, 'name' => 'contentable', 'scope' => 'deferredOpened'];
         $this->model->morphOne['deletedContent'] = [Content::class, 'name' => 'contentable', 'scope' => 'onDeleteOpened'];
+        $this->model->morphOne['deferredContentNew'] = [Content::class, 'name' => 'contentable', 'scope' => 'deferredContentNew'];
         $this->model->bindEvent('model.afterCreate', fn() => $this->afterCreate());
         $this->model->bindEvent('model.afterSave', fn() => $this->afterSave());
     }

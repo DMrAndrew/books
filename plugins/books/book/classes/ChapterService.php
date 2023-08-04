@@ -28,6 +28,11 @@ class ChapterService
         }
     }
 
+    public function deferred(): DeferredChapterService
+    {
+        return new DeferredChapterService($this->getChapter(), $this->getEdition());
+    }
+
     public function isNew(): bool
     {
         return !$this->chapter->exists;
@@ -45,13 +50,29 @@ class ChapterService
     }
 
     /**
+     * @return Edition|null
+     */
+    public function getEdition(): ?Edition
+    {
+        return $this->edition;
+    }
+
+    /**
+     * @return Chapter
+     */
+    public function getChapter(): Chapter
+    {
+        return $this->chapter;
+    }
+
+    /**
      * @throws UnknownFormatException
      * @throws Exception
      */
     public function from(mixed $payload): ?Chapter
     {
         if ($payload instanceof \Tizis\FB2\Model\Chapter) {
-            $collection = BookUtilities::parseStringToParagraphCollection($payload->getContent(),SaveHtmlMode::WITH_WRAP);
+            $collection = BookUtilities::parseStringToParagraphCollection($payload->getContent(), SaveHtmlMode::WITH_WRAP);
             if ((int)$collection->sum('length')) {
                 $data = [
                     'title' => $payload->getTitle(),
@@ -108,13 +129,7 @@ class ChapterService
         });
     }
 
-    public function mergeDeferred(): Chapter|bool
-    {
-        if ($content = $this->chapter->deferredContentOpened) {
-            return $this->update(['new_content' => $content->body]);
-        }
-        return false;
-    }
+
 
     public function initUpdateBody(string $content): bool|int
     {
@@ -133,12 +148,7 @@ class ChapterService
     public function delete()
     {
         if (!$this->chapter->edition->editAllowed()) {
-            if ($this->edition->shouldDeferredUpdate()) {
-                $content = $this->chapter->deletedContent()->firstOrCreate(['type' => ContentTypeEnum::DEFERRED_DELETE, 'status' => ContentStatus::Pending]);
-                return $content->service()->markRequested();
-            } else {
-                throw new ValidationException(['chapter' => 'В данный момент Вы не можете удалять главы книг.']);
-            }
+            throw new ValidationException(['chapter' => 'В данный момент Вы не можете удалять главы книги.']);
         }
         return $this->actionDelete();
     }
@@ -153,29 +163,17 @@ class ChapterService
         return $this->chapter->delete();
     }
 
-    public function markCanceledDeferredUpdate()
-    {
-        return $this->chapter->deferredContentOpened?->service()->markCanceled();
-    }
 
-    public function markCanceledDeletedContent()
-    {
-        return $this->chapter->deletedContent?->service()->markCanceled();
-    }
 
     /**
      * @throws ValidationException
      */
-    public function dataPrepare(array|Collection $data): array
+    protected function dataPrepare(array|Collection $data): array
     {
         $data = collect($data);
-        if (!$this->edition->editAllowed()) {
-            if ($this->edition->shouldDeferredUpdate()) {
-                $data = $data->only(['content']);
-            } else {
-                throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование глав.']);
-            }
-        }
+//        if (!$this->edition->editAllowed()) {
+//            throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование глав.']);
+//        }
 
 
         if ($data->has('status')) {
@@ -205,8 +203,7 @@ class ChapterService
         }
 
         if ($data->has('content')) {
-            $key = $this->edition?->shouldDeferredUpdate() ? 'deferred_content' : 'new_content';
-            $data[$key] = $data['content'];
+            $data['new_content'] = $data['content'];
             $data->forget('content');
         }
 

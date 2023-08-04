@@ -3,7 +3,7 @@
 
     {% if ebook.shouldDeferredUpdate %}
     {% if collect(ebook.chapters).where('deferred_content_unrequested_exists',1).count() %}
-    <a style="display: none" href="#" data-request="onRequestDeferredModal" data-modal="request_deferred_open">
+    <a  href="#" data-request="onRequestDeferredModal" >
         <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Запросить слияние
         </button>
     </a>

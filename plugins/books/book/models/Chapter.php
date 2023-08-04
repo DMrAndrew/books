@@ -3,6 +3,7 @@
 namespace Books\Book\Models;
 
 use Books\Book\Classes\ChapterService;
+use Books\Book\Classes\DeferredChapterService;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
@@ -156,9 +157,14 @@ class Chapter extends Model
 
     public $attachMany = [];
 
-    public function service(): ChapterService
+    public function service(): DeferredChapterService|ChapterService
     {
-        return new ChapterService($this);
+        return $this->edition->shouldDeferredUpdate() ? new DeferredChapterService($this) : new ChapterService($this);
+    }
+
+    public function deferredService(): DeferredChapterService
+    {
+        return new DeferredChapterService($this);
     }
 
     public function getTitleAttribute()
@@ -244,7 +250,7 @@ class Chapter extends Model
 
     public function scopeType(Builder $builder, ChapterStatus ...$status): Builder
     {
-        return $builder->whereIn('status', array_pluck($status,'value'));
+        return $builder->whereIn('status', array_pluck($status, 'value'));
     }
 
     public function lengthRecount()
