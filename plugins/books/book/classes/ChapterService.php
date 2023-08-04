@@ -51,7 +51,7 @@ class ChapterService
     public function from(mixed $payload): ?Chapter
     {
         if ($payload instanceof \Tizis\FB2\Model\Chapter) {
-            $collection = BookUtilities::parseStringToParagraphCollection($payload->getContent());
+            $collection = BookUtilities::parseStringToParagraphCollection($payload->getContent(),SaveHtmlMode::WITH_WRAP);
             if ((int)$collection->sum('length')) {
                 $data = [
                     'title' => $payload->getTitle(),
