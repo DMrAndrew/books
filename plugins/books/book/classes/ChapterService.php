@@ -266,7 +266,7 @@ class ChapterService
 
     public function chunkContent(): Collection
     {
-        return BookUtilities::parseStringToParagraphCollection($this->chapter->getContent()->body)->chunkWhile(function ($value, $key, $chunk) {
+        return BookUtilities::parseStringToParagraphCollection($this->chapter->content->body)->chunkWhile(function ($value, $key, $chunk) {
             return $chunk->sum('length') + $value['length'] <= Pagination::RECOMMEND_MAX_LENGTH;
         });
     }

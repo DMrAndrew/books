@@ -193,7 +193,7 @@ class BookUtilities
     {
         $diDom = new Document();
         $content = $content ?: '<p></p>';
-        $content = Html::clean(trim(Str::squish($content)));
+        $content = trim(Str::squish($content));
         $diDom->loadHtml($content, LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
         return $diDom;
     }
