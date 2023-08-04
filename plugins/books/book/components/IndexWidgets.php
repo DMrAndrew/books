@@ -141,11 +141,11 @@ class IndexWidgets extends ComponentBase
     public function setCookie(): void
     {
         if ($this->loved_genres) {
-            CookieEnum::LOVED_GENRES->setForever($this->loved_genres->pluck('id')->toArray());
+            CookieEnum::LOVED_GENRES->set($this->loved_genres->pluck('id')->toArray());
         }
 
         if ($this->unloved_genres) {
-            CookieEnum::UNLOVED_GENRES->setForever($this->unloved_genres->pluck('id')->toArray());
+            CookieEnum::UNLOVED_GENRES->set($this->unloved_genres->pluck('id')->toArray());
         }
 
     }

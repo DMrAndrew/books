@@ -107,7 +107,7 @@ class Plugin extends PluginBase
 
         Event::listen('mobecan.socialconnect.handleLogin', function ($provider_details, $provider_response, User $user) {
             if (!$user->exists) {
-                CookieEnum::guest->setForever($user->toArray());
+                CookieEnum::guest->set($user->toArray());
                 Flash::add('post_register_required', 1);
                 return redirect()->refresh();
             }
