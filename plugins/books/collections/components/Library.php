@@ -43,6 +43,7 @@ class Library extends ComponentBase
     {
         if ($this->user) {
             $lib = $this->user->getLib();
+            $lib[CollectionEnum::BOUGHT->value] = $this->user->ownedBooks()->with('ownable')->get()->map->ownable;
             $collection = collect(CollectionEnum::cases())->map(function ($item) use ($lib) {
                 return [
                     'label' => $item->label(),
@@ -51,6 +52,8 @@ class Library extends ComponentBase
                     'items' => $lib[$item->value] ?? [],
                 ];
             });
+
+
             $this->page['user'] = $this->user;
             $this->page['library'] = $collection;
             $this->page['library_has_items'] = (bool) $collection->pluck('count')->sum();

@@ -59,7 +59,7 @@ class Reader extends ComponentBase
         $this->user = Auth::getUser();
         $this->book_id = (int)$this->param('book_id') ?? abort(404);
         $this->book = Book::query()->public()->find($this->book_id)
-            ?? $this->user?->profile->books()->find($this->book_id);
+            ?? $this->user?->profile->books()->find($this->book_id) ?? $this->user->ownedBooks()->find($this->book_id);
         $this->chapter_id = (int)$this->param('chapter_id');
         $this->chapter = $this->chapter_id ? Chapter::find($this->chapter_id) ?? abort(404) : null;
         $this->tryInjectAdultModel();
