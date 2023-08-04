@@ -53,6 +53,6 @@ class BlogLCList extends ComponentBase
     {
         $this->page['profile'] = $this->profile;
         $this->page['postsCount'] = $this->postsCount;
-        $this->page['posts'] = $this->profile->posts()->orderByDesc('created_at')->paginate((int) $this->property('recordsPerPage', 16));
+        $this->page['posts'] = $this->profile->posts()->orderByDesc('id')->paginate((int) $this->property('recordsPerPage', 16));
     }
 }
