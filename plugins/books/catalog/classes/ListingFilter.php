@@ -176,7 +176,7 @@ class ListingFilter
         $this->push($model, 'exclude');
     }
 
-    public function fromPost(string $class, int|array|null $id = null)
+    public function fromPost(string $class, int|array|null|string $id = null)
     {
         return $this->query($class)->find($id ?? post('item')['id'] ?? post('remove_id'));
     }
