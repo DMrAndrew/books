@@ -101,7 +101,7 @@ function comDomain(): ?string
 
 function getFreqString(int $count, int $days): string
 {
-    $text = "%s %s в %d";
+    $text = "%s %s в %s";
     $forHumans = CarbonInterval::days($days)->cascade()
         ->forHumans(['parts' => 1, 'aUnit' => true]);
 
@@ -115,17 +115,11 @@ function getFreqString(int $count, int $days): string
 function getUnlovedFromCookie(): array
 {
     return CookieEnum::UNLOVED_GENRES->get() ?? [];
-    return Cookie::has(CookieEnum::UNLOVED_GENRES->value) ?
-        json_decode(Cookie::get(CookieEnum::UNLOVED_GENRES->value))
-        : [];
 }
 
 function getLovedFromCookie(): array
 {
     return CookieEnum::LOVED_GENRES->get() ?? [];
-    return Cookie::has(CookieEnum::LOVED_GENRES->value) ?
-        json_decode(Cookie::get(CookieEnum::LOVED_GENRES->value))
-        : [];
 }
 
 /**
