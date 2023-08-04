@@ -9,6 +9,7 @@ use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
 use Illuminate\Http\RedirectResponse;
+use October\Rain\Support\Facades\Event;
 use RainLab\User\Facades\Auth;
 use Redirect;
 use ValidationException;
@@ -134,6 +135,10 @@ class BlogLC extends ComponentBase
                 $post->update($data->toArray());
             } else {
                 $post = $this->profile->posts()->create($data->toArray());
+            }
+
+            if ($post->wasRecentlyCreated) {
+                Event::fire('books.blog::post.published', [$this->profile, $post]);
             }
 
             /**
