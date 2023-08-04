@@ -4,7 +4,7 @@ use Books\Book\Models\Book;
 
 trait InjectBookStuff
 {
-    public function tryInjectAdultModel()
+    public function tryInjectAdultModal()
     {
         if (!$this->validate() || !is_null($this->book)) {
             return false;
