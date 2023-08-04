@@ -77,38 +77,40 @@ class BlogLC extends ComponentBase
         try {
             $data = collect(post());
             $data['user_id'] = $this->profile->user->id;
+            $data['status'] = PostStatus::PUBLISHED;
 
-            if ($status = $data['action'] ?? false) {
-                switch ($status) {
-                    case 'published_at':
-
-                        $data['status'] = PostStatus::PLANNED;
-                        if (!isset($data['published_at_date'])) {
-                            new ValidationException(['published_at' => 'Укажите дату публикации.']);
-                        }
-                        if (!isset($data['published_at_time'])) {
-                            new ValidationException(['published_at' => 'Укажите время публикации.']);
-                        }
-                        if (!Carbon::canBeCreatedFromFormat($data['published_at_date'] ?? '', 'd.m.Y')) {
-                            throw new ValidationException(['published_at' => 'Не удалось получить дату публикации. Укажите дату в формате d.m.Y']);
-                        }
-                        $data['published_at'] = Carbon::createFromFormat('d.m.Y', $data['published_at_date'])->setTimeFromTimeString($data['published_at_time']);
-                        if (Carbon::now()->gte($data->get('published_at'))) {
-                            throw new ValidationException(['published_at' => 'Дата и время публикации должны быть больше текущего времени.']);
-                        }
-                        break;
-
-                    case 'save_as_draft':
-
-                        $data['status'] = PostStatus::DRAFT;
-                        break;
-
-                    case 'publish_now':
-
-                        $data['status'] = PostStatus::PUBLISHED;
-                        break;
-                }
-            }
+            // скрыть отложенную публикацию до востребования
+//            if ($status = $data['action'] ?? false) {
+//                switch ($status) {
+//                    case 'published_at':
+//
+//                        $data['status'] = PostStatus::PLANNED;
+//                        if (!isset($data['published_at_date'])) {
+//                            new ValidationException(['published_at' => 'Укажите дату публикации.']);
+//                        }
+//                        if (!isset($data['published_at_time'])) {
+//                            new ValidationException(['published_at' => 'Укажите время публикации.']);
+//                        }
+//                        if (!Carbon::canBeCreatedFromFormat($data['published_at_date'] ?? '', 'd.m.Y')) {
+//                            throw new ValidationException(['published_at' => 'Не удалось получить дату публикации. Укажите дату в формате d.m.Y']);
+//                        }
+//                        $data['published_at'] = Carbon::createFromFormat('d.m.Y', $data['published_at_date'])->setTimeFromTimeString($data['published_at_time']);
+//                        if (Carbon::now()->gte($data->get('published_at'))) {
+//                            throw new ValidationException(['published_at' => 'Дата и время публикации должны быть больше текущего времени.']);
+//                        }
+//                        break;
+//
+//                    case 'save_as_draft':
+//
+//                        $data['status'] = PostStatus::DRAFT;
+//                        break;
+//
+//                    case 'publish_now':
+//
+//                        $data['status'] = PostStatus::PUBLISHED;
+//                        break;
+//                }
+//            }
 
             /**
              * Validate

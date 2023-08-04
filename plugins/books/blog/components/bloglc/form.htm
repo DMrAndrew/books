@@ -1,3 +1,5 @@
+{% set titleMaxLength = constant('Books\\Blog\\Models\\Post::TITLE_MAX_LENGTH') %}
+
 <div class="ui-container">
     <div class="create-book__title ui-text-head--2 ui-text--bold">
         {% if post %}
@@ -15,96 +17,121 @@
 
     <input type="hidden" name="post_id" value="{{post.id}}">
 
-    <div class="personal-area__wrap _indent-large ui-input">
-        <label class="ui-input-label">Заголовок</label>
-        <input class="ui-input-item _size-32" value="{{ post.title }}" name="title" type="text">
-        <div class="ui-select-hitn"></div>
-        <div class="ui-select-error" data-validate-for="title"></div>
-    </div>
-
-    <div class="personal-area__wrap _indent-large typographical-block">
-        <textarea  id="content" name="content">{{ post.content|raw }}</textarea>
-    </div>
-    <div class="ui-select-hitn"></div>
-    <div class="ui-select-error" data-validate-for="content"></div>
+    <div class="wrapper__header _indent-large ui-input">
+        <div class="title-counter__container" data-title-counter="">
+            <div class="title-counter__top">
+                <label class="">Заголовок</label>
+                <label class="title-counter__numbers"><span data-counter-number="title">{{ post.title ? (titleMaxLength - post.title|length) : '0' }}</span>/{{titleMaxLength}}</label><!-- sync with input maxlength -->
+            </div>
+            <input class="title-counter__input ui-input-item _size-32" type="text" maxlength="{{titleMaxLength}}" value="{{ post.title }}" name="title" onkeyup="updateLengthCounter(this);">
+            <div class="ui-select-hitn"></div>
+            <div class="ui-select-error" data-validate-for="title"></div>
+        </div>
     </div>
 
     <div class="personal-area__wrap _indent-large">
-        <label class="personal-area__wrap _indent-medium ui-radio">
-            <input type="radio" name="action" value="publish_now" class="post-action-radio"
-                   {{ post.status.value == 'published'? 'checked':'' }}
-            hidden/>
-            <div class="ui-radio-checker"></div>
-            <span class="ui-radio-text">Опубликовать сейчас</span>
-        </label>
-        <label class="personal-area__wrap _indent-medium ui-radio">
-            <input type="radio" name="action" value="save_as_draft" class="post-action-radio"
-                   {{ post.id ? (post.status.value == 'draft' ? 'checked':'') : 'checked' }}
-
-            hidden/>
-            <div class="ui-radio-checker"></div>
-            <span class="ui-radio-text">Сохранить как черновик</span>
-        </label>
-        <label class="personal-area__wrap _indent-medium ui-radio">
-            <input type="radio" id="published_at_radio" value="published_at" class="post-action-radio"
-                   {{ post.status.value == 'planned' ? 'checked':'' }}
-            name="action" hidden/>
-            <div class="ui-radio-checker"></div>
-            <span class="ui-radio-text">Назначить дату публикации</span>
-        </label>
-
-        <div class="personal-area__wrap _indent-small ui-input" id="published_at_input" style="display: none">
-
-        </div>
-        <label class="ui-input-label">Дата публикации</label>
-        <div class="personal-area__datetime">
-            <input class="ui-input-item _size-32" type="text" id="datepicker" name="published_at_date" value="{{post.published_at ? carbon(post.published_at).format('d.m.Y') : ''}}" >
-            {% set time = carbon(post.published_at).format('H:i') %}
-            <select id="time" name="published_at_time">
-                {%  for opt in times %}
-                <option value="{{opt}}" {{opt == time ? 'selected': ''}}>{{opt}}</option>
-                {% endfor %}
-            </select>
-        </div>
+        <script src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
+        <textarea id="content" name="content">{{ post.content|raw }}</textarea>
+        <div class="ui-select-hitn"></div>
+        <div class="ui-select-error" data-validate-for="content"></div>
     </div>
-    <div class="ui-select-hitn"></div>
-    <div class="ui-select-error" data-validate-for="published_at"></div>
-    <div class="ui-select-hitn"></div>
-    <div class="ui-select-error" data-validate-for="action"></div>
+
+    {# скрыть отложенную публикацию до востребования
+    <!--    <div class="personal-area__wrap _indent-large">-->
+    <!--        <label class="personal-area__wrap _indent-medium ui-radio">-->
+    <!--            <input type="radio" name="action" value="publish_now" class="post-action-radio"-->
+    <!--                   {{ post.status.value == 'published'? 'checked':'' }}-->
+    <!--            hidden/>-->
+    <!--            <div class="ui-radio-checker"></div>-->
+    <!--            <span class="ui-radio-text">Опубликовать сейчас</span>-->
+    <!--        </label>-->
+    <!--        <label class="personal-area__wrap _indent-medium ui-radio">-->
+    <!--            <input type="radio" name="action" value="save_as_draft" class="post-action-radio"-->
+    <!--                   {{ post.id ? (post.status.value == 'draft' ? 'checked':'') : 'checked' }}-->
+
+    <!--            hidden/>-->
+    <!--            <div class="ui-radio-checker"></div>-->
+    <!--            <span class="ui-radio-text">Сохранить как черновик</span>-->
+    <!--        </label>-->
+    <!--        <label class="personal-area__wrap _indent-medium ui-radio">-->
+    <!--            <input type="radio" id="published_at_radio" value="published_at" class="post-action-radio"-->
+    <!--                   {{ post.status.value == 'planned' ? 'checked':'' }}-->
+    <!--            name="action" hidden/>-->
+    <!--            <div class="ui-radio-checker"></div>-->
+    <!--            <span class="ui-radio-text">Назначить дату публикации</span>-->
+    <!--        </label>-->
+
+    <!--        <div class="personal-area__wrap _indent-small ui-input" id="published_at_input" style="display: none">-->
+
+    <!--        </div>-->
+    <!--        <label class="ui-input-label">Дата публикации</label>-->
+    <!--        <div class="personal-area__datetime">-->
+    <!--            <input class="ui-input-item _size-32" type="text" id="datepicker" name="published_at_date" value="{{post.published_at ? carbon(post.published_at).format('d.m.Y') : ''}}" >-->
+    <!--            {% set time = carbon(post.published_at).format('H:i') %}-->
+    <!--            <select id="time" name="published_at_time">-->
+    <!--                {%  for opt in times %}-->
+    <!--                <option value="{{opt}}" {{opt == time ? 'selected': ''}}>{{opt}}</option>-->
+    <!--                {% endfor %}-->
+    <!--            </select>-->
+    <!--        </div>-->
+    <!--    </div>-->
+    <!--    <div class="ui-select-hitn"></div>-->
+    <!--    <div class="ui-select-error" data-validate-for="published_at"></div>-->
+    <!--    <div class="ui-select-hitn"></div>-->
+    <!--    <div class="ui-select-error" data-validate-for="action"></div>-->
+    <!--    </div>-->
+
+    <!--    <script>-->
+    <!--        $(function () {-->
+    <!--            if(document.querySelector('input[class = "post-action-radio"]:checked').id == 'published_at_radio'){-->
+    <!--                $('#published_at_input').show()-->
+    <!--            }-->
+    <!--            $('.post-action-radio').on('change', function (e) {-->
+    <!--                let input = $('#published_at_input')-->
+    <!--                if (e.target.id === 'published_at_radio') {-->
+    <!--                    input.show()-->
+    <!--                } else {-->
+    <!--                    input.hide()-->
+    <!--                }-->
+    <!--            })-->
+    <!--            initDatepicker("#datepicker")-->
+    <!--        });-->
+    <!--        new SlimSelect({-->
+    <!--            select: '#multiple',-->
+    <!--        })-->
+
+    <!--        new SlimSelect({-->
+    <!--            select: '#time',-->
+    <!--            settings: {-->
+    <!--                showSearch: false-->
+    <!--            }-->
+    <!--        })-->
+    <!--    </script>-->
+    -- скрыть отложенную публикацию до востребования #}
+
+    <div class="wrapper__footer">
+        <button class="ui-button ui-button-size--32 ui-button-view--3">Отмена</button>
+        <button class="ui-button ui-button-size--32 ui-button-view--2">{{ post.id ? 'Сохранить' : 'Опубликовать' }}</button>
     </div>
-    <script>
-        $(function () {
-            if(document.querySelector('input[class = "post-action-radio"]:checked').id == 'published_at_radio'){
-                $('#published_at_input').show()
-            }
-            $('.post-action-radio').on('change', function (e) {
-                let input = $('#published_at_input')
-                if (e.target.id === 'published_at_radio') {
-                    input.show()
-                } else {
-                    input.hide()
-                }
-            })
-            initDatepicker("#datepicker")
-        });
-        new SlimSelect({
-            select: '#multiple',
-        })
 
-        new SlimSelect({
-            select: '#time',
-            settings: {
-                showSearch: false
-            }
-        })
-    </script>
-
-    <button href="#" class="ui-button ui-button-size--32 ui-button-view--2" >{{ post.id ? 'Сохранить' : 'Опубликовать' }}</button>
 </form>
 
-
+<style>
+    .ck-editor__editable {
+        min-height: 200px;
+    }
+</style>
 <script>
     initEditor('content',{
         toolbarItems:['uploadImage',]
     })
+
+    function updateLengthCounter(field)
+    {
+        let maxLimit = {{titleMaxLength}};
+        if ( field.value.length > maxLimit ) {
+            field.value = field.value.substring( 0, maxLimit );
+        }
+        $('[data-counter-number="title"]').text(maxLimit - field.value.length);
+    }
 </script>
