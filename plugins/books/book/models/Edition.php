@@ -426,7 +426,7 @@ class Edition extends Model implements ProductInterface
 
     public function lengthRecount()
     {
-        $this->length = (int)$this->chapters()->published()->sum('length');
+        $this->length = (int)$this->chapters()->public()->sum('length');
         $this->save();
     }
 
@@ -443,7 +443,7 @@ class Edition extends Model implements ProductInterface
     public function setFreeParts()
     {
         Db::transaction(function () {
-            $builder = fn() => $this->chapters()->type(ChapterStatus::PLANNED, ChapterStatus::PUBLISHED);
+            $builder = fn() => $this->chapters()->public(withPlanned:true);
             if ($this->isFree() || $this->status === BookStatus::FROZEN) {
                 $builder()->update(['sales_type' => ChapterSalesType::FREE]);
             } else {
@@ -451,7 +451,7 @@ class Edition extends Model implements ProductInterface
 //            $this->chapters()->offset($this->free_parts); ошибка
                 $builder()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
             }
-            $this->chapters()->published()->get()->each->setNeighbours();
+            $this->chapters()->public()->get()->each->setNeighbours();
         });
     }
 

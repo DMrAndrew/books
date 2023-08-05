@@ -39,7 +39,7 @@ class Content extends Model
     public $table = 'books_book_contents';
 
     protected $fillable = ['body', 'type', 'requested_at', 'merged_at', 'data', 'status', 'saved_from_editor'];
-    protected $revisionable = ['status','requested_at','merged_at'];
+    protected $revisionable = ['status', 'requested_at', 'merged_at'];
     /**
      * @var array rules for validation
      */
@@ -131,12 +131,16 @@ class Content extends Model
 
     public function scopeDeferred(Builder $builder)
     {
-        return $builder->type(ContentTypeEnum::DEFERRED_UPDATE);
+        return $builder->statusNot(ContentStatus::Merged,ContentStatus::Cancelled)->notRegular();
     }
 
     public function scopeType(Builder $builder, ContentTypeEnum ...$type): Builder
     {
         return $builder->whereIn('type', array_pluck($type, 'value'));
+    }
+    public function scopeTypeNot(Builder $builder, ContentTypeEnum ...$type): Builder
+    {
+        return $builder->whereNotIn('type', array_pluck($type, 'value'));
     }
 
     public function scopeStatus(Builder $builder, ContentStatus ...$status): Builder
@@ -150,6 +154,14 @@ class Content extends Model
     }
 
 
+    public function scopeNotRejected(Builder $builder): Builder
+    {
+        return $builder->statusNot(ContentStatus::Rejected);
+    }
+    public function scopeNotCanceled(Builder $builder): Builder
+    {
+        return $builder->statusNot(ContentStatus::Rejected);
+    }
     public function scopeNotRequested(Builder $builder): Builder
     {
         return $builder->statusNot(ContentStatus::Pending);
@@ -171,14 +183,24 @@ class Content extends Model
         return $builder->status(ContentStatus::Merged);
     }
 
-    public function scopeDeferredOpened(Builder $builder)
+    public function scopeDeferredCreateOrUpdate(Builder $builder): Builder
     {
-        return $builder->deferred()->notMerged();
+        return $builder->type(ContentTypeEnum::DEFERRED_CREATE,ContentTypeEnum::DEFERRED_UPDATE);
     }
 
-    public function scopeOnDeleteOpened(Builder $builder)
+    public function scopeDeferredDelete(Builder $builder): Builder
     {
-        return $builder->onDeleteType()->requested()->notMerged();
+        return $builder->type(ContentTypeEnum::DEFERRED_DELETE);
+    }
+
+    public function scopeDeferredUpdate(Builder $builder): Builder
+    {
+        return $builder->type(ContentTypeEnum::DEFERRED_UPDATE);
+    }
+
+    public function scopeDeferredCreate(Builder $builder): Builder
+    {
+        return $builder->type(ContentTypeEnum::DEFERRED_CREATE);
     }
 
     public function getDeferredCommentsAttribute()
@@ -211,7 +233,7 @@ class Content extends Model
     public function allowedMarkAs(ContentStatus $status): bool
     {
         $original_status = $this->getOriginal('status');
-        return match($status){
+        return match ($status) {
             ContentStatus::Rejected, ContentStatus::Merged => !is_null($original_status) && ($original_status !== ContentStatus::Cancelled),
             ContentStatus::Cancelled => $original_status === ContentStatus::Pending,
             ContentStatus::Pending => !in_array($original_status, [ContentStatus::Merged]),
@@ -265,7 +287,7 @@ class Content extends Model
 
     protected function afterSave()
     {
-        if ($this->type === ContentTypeEnum::DEFERRED_UPDATE && $this->isDirty('body')) {
+        if (in_array($this->type,[ContentTypeEnum::DEFERRED_CREATE,ContentTypeEnum::DEFERRED_UPDATE])  && $this->isDirty('body')) {
             $this->storeDiff();
         }
     }
@@ -277,8 +299,8 @@ class Content extends Model
         }
 
         $diff = DiffHelper::calculate(
-            BookUtilities::prepareForDiff($this->contentable->content->body),
-            BookUtilities::prepareForDiff($this->body),
+            BookUtilities::prepareForDiff($this->contentable->content->body??''),
+            BookUtilities::prepareForDiff($this->body??''),
             ...(config('books.book::content_diff') ?? []));
 
         $this->fresh()->update(['data' => array_replace($this->data ?? [], ['diff' => $diff])]);

@@ -44,6 +44,7 @@ class EBooker extends ComponentBase
             return $redirect;
         }
         $this->vals();
+        $this->setAllowedStatuses();
         $this->service = new EditionService($this->ebook);
     }
 
@@ -55,12 +56,15 @@ class EBooker extends ComponentBase
         }
     }
 
+    protected function setAllowedStatuses()
+    {
+        $this->page['bookStatusCases'] = $this->ebook->getAllowedStatusCases();
+    }
+
     public function vals()
     {
         $this->fresh();
-
         $this->page['ebook'] = $this->ebook;
-        $this->page['bookStatusCases'] = $this->ebook->getAllowedStatusCases();
     }
 
     /**
@@ -80,7 +84,7 @@ class EBooker extends ComponentBase
         ];
     }
 
-    public function onUpdateSortOrder()
+    public function onUpdateSortOrder(): array
     {
         $partial = fn() => [
             '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
@@ -98,11 +102,17 @@ class EBooker extends ComponentBase
         }
     }
 
-    public function onDeleteChapter()
+    protected function renderChapters()
     {
-        $partial = fn() => [
+
+        return [
             '#ebooker-chapters' => $this->renderPartial('@chapters', ['ebook' => $this->ebook]),
         ];
+    }
+
+    public function onDeleteChapter(): array
+    {
+
         try {
             $chapter_id = post('chapter_id');
             if ($chapter = $this->ebook->chapters()->find($chapter_id)) {
@@ -111,18 +121,15 @@ class EBooker extends ComponentBase
 
             $this->fresh();
 
-            return $partial();
+            return $this->renderChapters();
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
 
-            return $partial();
+            return $this->renderChapters();
         }
     }
 
-    /**
-     * @throws ValidationException
-     */
-    public function onUpdate()
+    public function onUpdate(): array
     {
         if (!$this->ebook->book->genres()->count()) {
             Flash::error('Добавьте книге хотя бы один жанр.');
@@ -130,8 +137,8 @@ class EBooker extends ComponentBase
         }
         try {
             $this->service->update(post());
-
             $this->vals();
+            $this->setAllowedStatuses();
 
             return [
                 '#about-header' => $this->renderPartial('book/about-header'),
@@ -140,27 +147,44 @@ class EBooker extends ComponentBase
             ];
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
-            $this->vals();
-
-            return [
-                '#ebook-settings' => $this->renderPartial('@settings'),
-            ];
+            return [];
         }
     }
 
-    public function onRequestDeferredModal()
+    protected function chaptersQuery()
     {
-        return [
-            PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('modals/deferred_chapters_request', ['chapter' => $this->ebook->chapters()->find($this->postChapterId())]),
-        ];
+        return $this->ebook
+            ->chapters()
+            ->whereHas('deferred', fn($q) => $q->deferred()->deferredCreateOrUpdate()->notRequested());
     }
 
-    public function onRequestDeferred()
+    public function onRequestDeferredModal(): array
     {
-        $this->ebook
-            ->chapters()->whereHas('deferredContentOpened', fn($q) => $q->deferredOpened()->notRequested())
-            ->where('id', $this->postChapterId())
-            ->first()?->deferredContentOpened?->service()
+        $closure = fn($builder) => $this->postChapterId() ? $builder->find([$this->postChapterId()]) : $builder->get();
+        return array_merge(
+            [
+                PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('modals/deferred_chapter_request', [
+                    'chapters' => $closure($this->chaptersQuery())
+                ]),
+            ],
+            $this->renderChapters()
+        );
+    }
+
+    public function onRequestDeferred(): array|RedirectResponse
+    {
+
+        if (!count($this->postChaptersIds())) {
+            Flash::info('Выберите хотя бы 1 главу.');
+            return [];
+        }
+
+        $this->chaptersQuery()
+            ->find($this->postChaptersIds())
+            ->map(fn($c) => $c->deferred()->deferredCreateOrUpdate()->first())
+            ->map
+            ->service()
+            ->each
             ->markRequested(post('comment'));
         return Redirect::refresh();
     }
@@ -175,20 +199,22 @@ class EBooker extends ComponentBase
         return $this->onCancel(ContentTypeEnum::DEFERRED_DELETE);
     }
 
-    public function onCancel(ContentTypeEnum $typeEnum): array|RedirectResponse
+    public function onCancel(ContentTypeEnum $typeEnum): array
     {
         try {
-            $relation = match ($typeEnum) {
-                ContentTypeEnum::DEFERRED_UPDATE => 'deferredContentOpened',
-                ContentTypeEnum::DEFERRED_DELETE => 'deletedContent',
-            };
-            $this->ebook->chapters()->find($this->postChapterId())?->{$relation}?->service()->markCanceled();
-            return Redirect::refresh();
+            $this->ebook->chapters()->find($this->postChapterId())->service()->markCanceled($typeEnum);
+            $this->fresh();
+            return $this->renderChapters();
         } catch (Exception $exception) {
             Flash::error($exception instanceof ValidationException ? $exception->getMessage() : 'Не удалось выполнить запрос');
             Log::error($exception->getMessage());
             return [];
         }
+    }
+
+    public function postChaptersIds(): array
+    {
+        return collect(post('chapters'))->filter(fn($i) => in_array($i, ['1', 'on']))->keys()->toArray();
     }
 
     public function postChapterId()
