@@ -387,11 +387,13 @@ class WidgetService
             ->with('favorites')
             ->get()
             ->each(fn($i) => $i['user'] = $i->favorites?->first()->user_id)->groupBy('user')
-            ->map->pluck('book_id')
+            ->map
+            ->pluck('book_id')
             ->filter(fn($i) => !is_bool($i->search($this->book->id)))
             ->flatten(1)
             ->groupBy(fn($i) => $i)
-            ->map->count()
+            ->map
+            ->count()
             ->sortDesc()
             ->values()
             ->toArray();
