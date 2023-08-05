@@ -21,7 +21,7 @@ enum CookieEnum: string
     {
         return match ($this) {
             self::FETCH_REQUIRED => 'bool',
-            self::LOVED_GENRES, self::UNLOVED_GENRES, self::RECOMMEND, self::guest => 'object',
+            self::LOVED_GENRES, self::UNLOVED_GENRES, self::RECOMMEND, self::guest => 'array',
             default => 'string'
         };
     }

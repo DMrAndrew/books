@@ -104,4 +104,11 @@ class Tracker extends Model
         return $builder->where('trackable_type', '=', $class);
     }
 
+    public function scopeLatestActiveTracker(Builder $builder)
+    {
+        return $builder
+            ->whereHasMorph('trackable', Pagination::class, fn($i) => $i->whereHas('chapter', fn($chapter) => $chapter->whereNull('deleted_at')))
+            ->orderByUpdatedAt(asc: false);
+    }
+
 }

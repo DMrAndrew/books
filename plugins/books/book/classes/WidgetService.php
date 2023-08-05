@@ -261,8 +261,7 @@ class WidgetService
                     ->get()
                     ->pluck('favorable')
                     ->pluck('book_id')
-                    ->toArray() ?? [])
-                    ->diffWithUnloved();
+                    ->toArray() ?? [])->diffWithUnloved();
             })
             ->distinct((new Book())->getQualifiedKeyName())
             ->limit($this->limit)
@@ -375,10 +374,10 @@ class WidgetService
     public function otherAuthorBook()
     {
         return $this->query()
-            ->whereNotIn('id', [$this->book->id])
-            ->whereHas('author', fn($author) => $author->where('profile_id', '=', $this->book->author()->value('profile_id')))
-            ->whereHas('genres', fn($genres) => $genres
-                ->whereIn((new Genre())->getQualifiedKeyName(), $this->user?->loved_genres ?? getLovedFromCookie()));
+            ->whereNotIn('id', [$this->book->id]) // исключить книгу к которой прикреплён виджет
+            ->whereHas('author', fn($author) => $author->where('profile_id', '=', $this->book->author()->value('profile_id'))); // только книги основного автора
+//            ->whereHas('genres', fn($genres) => $genres
+//                ->whereIn((new Genre())->getQualifiedKeyName(), $this->user?->loved_genres ?? getLovedFromCookie())); //учитываются только жанры выбранные в настройках рекомендации
     }
 
     public function readingWithThisOne()
@@ -388,11 +387,13 @@ class WidgetService
             ->with('favorites')
             ->get()
             ->each(fn($i) => $i['user'] = $i->favorites?->first()->user_id)->groupBy('user')
-            ->map->pluck('book_id')
+            ->map
+            ->pluck('book_id')
             ->filter(fn($i) => !is_bool($i->search($this->book->id)))
             ->flatten(1)
             ->groupBy(fn($i) => $i)
-            ->map->count()
+            ->map
+            ->count()
             ->sortDesc()
             ->values()
             ->toArray();
