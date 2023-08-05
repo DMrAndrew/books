@@ -5,53 +5,75 @@ namespace Books\Book\Classes;
 use Books\Book\Classes\Enums\ContentStatus;
 use Books\Book\Classes\Enums\ContentTypeEnum;
 use Books\Book\Models\Chapter;
+use Books\Book\Models\Content;
 use Illuminate\Support\Collection;
-use ValidationException;
 
 class DeferredChapterService extends ChapterService
 {
     protected function create(array $data): Chapter
     {
-        $new = parent::create(array_replace($data, ['content' => ''])); // Создать новую часть
-        $new->deferredContentNew()->create(['type' => ContentTypeEnum::DEFERRED_CREATE, 'body' => $data['content']]);
+        $new = parent::create(array_replace($data, ['new_content' => ''])); // Создать новую часть
+        $new->deferred()->type(ContentTypeEnum::DEFERRED_CREATE)->create(['type' => ContentTypeEnum::DEFERRED_CREATE, 'body' => $data['new_content']]);
         return $new;
     }
 
-    /**
-     * @throws ValidationException
-     */
-    protected function update(array $data): Chapter
-    {
-        return parent::update($this->dataPrepare($data));
-    }
 
     protected function dataPrepare(array|Collection $data): array
     {
-        return [
-            'deferred_content' => $data['new_content'] ?? $data['content'] ?? ''
-        ];
+        $data = parent::dataPrepare($data);
+        if ($this->isNew()) {
+            return $data;
+        }
+
+        if ($content = $data['new_content'] ?? $data['content'] ?? null) {
+
+            return [
+                'deferred_content' => $content,
+            ];
+        }
+
+        return [];
     }
 
-    public function delete()
+    public function delete(): bool
     {
-        $content = $this->chapter->deletedContent()->firstOrCreate(['type' => ContentTypeEnum::DEFERRED_DELETE, 'status' => ContentStatus::Pending]);
+        /**
+         * @var Content $content
+         */
+        $content = $this->chapter->deferred()->type(ContentTypeEnum::DEFERRED_DELETE)->firstOrCreate(['type' => ContentTypeEnum::DEFERRED_DELETE, 'status' => ContentStatus::Pending]);
         return $content->service()->markRequested();
     }
 
-    public function mergeDeferred(): Chapter|bool
+    public function merge(ContentTypeEnum $type): Chapter|bool
     {
-        if ($content = $this->chapter->deferredContentOpened) {
-            return parent::update(['new_content' => $content->body]);
+        /**
+         * @var Content $content
+         */
+        if ($content = $this->chapter->deferred()->type($type)->first()) {
+            return match ($type) {
+                ContentTypeEnum::DEFERRED_UPDATE, ContentTypeEnum::DEFERRED_CREATE => parent::update(['new_content' => $content->body]),
+                ContentTypeEnum::DEFERRED_DELETE => parent::delete(),
+            };
         }
         return false;
     }
+
+    public function markCanceled(ContentTypeEnum $type)
+    {
+        return $this->chapter
+            ->deferred()
+            ->type($type)
+            ->first()?->service()
+            ->markCanceled();
+    }
+
     public function markCanceledDeferredUpdate()
     {
-        return $this->chapter->deferredContentOpened?->service()->markCanceled();
+        return $this->markCanceled(ContentTypeEnum::DEFERRED_UPDATE);
     }
 
     public function markCanceledDeletedContent()
     {
-        return $this->chapter->deletedContent?->service()->markCanceled();
+        return $this->markCanceled(ContentTypeEnum::DEFERRED_DELETE);
     }
 }

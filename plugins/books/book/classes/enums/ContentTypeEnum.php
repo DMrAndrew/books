@@ -10,7 +10,7 @@ enum ContentTypeEnum: int
     public function label(): string
     {
         return match ($this) {
-            self::DEFERRED_CREATE => 'Добавление контента',
+            self::DEFERRED_CREATE => 'Создание',
             self::DEFERRED_UPDATE => 'Обновление контента',
             self::DEFERRED_DELETE => 'Удаление',
         };

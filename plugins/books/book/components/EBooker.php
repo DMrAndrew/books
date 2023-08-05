@@ -155,7 +155,7 @@ class EBooker extends ComponentBase
     {
         return $this->ebook
             ->chapters()
-            ->whereHas('deferredContentOpened', fn($q) => $q->deferredOpened()->notRequested());
+            ->whereHas('deferred', fn($q) => $q->deferred()->deferredCreateOrUpdate()->notRequested());
     }
 
     public function onRequestDeferredModal(): array
@@ -181,8 +181,7 @@ class EBooker extends ComponentBase
 
         $this->chaptersQuery()
             ->find($this->postChaptersIds())
-            ->map
-            ->deferredContentOpened
+            ->map(fn($c) => $c->deferred()->deferredCreateOrUpdate()->first())
             ->map
             ->service()
             ->each
@@ -203,11 +202,7 @@ class EBooker extends ComponentBase
     public function onCancel(ContentTypeEnum $typeEnum): array
     {
         try {
-            $relation = match ($typeEnum) {
-                ContentTypeEnum::DEFERRED_UPDATE => 'deferredContentOpened',
-                ContentTypeEnum::DEFERRED_DELETE => 'deletedContent',
-            };
-            $this->ebook->chapters()->find($this->postChapterId())?->{$relation}?->service()->markCanceled();
+            $this->ebook->chapters()->find($this->postChapterId())->service()->markCanceled($typeEnum);
             $this->fresh();
             return $this->renderChapters();
         } catch (Exception $exception) {

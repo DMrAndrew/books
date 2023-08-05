@@ -38,8 +38,7 @@ use System\Models\File;
  * * @method AttachOne picture
  * @method HasOne next
  * @method HasOne prev
- * @method MorphMany deferredContent все отложенные обновления
- * @method MorphMany deferredContentOpened отложенные обновления без слияния
+ * @method MorphMany deferred
  *
  * @property ?Chapter prev
  * @property ?Chapter next
@@ -159,7 +158,7 @@ class Chapter extends Model
 
     public function service(): DeferredChapterService|ChapterService
     {
-        return $this->edition->shouldDeferredUpdate() ? new DeferredChapterService($this) : new ChapterService($this);
+        return $this->edition?->shouldDeferredUpdate() ? $this->deferredService() : new ChapterService($this);
     }
 
     public function deferredService(): DeferredChapterService
@@ -215,36 +214,45 @@ class Chapter extends Model
         return $query->where('status', ChapterStatus::PUBLISHED);
     }
 
+    public function scopePublic(Builder $builder,bool $withPlanned = false)
+    {
+        return $builder
+            ->where('length','>',0)
+            ->published()
+            ->when($withPlanned,fn($q) => $q->planned())
+            ->whereDoesntHave('deferred', fn($deferred) => $deferred->deferred()->deferredCreate());
+    }
+
     public function scopeWithDeferredState(Builder $builder)
     {
         return $builder
             ->withDeferredUpdateExists()
-            ->withDeferredUpdateUnRequestedExists()
+            ->withDeferredUpdateNotRequestedExists()
             ->withDeferredUpdateRequestedExists()
-            ->withOnDeleteExists();
+            ->withDeferredDeleteExists();
     }
 
-    public function scopeWithOnDeleteExists(Builder $builder): Builder
+    public function scopeWithDeferredDeleteExists(Builder $builder): Builder
     {
-        return $builder->withExists(['deletedContent as on_delete_exists' => fn($content) => $content->onDeleteOpened()]);
+        return $builder->withExists(['deferred as on_delete_exists' => fn($content) => $content->deferred()->deferredDelete()]);
 
     }
 
     public function scopeWithDeferredUpdateExists(Builder $builder): Builder
     {
-        return $builder->withExists(['deferredContentOpened as deferred_content_exists' => fn($content) => $content->deferredOpened()]);
+        return $builder->withExists(['deferred as deferred_content_exists' => fn($content) => $content->deferred()->deferredCreateOrUpdate()]);
 
     }
 
-    public function scopeWithDeferredUpdateUnRequestedExists(Builder $builder): Builder
+    public function scopeWithDeferredUpdateNotRequestedExists(Builder $builder): Builder
     {
-        return $builder->withExists(['deferredContentOpened as deferred_content_unrequested_exists' => fn($content) => $content->deferredOpened()->notRequested()]);
+        return $builder->withExists(['deferred as deferred_content_unrequested_exists' => fn($content) => $content->deferred()->deferredCreateOrUpdate()->notRequested()]);
 
     }
 
     public function scopeWithDeferredUpdateRequestedExists(Builder $builder): Builder
     {
-        return $builder->withExists(['deferredContentOpened as deferred_content_requested_exists' => fn($content) => $content->deferredOpened()->requested()]);
+        return $builder->withExists(['deferred as deferred_content_requested_exists' => fn($content) => $content->deferred()->deferredCreateOrUpdate()->requested()]);
 
     }
 
@@ -257,12 +265,12 @@ class Chapter extends Model
     {
         $this->length = (int)$this->pagination()->sum('length') ?? 0;
         $this->save();
-        $this->edition->lengthRecount();
+        $this->edition()->first()->lengthRecount();
     }
 
     public function setNeighbours()
     {
-        $builder = fn() => $this->edition()->first()->chapters()->published();
+        $builder = fn() => $this->edition()->first()->chapters()->public();
         $sort_order = $this->{$this->getSortOrderColumn()};
         $this->update([
             'prev_id' => $builder()->maxSortOrder($sort_order)->latest($this->getSortOrderColumn())->first()?->id,
@@ -274,7 +282,7 @@ class Chapter extends Model
     {
         if ($this->isDirty(['status'])) {
             $fresh = $this->fresh();
-            $this->edition->setFreeParts();
+            $this->edition()->first()->setFreeParts();
             if ($fresh->status === ChapterStatus::PUBLISHED) {
                 $fresh->lengthRecount();
             }
@@ -284,7 +292,7 @@ class Chapter extends Model
 
     protected function afterCreate()
     {
-        $this->edition->setFreeParts();
+        $this->edition()->first()->setFreeParts();
     }
 
     public function afterDelete()
@@ -299,15 +307,9 @@ class Chapter extends Model
     {
         Reading::dispatch($this, $user);
     }
-
     public function getContent()
     {
-        return $this->deferredContent()->notMerged()->first() ?? $this->content;
-    }
-
-    public function getDeferredContentDiff()
-    {
-        return $this->content->getDiff($this->deferredContent);
+        return $this->deferred()->deferredCreateOrUpdate()->first() ?? $this->content;
     }
 
 

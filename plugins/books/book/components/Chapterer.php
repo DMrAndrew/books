@@ -65,7 +65,7 @@ class Chapterer extends ComponentBase
         $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
         $this->ebook = $this->book->ebook;
         $this->chapter = $this->ebook->chapters()->find($this->param('chapter_id')) ?? new Chapter();
-        $this->chapterManager = $this->chapter->service();
+        $this->chapterManager = ($this->ebook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->ebook);
         $this->prepareVals();
     }
 
@@ -126,7 +126,7 @@ class Chapterer extends ComponentBase
                 throw new ValidationException($validator);
             }
 
-            $this->chapter = $this->chapterManager->setEdition($this->ebook)->from($data->toArray());
+            $this->chapter = $this->chapterManager->from($data->toArray());
 
             return Redirect::to('/about-book/' . $this->book->id)->withFragment('#electronic')->setLastModified(now());
         } catch (Exception $ex) {

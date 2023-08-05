@@ -13,11 +13,8 @@ class Contentable extends ExtensionBase
     public function __construct(protected Model $model)
     {
         $this->model->morphMany['contents'] = [Content::class, 'name' => 'contentable'];
+        $this->model->morphMany['deferred'] = [Content::class, 'name' => 'contentable', 'scope' => 'deferred'];
         $this->model->morphOne['content'] = [Content::class, 'name' => 'contentable', 'scope' => 'regular'];
-        $this->model->morphMany['deferredContent'] = [Content::class, 'name' => 'contentable', 'scope' => 'deferred'];
-        $this->model->morphOne['deferredContentOpened'] = [Content::class, 'name' => 'contentable', 'scope' => 'deferredOpened'];
-        $this->model->morphOne['deletedContent'] = [Content::class, 'name' => 'contentable', 'scope' => 'onDeleteOpened'];
-        $this->model->morphOne['deferredContentNew'] = [Content::class, 'name' => 'contentable', 'scope' => 'deferredContentNew'];
         $this->model->bindEvent('model.afterCreate', fn() => $this->afterCreate());
         $this->model->bindEvent('model.afterSave', fn() => $this->afterSave());
     }
@@ -43,7 +40,8 @@ class Contentable extends ExtensionBase
 
         if ($content = $this->model->getOriginalPurgeValue('deferred_content')) {
 
-            if ($deferred = $this->model->deferredContentOpened) {
+            $builder = fn() => $this->model->deferred()->deferredCreateOrUpdate();
+            if ($deferred = $builder()->first()) {
                 $deferred->fill(['body' => $content]);
                 if ($deferred->isDirty('body')) {
                     $deferred->save();
@@ -52,8 +50,7 @@ class Contentable extends ExtensionBase
                 if (strcasecmp($content, $this->model->content->body) === 0) {
                     return;
                 }
-
-                $this->model->deferredContentOpened()->create([
+                $builder()->create([
                     'type' => ContentTypeEnum::DEFERRED_UPDATE->value,
                     'body' => $content
                 ]);

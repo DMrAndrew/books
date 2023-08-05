@@ -24,7 +24,7 @@ class ContentService
      */
     public function markMerged(?string $comment = null): Chapter|bool
     {
-        if(!$this->content->allowedMarkAs(ContentStatus::Merged)){
+        if (!$this->content->allowedMarkAs(ContentStatus::Merged)) {
             throw new ValidationException(['status' => 'Действие не разрешено']);
         }
         if (!($this->content->contentable instanceof Chapter)) {
@@ -32,18 +32,16 @@ class ContentService
         }
 
         /**
-         * @var ChapterService $service
+         * @var DeferredChapterService $service
          */
-        $service = $this->content->contentable->service();
+        $service = $this->content->contentable->deferredService();
         return Db::transaction(function () use ($service, $comment) {
-            $merged = match ($this->content->type) {
-                ContentTypeEnum::DEFERRED_UPDATE => $service->mergeDeferred(),
-                ContentTypeEnum::DEFERRED_DELETE => $service->actionDelete()
-            };
-            if ($merged && $this->content->markMerged($comment)) {
+
+            if ($service->merge($this->content->type) && $this->content->markMerged($comment)) {
                 Event::fire('books.book::content.deferred.merged', [$this->content, $comment]);
+                return true;
             }
-            return $merged;
+            return false;
         });
 
     }
@@ -68,7 +66,7 @@ class ContentService
      */
     public function markRejected(?string $comment = null): bool
     {
-        if(!$this->content->allowedMarkAs(ContentStatus::Rejected)){
+        if (!$this->content->allowedMarkAs(ContentStatus::Rejected)) {
             throw new ValidationException(['status' => 'Действие не разрешено']);
         }
         if (!($this->content->contentable instanceof Chapter) || !$this->content->markRejected($comment)) {
