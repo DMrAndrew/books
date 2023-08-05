@@ -41,7 +41,7 @@ class BookAccount extends Account
     {
         if ($data = CookieEnum::guest->get()) {
             return [
-                PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/registerForm', ['user' => new User($data)]),
+                PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/registerForm', ['user' => new User((array)$data)]),
             ];
         }
         return [];
