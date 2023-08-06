@@ -7,7 +7,7 @@
         {% endif %}
     </div>
     <div class="comments-comment__info">
-        <div class="comments-comment__info-wrapper">
+        <div class="comments-comment__info-wrapper" >
 
             <div class="comments-comment__author ui-text--bold">
                 <a href="/author-page/{{comment.profile.id}}">{{ comment.profile.getAttribute('username') }}</a>
@@ -26,7 +26,11 @@
             <div class="comments-comment__text deleted">Комментарий удалён</div>
             {% else %}
             <div id="comment_{{ comment.id }}" class="comment-js-form">
-                <div class="comments-comment__text">
+                <div class="comments-comment__text" id="comment_text_{{comment.id}}">
+                    {% if comment.parent %}
+                    <a  class="ui-link _violet backlight cursor-pointer" data-comment-parent-id="{{comment.parent.id}}">@{{comment.parent.profile.getAttribute('username')}}</a>
+                    {% endif %}
+
                     {{comment.content|raw}}
                 </div>
                 {% partial '@textarea' item=comment cancel='#comment_'~comment.id %}
@@ -136,3 +140,20 @@
 {% if comment.parent_id %}
 {% partial '@list' comments=comment.children %}
 {% endif %}
+
+<script>
+    $(".backlight").on("click", function(event) {
+        event.stopPropagation();
+        let parentid = $(this).data('comment-parent-id')
+        let parent = $(`#comment_text_${parentid}`)
+        parent.addClass('backlighted')
+        setTimeout(() => parent.removeClass('backlighted'),1000)
+        parent.get(0).scrollIntoView({behavior: 'smooth', block:'center'})
+
+    })
+</script>
+
+<style>
+    .backlighted{
+    }
+</style>

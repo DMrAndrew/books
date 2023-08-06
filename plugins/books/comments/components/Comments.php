@@ -84,7 +84,7 @@ class Comments extends ComponentBase
 
     public function queryComments()
     {
-        return $this->model->comments()->withTrashed()->with(['profile', 'profile.avatar', 'children']);
+        return $this->model->comments()->withTrashed()->with(['profile', 'profile.avatar', 'children','parent.profile']);
     }
 
     /**
