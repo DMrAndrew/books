@@ -4,7 +4,6 @@ namespace Books\Notifications\Classes\Behaviors;
 
 use Books\Comments\Models\Comment;
 use Books\Notifications\Classes\Events\CommentReplied;
-use Books\Notifications\Classes\NotificationTypeEnum;
 use Cms\Classes\Controller;
 use Exception;
 use Illuminate\Support\Arr;
