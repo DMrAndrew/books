@@ -5,7 +5,6 @@ namespace Books\Book\Classes;
 use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Jobs\RaterExec;
 use Books\Book\Models\Book;
-use Books\Book\Models\Stats;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Traits\Conditionable;
@@ -240,7 +239,8 @@ class Rater
         if (in_array($name, StatsEnum::toArray())) {
             return $this->applyStats(StatsEnum::tryFrom($name), ...$arguments);
         } else {
-            throw new Exception(__CLASS__ . ' нет такого метода (' . $name . ')');
+
+            throw new Exception(sprintf('%s: метод %s не найден.', __CLASS__, $name));
         }
     }
 

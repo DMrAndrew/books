@@ -3,6 +3,7 @@
 namespace Books\Book\Models;
 
 use Books\Book\Classes\ChapterService;
+use Books\Book\Classes\Contracts\iChapterService;
 use Books\Book\Classes\DeferredChapterService;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\ChapterStatus;
@@ -156,12 +157,13 @@ class Chapter extends Model
 
     public $attachMany = [];
 
-    public function service(): DeferredChapterService|ChapterService
+
+    public function service(): iChapterService
     {
-        return $this->edition?->shouldDeferredUpdate() ? $this->deferredService() : new ChapterService($this);
+        return $this->edition?->deferredState() ? $this->deferredService() : new ChapterService($this);
     }
 
-    public function deferredService(): DeferredChapterService
+    public function deferredService(): iChapterService
     {
         return new DeferredChapterService($this);
     }
@@ -214,12 +216,11 @@ class Chapter extends Model
         return $query->where('status', ChapterStatus::PUBLISHED);
     }
 
-    public function scopePublic(Builder $builder,bool $withPlanned = false)
+    public function scopePublic(Builder $builder, bool $withPlanned = false)
     {
         return $builder
-            ->where('length','>',0)
-            ->published()
-            ->when($withPlanned,fn($q) => $q->planned())
+            ->where('length', '>', 0)
+            ->when($withPlanned, fn($q) => $q->where(fn($where) => $where->published()->orWhere(fn($or) => $or->planned())), fn($q) => $q->published())
             ->whereDoesntHave('deferred', fn($deferred) => $deferred->deferred()->deferredCreate());
     }
 

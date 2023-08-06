@@ -43,9 +43,14 @@
 
                             {% partial '@chapter-status' chapter=chapter %}
 
-                            {% if chapter.status.value != 'draft' %}
+                            {% if chapter.status.value != 'draft' and chapter.deferred.first.type.tag != 'create' %}
                             <div class="chapter-book__status">
                                 <span>{{chapter.sales_type.getLabel()}}</span>
+                            </div>
+                            {% endif %}
+                            {% if chapter.deferred.first.type.tag == 'create' %}
+                            <div class="chapter-book__status">
+                                <span>Новая глава</span>
                             </div>
                             {% endif %}
                             {% if chapter.published_at %}
@@ -68,6 +73,7 @@
 
                                 {% if chapter.deferred_content_unrequested_exists %}
                                 <span >Новый контент &nbsp;</span>
+                                <span>{{chapter.deferred.first.length}} зн. &nbsp;</span>
                                 <span  onclick="oc.ajax('onRequestDeferredModal',{
                                     data:{
                                         flash:true,
@@ -82,7 +88,9 @@
                                 {% endif %}
 
                                 {% if chapter.deferred_content_requested_exists %}
-                                Изменения на проверке  <span onclick="oc.ajax('onCancelRequestDeferred',{
+                                <span >Изменения на проверке &nbsp;</span>
+                                <span>{{chapter.deferred.first.length}} зн. &nbsp;</span>
+                                  <span onclick="oc.ajax('onCancelRequestDeferred',{
                                     data:{
                                         flash:true,
                                         chapter_id:`{{chapter.id}}`
@@ -103,7 +111,7 @@
                                 <svg class="square-16">
                                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
                                 </svg>
-                                Запрошено удаление главы <span onclick="oc.ajax('onCancelDeleting',{
+                                Запрошено удаление главы &nbsp;<span onclick="oc.ajax('onCancelDeleting',{
                                     data:{
                                         flash:true,
                                         chapter_id:`{{chapter.id}}`

@@ -10,8 +10,8 @@ enum ChapterSalesType: string
     public function getLabel()
     {
         return match ($this) {
-            self::FREE => 'Бесплатная часть',
-            self::PAY => 'Платная часть',
+            self::FREE => 'Бесплатная глава',
+            self::PAY => 'Платная глава',
         };
     }
 }

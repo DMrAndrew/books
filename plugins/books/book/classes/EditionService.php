@@ -33,9 +33,9 @@ class EditionService
         if ($this->edition->isDirty(['status']) && !in_array($this->edition->status, $this->edition->getAllowedStatusCases())) {
             throw new ValidationException(['status' => 'В данный момент Вы не можете перевести издание в статус `' . $this->edition->status->name . '`']);
         }
-        if ($this->edition->isDirty(['free_parts', 'price']) && !$this->edition->sellsSettingsEditAllowed()) {
-            throw new ValidationException(['edition' => 'Для книги запрещено редактирование продаж']);
-        }
+//        if ($this->edition->isDirty(['free_parts', 'price']) && !$this->edition->editAllowed()) {
+//            throw new ValidationException(['edition' => 'Для книги запрещено редактирование продаж']);
+//        }
 
         if ($this->edition->price) {
             $this->edition->addValidationRule('free_parts', 'min:' . config('book.minimal_free_parts'));
@@ -96,7 +96,7 @@ class EditionService
             $this->edition->isDirty(['status']) &&
             $this->edition->getOriginal('status') === BookStatus::WORKING &&
             $data->get('status') === BookStatus::COMPLETE &&
-            !$this->edition->hadCompleted()
+            !$this->edition->hasCompletedState()
         ) {
             Event::fire('books.book::book.completed', [$this->edition->book]);
         }
