@@ -22,7 +22,7 @@
     <div class="ui-select-error" data-validate-for="content"></div>
 
 
-    {% if not chapter.id  or not ebook.shouldDeferredUpdate %}
+    {% if not chapter.id  or not ebook.is_deferred %}
     <div class="personal-area__wrap _indent-large">
         <label class="personal-area__wrap _indent-medium ui-radio">
             <input type="radio" name="action" value="publish_now" class="chapter-action-radio"

@@ -2,8 +2,10 @@
 
 namespace Books\Notifications\Classes\Behaviors;
 
+use Books\Comments\Models\Comment;
+use Books\Notifications\Classes\Events\CommentReplied;
+use Books\Notifications\Classes\NotificationTypeEnum;
 use Cms\Classes\Controller;
-use Cms\Classes\Page;
 use Exception;
 use Illuminate\Support\Arr;
 use October\Rain\Extension\ExtensionBase;
@@ -18,7 +20,7 @@ class NotificationModel extends ExtensionBase
 
     public function render(array $args = []): string
     {
-        $params = array_merge($this->notification->data, $args, ['notification' => $this->notification]);
+        $params = array_merge($this->notification->data, $args, ['notification' => $this->notification], $this->loadData());
         $template = Arr::get($params, 'template');
         $templatePath = plugins_path("books/notifications/views/{$template}.twig");
 
@@ -36,6 +38,17 @@ class NotificationModel extends ExtensionBase
         } catch (Exception $e) {
             return Twig::parse($markup, $params);
         }
+    }
+
+    public function loadData(): array
+    {
+
+        return match ($this->notification->event_type) {
+            CommentReplied::class => $this->notification->data['comment']['id'] ?? false ? [
+                'comment' => Comment::query()->withTrashed()->with(['parent' => fn($p) => $p->withTrashed()])->find($this->notification->data['comment']['id'] ?? null)
+            ] : [],
+            default => []
+        };
     }
 
 

@@ -190,3 +190,6 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
 .chapter-book__info-container:not(:last-child){
     margin-bottom: 12px;
 }
+.color-yellow{
+    color:var(--color-dark-yellow)
+}

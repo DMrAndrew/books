@@ -52,7 +52,7 @@ class DeferredChapterService extends ChapterService
          */
         if ($content = $this->chapter->deferred()->type($type)->first()) {
             return match ($type) {
-                ContentTypeEnum::DEFERRED_UPDATE, ContentTypeEnum::DEFERRED_CREATE => (parent::update(['new_content' => $content->body])),
+                ContentTypeEnum::DEFERRED_UPDATE, ContentTypeEnum::DEFERRED_CREATE => parent::update(['new_content' => $content->body]),
                 ContentTypeEnum::DEFERRED_DELETE => parent::delete(),
             };
         }

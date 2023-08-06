@@ -96,7 +96,7 @@ class EditionService
             $this->edition->isDirty(['status']) &&
             $this->edition->getOriginal('status') === BookStatus::WORKING &&
             $data->get('status') === BookStatus::COMPLETE &&
-            !$this->edition->hasCompletedState()
+            !$this->edition->is_has_completed
         ) {
             Event::fire('books.book::book.completed', [$this->edition->book]);
         }

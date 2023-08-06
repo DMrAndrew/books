@@ -6,13 +6,13 @@
         <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Добавить текст
         </button>
     </a>
-    {% if collect(ebook.chapters).where('deferred_content_unrequested_exists',1).count() %}
-    <a  href="#" data-request="onRequestDeferredModal" >
-        <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Запросить слияние
+    {% if mass_request %}
+    <a href="#" data-request="onRequestDeferredModal">
+        <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--1">Запросить
+            слияние
         </button>
     </a>
     {% endif %}
-
 
 
     <div class="about-book__chapter-container">
@@ -61,70 +61,54 @@
                             <div class="chapter-book__status">
                                 <span>{{chapter.length}} зн.</span>
                             </div>
-
-
                         </div>
+
+                        {% for deferred in chapter.deferred %}
+                        {% if deferred.infoHelper.isVisible %}
                         <div class="chapter-book__info-container">
-                            {% if chapter.deferred_content_exists %}
-                            <div class="chapter-book__status ">
-                                <svg class="square-16">
-                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
+                            <div class="chapter-book__status">
+                                <svg class="square-16 attention">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
                                 </svg>
 
-                                {% if chapter.deferred_content_unrequested_exists %}
-                                <span >Новый контент &nbsp;</span>
-                                <span>{{chapter.deferred.first.length}} зн. &nbsp;</span>
-                                <span  onclick="oc.ajax('onRequestDeferredModal',{
+                                <span class="ui-tooltip" data-tooltip="{{deferred.updated_at.format('H:i d.m.y')}}">{{deferred.infoHelper.label}}&nbsp;</span>
+                                {% if deferred.infoHelper.length %}
+                                <span>{{deferred.infoHelper.length}} зн. &nbsp;</span>
+                                {% endif %}
+                                {% if deferred.infoHelper.cancelAllowed %}
+                                <span onclick="uiconfirm(`{{deferred.infoHelper.cancelMessage}}`, () => oc.ajax('onCancel',{
+                                    data:{
+                                        flash:true,
+                                        chapter_id:`{{chapter.id}}`,
+                                        type: `{{deferred.infoHelper.typeValue}}`
+                                    }
+                                }))" class="ui-tooltip square-16" data-tooltip="Отменить">
+                                <svg class="square-16 ">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                                </svg>
+                                </span>
+                                {% endif %}
+
+                                {% if deferred.infoHelper.requestAllowed %}
+
+                                <span onclick="oc.ajax('onRequestDeferredModal',{
                                     data:{
                                         flash:true,
                                         chapter_id:`{{chapter.id}}`
                                     }
-                                })"  class="ui-tooltip square-16 attention" data-tooltip="Запросить слияние">
-                                <svg class="square-16 " >
+                                })" class="ui-tooltip square-16" data-tooltip="Запросить слияние">
+                                <svg class="square-16 color-yellow">
                                     <use
                                         xlink:href="{{'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme}}"></use>
                                 </svg>
                             </span>
                                 {% endif %}
-
-                                {% if chapter.deferred_content_requested_exists %}
-                                <span >Изменения на проверке &nbsp;</span>
-                                <span>{{chapter.deferred.first.length}} зн. &nbsp;</span>
-                                  <span onclick="oc.ajax('onCancelRequestDeferred',{
-                                    data:{
-                                        flash:true,
-                                        chapter_id:`{{chapter.id}}`
-                                    }
-                                })"  class="ui-tooltip square-16" data-tooltip="Отменить">
-                                <svg class="square-16 " >
-                                    <use
-                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                                </svg>
-                            </span>
-
-                                {% endif %}
                             </div>
-                            {% endif %}
-
-                            {% if chapter.on_delete_exists %}
-                            <div class="chapter-book__status _draft">
-                                <svg class="square-16">
-                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
-                                </svg>
-                                Запрошено удаление главы &nbsp;<span onclick="oc.ajax('onCancelDeleting',{
-                                    data:{
-                                        flash:true,
-                                        chapter_id:`{{chapter.id}}`
-                                    }
-                                })"  class="ui-tooltip square-16" data-tooltip="Отменить">
-                                <svg class="square-16 " >
-                                    <use
-                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                                </svg>
-                            </span>
-                            </div>
-                            {% endif %}
                         </div>
+                        {% endif %}
+                        {% endfor %}
                     </div>
                     <div class="chapter-book__action dropdown-menu">
                         <svg class="square-16" data-dropdown="button">
@@ -180,14 +164,13 @@
         openDropdown();
 
         function deleteChapter(id) {
-            if (id && confirm('Вы уверены?')) {
-                oc.ajax('ebooker::onDeleteChapter', {
+            id && uiconfirm('Удалить часть?', () => oc.ajax('ebooker::onDeleteChapter', {
                     data: {
                         chapter_id: id
                     },
                     flash: true
                 })
-            }
+            )
         }
     </script>
 

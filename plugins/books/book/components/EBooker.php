@@ -6,6 +6,8 @@ use App\classes\PartialSpawns;
 use ApplicationException;
 use Books\Book\Classes\EditionService;
 use Books\Book\Classes\Enums\ContentTypeEnum;
+use Books\Book\Models\Chapter;
+use Books\Book\Models\Content;
 use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use Exception;
@@ -55,12 +57,10 @@ class EBooker extends ComponentBase
     {
         $this->ebook = Auth::getUser()?->profile
             ->books()
-            ->with(['ebook.chapters' => fn($chapters) => $chapters->withDeferredState()->with(['deferred' => fn($d) => $d->deferred()->deferredCreateOrUpdate()])])
+            ->with(['ebook.chapters' => fn($chapters) => $chapters->with(['deferred' => fn($d) => $d->deferred()])])
             ->find($this->property('book_id'))?->ebook
             ?? throw new ApplicationException('Электронное издание книги не найдено.');
-        $this->ebook->chapters->each(function ($chapter) {
-            $chapter->deferred?->first()?->appendLength();
-        });
+        $this->page['mass_request'] = $this->ebook->chapters->some(fn(Chapter $chapter) => $chapter->deferred?->some(fn(Content $d) => $d->infoHelper()->requestAllowed()));
     }
 
     protected function setAllowedStatuses()
@@ -196,20 +196,11 @@ class EBooker extends ComponentBase
         return Redirect::refresh();
     }
 
-    public function onCancelRequestDeferred(): array|RedirectResponse
-    {
-        return $this->onCancel(ContentTypeEnum::DEFERRED_UPDATE);
-    }
-
-    public function onCancelDeleting(): array|RedirectResponse
-    {
-        return $this->onCancel(ContentTypeEnum::DEFERRED_DELETE);
-    }
-
-    public function onCancel(ContentTypeEnum $typeEnum): array
+    public function onCancel(): array
     {
         try {
-            $this->ebook->chapters()->find($this->postChapterId())->service()->markCanceled($typeEnum);
+            $type = ContentTypeEnum::tryFrom((int)post('type') ?? new ValidationException(['Укажите тип отмены'])) ?? throw new ValidationException(['Тип не найден']);
+            $this->ebook->chapters()->find($this->postChapterId())->service()->markCanceled($type);
             $this->fresh();
             return $this->renderChapters();
         } catch (Exception $exception) {

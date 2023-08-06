@@ -160,7 +160,7 @@ class Chapter extends Model
 
     public function service(): iChapterService
     {
-        return $this->edition?->deferredState() ? $this->deferredService() : new ChapterService($this);
+        return $this->edition?->is_deferred ? $this->deferredService() : new ChapterService($this);
     }
 
     public function deferredService(): iChapterService
@@ -231,30 +231,6 @@ class Chapter extends Model
             ->withDeferredUpdateNotRequestedExists()
             ->withDeferredUpdateRequestedExists()
             ->withDeferredDeleteExists();
-    }
-
-    public function scopeWithDeferredDeleteExists(Builder $builder): Builder
-    {
-        return $builder->withExists(['deferred as on_delete_exists' => fn($content) => $content->deferred()->deferredDelete()]);
-
-    }
-
-    public function scopeWithDeferredUpdateExists(Builder $builder): Builder
-    {
-        return $builder->withExists(['deferred as deferred_content_exists' => fn($content) => $content->deferred()->deferredCreateOrUpdate()]);
-
-    }
-
-    public function scopeWithDeferredUpdateNotRequestedExists(Builder $builder): Builder
-    {
-        return $builder->withExists(['deferred as deferred_content_unrequested_exists' => fn($content) => $content->deferred()->deferredCreateOrUpdate()->notRequested()]);
-
-    }
-
-    public function scopeWithDeferredUpdateRequestedExists(Builder $builder): Builder
-    {
-        return $builder->withExists(['deferred as deferred_content_requested_exists' => fn($content) => $content->deferred()->deferredCreateOrUpdate()->requested()]);
-
     }
 
     public function scopeType(Builder $builder, ChapterStatus ...$status): Builder

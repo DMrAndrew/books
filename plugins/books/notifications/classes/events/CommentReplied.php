@@ -2,8 +2,8 @@
 
 namespace Books\Notifications\Classes\Events;
 
+use Books\Comments\Models\Comment;
 use Books\Notifications\Classes\NotificationTypeEnum;
-use Books\Profile\Models\Profile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -32,11 +32,16 @@ class CommentReplied extends BaseEvent
      */
     public static function makeParamsFromEvent(array $args, $eventName = null): array
     {
+        /**
+         * @var Comment $comment
+         */
+        $comment = Arr::get($args, 0);
+        $comment->load(['parent' => fn($p) => $p->withTrashed()]);
         return array_merge(
             static::defaultParams(),
             [
-                'comment' => Arr::get($args, 0),
-                'recipients' => static::getRecipients($args),
+                'comment' => $comment,
+                'recipients' => static::getRecipients([$comment]),
             ],
         );
     }

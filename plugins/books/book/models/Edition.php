@@ -5,7 +5,6 @@ namespace Books\Book\Models;
 use Books\Book\Classes\EditionService;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterSalesType;
-use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\ElectronicFormats;
 use Books\Book\Classes\PriceTag;
@@ -14,7 +13,6 @@ use Books\Book\Classes\UpdateHistoryView;
 use Books\Book\Jobs\ParseFB2;
 use Books\Orders\Classes\Contracts\ProductInterface;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use DateTime;
 use Db;
 use Model;
@@ -23,6 +21,7 @@ use October\Rain\Database\Relations\AttachOne;
 use October\Rain\Database\Relations\BelongsTo;
 use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Relations\MorphMany;
+use October\Rain\Database\Traits\Purgeable;
 use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
@@ -38,7 +37,7 @@ use System\Models\Revision;
  * * @method HasMany sells Записи из статистики коммерческого кабинета, т.е. только те, где книга куплена за деньги
  * * @method AttachOne fb2
  * * @method BelongsTo book
- * * @method MorphMany customers Аккаунты, у которых есть книга (включая покупки по промокоду)
+ * * @method MorphMany customers купленных или приобретенных другим способом
  * * @method MorphMany revision_history
  *
  * * @property  Book book
@@ -46,24 +45,26 @@ use System\Models\Revision;
  * * @property  EditionsEnums type
  * * @property  bool download_allowed
  * * @property  int price
+ * * @property  bool is_deferred
+ * * @property  bool is_has_customers
+ * * @property  bool is_has_completed
+ * * @property  Carbon last_length_update_notification_at
+ * * @property  Carbon last_updated_at
  */
 class Edition extends Model implements ProductInterface
 {
     use Validation;
     use SoftDelete;
     use Revisionable;
+    use Purgeable;
 
 
-    const LAST_LENGTH_UPDATE_NOTIFICATION_AT_FIELD = 'last_notification_at';
+    const LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN = 'last_length_update_notification_at';
 
     /**
      * @var string table name
      */
     public $table = 'books_book_editions';
-
-    public ?bool $deferred_state = null;
-    public ?bool $has_customers_state = null;
-    public ?bool $has_completed_state = null;
 
     /**
      * @var array guarded attributes aren't mass assignable
@@ -72,6 +73,7 @@ class Edition extends Model implements ProductInterface
 
     protected $revisionable = ['length', 'status', 'price'];
 
+    protected $purgeable = ['is_deferred', 'is_has_customers', 'is_has_completed', self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN, 'last_updated_at'];
 
     public $revisionableLimit = 10000;
 
@@ -90,7 +92,11 @@ class Edition extends Model implements ProductInterface
         'price',
         'book_id',
         'length',
-        'last_notification_at'
+        'is_has_customers',
+        'is_has_completed',
+        'is_deferred',
+        self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN,
+        'last_updated_at'
     ];
 
     protected $casts = [
@@ -164,7 +170,7 @@ class Edition extends Model implements ProductInterface
     public function markLastLengthUpdateNotificationAt(): void
     {
         $this->revision_history()->insert([
-            'field' => self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_FIELD,
+            'field' => self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN,
             'revisionable_type' => self::class,
             'revisionable_id' => $this->getKey(),
             'user_id' => $this->revisionableGetUser(),
@@ -176,11 +182,11 @@ class Edition extends Model implements ProductInterface
 
     public function getLastLengthUpdateNotificationAtAttribute(): ?Carbon
     {
+        $this->attributes[self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN] ??= $this->revision_history()
+            ->where('field', '=', self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN)
+            ->latest('id')->first()?->created_at;
 
-        return $this->revision_history()
-            ->where('field', '=', self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_FIELD)
-            ->latest('id')
-            ->first()?->created_at;
+        return $this->attributes[self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN];
     }
 
     public function allowedDownload(ElectronicFormats $format = ElectronicFormats::FB2): bool
@@ -190,12 +196,14 @@ class Edition extends Model implements ProductInterface
             && $this->{$format->value};
     }
 
-    public function getLastUpdatedAtAttribute()
+    public function getLastUpdatedAtAttribute(): ?Carbon
     {
-        return $this->revision_history()
+        $this->attributes['last_updated_at'] ??= $this->revision_history()
             ->where('field', '=', 'length')
             ->orderByDesc('created_at')
             ->first()?->created_at;
+
+        return $this->attributes['last_updated_at'];
     }
 
     public function collectUpdateHistory(): UpdateHistory
@@ -205,7 +213,7 @@ class Edition extends Model implements ProductInterface
 
     public function getUpdateHistoryViewAttribute(): UpdateHistoryView
     {
-       return  $this->collectUpdateHistory()->toView();
+        return $this->collectUpdateHistory()->toView();
     }
 
     public function priceTag(): PriceTag
@@ -263,12 +271,10 @@ class Edition extends Model implements ProductInterface
         return $this->hasRevisionStatus(BookStatus::COMPLETE);
     }
 
-    public function hasCompletedState(): bool
+    public function getIsHasCompletedAttribute()
     {
-        if (is_null($this->has_completed_state)) {
-            $this->has_completed_state = $this->hasCompleted();
-        }
-        return $this->has_completed_state;
+        $this->attributes['is_has_completed'] ??= $this->hasCompleted();
+        return $this->attributes['is_has_completed'];
     }
 
     public function hasRevisionStatus(BookStatus ...$status)
@@ -289,9 +295,9 @@ class Edition extends Model implements ProductInterface
     public function editAllowed(): bool
     {
         return !$this->isPublished()
-            || $this->isFree() && !$this->hasCustomersState()
+            || $this->isFree() && !$this->is_has_customers
             || in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN])
-            || (in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && !$this->hasCustomersState());
+            || (in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && !$this->is_has_customers);
     }
 
     public function setPublishAt(): void
@@ -304,9 +310,9 @@ class Edition extends Model implements ProductInterface
         $cases = collect(BookStatus::publicCases());
 
         $cases = match ($this->getOriginal('status')) {
-            BookStatus::WORKING => $this->hasCustomersState() ? $cases->forget(BookStatus::HIDDEN) : $cases,// нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
+            BookStatus::WORKING => $this->is_has_customers ? $cases->forget(BookStatus::HIDDEN) : $cases,// нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
             BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value), // Из “Завершено” можем перевести только в статус “Скрыто”.
-            BookStatus::HIDDEN => $this->isPublished() && $this->hasCompletedState() && $this->hasCustomersState() ? $cases->only(BookStatus::COMPLETE->value) : $cases,//Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”, то книгу можно вернуть в статус “Скрыто” но редактирование и удаление глав будет невозможным.
+            BookStatus::HIDDEN => $this->isPublished() && $this->is_has_completed && $this->is_has_customers ? $cases->only(BookStatus::COMPLETE->value) : $cases,//Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”, то книгу можно вернуть в статус “Скрыто” но редактирование и удаление глав будет невозможным.
             default => collect()
         };
 
@@ -318,23 +324,16 @@ class Edition extends Model implements ProductInterface
     public function shouldDeferredUpdate(): bool
     {
         return match ($this->getOriginal('status')) {
-            BookStatus::HIDDEN => $this->isPublished() && $this->hasCompletedState() && $this->hasCustomersState(),
-            BookStatus::COMPLETE => !$this->isFree() && $this->hasCustomersState(),
+            BookStatus::HIDDEN => $this->isPublished() && $this->is_has_completed && $this->is_has_customers,
+            BookStatus::COMPLETE => !$this->isFree() && $this->is_has_customers,
             default => false
         };
     }
 
-    public function deferredState(): bool
+    public function getIsDeferredAttribute(): bool
     {
-        if (is_null($this->deferred_state)) {
-            $this->deferred_state = $this->shouldDeferredUpdate();
-        }
-        return $this->deferred_state;
-    }
-
-    public function getHasSalesStateAttribute(): bool
-    {
-        return $this->hasSales();
+        $this->attributes['is_deferred'] ??= $this->shouldDeferredUpdate();
+        return $this->attributes['is_deferred'];
     }
 
     public function hasSales(): bool
@@ -347,18 +346,16 @@ class Edition extends Model implements ProductInterface
         return $this->customers()->exists();
     }
 
-    public function hasCustomersState(): bool
+    public function getIsHasCustomersAttribute()
     {
-        if (is_null($this->has_customers_state)) {
-            $this->has_customers_state = $this->hasCustomers();
-        }
-        return $this->has_customers_state;
+        $this->attributes['is_has_customers'] ??= $this->hasCustomers();
+        return $this->attributes['is_has_customers'];
     }
 
     public function shouldRevisionLength(): bool
     {
         return $this->isDirty('length')
-            && !$this->deferredState()
+            && !$this->is_deferred
             && in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN, BookStatus::COMPLETE]);
     }
 
@@ -499,7 +496,7 @@ class Edition extends Model implements ProductInterface
         $this->save();
     }
 
-    public function froze()
+    public function froze(): void
     {
         $this->fill(['status' => BookStatus::FROZEN]);
         $this->save();

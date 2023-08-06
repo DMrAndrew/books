@@ -1,6 +1,7 @@
 <?php namespace Books\Book\Models;
 
 use Books\Book\Classes\BookUtilities;
+use Books\Book\Classes\ContentInfoHelper;
 use Books\Book\Classes\ContentService;
 use Books\Book\Classes\Enums\ContentStatus;
 use Carbon\Carbon;
@@ -25,6 +26,7 @@ use System\Models\Revision;
  * @property ContentStatus $status
  * @property ContentTypeEnum $type
  * @property $contentable
+ * @property int $length
  */
 class Content extends Model
 {
@@ -69,6 +71,11 @@ class Content extends Model
     public $morphMany = [
         'revision_history' => [Revision::class, 'name' => 'revisionable']
     ];
+
+    public function infoHelper(): ContentInfoHelper
+    {
+        return new ContentInfoHelper($this);
+    }
 
     public function getBookInfoAttribute(): string
     {
@@ -192,7 +199,7 @@ class Content extends Model
 
     public function scopeDeferred(Builder $builder)
     {
-        return $builder->statusNotOrNull(ContentStatus::Merged, ContentStatus::Cancelled)->notRegular();
+        return $builder->statusNotOrNull(ContentStatus::Merged)->notRegular();
     }
 
     public function scopeDeferredCreateOrUpdate(Builder $builder): Builder
@@ -248,7 +255,7 @@ class Content extends Model
         return match ($status) {
             ContentStatus::Rejected, ContentStatus::Merged => !is_null($original_status) && ($original_status !== ContentStatus::Cancelled),
             ContentStatus::Cancelled => $original_status === ContentStatus::Pending,
-            ContentStatus::Pending => $original_status != ContentStatus::Merged,
+            ContentStatus::Pending => !in_array($original_status, [ContentStatus::Merged, ContentStatus::Pending]),
             default => false
         };
     }
@@ -331,10 +338,10 @@ class Content extends Model
         return $this->data['diff'] ?? '';
     }
 
-    public function appendLength(): static
+    public function getLengthAttribute()
     {
-        $this->attributes['length'] = BookUtilities::countContentLength(BookUtilities::stringToDiDom($this->body)->text());
-        return $this;
+        $this->attributes['length'] ??= BookUtilities::countContentLength(BookUtilities::stringToDiDom($this->body)->text());
+        return $this->attributes['length'];
     }
 
 

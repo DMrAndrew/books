@@ -49,12 +49,12 @@
                         <div class="ui-dropdown-container">
 
                             <div class="ui-dropdown-item active"
-                                 onclick="oc.ajax('Blacklist::onAddToCommentsBlacklist',{data:{profile_id:'{{comment.profile.id}}'}, flash: true})">
+                                 onclick="uiconfirm('Добавить в чёрный список?',()=>oc.ajax('Blacklist::onAddToCommentsBlacklist',{data:{profile_id:'{{comment.profile.id}}'}, flash: true}))">
                                 <span>Добавить в черный список</span>
                             </div>
 
                             <div class="ui-dropdown-item active"
-                                 onclick="oc.ajax('onRemove',{data:{id:'{{comment.id}}',...getUnCollapsed()}})">
+                                 onclick="uiconfirm('Удалить комментарий?', () => oc.ajax('onRemove',{data:{id:'{{comment.id}}',...getUnCollapsed(),flash:true}}))">
                                 <span>Удалить</span>
                             </div>
 
@@ -74,13 +74,34 @@
                         <div class="ui-dropdown-container">
 
                             <div class="ui-dropdown-item active"
-                                 onclick="oc.ajax('onRemove',{data:{id:'{{comment.id}}',...getUnCollapsed()}})">
+                                 onclick="uiconfirm('Удалить комментарий?',() => oc.ajax('onRemove',{data:{id:'{{comment.id}}',...getUnCollapsed(),flash:true}}))">
                                 <span>Удалить</span>
                             </div>
                         </div>
                     </div>
                 </div>
+
+
+                {# Владелец комментария восстановить комментарий #}
+                {% elseif comment.isDeleted()
+                and(user and user.profile.id == comment.profile.id)
+                %}
+                <div class="comments-comment__action-wrapper" data-tippy-continer data-tippy-offset="[0, 0]">
+                    <svg class="square-16" data-tippy-init>
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
+                    </svg>
+                    <div class="ui-dropdown" data-tippy-block>
+                        <div class="ui-dropdown-container">
+
+                            <div class="ui-dropdown-item active"
+                                 onclick="uiconfirm('Восстановить комментарий?',() => oc.ajax('onRestore',{data:{id:'{{comment.id}}',...getUnCollapsed(),flash:true}}))">
+                                <span>Восстановить</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {% endif %}
+
 
             </div>
             <div class="comment-js-form" id="replay_{{comment.id}}">

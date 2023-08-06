@@ -1,10 +1,10 @@
 <div class="notification-menu__text notification-menu__content-wrapper">
-    {% set parentTitle = comment.parent.content | length > 100 ? comment.parent.content | slice(0, 100) ~ '...' : comment.parent.content %}
+    {% set parentTitle = comment.parent.deleted_at ? '*Комментарий удалён*' : (comment.parent.content | length > 100 ? comment.parent.content | slice(0, 100) ~ '...' : comment.parent.content) %}
     {% set link = 'book-card' | page({book_id: comment.commentable.id}) %}
-
     {% if comment.commentable_type == 'Books\Profile\Models\Profile' %}
         {% set link = 'author_page' | page({profile_id: comment.commentable_id}) %}
     {% endif %}
-
     <a href="{{ 'author_page' | page({profile_id: comment.user.profile.id}) }}" class="ui-link _violet">{{ comment.user.profile.username }}</a> оставил(а) комментарий к Вашей записи "<a href="{{ link }}" class="ui-link _violet">{{ parentTitle }}</a>"
+
+
 </div>

@@ -30,13 +30,22 @@
                 </div>
                 {% partial 'site/book-status' status=book.ebook.status %}
 
-                {% if book.ebook.deferredState %}
+                {% if book.ebook.is_deferred %}
                 <div class="chapter-book__info-container">
-                    <div class="chapter-book__status _draft">
-                        <svg class="square-16">
+                    <div class="chapter-book__status">
+
+                        <svg class="square-16 attention">
                             <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
                         </svg>
-                        <span>Редактирование контента через администратора</span>
+
+                        <span>Отложенное редактирование&nbsp;</span>
+                        <span class="ui-tooltip square-16"
+                              data-tooltip="Редактирование глав только через подтверждение от администратора">
+                              <svg class="square-16">
+                            <use
+                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#questions-stroked-circle-16' | theme}}"></use>
+                        </svg>
+                        </span>
                     </div>
                 </div>
                 {% endif %}

@@ -55,8 +55,6 @@ interface iChapterService
     public function delete(): bool;
     public function merge(ContentTypeEnum $type): Chapter|bool;
     public function markCanceled(ContentTypeEnum $type);
-    public function markCanceledDeferredUpdate();
-    public function markCanceledDeletedContent();
 
     /**
      * @param int $page

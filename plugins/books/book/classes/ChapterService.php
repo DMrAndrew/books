@@ -162,7 +162,7 @@ class ChapterService implements iChapterService
      */
     protected function isDenied(): bool
     {
-        return !$this->edition->editAllowed() && !$this->edition->deferredState();
+        return !$this->edition->editAllowed() && !$this->edition->is_deferred;
     }
 
     /**
@@ -345,15 +345,5 @@ class ChapterService implements iChapterService
     public function markCanceled(ContentTypeEnum $type)
     {
         // TODO: Implement markCanceled() method.
-    }
-
-    public function markCanceledDeferredUpdate()
-    {
-        // TODO: Implement markCanceledDeferredUpdate() method.
-    }
-
-    public function markCanceledDeletedContent()
-    {
-        // TODO: Implement markCanceledDeletedContent() method.
     }
 }

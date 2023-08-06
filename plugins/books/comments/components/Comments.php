@@ -10,9 +10,12 @@ use Closure;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
+use Log;
 use October\Rain\Database\Model;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Throwable;
+use ValidationException;
 
 /**
  * Comments Component
@@ -64,11 +67,11 @@ class Comments extends ComponentBase
             $all = $this->queryComments()->get()->toNested();
             $items = $all->forPage($this->currentPage(), $this->perPage);
             $paginator = new CustomPaginator($items, $all->count(), $this->perPage, $this->currentPage());
-            $paginator->setHandler($this->alias.'::onPage')->setScrollToContainer('.comments');
+            $paginator->setHandler($this->alias . '::onPage')->setScrollToContainer('.comments');
             $this->page['paginator'] = $paginator;
             $this->page['current_page'] = $this->currentPage();
         }
-        $this->page['opened'] = (array) post('opened');
+        $this->page['opened'] = (array)post('opened');
     }
 
     public function vals(): array
@@ -95,8 +98,8 @@ class Comments extends ComponentBase
 
         $this->model = $model;
 
-        if (! $this->model->isClassExtendedWith(Commentable::class)) {
-            throw new Exception(get_class($this->model).' must be extended with '.Commentable::class.' behavior.');
+        if (!$this->model->isClassExtendedWith(Commentable::class)) {
+            throw new Exception(get_class($this->model) . ' must be extended with ' . Commentable::class . ' behavior.');
         }
     }
 
@@ -123,36 +126,44 @@ class Comments extends ComponentBase
 
     public function onComment()
     {
-        if (! $this->user) {
-            return;
-        }
+        try {
+            if (!$this->user) {
+                return;
+            }
 
-        /**
-         * Check if blacklisted
-         */
-        if ($this->user->profile->isCommentsBlacklistedBy($this->owner)) {
-            Flash::error('Автор ограничил вам доступ к публикации комментариев');
+            /**
+             * Check if blacklisted
+             */
+            if ($this->user->profile->isCommentsBlacklistedBy($this->owner)) {
+                Flash::error('Автор ограничил вам доступ к публикации комментариев');
 
+                return [];
+            }
+
+            $payload = post();
+            if (!$this->queryComments()->find(post('parent_id'))) {
+                unset($payload['parent_id']);
+            }
+            $this->model->addComment($this->user, $payload);
+
+            return $this->renderSpawn();
+        } catch (Throwable $exception) {
+            Log::error($exception->getMessage());
+            if ($exception instanceof ValidationException) {
+                Flash::error($exception->getMessage());
+            }
             return [];
         }
-
-        $payload = post();
-        if (! $this->queryComments()->find(post('parent_id'))) {
-            unset($payload['parent_id']);
-        }
-        $comment = $this->model->addComment($this->user, $payload);
-
-        return $this->renderSpawn();
     }
 
     public function onEdit()
     {
-        if (! $this->user) {
+        if (!$this->user) {
             return;
         }
 
         $comment = $this->queryComments()->find(post('comment_id'));
-        if (! $this->validateComment($comment)) {
+        if (!$this->validateComment($comment)) {
             return;
         }
         $comment->update(['content' => post('content')]);
@@ -160,14 +171,28 @@ class Comments extends ComponentBase
         return $this->renderSpawn();
     }
 
-    public function onRemove()
+    public function onRestore()
     {
-        if (! $this->user) {
+        if (!$this->user) {
             return;
         }
 
         $comment = $this->queryComments()->find(post('id'));
-        if (! $this->validateComment($comment)) {
+        if (!$this->validateComment($comment)) {
+            return;
+        }
+        $comment->restore();
+        return $this->renderSpawn();
+    }
+
+    public function onRemove()
+    {
+        if (!$this->user) {
+            return;
+        }
+
+        $comment = $this->queryComments()->find(post('id'));
+        if (!$this->validateComment($comment)) {
             return;
         }
         $this->model->deleteComment($comment);
@@ -191,6 +216,6 @@ class Comments extends ComponentBase
 
     public function currentPage(): int
     {
-        return (int) (post('page') ?? $this->currentPage);
+        return (int)(post('page') ?? $this->currentPage);
     }
 }
