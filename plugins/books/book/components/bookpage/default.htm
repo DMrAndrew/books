@@ -1,4 +1,4 @@
-{% set history = book.ebook.updateHistory %}
+{% set history = book.ebook.updateHistoryView %}
 <div class="ui-container-fluid">
     <div class="book-card-full _indent">
         <img class="book-card-full__image" src="{{book.cover.getThumb(334,488)}}" alt="" style="object-fit: fill">
@@ -38,14 +38,14 @@
                                 <div class="book-card-full-type__description _indent-bottom">
                                     {% partial 'site/book-status' status=book.ebook.status %}
                                     <span class="book-card-full-type__description-dot"></span>
-                                    {% if history.items[0] %}
+                                    {% if history.items.first %}
                                     <span>{{ history.items.first.date.format('d.m.y') }}</span>
                                     {% else %}
                                     <span>{{carbon(book.ebook.sales_at).format('d.m.y')}}</span>
                                     {% endif %}
                                     <span class="book-card-full-type__description-dot"></span>
                                     <span>{{book.ebook.length}} зн.</span>
-                                    {% if book.ebook.updateHistory.items[0] %}
+                                    {% if history.items.first %}
                                     <span class="book-card-full-type__description-dot"></span>
                                     <a class="ui-link _violet cursor-pointer" data-modal="open-history">История</a>
                                     {% endif %}

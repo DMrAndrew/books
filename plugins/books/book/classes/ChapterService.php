@@ -162,7 +162,7 @@ class ChapterService implements iChapterService
      */
     protected function isDenied(): bool
     {
-        return !$this->edition->editAllowed() && !$this->edition->shouldDeferredUpdate();
+        return !$this->edition->editAllowed() && !$this->edition->deferredState();
     }
 
     /**
@@ -187,7 +187,7 @@ class ChapterService implements iChapterService
     protected function dataPrepare(array|Collection $data): array
     {
         if ($this->isDenied()) {
-            throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование глав.']);
+            throw new ValidationException(['edition' => 'В данный момент Вы не можете редактировать книгу.']);
         }
 
         $data = collect($data);

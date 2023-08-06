@@ -9,6 +9,8 @@ use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\ElectronicFormats;
 use Books\Book\Classes\PriceTag;
+use Books\Book\Classes\UpdateHistory;
+use Books\Book\Classes\UpdateHistoryView;
 use Books\Book\Jobs\ParseFB2;
 use Books\Orders\Classes\Contracts\ProductInterface;
 use Carbon\Carbon;
@@ -51,7 +53,6 @@ class Edition extends Model implements ProductInterface
     use SoftDelete;
     use Revisionable;
 
-    const UPDATE_CHUNK_LENGTH = 4999;
 
     const LAST_LENGTH_UPDATE_NOTIFICATION_AT_FIELD = 'last_notification_at';
 
@@ -197,36 +198,14 @@ class Edition extends Model implements ProductInterface
             ->first()?->created_at;
     }
 
-    public function getUpdateHistoryAttribute()
+    public function collectUpdateHistory(): UpdateHistory
     {
-        $items = $this->revision_history()
-            ->where('field', '=', 'length')
-            ->get()
-            ->chunkWhile(function ($value, $key, $chunk) {
-                return (int)$chunk->sum('odds') <= self::UPDATE_CHUNK_LENGTH;
-            })
-            ->filter(fn($i) => $i->sum('odds') >= self::UPDATE_CHUNK_LENGTH)->map(function ($collection) {
-                return [
-                    'date' => $collection->last()->created_at,
-                    'value' => (int)$collection->sum('odds'),
-                    'new_value' => (int)$collection->last()->new_value,
-                ];
-            })
-            ->reverse();
+        return new UpdateHistory($this->revision_history()->where('field', '=', 'length')->get());
+    }
 
-        $count = $items->count();
-        $days = $count ? CarbonPeriod::create($items->last()['date'], $items->first()['date'])->count() : 0;
-
-        $freq_string = $count ? getFreqString($count, $days) : '';
-        $freq = $count ? $count / $days : 0;
-
-        return [
-            'freq' => $freq,
-            'freq_string' => $freq_string,
-            'items' => $items,
-            'count' => $count,
-            'days' => $days,
-        ];
+    public function getUpdateHistoryViewAttribute(): UpdateHistoryView
+    {
+       return  $this->collectUpdateHistory()->toView();
     }
 
     public function priceTag(): PriceTag
@@ -310,10 +289,9 @@ class Edition extends Model implements ProductInterface
     public function editAllowed(): bool
     {
         return !$this->isPublished()
-            || $this->isFree()
+            || $this->isFree() && !$this->hasCustomersState()
             || in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN])
-            || ($this->getOriginal('status') === BookStatus::HIDDEN && !$this->hasCompletedState())
-            || ($this->getOriginal('status') === BookStatus::COMPLETE && !$this->hasCustomersState());
+            || (in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && !$this->hasCustomersState());
     }
 
     public function setPublishAt(): void
@@ -328,9 +306,8 @@ class Edition extends Model implements ProductInterface
         $cases = match ($this->getOriginal('status')) {
             BookStatus::WORKING => $this->hasCustomersState() ? $cases->forget(BookStatus::HIDDEN) : $cases,// нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
             BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value), // Из “Завершено” можем перевести только в статус “Скрыто”.
-            BookStatus::FROZEN => collect(),
-            BookStatus::HIDDEN => !$this->isPublished() && $this->hasCompletedState() ? collect() : $cases,//Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”, то книгу можно вернуть в статус “Скрыто” но редактирование и удаление глав будет невозможным.
-            default => $cases
+            BookStatus::HIDDEN => $this->isPublished() && $this->hasCompletedState() && $this->hasCustomersState() ? $cases->only(BookStatus::COMPLETE->value) : $cases,//Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”, то книгу можно вернуть в статус “Скрыто” но редактирование и удаление глав будет невозможным.
+            default => collect()
         };
 
         $cases[$this->getOriginal('status')->value] = $this->getOriginal('status');
@@ -340,9 +317,11 @@ class Edition extends Model implements ProductInterface
 
     public function shouldDeferredUpdate(): bool
     {
-        return ($this->getOriginal('status') === BookStatus::HIDDEN && !$this->isPublished() && $this->hasCompletedState() && $this->hasCustomersState())
-            ||
-            ($this->getOriginal('status') === BookStatus::COMPLETE && !$this->isFree() && $this->hasCustomersState());
+        return match ($this->getOriginal('status')) {
+            BookStatus::HIDDEN => $this->isPublished() && $this->hasCompletedState() && $this->hasCustomersState(),
+            BookStatus::COMPLETE => !$this->isFree() && $this->hasCustomersState(),
+            default => false
+        };
     }
 
     public function deferredState(): bool
@@ -525,6 +504,21 @@ class Edition extends Model implements ProductInterface
         $this->fill(['status' => BookStatus::FROZEN]);
         $this->save();
     }
+
+    public static function lookUpFroze()
+    {
+        $date = today()->copy()->subDays(config('books.book.free_days_before_frozen', 1));
+        return static::query()
+            ->status(BookStatus::WORKING)
+            ->whereHas('revision_history', fn($revision_history) => $revision_history
+                ->whereDate('created_at', '<=', $date)
+                ->where(['field' => 'status', 'new_value' => BookStatus::WORKING->value]))
+            ->get()
+            ->filter(function (Edition $edition) use ($date) {
+                return $edition->collectUpdateHistory()->getChunks()->last()?->date->lessThan($date);
+            });
+    }
+
 
 
 }
