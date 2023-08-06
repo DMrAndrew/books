@@ -48,12 +48,19 @@ class EBooker extends ComponentBase
         $this->service = new EditionService($this->ebook);
     }
 
+    /**
+     * @throws ApplicationException
+     */
     public function fresh()
     {
-        $this->ebook = Auth::getUser()?->profile->books()->with(['ebook.chapters' => fn($chapters) => $chapters->withDeferredState()])->find($this->property('book_id'))?->ebook;
-        if (!$this->ebook) {
-            throw new ApplicationException('Электронное издание книги не найден.');
-        }
+        $this->ebook = Auth::getUser()?->profile
+            ->books()
+            ->with(['ebook.chapters' => fn($chapters) => $chapters->withDeferredState()->with(['deferred' => fn($d) => $d->deferred()->deferredCreateOrUpdate()])])
+            ->find($this->property('book_id'))?->ebook
+            ?? throw new ApplicationException('Электронное издание книги не найдено.');
+        $this->ebook->chapters->each(function ($chapter) {
+            $chapter->deferred?->first()?->appendLength();
+        });
     }
 
     protected function setAllowedStatuses()

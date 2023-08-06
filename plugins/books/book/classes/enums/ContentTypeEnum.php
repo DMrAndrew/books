@@ -15,4 +15,13 @@ enum ContentTypeEnum: int
             self::DEFERRED_DELETE => 'Удаление',
         };
     }
+
+    public function tag(): string
+    {
+        return match ($this) {
+            self::DEFERRED_CREATE => 'create',
+            self::DEFERRED_UPDATE => 'update',
+            self::DEFERRED_DELETE => 'delete',
+        };
+    }
 }

@@ -29,6 +29,17 @@
                     {% partial 'controls/tags-link-list' tags=book.tags %}
                 </div>
                 {% partial 'site/book-status' status=book.ebook.status %}
+
+                {% if book.ebook.deferredState %}
+                <div class="chapter-book__info-container">
+                    <div class="chapter-book__status _draft">
+                        <svg class="square-16">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
+                        </svg>
+                        <span>Редактирование контента через администратора</span>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

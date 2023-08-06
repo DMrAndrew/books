@@ -6,15 +6,18 @@ use Books\Book\Classes\Enums\ContentStatus;
 use Books\Book\Classes\Enums\ContentTypeEnum;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Content;
+use Db;
 use Illuminate\Support\Collection;
 
 class DeferredChapterService extends ChapterService
 {
     protected function create(array $data): Chapter
     {
-        $new = parent::create(array_replace($data, ['new_content' => ''])); // Создать новую часть
-        $new->deferred()->type(ContentTypeEnum::DEFERRED_CREATE)->create(['type' => ContentTypeEnum::DEFERRED_CREATE, 'body' => $data['new_content']]);
-        return $new;
+        return Db::transaction(function () use ($data) {
+            $new = parent::create(array_replace($data, ['new_content' => '']));
+            $new->deferred()->type(ContentTypeEnum::DEFERRED_CREATE)->create(['type' => ContentTypeEnum::DEFERRED_CREATE, 'body' => $data['new_content']]);
+            return $new;
+        });
     }
 
 
@@ -24,24 +27,22 @@ class DeferredChapterService extends ChapterService
         if ($this->isNew()) {
             return $data;
         }
-
-        if ($content = $data['new_content'] ?? $data['content'] ?? null) {
-
-            return [
-                'deferred_content' => $content,
-            ];
-        }
-
-        return [];
+        return [
+            'deferred_content' => $data['new_content'] ?? null,
+            'title' => $data['title']
+        ];
     }
 
     public function delete(): bool
     {
-        /**
-         * @var Content $content
-         */
-        $content = $this->chapter->deferred()->type(ContentTypeEnum::DEFERRED_DELETE)->firstOrCreate(['type' => ContentTypeEnum::DEFERRED_DELETE, 'status' => ContentStatus::Pending]);
-        return $content->service()->markRequested();
+        return Db::transaction(function () {
+            /**
+             * @var Content $content
+             */
+            $content = $this->chapter->deferred()->type(ContentTypeEnum::DEFERRED_DELETE)
+                ->firstOrCreate(['type' => ContentTypeEnum::DEFERRED_DELETE, 'status' => ContentStatus::Pending]);
+            return $content->service()->markRequested();
+        });
     }
 
     public function merge(ContentTypeEnum $type): Chapter|bool
@@ -51,7 +52,7 @@ class DeferredChapterService extends ChapterService
          */
         if ($content = $this->chapter->deferred()->type($type)->first()) {
             return match ($type) {
-                ContentTypeEnum::DEFERRED_UPDATE, ContentTypeEnum::DEFERRED_CREATE => parent::update(['new_content' => $content->body]),
+                ContentTypeEnum::DEFERRED_UPDATE, ContentTypeEnum::DEFERRED_CREATE => (parent::update(['new_content' => $content->body])),
                 ContentTypeEnum::DEFERRED_DELETE => parent::delete(),
             };
         }
