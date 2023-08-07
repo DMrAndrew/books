@@ -66,26 +66,43 @@ class PostService
                  * Separate base64 data from mimetype
                  */
                 $base64Data = explode(',', $src);
-                if (is_array($base64Data)
-                    && base64_encode(base64_decode($base64Data[1], true)) === $base64Data[1]) {
+                $base64MimeType = $base64Data[0] ?? null;
+                $base64Content = $base64Data[1] ?? null;
+
+                if ($base64MimeType && $base64Content
+                    && base64_encode(base64_decode($base64Content, true)) === $base64Content) {
 
                     /** base64 image extension */
-                    $extension = explode('/', mime_content_type($src))[1];
-                    $outputFile = time() . '.' . $extension;
+                    $extensionData = explode('/', mime_content_type($src));
+                    if (!is_array($extensionData) || !isset($extensionData[1])) {
+                        throw new Exception("Не удается обработать расширение загруженного изображения №{$key}");
+                    }
+                    $extension = $extensionData[1];
 
                     /**
-                     * todo добавить валидацию расширения файла
-                     * todo добавить валидацию размеров загруженного файла
+                     * Validate image
                      */
+                    if (!in_array($extension, Post::AVAILABLE_IMAGE_EXTENSIONS)) {
+                        throw new Exception("Недопустимый тип файла. Разрешенные расширения для изображений: " . implode(', ', Post::AVAILABLE_IMAGE_EXTENSIONS));
+                    }
+                    $maxImageSize = Post::MAX_IMAGE_SIZE_MB * 1024 * 1024;
+                    $base64ContentSize = self::getBase64ImageSize($src);
+                    if ($base64ContentSize > $maxImageSize) {
+                        throw new Exception("Максимальный размер загружаемого изображения составляет: " . Post::MAX_IMAGE_SIZE_MB . ' Мб');
+                    }
 
-                    /** attach image to post model */
+                    /**
+                     * Attach image to post model
+                     */
+                    $outputFile = time() . '.' . $extension;
                     $image = (new File())->fromData(base64_decode($base64Data[1]), $outputFile);
                     $image->save();
                     $post->content_images()->add($image);
 
-                    /** update src from base64 to file path  */
+                    /**
+                     * Update src from base64 to file path
+                     */
                     $filepath = $image->getPath();
-
                     $HTMLContent = str_replace($src, $filepath, $HTMLContent);
                 } else {
                     throw new Exception("Не удается обработать загруженное изображение №{$key}");
@@ -104,5 +121,16 @@ class PostService
                 $imageFile->delete();
             }
         });
+    }
+
+    /**
+     * Returns size in bytes
+     * @param $base64Image
+     *
+     * @return int
+     */
+    public static function getBase64ImageSize($base64Image): int
+    {
+        return (int) (strlen(rtrim($base64Image, '=')) * 3 / 4);
     }
 }
