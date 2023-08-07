@@ -326,7 +326,6 @@ class Edition extends Model implements ProductInterface
 
     public function hasCustomers(): bool
     {
-        return true;
         return $this->customers()->exists();
     }
 
