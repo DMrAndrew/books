@@ -120,11 +120,6 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
 .profile-avatar-image {
     height: 100%;
 }
-
-.reader__body {
-    text-align: justify;
-}
-
 .comments {
     margin-top: 16px;
 }
@@ -177,6 +172,7 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
 }
 .reader__body{
     position: relative;
+    word-break: break-word;
 }
 .reader__body iframe{
     position: absolute;
