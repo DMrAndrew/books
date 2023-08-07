@@ -73,25 +73,25 @@
 {% endif %}
 
 <!-- Reader -->
-{% if this.page.include_reader %}
+<!--{% if this.page.include_reader %}-->
 <script src="{{ 'assets/js/reader.js'|theme }}"></script>
 <script src="{{ 'assets/js/restrictCopy.js'|theme }}"></script>
-{% endif %}
+<!--{% endif %}-->
 
 <!-- Comments -->
-{% if not this.page.exclude_comments %}
+<!--{% if not this.page.exclude_comments %}-->
 <script src="{{ 'assets/js/comments.js'|theme }}"></script>
-{% endif %}
+<!--{% endif %}-->
 
 <!-- BookCard -->
-{% if not this.page.exclude_bookcard %}
+<!--{% if not this.page.exclude_bookcard %}-->
 <script src="{{ 'assets/js/book-card.js'|theme }}?v=1606"></script>
-{% endif %}
+<!--{% endif %}-->
 
 <!-- Listing Filter -->
-{% if not this.page.exclude_listing_filter %}
+<!--{% if not this.page.exclude_listing_filter %}-->
 <script src="{{ 'assets/js/filter.js'|theme }}"></script>
-{% endif %}
+<!--{% endif %}-->
 
 <script src="{{ 'assets/js/autocomplete.js'|theme }}"></script>
 <script src="{{ 'assets/js/utils.js'|theme }}?v=07082023"></script>
