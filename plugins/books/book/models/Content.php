@@ -39,7 +39,7 @@ class Content extends Model
      */
     public $table = 'books_book_contents';
 
-    protected $fillable = ['body', 'type', 'requested_at', 'merged_at', 'data', 'status', 'saved_from_editor'];
+    protected $fillable = ['body', 'type', 'requested_at', 'merged_at', 'data', 'status', 'saved_from_editor','length'];
     protected $revisionable = ['status', 'requested_at', 'merged_at'];
 
     protected $purgeable = ['length'];

@@ -91,7 +91,12 @@ class Edition extends Model implements ProductInterface
         'status',
         'price',
         'book_id',
-        'length'
+        'length',
+        'is_deferred',
+        'is_has_customers',
+        'is_has_completed',
+        self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN,
+        'last_updated_at'
     ];
 
     protected $casts = [
@@ -321,6 +326,7 @@ class Edition extends Model implements ProductInterface
 
     public function hasCustomers(): bool
     {
+        return true;
         return $this->customers()->exists();
     }
 
@@ -359,6 +365,7 @@ class Edition extends Model implements ProductInterface
         if (!$this->shouldRevisionLength()) {
             $this->revisionable = array_diff_key($this->revisionable, ['length']);
         }
+        $this->purgeAttributes();
     }
 
     public function scopeNotEmpty(Builder $builder): Builder
@@ -439,7 +446,7 @@ class Edition extends Model implements ProductInterface
 
     public function lengthRecount()
     {
-        $this->length = (int)$this->chapters()->public()->sum('length');
+        $this->fill(['length' => (int)$this->chapters()->public()->sum('length')]);
         $this->save();
         $this->setFreeParts();
     }
