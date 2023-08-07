@@ -39,7 +39,9 @@
         "vdlp/oc-telescope-plugin": "^2.0",
         "vdlp/oc-horizon-plugin": "*",
         "abordage/laravel-last-modified": "^0.2.0",
-        "jfcherng/php-diff": "^6.15"
+        "jfcherng/php-diff": "^6.15",
+        "ext-dom": "*",
+        "ext-fileinfo": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
