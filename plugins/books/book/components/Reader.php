@@ -158,7 +158,6 @@ class Reader extends ComponentBase
 
     public function onMove()
     {
-        $this->prepareVals();
 
         return Response::make([
             '#reader-body-spawn' => $this->renderPartial('@body'),

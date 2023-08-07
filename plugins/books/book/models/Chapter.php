@@ -8,6 +8,7 @@ use Books\Book\Classes\DeferredChapterService;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Reader;
 use Books\Book\Jobs\Paginate;
 use Books\Book\Jobs\Reading;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -158,6 +159,9 @@ class Chapter extends Model
     public $attachMany = [];
 
 
+    public function reader(){
+        return new Reader($this->edition->book,$this);
+    }
     public function service(): iChapterService
     {
         return $this->edition?->is_deferred ? $this->deferredService() : new ChapterService($this);

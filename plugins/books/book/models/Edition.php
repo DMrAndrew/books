@@ -261,17 +261,6 @@ class Edition extends Model implements ProductInterface
         return !!!(int)$this->getOriginal('price');
     }
 
-    public function hasCompleted(): bool
-    {
-        return $this->hasRevisionStatus(BookStatus::COMPLETE);
-    }
-
-    public function getIsHasCompletedAttribute()
-    {
-        $this->attributes['is_has_completed'] ??= $this->hasCompleted();
-        return $this->attributes['is_has_completed'];
-    }
-
     public function hasRevisionStatus(BookStatus ...$status)
     {
         return $this->revision_history()->where('field', 'status')->whereIn('old_value', array_pluck($status, 'value'))->exists();
@@ -325,15 +314,9 @@ class Edition extends Model implements ProductInterface
         };
     }
 
-    public function getIsDeferredAttribute(): bool
+    public function hasCompleted(): bool
     {
-        $this->attributes['is_deferred'] ??= $this->shouldDeferredUpdate();
-        return $this->attributes['is_deferred'];
-    }
-
-    public function hasSales(): bool
-    {
-        return $this->sells()->exists();
+        return $this->hasRevisionStatus(BookStatus::COMPLETE);
     }
 
     public function hasCustomers(): bool
@@ -341,10 +324,27 @@ class Edition extends Model implements ProductInterface
         return $this->customers()->exists();
     }
 
+    public function getIsDeferredAttribute(): bool
+    {
+        $this->attributes['is_deferred'] ??= $this->shouldDeferredUpdate();
+        return $this->attributes['is_deferred'];
+    }
+
     public function getIsHasCustomersAttribute()
     {
         $this->attributes['is_has_customers'] ??= $this->hasCustomers();
         return $this->attributes['is_has_customers'];
+    }
+
+    public function getIsHasCompletedAttribute()
+    {
+        $this->attributes['is_has_completed'] ??= $this->hasCompleted();
+        return $this->attributes['is_has_completed'];
+    }
+
+    public function hasSales(): bool
+    {
+        return $this->sells()->exists();
     }
 
     public function shouldRevisionLength(): bool
