@@ -340,7 +340,7 @@ class Content extends Model
 
     public function getLengthAttribute()
     {
-        $this->attributes['length'] ??= BookUtilities::countContentLength(BookUtilities::stringToDiDom($this->body)->text());
+        $this->attributes['length'] ??= BookUtilities::countContentLengthForContent($this->body);
         return $this->attributes['length'];
     }
 

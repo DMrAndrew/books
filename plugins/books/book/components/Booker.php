@@ -4,9 +4,9 @@ namespace Books\Book\Components;
 
 use ApplicationException;
 use Books\Book\Classes\BookService;
+use Books\Book\Classes\BookUtilities;
 use Books\Book\Classes\Enums\AgeRestrictionsEnum;
 use Books\Book\Models\Book;
-use Books\Book\Models\Cycle;
 use Books\Book\Models\Tag;
 use Books\Catalog\Models\Genre;
 use Books\FileUploader\Components\ImageUploader;
@@ -99,19 +99,13 @@ class Booker extends ComponentBase
     {
         try {
             $data = post();
-            $book = (new Book());
-            $book->addValidationRule('annotation', 'max:2000');
-            $validator = Validator::make(
-                $data,
-                $book->rules,
-                (array)$book->customMessages
-            );
+            if (BookUtilities::countContentLengthForContent(post('annotation')) > 2000) {
+                throw  new ValidationException(['annotation' => 'Аннотация не должна превышать 2000 символов.']);
+            }
             if ($this->service->getGenres()->count() === 0) {
                 throw  new ValidationException(['genres' => 'Укажите хотя бы один жанр.']);
             }
-            if ($validator->fails()) {
-                throw new ValidationException($validator);
-            }
+
             $book = $this->service->from($data);
             $redirect = (bool)$this->book->id;
 
