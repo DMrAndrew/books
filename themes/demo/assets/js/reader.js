@@ -106,7 +106,6 @@ class Reader {
 }
 
 function initReader() {
-    window.reader && window.reader.clear()
     window.reader = new Reader();
 
 }

@@ -125,7 +125,6 @@ addEventListener(`page:updated`, function () {
 
 addEventListener('page:unload', function () {
     // console.log('page:unload')
-
     window.reader && window.reader.clear()
 })
 
