@@ -106,12 +106,7 @@ class Reader {
 }
 
 function initReader() {
+    window.reader && window.reader.clear()
     window.reader = new Reader();
-
 }
-// addEventListener('page:unload', function () {
-//     // console.log('page:unload')
-//
-//     window.reader && window.reader.clear()
-// })
 
