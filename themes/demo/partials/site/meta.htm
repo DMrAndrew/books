@@ -14,16 +14,21 @@
 <link href="{{ 'assets/css/main.min.css' | theme }}?v=07082023" rel="stylesheet">
 <!--<link href="{{ 'assets/css/main.min.css' | theme }}" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">-->
 <link href="{{ 'assets/css/helper.css' | theme }}?v=070823" rel="stylesheet">
-<!--<link  href="{{ 'assets/css/slimselect.css' | theme }}" rel="stylesheet">-->
-<link href="{{ 'assets/css/slimselect.css' | theme }}" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<!--<link href="{{ 'assets/css/jquery-ui.min.css' | theme }}" rel="stylesheet">-->
-<link href="{{ 'assets/css/jquery-ui.min.css' | theme }}" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<!--<link href="{{ 'assets/css/tippy.css' | theme }}" rel="stylesheet">-->
-<link href="{{ 'assets/css/tippy.css' | theme }}" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<!--<link href="{{ 'assets/css/tippy.light.css' | theme }}" rel="stylesheet">-->
-<link href="{{ 'assets/css/tippy.light.css' | theme }}" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<!--<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>-->
-<link href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" rel="preload" as="style" type="text/css" onload="this.onload=null;this.rel='stylesheet'">
+<link  href="{{ 'assets/css/slimselect.css' | theme }}" rel="stylesheet">
+<!--<link href="{{ 'assets/css/slimselect.css' | theme }}" rel="preload" as="style"-->
+<!--      onload="this.onload=null;this.rel='stylesheet'">-->
+<link href="{{ 'assets/css/jquery-ui.min.css' | theme }}" rel="stylesheet">
+<!--<link href="{{ 'assets/css/jquery-ui.min.css' | theme }}" rel="preload" as="style"-->
+<!--      onload="this.onload=null;this.rel='stylesheet'">-->
+<link href="{{ 'assets/css/tippy.css' | theme }}" rel="stylesheet">
+<!--<link href="{{ 'assets/css/tippy.css' | theme }}" rel="preload" as="style"-->
+<!--      onload="this.onload=null;this.rel='stylesheet'">-->
+<link href="{{ 'assets/css/tippy.light.css' | theme }}" rel="stylesheet">
+<!--<link href="{{ 'assets/css/tippy.light.css' | theme }}" rel="preload" as="style"-->
+<!--      onload="this.onload=null;this.rel='stylesheet'">-->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+<!--<link href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" rel="preload" as="style" type="text/css"-->
+<!--      onload="this.onload=null;this.rel='stylesheet'">-->
 <link href="{{ 'assets/css/custom.css' | theme }}?v=05082023" rel="stylesheet">
 <!-- Временное подключение шрифтов -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,23 +37,23 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
 <!-- Подключение стилей свайпера -->
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
-<script {{user ? '' : 'defer'}} src="https://unpkg.com/slim-select@latest/dist/slimselect.min.js"></script>
+<script src="https://unpkg.com/slim-select@latest/dist/slimselect.min.js"></script>
 <script src="{{ ['@jquery','@framework','@framework.extras',]|theme}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-<script {{user ? '' : 'defer'}} src="{{ 'assets/js/jquery-ui.js'|theme }}"></script>
+<script src="{{ 'assets/js/jquery-ui.js'|theme }}"></script>
 <script src="{{'assets/js/menu-mobile.js' | theme}}"></script>
 <script src="{{'assets/js/favorite-accordion.js' | theme}}"></script>
-<script {{user ? '' : 'defer'}}  src="{{ 'assets/js/tabs.js'|theme }}?v=07082023"></script>
-<script {{user ? '' : 'defer'}}  src="{{ 'assets/js/dropdown.js'|theme }}"></script>
-<script  src="{{ 'assets/js/modal.js'|theme }}?v=060823"></script>
-<script {{user ? '' : 'defer'}}  src="{{ 'assets/js/radio-group.js'|theme }}"></script>
-<script {{user ? '' : 'defer'}}  src="{{ 'assets/js/tippy.js'|theme }}"></script>
-<script {{user ? '' : 'defer'}}  src="{{ 'assets/js/datepicker.js'|theme }}"></script>
-<script {{user ? '' : 'defer'}}  src="{{ 'assets/js/moment.min.js'|theme }}"></script>
-<script {{user ? '' : 'defer'}}  src="{{ 'assets/js/daterangepicker.min.js'|theme }}"></script>
-<script {{user ? '' : 'defer'}}  src="{{ 'assets/js/popper.min.js'|theme }}"></script>
+<script src="{{ 'assets/js/tabs.js'|theme }}?v=07082023"></script>
+<script src="{{ 'assets/js/dropdown.js'|theme }}"></script>
+<script src="{{ 'assets/js/modal.js'|theme }}?v=060823"></script>
+<script src="{{ 'assets/js/radio-group.js'|theme }}"></script>
+<script src="{{ 'assets/js/tippy.js'|theme }}"></script>
+<script src="{{ 'assets/js/datepicker.js'|theme }}"></script>
+<script src="{{ 'assets/js/moment.min.js'|theme }}"></script>
+<script src="{{ 'assets/js/daterangepicker.min.js'|theme }}"></script>
+<script src="{{ 'assets/js/popper.min.js'|theme }}"></script>
 <script src="{{ 'assets/js/password.js'|theme }}"></script>
-<script {{user ? '' : 'defer'}}  src="{{ 'assets/js/tippy-bundle.umd.min.js'|theme }}"></script>
+<script src="{{ 'assets/js/tippy-bundle.umd.min.js'|theme }}"></script>
 <script src="{{ 'assets/js/confirm.js'|theme }}"></script>
 
 {% styles %}
@@ -88,8 +93,8 @@
 <script src="{{ 'assets/js/filter.js'|theme }}"></script>
 {% endif %}
 
-<script {{user ? '' : 'defer'}} src="{{ 'assets/js/autocomplete.js'|theme }}"></script>
-<script {{user ? '' : 'defer'}}  src="{{ 'assets/js/utils.js'|theme }}?v=07082023"></script>
+<script src="{{ 'assets/js/autocomplete.js'|theme }}"></script>
+<script src="{{ 'assets/js/utils.js'|theme }}?v=07082023"></script>
 
 <script>
 
