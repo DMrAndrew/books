@@ -110,9 +110,9 @@ function initReader() {
     window.reader = new Reader();
 
 }
-addEventListener('page:unload', function () {
-    // console.log('page:unload')
-
-    window.reader && window.reader.clear()
-})
+// addEventListener('page:unload', function () {
+//     // console.log('page:unload')
+//
+//     window.reader && window.reader.clear()
+// })
 
