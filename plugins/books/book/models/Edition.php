@@ -91,12 +91,7 @@ class Edition extends Model implements ProductInterface
         'status',
         'price',
         'book_id',
-        'length',
-        'is_has_customers',
-        'is_has_completed',
-        'is_deferred',
-        self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN,
-        'last_updated_at'
+        'length'
     ];
 
     protected $casts = [
