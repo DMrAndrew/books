@@ -159,10 +159,12 @@ class Reader extends ComponentBase
     public function onMove()
     {
 
-        return Response::make([
+        $this->prepareVals();
+
+        return [
             '#reader-body-spawn' => $this->renderPartial('@body'),
             '.reader-user-section' => $this->renderPartial('@user-section'),
-        ]);
+        ];
     }
 
     public function onTrack()
