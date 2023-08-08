@@ -25,7 +25,7 @@ class Reader
 
     protected bool $contentGuard = true;
 
-    public function __construct(protected Book $book, protected ?Chapter $chapter, protected ?int $page = 1, protected ?User $user = null)
+    public function __construct(protected Book $book, protected ?Chapter $chapter = null, protected ?int $page = 1, protected ?User $user = null)
     {
         //TODO refactor
         //With Next and Prev

@@ -1,22 +1,21 @@
 <?php namespace Books\Book\Models;
 
-use Backend;
 use Books\Book\Classes\BookUtilities;
+use Books\Book\Classes\ContentInfoHelper;
 use Books\Book\Classes\ContentService;
 use Books\Book\Classes\Enums\ContentStatus;
 use Carbon\Carbon;
-use Event;
+use Closure;
 use Exception;
 use Jfcherng\Diff\DiffHelper;
-use Mail;
 use Model;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Traits\Purgeable;
 use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\Validation;
 use Books\Book\Classes\Enums\ContentTypeEnum;
 use RainLab\User\Facades\Auth;
 use System\Models\Revision;
-use ValidationException;
 
 /**
  * Content Model
@@ -27,19 +26,24 @@ use ValidationException;
  * @property ContentStatus $status
  * @property ContentTypeEnum $type
  * @property $contentable
+ * @property int $length
  */
 class Content extends Model
 {
     use Validation;
     use Revisionable;
+    use Purgeable;
 
     /**
      * @var string table name
      */
     public $table = 'books_book_contents';
 
-    protected $fillable = ['body', 'type', 'requested_at', 'merged_at', 'data', 'status', 'saved_from_editor'];
-    protected $revisionable = ['status','requested_at','merged_at'];
+    protected $fillable = ['body', 'type', 'requested_at', 'merged_at', 'data', 'status', 'saved_from_editor','length'];
+    protected $revisionable = ['status', 'requested_at', 'merged_at'];
+
+    protected $purgeable = ['length'];
+
     /**
      * @var array rules for validation
      */
@@ -67,6 +71,11 @@ class Content extends Model
     public $morphMany = [
         'revision_history' => [Revision::class, 'name' => 'revisionable']
     ];
+
+    public function infoHelper(): ContentInfoHelper
+    {
+        return new ContentInfoHelper($this);
+    }
 
     public function getBookInfoAttribute(): string
     {
@@ -107,31 +116,27 @@ class Content extends Model
 
     public function scopeFilterByChapterTitle(Builder $builder, string $value)
     {
-
-        return $builder->whereHasMorph('contentable', Chapter::class, fn($contentable) => $contentable->where('title', 'LIKE', "%{$value}%"));
+        return $builder->filterChapter(fn($q) => $q->where('title', 'LIKE', "%{$value}%"));
     }
 
     public function scopeFilterByChapterId(Builder $builder, string $value)
     {
-
-        return $builder->whereHasMorph('contentable', Chapter::class, fn($contentable) => $contentable->where('id', $value));
+        return $builder->filterChapter(fn($q) => $q->where('id', $value));
     }
 
     public function scopeFilterByBookTitle(Builder $builder, string $value)
     {
-
-        return $builder->whereHasMorph('contentable', Chapter::class, fn($contentable) => $contentable->whereHas('edition.book', fn($book) => $book->where('title', 'LIKE', "%{$value}%")));
+        return $builder->filterChapter(fn($q) => $q->whereHas('edition.book', fn($book) => $book->where('title', 'LIKE', "%{$value}%")));
     }
 
     public function scopeFilterByBookId(Builder $builder, string $value)
     {
-
-        return $builder->whereHasMorph('contentable', Chapter::class, fn($contentable) => $contentable->whereHas('edition.book', fn($book) => $book->where('id', $value)));
+        return $builder->filterChapter(fn($q) => $q->whereHas('edition.book', fn($book) => $book->where('id', $value)));
     }
 
-    public function scopeDeferred(Builder $builder)
+    public function scopeFilterChapter(Builder $builder, Closure $closure): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->type(ContentTypeEnum::DEFERRED_UPDATE);
+        return $builder->whereHasMorph('contentable', Chapter::class, $closure);
     }
 
     public function scopeType(Builder $builder, ContentTypeEnum ...$type): Builder
@@ -139,31 +144,52 @@ class Content extends Model
         return $builder->whereIn('type', array_pluck($type, 'value'));
     }
 
+    public function scopeTypeNot(Builder $builder, ContentTypeEnum ...$type): Builder
+    {
+        return $builder->whereNotIn('type', array_pluck($type, 'value'));
+    }
+
     public function scopeStatus(Builder $builder, ContentStatus ...$status): Builder
     {
         return $builder->whereIn('status', array_pluck($status, 'value'));
     }
 
-    public function scopeStatusNot(Builder $builder, ContentStatus ...$status): Builder
+    public function scopeStatusNotOrNull(Builder $builder, ContentStatus ...$status): Builder
     {
-        return $builder->where(fn($q) => $q->whereNotIn('status', array_pluck($status, 'value'))->orWhereNull('status'));
+        return $builder->where(fn($q) => $q->statusNot(...$status)->orWhereNull('status'));
     }
 
+    public function scopeStatusNot(Builder $builder, ContentStatus ...$status): Builder
+    {
+        return $builder->where(fn($q) => $q->whereNotIn('status', array_pluck($status, 'value')));
+    }
+
+
+    public function scopeNotRejected(Builder $builder): Builder
+    {
+        return $builder->statusNotOrNull(ContentStatus::Rejected);
+    }
+
+
+    public function scopeNotCanceled(Builder $builder): Builder
+    {
+        return $builder->statusNotOrNull(ContentStatus::Rejected);
+    }
 
     public function scopeNotRequested(Builder $builder): Builder
     {
-        return $builder->statusNot(ContentStatus::Pending);
+        return $builder->statusNotOrNull(ContentStatus::Pending);
     }
-
 
     public function scopeRequested(Builder $builder): Builder
     {
         return $builder->status(ContentStatus::Pending);
     }
 
+
     public function scopeNotMerged(Builder $builder): Builder
     {
-        return $builder->statusNot(ContentStatus::Merged);
+        return $builder->statusNotOrNull(ContentStatus::Merged);
     }
 
     public function scopeMerged(Builder $builder): Builder
@@ -171,14 +197,29 @@ class Content extends Model
         return $builder->status(ContentStatus::Merged);
     }
 
-    public function scopeDeferredOpened(Builder $builder)
+    public function scopeDeferred(Builder $builder)
     {
-        return $builder->deferred()->notMerged();
+        return $builder->statusNotOrNull(ContentStatus::Merged)->notRegular();
     }
 
-    public function scopeOnDeleteOpened(Builder $builder)
+    public function scopeDeferredCreateOrUpdate(Builder $builder): Builder
     {
-        return $builder->onDeleteType()->requested()->notMerged();
+        return $builder->type(ContentTypeEnum::DEFERRED_CREATE, ContentTypeEnum::DEFERRED_UPDATE);
+    }
+
+    public function scopeDeferredDelete(Builder $builder): Builder
+    {
+        return $builder->type(ContentTypeEnum::DEFERRED_DELETE);
+    }
+
+    public function scopeDeferredUpdate(Builder $builder): Builder
+    {
+        return $builder->type(ContentTypeEnum::DEFERRED_UPDATE);
+    }
+
+    public function scopeDeferredCreate(Builder $builder): Builder
+    {
+        return $builder->type(ContentTypeEnum::DEFERRED_CREATE);
     }
 
     public function getDeferredCommentsAttribute()
@@ -211,18 +252,20 @@ class Content extends Model
     public function allowedMarkAs(ContentStatus $status): bool
     {
         $original_status = $this->getOriginal('status');
-        return match($status){
+        return match ($status) {
             ContentStatus::Rejected, ContentStatus::Merged => !is_null($original_status) && ($original_status !== ContentStatus::Cancelled),
             ContentStatus::Cancelled => $original_status === ContentStatus::Pending,
-            ContentStatus::Pending => !in_array($original_status, [ContentStatus::Merged]),
+            ContentStatus::Pending => !in_array($original_status, [ContentStatus::Merged, ContentStatus::Pending]),
             default => false
         };
     }
 
     public function markRequested(?string $comment = null): bool
     {
-        $this->requested_at = now();
-        $this->status = ContentStatus::Pending;
+        $this->fill([
+            'requested_at' => now(),
+            'status' => ContentStatus::Pending
+        ]);
         $this->addComment($comment);
         return $this->save();
     }
@@ -230,8 +273,10 @@ class Content extends Model
 
     public function markMerged(?string $comment = null): bool
     {
-        $this->merged_at = now();
-        $this->status = ContentStatus::Merged;
+        $this->fill([
+            'merged_at' => now(),
+            'status' => ContentStatus::Merged
+        ]);
         $this->addComment($comment);
         return $this->save();
     }
@@ -241,14 +286,18 @@ class Content extends Model
      */
     public function markCanceled(): bool
     {
-        $this->status = ContentStatus::Cancelled;
+        $this->fill([
+            'status' => ContentStatus::Cancelled
+        ]);
         return $this->save();
     }
 
     public function markRejected(?string $comment = null): bool
     {
-        $this->status = ContentStatus::Rejected;
-        $this->merged_at = now();
+        $this->fill([
+            'merged_at' => now(),
+            'status' => ContentStatus::Rejected
+        ]);
         $comment && $this->addComment($comment);
         return $this->save();
     }
@@ -265,7 +314,7 @@ class Content extends Model
 
     protected function afterSave()
     {
-        if ($this->type === ContentTypeEnum::DEFERRED_UPDATE && $this->isDirty('body')) {
+        if (in_array($this->type, [ContentTypeEnum::DEFERRED_CREATE, ContentTypeEnum::DEFERRED_UPDATE]) && $this->isDirty('body')) {
             $this->storeDiff();
         }
     }
@@ -277,8 +326,8 @@ class Content extends Model
         }
 
         $diff = DiffHelper::calculate(
-            BookUtilities::prepareForDiff($this->contentable->content->body),
-            BookUtilities::prepareForDiff($this->body),
+            BookUtilities::prepareForDiff($this->contentable->content->body ?? ''),
+            BookUtilities::prepareForDiff($this->body ?? ''),
             ...(config('books.book::content_diff') ?? []));
 
         $this->fresh()->update(['data' => array_replace($this->data ?? [], ['diff' => $diff])]);
@@ -287,6 +336,12 @@ class Content extends Model
     public function getContentDiffAttribute(): string
     {
         return $this->data['diff'] ?? '';
+    }
+
+    public function getLengthAttribute()
+    {
+        $this->attributes['length'] ??= BookUtilities::countContentLengthForContent($this->body);
+        return $this->attributes['length'];
     }
 
 

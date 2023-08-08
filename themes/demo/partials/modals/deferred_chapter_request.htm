@@ -1,7 +1,9 @@
 <div data-modal="request_deferred" class="buy-book-modal ui-modal active">
 
-    <div class="ui-modal-container">
-        {{ form_ajax('onRequestDeferred') }}
+    <div  class="ui-modal-container">
+        {{ form_ajax('onRequestDeferred',{
+        'data-request-flash':true
+        }) }}
         <input type="hidden" name="chapter_id" value="{{chapter.id}}">
         <div class="buy-book-modal__container ui-modal-content">
 
@@ -15,17 +17,30 @@
             </div>
 
             <div class="buy-book-modal__wrap">
-
-                <!-- часть -->
                 <div class="buy-book-modal__wrapper">
                     <div class="buy-book-modal__wrapper-item">
+                        <span class="ui-checkbox-text">Главы</span>
+                    </div>
+                    {% for chapter in chapters %}
+                    <div class="buy-book-modal__wrapper-item">
                         <label class="ui-checkbox">
+                            <input type="hidden" name="chapters[{{chapter.id}}]" value="0">
+                            <input name="chapters[{{chapter.id}}]" value="1" checked type="checkbox" hidden >
+                            <div class="ui-checkbox-checker">
+                                <svg>
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-filled-square-16' | theme}}"></use>
+                                </svg>
+                            </div>
                             <span class="ui-checkbox-text">{{chapter.title|raw}}</span>
                         </label>
                         <div class="buy-book-modal__price"></div>
                     </div>
-                    <div class="buy-book-modal__wrapper-item"></div>
+                    {% endfor %}
                 </div>
+
+                <!-- часть -->
+
 
                 <!-- Комментарий -->
                 <div class="buy-book-modal__wrapper">
@@ -35,7 +50,7 @@
                     </div>
                 </div>
                 <!-- продолжить -->
-                <div class="buy-book-modal__wrapper">
+                <div class="buy-book-modal__wrapper" style="border-bottom: none">
                     <div class="buy-book-modal__wrapper-item">
                         <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full">
                             <span class="ui-text--medium">Запросить</span>
@@ -51,6 +66,6 @@
 </div>
 <script>
     // modal
-    openModal('[data-modal="request_deferred"]', '[data-modal="request_deferred_open"]');
+    openModal('[data-modal="request_deferred"]');
     document.body.style.overflow = 'hidden';
 </script>

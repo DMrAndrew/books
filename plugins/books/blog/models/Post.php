@@ -39,8 +39,8 @@ class Post extends Model
     public $rules = [
         'user_id' => 'nullable|integer|exists:users,id',
         'profile_id' => 'required|exists:books_profile_profiles,id',
-        'title'   => 'required|string|max:' . self::TITLE_MAX_LENGTH,
-        'slug'    => ['string', 'regex:/^[a-z0-9\/\:_\-\*\[\]\+\?\|]*$/i', 'unique:books_blog_posts,slug'],
+        'title' => 'required|string|max:' . self::TITLE_MAX_LENGTH,
+        'slug' => ['string', 'regex:/^[a-z0-9\/\:_\-\*\[\]\+\?\|]*$/i', 'unique:books_blog_posts,slug'],
         'preview' => 'string',
         'content' => 'required',
         'published_at' => 'nullable|date',
@@ -98,22 +98,21 @@ class Post extends Model
     public function generateSlugFromTitle(): void
     {
         $slug = Str::slug($this->attributes['title']);
-        $postId = Post::orderByDesc('id')->first()?->id + 1 ?? 1;
+//        $postId = Post::orderByDesc('id')->first()?->id + 1 ?? 1;
+        $postId = (int)(self::max('id'));
 
         for ($i = 0; $i < self::MAX_CREATE_SLUG_ATTEMPTS; $i++) {
 
-            $uniqueSlug = $postId . '-' . $slug;
+            $uniqueSlug = sprintf("%s-%s", ++$postId, $slug);
 
             if (!static::query()->slug($uniqueSlug)->exists()) {
                 $this->attributes['slug'] = $uniqueSlug;
 
                 return;
-            } else {
-                $postId++;
             }
         }
 
-        throw new Exception('Не удалось сгенерировать уникальную ссылку для публикации в блоге после ' . self::MAX_CREATE_SLUG_ATTEMPTS . ' попыток');
+        throw new Exception(sprintf('Не удалось сгенерировать уникальную ссылку для публикации в блоге после %s попыток', self::MAX_CREATE_SLUG_ATTEMPTS));
     }
 
     /**
@@ -150,7 +149,7 @@ class Post extends Model
      *
      * @return Builder
      */
-    public function scopePLanned(Builder $query): Builder
+    public function scopePlanned(Builder $query): Builder
     {
         return $query->where('status', PostStatus::PLANNED);
     }

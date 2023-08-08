@@ -4,9 +4,9 @@ namespace Books\Book\Classes;
 
 use Backend;
 use Books\Book\Classes\Enums\ContentStatus;
-use Books\Book\Classes\Enums\ContentTypeEnum;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Content;
+use Closure;
 use Db;
 use Event;
 use Exception;
@@ -22,29 +22,28 @@ class ContentService
     /**
      * @throws ValidationException
      */
-    public function markMerged(?string $comment = null): Chapter|bool
+    public function markMerged(?string $comment = null): bool
     {
-        if(!$this->content->allowedMarkAs(ContentStatus::Merged)){
+        $this->validateContent();
+
+        if (!$this->content->allowedMarkAs(ContentStatus::Merged)) {
             throw new ValidationException(['status' => 'Действие не разрешено']);
-        }
-        if (!($this->content->contentable instanceof Chapter)) {
-            return false;
         }
 
         /**
-         * @var ChapterService $service
+         * @var DeferredChapterService $service
          */
-        $service = $this->content->contentable->service();
-        return Db::transaction(function () use ($service, $comment) {
-            $merged = match ($this->content->type) {
-                ContentTypeEnum::DEFERRED_UPDATE => $service->mergeDeferred(),
-                ContentTypeEnum::DEFERRED_DELETE => $service->actionDelete()
-            };
-            if ($merged && $this->content->markMerged($comment)) {
-                Event::fire('books.book::content.deferred.merged', [$this->content, $comment]);
+        $service = $this->content->contentable->deferredService();
+        return Db::transaction(function () use ($service, $comment): Closure {
+
+            if ($service->merge($this->content->type) && $this->content->markMerged($comment)) {
+                return function () use ($comment): bool {
+                    Event::fire('books.book::content.deferred.merged', [$this->content, $comment]);
+                    return true;
+                };
             }
-            return $merged;
-        });
+            return fn(): bool => false;
+        })();
 
     }
 
@@ -68,14 +67,18 @@ class ContentService
      */
     public function markRejected(?string $comment = null): bool
     {
-        if(!$this->content->allowedMarkAs(ContentStatus::Rejected)){
+        $this->validateContent();
+
+        if (!$this->content->allowedMarkAs(ContentStatus::Rejected)) {
             throw new ValidationException(['status' => 'Действие не разрешено']);
         }
-        if (!($this->content->contentable instanceof Chapter) || !$this->content->markRejected($comment)) {
-            return false;
+
+        if ($this->content->markRejected($comment)) {
+            Event::fire('books.book::content.deferred.rejected', [$this->content, $comment]);
+            return true;
         };
-        Event::fire('books.book::content.deferred.rejected', [$this->content, $comment]);
-        return true;
+
+        return false;
     }
 
     /**
@@ -84,14 +87,28 @@ class ContentService
      */
     public function markRequested(?string $comment = null): bool
     {
-        if (!$this->content->allowedMarkAs(ContentStatus::Pending) || !$this->content->markRequested($comment)) {
-            return false;
-        }
-        if ($this->content->contentable instanceof Chapter) {
-            $this->sendRequestedMailNotify($comment);
+        if ($this->content->allowedMarkAs(ContentStatus::Pending) && $this->content->markRequested($comment)) {
+            if ($this->contentableIsChapter()) {
+                $this->sendRequestedMailNotify($comment);
+            }
+
+            return true;
         }
 
-        return true;
+        return false;
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    protected function validateContent(): bool
+    {
+        return $this->contentableIsChapter() ?: throw new ValidationException(['status' => 'Контент не принадлежит главе']);
+    }
+
+    protected function contentableIsChapter(): bool
+    {
+        return $this->content->contentable instanceof Chapter;
     }
 
     /**
@@ -100,7 +117,7 @@ class ContentService
      */
     public function sendRequestedMailNotify(?string $comment = null): void
     {
-        if ($recipients = Backend\Models\UserGroup::where('code', 'owners')->first()?->users->map->email->toArray()) {
+        if ($recipients = Backend\Models\UserGroup::where('code', 'owners')->with('users')->first()?->users->map->email->toArray()) {
 
             /**
              * @var Chapter $chapter
@@ -111,7 +128,7 @@ class ContentService
                 'title' => strip_tags($chapter->title),
                 'book' => $chapter->edition->book->title,
                 'type_label' => $this->content->type->label(),
-                'content' => $this,
+                'content' => $this->content,
                 'comment' => $comment,
                 'backend_url' => Backend::url(sprintf("books/book/content/update/%s", $this->content->id)),
             ];

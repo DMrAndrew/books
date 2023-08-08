@@ -14,10 +14,10 @@ columns:
         label: Название части
         displayFrom: chapter_info
         sortable: false
-    type_label:
+    type:
         label: Тип
         displayFrom: type_label
-    status_label:
+    status:
         label: Статус
         displayFrom: status_label
     updated_at:

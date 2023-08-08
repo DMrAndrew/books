@@ -74,7 +74,11 @@ class Comment extends Model
 
     public function addition(): string
     {
-        return $this->isDeleted() ? 'Удалён' : ($this->isEdited() ? 'Редактирован' : '');
+        return match (true){
+            $this->isDeleted() => 'Удалён',
+            $this->isEdited() => 'Редактирован',
+            default => ''
+        };
     }
 
     public function isDeleted(): bool

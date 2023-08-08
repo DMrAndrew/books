@@ -2,6 +2,10 @@ url = "/"
 layout = "default"
 title = "Главная"
 meta_title = "Главная"
+meta_description = "Время книг главная"
+exclude_comments="true"
+exclude_bookcard="true"
+exclude_listing_filter="true"
 [IndexWidgets]
 ==
 <div>
@@ -9,13 +13,13 @@ meta_title = "Главная"
     <div class="promo _indent">
         <div class="ui-container">
             <div class="promo__container">
-                <img class="promo__image" src="{{'assets/images/main/promo-main-image.svg' | theme}}" alt="">
+                <img class="promo__image" src="{{'assets/images/main/promo-main-image.svg' | theme}}" alt="promo-main">
                 <h1 class="promo__title ui-text-head--1 ui-text--bold">Уютное место для авторов и читателей</h1>
                 <div class="promo__actions">
-                    <a onclick="registerPopup()"
+                    <button onclick="registerPopup()"
                        class="ui-button ui-button-view--1 ui-button-size--56 ui-button--full-mobile">
                         <span class="ui-text--medium">Присоединиться</span>
-                    </a>
+                    </button>
                     <a href="/faq" target="_blank" class="promo__actions-info">
                         <svg>
                             <use

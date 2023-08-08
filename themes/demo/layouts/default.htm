@@ -22,7 +22,8 @@ recordsPerView = 11
     {% partial 'site/yandex_metrika' %}
     {% partial 'site/vk_pixel' %}
 </head>
-<body class="{{ 'page-'~this.page.id }}">
+<body class="{{ 'page-'~this.page.id }}" data-user="{{user ? 1: 0}}">
+
 
 <!-- Header -->
 <header id="layout-header" class="header">
@@ -40,5 +41,6 @@ recordsPerView = 11
     {% partial 'site/footer' %}
 </footer>
 {% ajaxPartial 'controls/flash' %}
+{% partial 'modals/confirm' %}
 </body>
 </html>

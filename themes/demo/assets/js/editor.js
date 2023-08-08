@@ -9,7 +9,7 @@ function initEditor(inputName, options = []) {
                 'heading', '|',
                 '|', 'bold', 'italic', 'strikethrough', 'underline',
                 '|', 'alignment', 'numberedList', 'bulletedList',
-                '|', 'link', 'blockQuote', "removeFormat", 'horizontalLine']
+                '|', 'link', 'blockQuote', "removeFormat"]
                 .concat(toolbarItems)
                 .concat(['|', "specialCharacters", "findAndReplace", "selectAll",'sourceEditing'])
         },

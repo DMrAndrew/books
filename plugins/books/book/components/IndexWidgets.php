@@ -52,7 +52,9 @@ class IndexWidgets extends ComponentBase
         if (request()->header('X-October-Request-Handler') !== 'IndexWidgets::onRefreshWidgets') {
             $this->setProps();
         }
-        $this->bindWidgets();
+       if($this->user){
+           $this->bindWidgets();
+       }
 
     }
 
@@ -133,6 +135,9 @@ class IndexWidgets extends ComponentBase
 
     public function onRefreshWidgets(): array
     {
+        if(!$this->user){
+            $this->bindWidgets();
+        }
         return [
             '#widgets-container' => $this->renderPartial('site/thematic')
         ];

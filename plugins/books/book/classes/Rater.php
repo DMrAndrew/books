@@ -5,7 +5,6 @@ namespace Books\Book\Classes;
 use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Jobs\RaterExec;
 use Books\Book\Models\Book;
-use Books\Book\Models\Stats;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Traits\Conditionable;
@@ -217,7 +216,7 @@ class Rater
                 ($book['reposts_count'] ?? 0) * 2,
             ])->sum(),
             StatsEnum::READ_TIME => $book->stats->read_time = (int)ceil((int)$book->pagination_trackers_sum_time / 60),
-            StatsEnum::UPDATE_FREQUENCY => $book->stats->freq = $book->ebook->updateHistory['freq'],
+            StatsEnum::UPDATE_FREQUENCY => $book->stats->freq = $book->ebook->getUpdateHistoryViewAttribute()->freq,
             StatsEnum::COLLECTED_GENRE_RATE => $book->stats->collected_genre_rate = $book->stats->forGenres($book->isWorking()),
             StatsEnum::collected_gain_popularity_rate => $book->stats->collected_gain_popularity_rate = $book->stats->gainingPopularity($book->isWorking()),
             StatsEnum::collected_hot_new_rate => $book->stats->collected_hot_new_rate = $book->stats->hotNew($book->isWorking()),
@@ -240,7 +239,8 @@ class Rater
         if (in_array($name, StatsEnum::toArray())) {
             return $this->applyStats(StatsEnum::tryFrom($name), ...$arguments);
         } else {
-            throw new Exception(__CLASS__ . ' нет такого метода (' . $name . ')');
+
+            throw new Exception(sprintf('%s: метод %s не найден.', __CLASS__, $name));
         }
     }
 

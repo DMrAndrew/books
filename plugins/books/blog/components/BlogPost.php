@@ -36,7 +36,8 @@ class BlogPost extends ComponentBase
     public function init()
     {
         $this->post = Post
-            ::where('slug', $this->param('post_slug'))
+            ::query()
+            ->slug($this->param('post_slug'))
             ->published()
             ->firstOrFail();
 

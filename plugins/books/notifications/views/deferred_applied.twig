@@ -1,7 +1,7 @@
 <div class="notification-menu__text notification-menu__content-wrapper">
-    {{ type_label}} главы "{{ chapter_title }}"
-    книги "<a href="{{ 'about-book' | page({book_id: book.id}) }}" class="ui-link _violet">{{ book.title }}</a>"
-    {{ status_label|str_lower }}.
+    {{ type_label}} главы &laquo;{{ chapter_title }}&raquo;
+    книги &laquo;<a href="{{ '/about-book/' ~ book.id}}" class="ui-link _violet">{{ book.title }}</a>&raquo;
+    <span style="text-decoration: underline">{{ status_label|str_lower }}</span>.
     {%  if comment %}
     <br>
     Комментарий:
