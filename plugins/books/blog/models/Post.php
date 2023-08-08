@@ -10,6 +10,7 @@ use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
 use System\Models\File;
+use WordForm;
 
 /**
  * Blog Model
@@ -76,6 +77,8 @@ class Post extends Model
         'content_images' => File::class,
     ];
 
+    public static array $endingArray = ['Блог', 'Блога', 'Блогов'];
+
     public static function boot(): void
     {
         parent::boot();
@@ -132,6 +135,11 @@ class Post extends Model
     public function fillPreviewFromContent(): void
     {
         $this->attributes['preview'] = substr(strip_tags($this->attributes['content']), 0, self::PREVIEW_MAX_LENGTH);
+    }
+
+    public static function wordForm(): WordForm
+    {
+        return new WordForm(...self::$endingArray);
     }
 
     /**
