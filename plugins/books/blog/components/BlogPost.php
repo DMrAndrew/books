@@ -43,7 +43,7 @@ class BlogPost extends ComponentBase
         $authUser = Auth::getUser();
         $can_see_blog_posts = $this->post->profile->canSeeBlogPosts($authUser?->profile);
         if (!$can_see_blog_posts) {
-            abort(404);
+            $this->page['privacyRestricted'] = true;
         }
 
         $this->page['post'] = $this->post;
