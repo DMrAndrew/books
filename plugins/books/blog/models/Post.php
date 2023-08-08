@@ -10,6 +10,7 @@ use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
 use System\Models\File;
+use WordForm;
 
 /**
  * Blog Model
@@ -76,6 +77,8 @@ class Post extends Model
         'content_images' => File::class,
     ];
 
+    public static array $endingArray = ['Блог', 'Блога', 'Блогов'];
+
     public static function boot(): void
     {
         parent::boot();
@@ -86,6 +89,10 @@ class Post extends Model
 
         static::saving(function ($post) {
             $post->fillPreviewFromContent();
+        });
+
+        static::deleting(function ($post) {
+            $post->deleteComments();
         });
     }
 
@@ -98,7 +105,6 @@ class Post extends Model
     public function generateSlugFromTitle(): void
     {
         $slug = Str::slug($this->attributes['title']);
-//        $postId = Post::orderByDesc('id')->first()?->id + 1 ?? 1;
         $postId = (int)(self::max('id'));
 
         for ($i = 0; $i < self::MAX_CREATE_SLUG_ATTEMPTS; $i++) {
@@ -118,9 +124,22 @@ class Post extends Model
     /**
      * @return void
      */
+    public function deleteComments(): void
+    {
+        $this->comments()->delete();
+    }
+
+    /**
+     * @return void
+     */
     public function fillPreviewFromContent(): void
     {
         $this->attributes['preview'] = substr(strip_tags($this->attributes['content']), 0, self::PREVIEW_MAX_LENGTH);
+    }
+
+    public static function wordForm(): WordForm
+    {
+        return new WordForm(...self::$endingArray);
     }
 
     /**

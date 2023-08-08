@@ -75,7 +75,7 @@ class Blacklist extends ComponentBase
             $banProfile = Profile::findOrFail(post('profile_id'));
             $this->profile->blackListCommentsFor($banProfile);
         } catch (Exception $e) {
-            Flash::error($e->getMessage());
+            Log::error($e->getMessage());
             Flash::error($e->getMessage());
             return [];
         }
@@ -106,8 +106,6 @@ class Blacklist extends ComponentBase
             Flash::error($e->getMessage());
             return [];
         }
-
-
     }
 
     public function renderList(): array

@@ -8,7 +8,7 @@
                             {% if post.profile.avatar %}
                             <img class="square-40" src="{{ post.profile.avatar.getThumb(40,40)}} " alt="avatar">
                             {% else %}
-                            <span class="ui-text-body--1 ui-text--bold">{{ post.profile.firstLatter }}</span>
+                            <div class="avatar">{{ post.profile.firstLatter }}</div>
                             {% endif %}
 
                             <div class="">
@@ -31,66 +31,6 @@
 
         <!-- Сайдбар -->
         <div class="ui-col-sm-3 author__sidebar">
-            {% if hasContacts %}
-            <div class="author-contacts wrapper _indent">
-                <div class="author-contacts__title ui-text-head--3 ui-text--bold">Контакты</div>
-                {% if profile.website %}
-                <a href="{{profile.website}}" class="author-contacts__link" rel="noopener" target="_blank"
-                   title="{{profile.website}}">
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#link-stroked-16' | theme}}"></use>
-                    </svg>
-                    <span>{{profile.website}}</span>
-                </a>
-                {% endif %}
-                {% if profile.email %}
-                <a href="mailto:{{profile.email}}" class="author-contacts__link" title="{{profile.email}}">
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#mail-filled-16' | theme}}"></use>
-                    </svg>
-                    <span>{{ profile.email }}</span>
-                </a>
-                {% endif %}
-                {% if profile.phone %}
-                <a href="tel:{{profile.phone}}" class="author-contacts__link" title="{{profile.phone}}">
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#phone-filled-16' | theme}}"></use>
-                    </svg>
-                    <span>{{profile.phone}}</span>
-                </a>
-                {% endif %}
-                {% if profile.vk %}
-                <a href="{{profile.vk}}" rel="noopener" target="_blank" class="author-contacts__link"
-                   title="{{profile.vk}}">
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-vk-stroked-16' | theme}}"></use>
-                    </svg>
-                    <span>{{profile.vk}}</span>
-                </a>
-                {% endif %}
-                {% if profile.tg %}
-                <a href="{{profile.tg}}" rel="noopener" target="_blank" class="author-contacts__link"
-                   title="{{profile.tg}}">
-                    <svg class="square-16">
-                        <use
-                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-telegram-stroked-16' | theme}}"></use>
-                    </svg>
-                    <span>{{profile.tg}}</span>
-                </a>
-                {% endif %}
-                {% if profile.ok %}
-                <a href="{{ profile.ok }}" rel="noopener" target="_blank" class="author-contacts__link"
-                   title="{{profile.ok}}"
-                >
-
-                    <svg class="square-16">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-stroked-16' | theme}}"></use>
-                    </svg>
-                    <span>{{ profile.ok }}</span>
-                </a>
-                {% endif %}
-            </div>
-            {% endif %}
             {% component 'recommend' %}
         </div>
 
