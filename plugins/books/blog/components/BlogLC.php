@@ -1,6 +1,7 @@
 <?php namespace Books\Blog\Components;
 
 use Books\Blog\Classes\Enums\PostStatus;
+use Books\Blog\Classes\Services\PostService;
 use Books\Blog\Models\Post;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
@@ -79,6 +80,7 @@ class BlogLC extends ComponentBase
             $data = collect(post());
             $data['user_id'] = $this->profile->user->id;
             $data['status'] = PostStatus::PUBLISHED;
+            $data['published_at'] = now();
 
             // скрыть отложенную публикацию до востребования
 //            if ($status = $data['action'] ?? false) {
@@ -136,6 +138,8 @@ class BlogLC extends ComponentBase
             } else {
                 $post = $this->profile->posts()->create($data->toArray());
             }
+
+            PostService::replaceBase64ImagesWithFiles($post);
 
             if ($post->wasRecentlyCreated) {
                 Event::fire('books.blog::post.published', [$this->profile, $post]);

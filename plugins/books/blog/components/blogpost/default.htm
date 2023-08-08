@@ -1,43 +1,98 @@
 <div class="ui-container-fluid">
-    <div class="personal-area__container ui-grid-container ui-grid-gap">
-        <div class="ui-col-sm-12">
-            <div class="personal-area__subtitle">
-                <span class="ui-text-head--3 ui-text--bold">{{ post.title }}</span>
-                <svg class="square-16">
-                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
-                </svg>
-            </div>
+    <div class="ui-grid-container ui-grid-gap">
+        <div class="ui-col-sm-9">
+            <div class="blog-card__container">
+                <div class="blog-card wrapper _indent">
+                    <div class="blog-card__header">
 
-            <div class="book-card">
-                <div class="personal-area-blacklist__container">
-                    <div class="cb-mini-card _avatar">
-
-                        <div class="comments-comment__avatar square-40">
                             {% if post.profile.avatar %}
-                            <img class="square-40" src="{{post.profile.avatar.getThumb(40,40)}}" alt="avatar">
+                            <img class="square-40" src="{{ post.profile.avatar.getThumb(40,40)}} " alt="avatar">
                             {% else %}
                             <span class="ui-text-body--1 ui-text--bold">{{ post.profile.firstLatter }}</span>
                             {% endif %}
-                        </div>
 
-                        <div class="cb-mini-card__wrapper">
-                            <div class="">{{ post.profile.username }}</div>
-                            <div class="cb-mini-card__date">{{post.published_at.diffForHumans}}</div>
-
-                            <div class="book-card-full-description _indent"></div>
-
-                            <div class="cb-mini-card__text">
-                                {{post.content|raw}}
+                            <div class="">
+                                <div class="ui-text--bold">{{ post.profile.username }}</div>
+                                <span class="blog-card__header-date">{{ post.published_at.diffForHumans }}</span>
                             </div>
-                        </div>
 
+                    </div>
+                    <div class="blog-card__body">
+                        <a href="#" class="blog-card__title ui-text-head--3 ui-text--bold _indent-small">{{ post.title }}</a>
+                        <div class="blog-card__text typographical-block">
+                            {{ post.content|raw }}
+                        </div>
                     </div>
                 </div>
             </div>
 
             {% component 'comments' %}
-
-            </div>
         </div>
+
+        <!-- Сайдбар -->
+        <div class="ui-col-sm-3 author__sidebar">
+            {% if hasContacts %}
+            <div class="author-contacts wrapper _indent">
+                <div class="author-contacts__title ui-text-head--3 ui-text--bold">Контакты</div>
+                {% if profile.website %}
+                <a href="{{profile.website}}" class="author-contacts__link" rel="noopener" target="_blank"
+                   title="{{profile.website}}">
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#link-stroked-16' | theme}}"></use>
+                    </svg>
+                    <span>{{profile.website}}</span>
+                </a>
+                {% endif %}
+                {% if profile.email %}
+                <a href="mailto:{{profile.email}}" class="author-contacts__link" title="{{profile.email}}">
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#mail-filled-16' | theme}}"></use>
+                    </svg>
+                    <span>{{ profile.email }}</span>
+                </a>
+                {% endif %}
+                {% if profile.phone %}
+                <a href="tel:{{profile.phone}}" class="author-contacts__link" title="{{profile.phone}}">
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#phone-filled-16' | theme}}"></use>
+                    </svg>
+                    <span>{{profile.phone}}</span>
+                </a>
+                {% endif %}
+                {% if profile.vk %}
+                <a href="{{profile.vk}}" rel="noopener" target="_blank" class="author-contacts__link"
+                   title="{{profile.vk}}">
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-vk-stroked-16' | theme}}"></use>
+                    </svg>
+                    <span>{{profile.vk}}</span>
+                </a>
+                {% endif %}
+                {% if profile.tg %}
+                <a href="{{profile.tg}}" rel="noopener" target="_blank" class="author-contacts__link"
+                   title="{{profile.tg}}">
+                    <svg class="square-16">
+                        <use
+                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-telegram-stroked-16' | theme}}"></use>
+                    </svg>
+                    <span>{{profile.tg}}</span>
+                </a>
+                {% endif %}
+                {% if profile.ok %}
+                <a href="{{ profile.ok }}" rel="noopener" target="_blank" class="author-contacts__link"
+                   title="{{profile.ok}}"
+                >
+
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#social-ok-stroked-16' | theme}}"></use>
+                    </svg>
+                    <span>{{ profile.ok }}</span>
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% component 'recommend' %}
+        </div>
+
     </div>
 </div>

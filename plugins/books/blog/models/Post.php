@@ -25,6 +25,8 @@ class Post extends Model
     const TITLE_MAX_LENGTH = 60;
     const PREVIEW_MAX_LENGTH = 500;
     const MAX_CREATE_SLUG_ATTEMPTS = 10;
+    const AVAILABLE_IMAGE_EXTENSIONS = ['jpeg', 'jpg', 'png'];
+    const MAX_IMAGE_SIZE_MB = 3;
 
     /**
      * @var string table name

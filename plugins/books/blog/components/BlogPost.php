@@ -1,6 +1,8 @@
 <?php namespace Books\Blog\Components;
 
 use Books\Blog\Models\Post;
+use Books\Book\Classes\Enums\WidgetEnum;
+use Books\Book\Components\Widget;
 use Books\Comments\Components\Comments;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
@@ -50,5 +52,8 @@ class BlogPost extends ComponentBase
         $comments = $this->addComponent(Comments::class, 'comments');
         $comments->bindModel($this->post);
         $comments->bindModelOwner($this->post->profile);
+
+        $recommend = $this->addComponent(Widget::class, 'recommend');
+        $recommend->setUpWidget(WidgetEnum::recommend, short: true);
     }
 }
