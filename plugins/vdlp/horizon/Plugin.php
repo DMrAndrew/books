@@ -88,12 +88,27 @@ final class Plugin extends PluginBase
     public function registerNavigation(): array
     {
         return [
-            'dashboard' => [
-                'label' => 'Horizon',
-                'url' => $this->backend->url('vdlp/horizon/dashboard'),
-                'iconSvg' => '/plugins/vdlp/horizon/assets/icons/horizon.svg',
-                'permissions' => ['vdlp.horizon.access_dashboard'],
-                'order' => 509,
+            'service' => [
+                'label' => 'Service',
+                'url' => $this->backend->url('books/catalog/service'),
+                'icon' => 'icon-leaf',
+                'order' => 511,
+                'sideMenu' => [
+                    'horizon' => [
+                        'label' => 'Horizon',
+                        'url' => $this->backend->url('vdlp/horizon/dashboard'),
+                        'iconSvg' => '/plugins/vdlp/horizon/assets/icons/horizon.svg',
+                        'permissions' => ['vdlp.horizon.access_dashboard'],
+                        'order' => 509,
+                    ],
+                    'telescope' => [
+                        'label' => 'Telescope',
+                        'url' => $this->backend->url('vdlp/telescope/dashboard'),
+                        'iconSvg' => '/plugins/vdlp/telescope/assets/icons/telescope.svg',
+                        'permissions' => ['vdlp.telescope.access_dashboard'],
+                        'order' => 510,
+                    ],
+                ]
             ],
         ];
     }

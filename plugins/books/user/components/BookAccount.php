@@ -7,6 +7,7 @@ use Books\User\Classes\CookieEnum;
 use Books\User\Classes\UserService;
 use Books\User\Models\TempAdultPass;
 use Cookie;
+use Illuminate\Http\RedirectResponse;
 use RainLab\User\Components\Account;
 use RainLab\User\Models\User;
 use Redirect;
@@ -21,16 +22,14 @@ class BookAccount extends Account
         ];
     }
 
-    public function onAdultAgreementSave()
+    public function onAdultAgreementSave(): RedirectResponse
     {
         $agree = post('action') === 'accept';
         if ($this->user()) {
             $this->user()->update(['see_adult' => $agree, 'asked_adult_agreement' => 1]);
         } else {
             if (UserService::canGuestBeAskedAdultPermission()) {
-                $pass = TempAdultPass::make(['is_agree' => $agree]);
-                $pass->save();
-                Cookie::queue(Cookie::forever(CookieEnum::ADULT_ULID->value, $pass->id));
+                (TempAdultPass::make(['is_agree' => $agree]))->save();
             }
         }
 
@@ -38,17 +37,17 @@ class BookAccount extends Account
     }
 
 
-    public function onGetGuestRegisterForm()
+    public function onGetGuestRegisterForm(): array
     {
         if ($data = CookieEnum::guest->get()) {
             return [
-                PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/registerForm', ['user' => new User($data)]),
+                PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/registerForm', ['user' => new User((array)$data)]),
             ];
         }
         return [];
     }
 
-    public function onGetRegisterForm()
+    public function onGetRegisterForm(): array
     {
         return [
             PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/registerForm'),
@@ -56,7 +55,7 @@ class BookAccount extends Account
 
     }
 
-    public function onGetLoginPopup()
+    public function onGetLoginPopup(): array
     {
         return [
             PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/loginPopup'),
@@ -64,7 +63,7 @@ class BookAccount extends Account
 
     }
 
-    public function onGetRegisterPopup()
+    public function onGetRegisterPopup(): array
     {
         return [
             PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/registerPopup'),
@@ -72,7 +71,7 @@ class BookAccount extends Account
 
     }
 
-    public function onGetLoginForm()
+    public function onGetLoginForm(): array
     {
         return [
             PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('auth/loginForm'),
