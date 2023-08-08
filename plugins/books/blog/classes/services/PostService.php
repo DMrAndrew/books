@@ -74,7 +74,7 @@ class PostService
 
                     /** base64 image extension */
                     $extensionData = explode('/', mime_content_type($src));
-                    if (!is_array($extensionData) || !isset($extensionData[1])) {
+                    if ( !is_array($extensionData) || !isset($extensionData[1])) {
                         throw new Exception("Не удается обработать расширение загруженного изображения №{$key}");
                     }
                     $extension = $extensionData[1];
@@ -82,7 +82,7 @@ class PostService
                     /**
                      * Validate image
                      */
-                    if (!in_array($extension, Post::AVAILABLE_IMAGE_EXTENSIONS)) {
+                    if ( !in_array($extension, Post::AVAILABLE_IMAGE_EXTENSIONS)) {
                         throw new Exception("Недопустимый тип файла. Разрешенные расширения для изображений: " . implode(', ', Post::AVAILABLE_IMAGE_EXTENSIONS));
                     }
                     $maxImageSize = Post::MAX_IMAGE_SIZE_MB * 1024 * 1024;

@@ -80,6 +80,7 @@ class BlogLC extends ComponentBase
             $data = collect(post());
             $data['user_id'] = $this->profile->user->id;
             $data['status'] = PostStatus::PUBLISHED;
+            $data['published_at'] = now();
 
             // скрыть отложенную публикацию до востребования
 //            if ($status = $data['action'] ?? false) {
