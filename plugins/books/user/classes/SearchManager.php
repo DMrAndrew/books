@@ -2,6 +2,7 @@
 
 namespace Books\User\Classes;
 
+use Books\Blog\Models\Post;
 use Books\Book\Models\Book;
 use Books\Profile\Models\Profile;
 use Illuminate\Support\Collection;
@@ -14,13 +15,14 @@ class SearchManager
     protected array $classes = [
         'Book' => Book::class,
         'Profile' => Profile::class,
+        'Post' => Post::class,
     ];
 
     public function apply(string $query): \October\Rain\Support\Collection|Collection
     {
-
         $res = $query ? Search::add(Book::public()->defaultEager(), 'title')
             ->add(Profile::query()->shortPublicEager()->booksExists(), 'username')
+            ->add(Post::query()->published(), 'title')
             ->includeModelType()
             ->orderByModel([Book::class, Profile::class])
             ->beginWithWildcard()
