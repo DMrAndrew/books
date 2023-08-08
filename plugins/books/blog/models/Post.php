@@ -87,6 +87,10 @@ class Post extends Model
         static::saving(function ($post) {
             $post->fillPreviewFromContent();
         });
+
+        static::deleting(function ($post) {
+            $post->deleteComments();
+        });
     }
 
     /**
@@ -98,7 +102,6 @@ class Post extends Model
     public function generateSlugFromTitle(): void
     {
         $slug = Str::slug($this->attributes['title']);
-//        $postId = Post::orderByDesc('id')->first()?->id + 1 ?? 1;
         $postId = (int)(self::max('id'));
 
         for ($i = 0; $i < self::MAX_CREATE_SLUG_ATTEMPTS; $i++) {
@@ -113,6 +116,14 @@ class Post extends Model
         }
 
         throw new Exception(sprintf('Не удалось сгенерировать уникальную ссылку для публикации в блоге после %s попыток', self::MAX_CREATE_SLUG_ATTEMPTS));
+    }
+
+    /**
+     * @return void
+     */
+    public function deleteComments(): void
+    {
+        $this->comments()->delete();
     }
 
     /**
