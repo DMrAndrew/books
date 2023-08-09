@@ -25,7 +25,7 @@ class Searcher extends ComponentBase
 {
     protected $query;
 
-    protected bool $useCache = true;
+    protected bool $useCache = false;
     protected Carbon $cacheTTL;
 
     protected int $delay_seconds = 20;
