@@ -96,4 +96,12 @@ return [
 
     'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'october'), '_').'_cache_'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Search Results
+    |--------------------------------------------------------------------------
+    */
+
+    'cache_search_results' => env('CACHE_SEARCH_RESULTS', true),
+
 ];
