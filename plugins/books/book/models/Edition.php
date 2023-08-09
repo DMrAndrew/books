@@ -293,6 +293,7 @@ class Edition extends Model implements ProductInterface
 
     public function editAllowed(): bool
     {
+        return !$this->is_deferred;
         return !$this->isPublished()
             //не опубликована
             || $this->isFree() && !$this->is_has_customers
