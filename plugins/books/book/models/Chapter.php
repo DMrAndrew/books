@@ -9,6 +9,7 @@ use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Reader;
+use Books\Book\Classes\ScopeToday;
 use Books\Book\Jobs\Paginate;
 use Books\Book\Jobs\Reading;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,7 @@ use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
+use ValidationException;
 
 /**
  * Chapter Model
@@ -159,9 +161,41 @@ class Chapter extends Model
     public $attachMany = [];
 
 
-    public function reader(){
-        return new Reader($this->edition->book,$this);
+    public function reader()
+    {
+        return new Reader($this->edition->book, $this);
     }
+
+    /**
+     * test
+     *
+     * @throws ValidationException
+     */
+    public function groupedTrackers(string $groupBy = 'user_id')
+    {
+        if (!in_array($groupBy, ['user_id', 'ip'])) {
+            throw new ValidationException(['column' => 'user_id or ip only']);
+        }
+        $tracker = (new Tracker());
+        $column = $tracker->qualifyColumn($groupBy);
+        $raw = sprintf('max( DATE(%s)) as date ,%s, count(*) as total_trackers, sum(%s) as total_time, sum(%s) as total_length, sum(%s) as total_progress',
+            $tracker->qualifyColumn('created_at'),
+            $tracker->qualifyColumn('trackable_id'),
+            $tracker->qualifyColumn('time'),
+            $tracker->qualifyColumn('length'),
+            $tracker->qualifyColumn('progress'),
+        );
+
+        return $this->paginationTrackers()
+            ->withoutTodayScope()
+            ->whereNotNull($column)
+            ->when($groupBy === 'ip', fn($q) => $q->whereNull('user_id'))
+            ->selectRaw($raw)
+            ->groupBy($tracker->qualifyColumn('trackable_id'),$column);
+    }
+
+
+
     public function service(): iChapterService
     {
         return $this->edition?->is_deferred ? $this->deferredService() : new ChapterService($this);
@@ -182,11 +216,29 @@ class Chapter extends Model
         return $this->sales_type === ChapterSalesType::FREE;
     }
 
+    public function groupTrackers(string $field)
+    {
+        if (!in_array($field, ['user_id', 'ip'])) {
+            throw new \ValidationException(['column' => 'user_id or ip only']);
+        }
+        $tracker = (new Tracker());
+        $column = $tracker->qualifyColumn($field);
+        $raw = sprintf('%s, count(%s) as trackers_count, sum(%s) as time, sum(%s) as length', $column, $tracker->getQualifiedKeyName(),$tracker->qualifyColumn('time'),$tracker->qualifyColumn('length'));
+
+        $query = match ($field){
+            'ip' => fn($q) => $q->whereNull('user_id'),
+            'user_id' => fn($q) => $q,
+        };
+
+        return $query($this->paginationTrackers()->whereNotNull($column)->completed()->selectRaw($raw)->groupBy($column));
+    }
+
     public function paginationTrackers()
     {
-        return $this->hasManyDeepFromRelations(
-            $this->pagination(),
-            [(new Pagination())->trackers()]);
+        return $this->hasManyDeepFromRelationsWithConstraints(
+            [$this, 'pagination'],
+            [new Pagination(), 'trackers']
+        )->withoutGlobalScope(new ScopeToday());
     }
 
     public function paginateContent()
@@ -288,6 +340,7 @@ class Chapter extends Model
     {
         Reading::dispatch($this, $user);
     }
+
     public function getContent()
     {
         return $this->deferred()->deferredCreateOrUpdate()->first() ?? $this->content;
