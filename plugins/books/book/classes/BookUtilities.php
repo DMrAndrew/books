@@ -188,7 +188,6 @@ class BookUtilities
     {
         return iconv_strlen(trim(Str::squish($str)));
     }
-
     public static function countContentLengthForContent(string $str): bool|int
     {
         return static::countContentLength(static::stringToDiDom($str)->text());
