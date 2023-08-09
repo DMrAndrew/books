@@ -105,20 +105,18 @@ class ChapterService implements iChapterService
      */
     protected function create(array $data): Chapter
     {
-        return Db::transaction(function () use ($data) {
-            if (!$this->edition->id) {
-                throw new Exception('Edition required.');
-            }
-            $this->chapter->fill($data);
-            $this->chapter->sort_order ??= $this->edition->nextChapterSortOrder();
-            $this->chapter->sales_type ??= ChapterSalesType::PAY;
-            $this->chapter['edition_id'] = $this->edition->id;
-            $this->chapter->save();
+        if (!$this->edition->id) {
+            throw new Exception('Edition required.');
+        }
+        $this->chapter->fill($data);
+        $this->chapter->sort_order ??= $this->edition->nextChapterSortOrder();
+        $this->chapter->sales_type ??= ChapterSalesType::PAY;
+        $this->chapter['edition_id'] = $this->edition->id;
+        $this->chapter->save();
 
-            Event::fire('books.chapter.created', [$this->chapter]);
+        Event::fire('books.chapter.created', [$this->chapter]);
 
-            return $this->chapter;
-        });
+        return $this->chapter;
     }
 
     /**
@@ -127,18 +125,16 @@ class ChapterService implements iChapterService
      */
     protected function update(array $data): Chapter
     {
-        return Db::transaction(function () use ($data) {
-            $this->chapter->fill($data);
+        $this->chapter->fill($data);
 
-            if (!$this->chapter->isDirty('status')) {
-                $this->chapter->published_at = $this->chapter->getOriginal('published_at');
-            }
+        if (!$this->chapter->isDirty('status')) {
+            $this->chapter->published_at = $this->chapter->getOriginal('published_at');
+        }
 
-            $this->chapter->save();
-            Event::fire('books.chapter.updated', [$this->chapter]);
+        $this->chapter->save();
+        Event::fire('books.chapter.updated', [$this->chapter]);
 
-            return $this->chapter;
-        });
+        return $this->chapter;
     }
 
 

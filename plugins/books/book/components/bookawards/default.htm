@@ -42,3 +42,20 @@
 
 </div>
 {% endif %}
+<script>
+
+(    function initAwardAccordion(){
+        const accordion = document.querySelectorAll('[data-accodrion="wrapper"]');
+
+        accordion.forEach(item => {
+            item.addEventListener('click', e => {
+                e.preventDefault();
+                if (e.target.closest('[data-accodrion="header"]')) {
+                    item.classList.toggle('active');
+                }
+
+            })
+        })
+    }
+)()
+</script>

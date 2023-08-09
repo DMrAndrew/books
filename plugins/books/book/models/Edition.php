@@ -158,7 +158,8 @@ class Edition extends Model implements ProductInterface
 
     public function discount()
     {
-        return $this->hasOne(Discount::class, 'edition_id', 'id')->whereDate('active_at', '=', today());
+        return $this->hasOne(Discount::class, 'edition_id', 'id')
+            ->whereDate('active_at', '=', today());
     }
 
     public function service(): EditionService
@@ -268,7 +269,10 @@ class Edition extends Model implements ProductInterface
 
     public function hasRevisionStatus(BookStatus ...$status)
     {
-        return $this->revision_history()->where('field', 'status')->whereIn('old_value', array_pluck($status, 'value'))->exists();
+        return $this->revision_history()
+            ->where('field', 'status')
+            ->whereIn('old_value', array_pluck($status, 'value'))
+            ->exists();
     }
 
     public function isPublished(): bool
@@ -283,7 +287,7 @@ class Edition extends Model implements ProductInterface
 
     public function sellsSettingsEditAllowed(): bool
     {
-        return $this->getOriginal('status') == BookStatus::COMPLETE || $this->editAllowed();
+        return $this->getOriginal('status') !== BookStatus::FROZEN;
     }
 
     /**
@@ -379,7 +383,7 @@ class Edition extends Model implements ProductInterface
             && in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN, BookStatus::COMPLETE]);
     }
 
-    protected function beforeUpdate()
+    protected function beforeUpdate(): void
     {
         if (!$this->shouldRevisionLength()) {
             $this->revisionable = array_diff_key($this->revisionable, ['length']);
@@ -414,11 +418,10 @@ class Edition extends Model implements ProductInterface
 
     public function scopeFree(Builder $builder, bool $free = true): Builder
     {
-        if ($free) {
-            return $builder->where('price', '=', 0);
-        } else {
-            return $builder->minPrice(1);
-        }
+        return $builder->when($free,
+            fn($q) => $q->where('price', '=', 0),
+            fn($q) => $q->minPrice(1)
+        );
     }
 
     public function scopeSelling(Builder $builder): Builder
@@ -525,7 +528,7 @@ class Edition extends Model implements ProductInterface
 
     public static function lookUpFroze()
     {
-        $date = today()->copy()->subDays(config('books.book.free_days_before_frozen', 1));
+        $date = today()->copy()->subDays(config('books.book.free_working_days_before_frozen', 30));
         return static::query()
             ->status(BookStatus::WORKING)
             ->whereHas('revision_history', fn($revision_history) => $revision_history
