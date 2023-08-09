@@ -276,32 +276,50 @@ class Edition extends Model implements ProductInterface
         return (bool)$this->getOriginal('sales_at');
     }
 
-    public function sellsSettingsEditAllowed(): bool
-    {
-        return $this->getOriginal('status') == BookStatus::COMPLETE || $this->editAllowed();
-    }
-
-    public function editAllowed(): bool
-    {
-        return !$this->isPublished()
-            || $this->isFree() && !$this->is_has_customers
-            || in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN])
-            || (in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && !$this->is_has_customers);
-    }
-
     public function setPublishAt(): void
     {
         $this->attributes['sales_at'] = Carbon::now();
     }
 
+    public function sellsSettingsEditAllowed(): bool
+    {
+        return $this->getOriginal('status') == BookStatus::COMPLETE || $this->editAllowed();
+    }
+
+    /**
+     * Разрешено редактировать книгу
+     * @return bool
+     */
+
+    public function editAllowed(): bool
+    {
+        return !$this->isPublished()
+            //не опубликована
+            || $this->isFree() && !$this->is_has_customers
+            // или бесплатная и нет продаж
+            || in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN])
+            // или статус в работе или заморожен
+            || (in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && !$this->is_has_customers);
+        // или статус "скрыто" или "завершена" и нет продаж
+    }
+
+    /**
+     * Функция определяет разрешённые статусы для книги
+     *
+     * @return array
+     */
     public function getAllowedStatusCases(): array
     {
         $cases = collect(BookStatus::publicCases());
 
         $cases = match ($this->getOriginal('status')) {
-            BookStatus::WORKING => $this->is_has_customers ? $cases->forget(BookStatus::HIDDEN) : $cases,// нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
-            BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value), // Из “Завершено” можем перевести только в статус “Скрыто”.
-            BookStatus::HIDDEN => $this->isPublished() && $this->is_has_completed && $this->is_has_customers ? $cases->only(BookStatus::COMPLETE->value) : $cases,//Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”, то книгу можно вернуть в статус “Скрыто” но редактирование и удаление глав будет невозможным.
+            BookStatus::WORKING => $this->is_has_customers ? $cases->forget(BookStatus::HIDDEN) : $cases,
+            // нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
+            BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value),
+            // Из “Завершено” можем перевести только в статус “Скрыто”.
+            BookStatus::HIDDEN => $this->isPublished() && $this->is_has_completed && $this->is_has_customers ? $cases->only(BookStatus::COMPLETE->value) : $cases,
+            //Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”,
+            // то книгу можно вернуть в статус “Скрыто”, но редактирование и удаление глав будет невозможным если есть продажи.
             default => collect()
         };
 
@@ -310,13 +328,14 @@ class Edition extends Model implements ProductInterface
         return $cases->toArray();
     }
 
+    /**
+     * Функция определяет подлежит ли книга отложенному редактированию
+     * @return bool
+     */
+
     public function shouldDeferredUpdate(): bool
     {
-        return match ($this->getOriginal('status')) {
-            BookStatus::HIDDEN => $this->isPublished() && $this->is_has_completed && $this->is_has_customers,
-            BookStatus::COMPLETE => !$this->isFree() && $this->is_has_customers,
-            default => false
-        };
+        return in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && $this->is_has_customers;
     }
 
     public function hasCompleted(): bool
@@ -516,7 +535,6 @@ class Edition extends Model implements ProductInterface
                 return $edition->collectUpdateHistory()->getChunks()->last()?->date->lessThan($date);
             });
     }
-
 
 
 }
