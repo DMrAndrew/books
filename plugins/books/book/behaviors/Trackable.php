@@ -5,7 +5,6 @@ namespace Books\Book\Behaviors;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Tracker;
 use Books\Collections\classes\CollectionEnum;
-use Log;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Extension\ExtensionBase;
@@ -22,7 +21,7 @@ class Trackable extends ExtensionBase
 
     public function getTracker(?User $user = null, ?string $ip = null)
     {
-        return $this->model->trackers()->userOrIP($user, $ip)->first()
+        return $this->model->trackers()->userOrIpWithDefault($user, $ip)->first()
             ??
             $this->model->trackers()->create([
                 'user_id' => ($user ?? Auth::getUser())?->id,
@@ -42,6 +41,8 @@ class Trackable extends ExtensionBase
 
     public function computeProgress()
     {
+        return false;
+
         if (!$this->model->trackerChildRelation || !$this->model->hasRelation($this->model->trackerChildRelation)) {
             return false;
         }
