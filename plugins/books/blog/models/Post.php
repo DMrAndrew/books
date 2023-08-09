@@ -15,6 +15,7 @@ use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 use System\Models\File;
 use WordForm;
 
@@ -171,11 +172,11 @@ class Post extends Model
 
     /**
      * @param Builder $query
-     * @param Auth|null $user
+     * @param User|null $user
      *
      * @return Builder
      */
-    public function scopePublicVisible(Builder $query, ?Auth $user = null): Builder
+    public function scopePublicVisible(Builder $query, ?User $user = null): Builder
     {
         if (!$user) {
             $user = Auth::getUser();
