@@ -201,6 +201,7 @@ class Post extends Model
                  */
                 $subQuery->where(function ($q) use ($settingsTable) {
                     return $q
+                        ->published()
                         ->where(function ($query) use ($settingsTable) {
                             $query
                                 ->whereNull($settingsTable.'.user_id')
