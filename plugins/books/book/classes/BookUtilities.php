@@ -193,11 +193,6 @@ class BookUtilities
         return static::countContentLength(static::stringToDiDom($str)->text());
     }
 
-    public static function countContentLengthForContent(string $str): bool|int
-    {
-        return static::countContentLength(static::stringToDiDom($str)->text());
-    }
-
     public static function stringToDiDom(?string $content): Document
     {
         $diDom = new Document();
