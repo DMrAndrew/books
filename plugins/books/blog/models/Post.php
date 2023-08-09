@@ -185,13 +185,13 @@ class Post extends Model
 
         $profileId = $user?->profile?->id;
 
-        $settingsTable = (new Settings())->getTable();
         $postsTable = $this->getTable();
+        $settingsTable = (new Settings())->getTable();
         $subscribersTable = (new Subscriber())->getTable();
         $profilersTable = (new Profiler())->getTable();
 
-        $query->leftJoin($settingsTable, $postsTable.'.user_id','=', $settingsTable.'.user_id');
-        $query->leftJoin($profilersTable, $settingsTable.'.id','=', $profilersTable.'.slave_id');
+        $query->leftJoin($profilersTable, $profilersTable.'.master_id','=', $postsTable.'.profile_id');
+        $query->leftJoin($settingsTable, $settingsTable.'.id','=', $profilersTable.'.slave_id');
 
         if ($profileId) {
             $query->leftJoin($subscribersTable, $postsTable.'.profile_id','=', $subscribersTable.'.profile_id');
@@ -200,8 +200,9 @@ class Post extends Model
         $query
             ->select($postsTable.'.*')
             ->where($postsTable.'.status', PostStatus::PUBLISHED)
-            ->where($profilersTable.'.slave_type', Settings::class)
+
             ->where($profilersTable.'.master_type', Profile::class)
+            ->where($profilersTable.'.slave_type', Settings::class)
 
             ->where(function($subQuery) use ($profileId, $settingsTable, $subscribersTable, $profilersTable) {
 

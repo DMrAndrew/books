@@ -25,7 +25,7 @@ class Searcher extends ComponentBase
 {
     protected $query;
 
-    protected bool $useCache = true;
+    protected bool $useCache;
     protected Carbon $cacheTTL;
 
     protected int $delay_seconds = 20;
@@ -55,6 +55,8 @@ class Searcher extends ComponentBase
     {
         $this->query = trim($this->param('query'));
         $this->page['search_query'] = $this->query;
+
+        $this->useCache = config('cache.cache_search_results');
         $this->cacheTTL = Carbon::now()->addMinutes(2);
     }
 
