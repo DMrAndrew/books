@@ -6,7 +6,6 @@ use Books\Book\Components\Widget;
 use Books\Comments\Components\Comments;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
-use RainLab\User\Models\User;
 
 /**
  * Blog Component
