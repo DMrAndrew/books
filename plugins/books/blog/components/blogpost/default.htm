@@ -29,6 +29,7 @@
                     <div class="blog-card wrapper _indent">
                         <div class="blog-card__header">
 
+
                                 {% if post.profile.avatar %}
                                 <img class="square-40" src="{{ post.profile.avatar.getThumb(40,40)}} " alt="avatar">
                                 {% else %}
@@ -36,13 +37,15 @@
                                 {% endif %}
 
                                 <div class="">
-                                    <div class="ui-text--bold">{{ post.profile.username }}</div>
+                                    <a href="/author-page/{{post.profile.id}}">
+                                        <div class="ui-text--bold __black">{{ post.profile.username }}</div>
+                                    </a>
                                     <span class="blog-card__header-date">{{ post.published_at.diffForHumans }}</span>
                                 </div>
 
                         </div>
                         <div class="blog-card__body">
-                            <a href="#" class="blog-card__title ui-text-head--3 ui-text--bold _indent-small">{{ post.title }}</a>
+                            <h1 class="blog-card__title ui-text-head--3 ui-text--bold _indent-small">{{ post.title }}</h1>
                             <div class="blog-card__text typographical-block">
                                 {{ post.content|raw }}
                             </div>

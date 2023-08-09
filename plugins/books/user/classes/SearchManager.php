@@ -22,7 +22,7 @@ class SearchManager
     {
         $res = $query ? Search::add(Book::public()->defaultEager(), 'title')
             ->add(Profile::query()->shortPublicEager()->booksExists(), 'username')
-            ->add(Post::query()->published(), 'title')
+            ->add(Post::query()->published()->publicVisible(), 'title')
             ->includeModelType()
             ->orderByModel([Book::class, Profile::class])
             ->beginWithWildcard()

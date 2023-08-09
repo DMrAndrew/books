@@ -3,12 +3,18 @@
 use App\traits\HasUserScope;
 use Books\Blog\Classes\Enums\PostStatus;
 use Books\Profile\Models\Profile;
+use Books\Profile\Models\Subscriber;
+use Books\User\Classes\PrivacySettingsEnum;
+use Books\User\Classes\UserSettingsEnum;
+use Books\User\Models\Settings;
 use Exception;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Str;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Facades\Auth;
 use System\Models\File;
 use WordForm;
 
@@ -163,6 +169,95 @@ class Post extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('status', PostStatus::PUBLISHED);
+    }
+
+    /**
+     * @param Builder $query
+     * @param Auth|null $user
+     *
+     * @return Builder
+     */
+    public function scopePublicVisible(Builder $query, ?Auth $user = null): Builder
+    {
+        if (!$user) {
+            $user = Auth::getUser();
+        }
+
+        $profileId = $user?->profile?->id;
+
+        $settingsTable = (new Settings())->getTable();
+        $postsTable = $this->getTable();
+        $subscribersTable = (new Subscriber())->getTable();
+
+        $query->leftJoin($settingsTable, $postsTable.'.user_id','=', $settingsTable.'.user_id');
+        $query->leftJoin($subscribersTable, $postsTable.'.profile_id','=', $subscribersTable.'.profile_id');
+
+        $query
+            ->select($postsTable.'.*')
+            ->where(function($subQuery) use ($profileId, $settingsTable, $postsTable, $subscribersTable) {
+
+                /**
+                 * Except posts that `Nobody can see`
+                 */
+                $subQuery->where(function ($q) use ($settingsTable) {
+                    return $q
+                        ->where(function ($query) use ($settingsTable) {
+                            $query
+                                ->whereNull($settingsTable.'.user_id')
+                                ->orWhere(function($query) use ($settingsTable) {
+                                    return $query
+                                        ->where($settingsTable.'.type', UserSettingsEnum::PRIVACY_ALLOW_VIEW_BLOG)
+                                        ->whereNot($settingsTable.'.value', PrivacySettingsEnum::NONE);
+                                });
+                        });
+                });
+
+                /**
+                 * For subscribers
+                 */
+                if ($profileId) {
+                    $subQuery->where(function ($q) use ($subscribersTable, $settingsTable, $profileId) {
+                        return $q
+                            ->published()
+                            ->where(function ($query) use ($settingsTable) {
+                                $query
+                                    ->whereNull($settingsTable.'.user_id')
+                                    ->orWhere(function($query) use ($settingsTable) {
+                                        return $query
+                                            ->where($settingsTable.'.type', UserSettingsEnum::PRIVACY_ALLOW_VIEW_BLOG)
+                                            ->where($settingsTable.'.value', PrivacySettingsEnum::SUBSCRIBERS);
+                                    });
+                            })
+                            ->where($subscribersTable . '.subscriber_id', $profileId);
+                    });
+                }
+
+                /**
+                 * For all
+                 */
+                $subQuery->orWhere(function ($q) use ($subscribersTable, $settingsTable, $profileId) {
+                    return $q
+                        ->published()
+                        ->where(function ($query) use ($settingsTable) {
+                            $query
+                                ->whereNull($settingsTable.'.user_id')
+                                ->orWhere(function($query) use ($settingsTable) {
+                                    return $query
+                                        ->where($settingsTable.'.type', UserSettingsEnum::PRIVACY_ALLOW_VIEW_BLOG)
+                                        ->where($settingsTable.'.value', PrivacySettingsEnum::ALL);
+                                });
+                        });
+                });
+
+                /**
+                 * Author is current profile
+                 */
+                if ($profileId) {
+                    $subQuery->orWhere($postsTable.'.profile_id', $profileId);
+                }
+        });
+
+        return $query;
     }
 
     /**
