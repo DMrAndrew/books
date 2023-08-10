@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <div class="personal-area__wrap _indent-large">
+    <div class="personal-area__wrap _indent-large typographical-block">
         <script src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
         <textarea id="content" name="content">{{ post.content|raw }}</textarea>
         <div class="ui-select-hitn"></div>
@@ -110,8 +110,10 @@
     -- скрыть отложенную публикацию до востребования #}
 
     <div class="wrapper__footer">
-        <button class="ui-button ui-button-size--32 ui-button-view--3">Отмена</button>
-        <button class="ui-button ui-button-size--32 ui-button-view--2">{{ post.id ? 'Сохранить' : 'Опубликовать' }}</button>
+        <a href="/lc-blog">
+            <button type="button" class="ui-button ui-button-size--32 ui-button-view--3">Отмена</button>
+        </a>
+        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2">{{ post.id ? 'Сохранить' : 'Опубликовать' }}</button>
     </div>
 
 </form>
@@ -123,8 +125,8 @@
 </style>
 <script>
     initEditor('content',{
-        toolbarItems:['uploadImage',]
-    })
+        toolbarItems:['uploadImage']
+    });
 
     function updateLengthCounter(field)
     {

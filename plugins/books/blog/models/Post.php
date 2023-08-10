@@ -3,13 +3,22 @@
 use App\traits\HasUserScope;
 use Books\Blog\Classes\Enums\PostStatus;
 use Books\Profile\Models\Profile;
+use Books\Profile\Models\Profiler;
+use Books\Profile\Models\Subscriber;
+use Books\User\Classes\PrivacySettingsEnum;
+use Books\User\Classes\UserSettingsEnum;
+use Books\User\Models\Settings;
 use Exception;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Str;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 use System\Models\File;
+use WordForm;
 
 /**
  * Blog Model
@@ -25,6 +34,8 @@ class Post extends Model
     const TITLE_MAX_LENGTH = 60;
     const PREVIEW_MAX_LENGTH = 500;
     const MAX_CREATE_SLUG_ATTEMPTS = 10;
+    const AVAILABLE_IMAGE_EXTENSIONS = ['jpeg', 'jpg', 'png'];
+    const MAX_IMAGE_SIZE_MB = 3;
 
     /**
      * @var string table name
@@ -74,6 +85,8 @@ class Post extends Model
         'content_images' => File::class,
     ];
 
+    public static array $endingArray = ['Блог', 'Блога', 'Блогов'];
+
     public static function boot(): void
     {
         parent::boot();
@@ -84,6 +97,10 @@ class Post extends Model
 
         static::saving(function ($post) {
             $post->fillPreviewFromContent();
+        });
+
+        static::deleting(function ($post) {
+            $post->deleteComments();
         });
     }
 
@@ -96,7 +113,6 @@ class Post extends Model
     public function generateSlugFromTitle(): void
     {
         $slug = Str::slug($this->attributes['title']);
-//        $postId = Post::orderByDesc('id')->first()?->id + 1 ?? 1;
         $postId = (int)(self::max('id'));
 
         for ($i = 0; $i < self::MAX_CREATE_SLUG_ATTEMPTS; $i++) {
@@ -116,9 +132,22 @@ class Post extends Model
     /**
      * @return void
      */
+    public function deleteComments(): void
+    {
+        $this->comments()->delete();
+    }
+
+    /**
+     * @return void
+     */
     public function fillPreviewFromContent(): void
     {
         $this->attributes['preview'] = substr(strip_tags($this->attributes['content']), 0, self::PREVIEW_MAX_LENGTH);
+    }
+
+    public static function wordForm(): WordForm
+    {
+        return new WordForm(...self::$endingArray);
     }
 
     /**
@@ -140,6 +169,66 @@ class Post extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('status', PostStatus::PUBLISHED);
+    }
+
+    /**
+     * @param Builder $query
+     * @param User|null $user
+     *
+     * @return Builder
+     */
+    public function scopePublicVisible(Builder $query, ?User $user = null): Builder
+    {
+        if (!$user) {
+            $user = Auth::getUser();
+        }
+
+        $profileId = $user?->profile?->id;
+
+        $postsTable = $this->getTable();
+        $settingsTable = (new Settings())->getTable();
+        $subscribersTable = (new Subscriber())->getTable();
+        $profilersTable = (new Profiler())->getTable();
+
+        $query->leftJoin($profilersTable, $profilersTable.'.master_id','=', $postsTable.'.profile_id');
+        $query->leftJoin($settingsTable, $settingsTable.'.id','=', $profilersTable.'.slave_id');
+
+        if ($profileId) {
+            $query->leftJoin($subscribersTable, $postsTable.'.profile_id','=', $subscribersTable.'.profile_id');
+        }
+
+        $query
+            ->select($postsTable.'.*')
+            ->where($postsTable.'.status', PostStatus::PUBLISHED)
+
+            ->where($profilersTable.'.master_type', Profile::class)
+            ->where($profilersTable.'.slave_type', Settings::class)
+
+            ->where(function($subQuery) use ($profileId, $settingsTable, $subscribersTable, $profilersTable) {
+
+                /**
+                 * For all
+                 */
+                $subQuery->where(function ($q) use ($settingsTable) {
+                    return $q
+                        ->where($settingsTable.'.type', UserSettingsEnum::PRIVACY_ALLOW_VIEW_BLOG)
+                        ->where($settingsTable.'.value', PrivacySettingsEnum::ALL);
+                });
+
+                /**
+                 * For subscribers
+                 */
+                if ($profileId) {
+                    $subQuery->orWhere(function ($q) use ($subscribersTable, $settingsTable, $profileId) {
+                        return $q
+                            ->where($settingsTable.'.type', UserSettingsEnum::PRIVACY_ALLOW_VIEW_BLOG)
+                            ->where($settingsTable.'.value', PrivacySettingsEnum::SUBSCRIBERS)
+                            ->where($subscribersTable . '.subscriber_id', $profileId);
+                    });
+                }
+        });
+
+        return $query;
     }
 
     /**

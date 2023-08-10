@@ -3,8 +3,27 @@ function initFn() {
     const actionItems = document.querySelectorAll('[data-header-action]');
 
     actionItems.forEach(item => {
-        item.addEventListener('click', () => {
-            item.classList.toggle('active');
+        const name = item.dataset.headerAction;
+        const $content = document.querySelector(`[data-header-content="${name}"]`);
+        if($content){
+            $content.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+        item.addEventListener('click', (e) => {
+            function closeItem(ev){
+                if(item.classList.contains('active') || (!(item.contains(ev.target)) && ev.target !== item)){
+                    document.body.removeEventListener('click', closeItem);
+                    setTimeout(() => {
+                        item.classList.remove('active');
+                    },1)
+                }
+            }
+            document.body.removeEventListener('click', closeItem);
+            document.body.addEventListener('click', closeItem);
+            setTimeout(() => {
+                item.classList.add('active');
+            },1)
         })
     })
 

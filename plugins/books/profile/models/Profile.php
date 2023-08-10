@@ -278,20 +278,19 @@ class Profile extends Model
     public function canSeeBlogPosts(?Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
-        if (!$profile) {
-            return false;
-        }
-        if ($profile->is($this)) {
+
+        if ($profile != null && $profile->is($this)) {
             return true;
         }
+
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_BLOG)->first();
         if (!$setting) {
-            return false;
+            return true;
         }
 
         return match (PrivacySettingsEnum::tryFrom($setting->value)) {
             PrivacySettingsEnum::ALL => true,
-            PrivacySettingsEnum::SUBSCRIBERS => $profile->hasSubscription($this),
+            PrivacySettingsEnum::SUBSCRIBERS => (bool) $profile?->hasSubscription($this),
             default => false
         };
     }
