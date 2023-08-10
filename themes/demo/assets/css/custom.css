@@ -18,8 +18,3 @@ body {
     margin-top: auto;
     height: 32px;
 }
-.responsiv-uploader-fileupload .upload-object,
-.responsiv-uploader-fileupload .upload-button{
-    width: 100% !important;
-    height: auto !important;
-}
