@@ -40,17 +40,12 @@ class Reader
         $this->setPage($this->page);
     }
 
-    /**
-     * @param bool $contentGuard
-     */
     public function setContentGuard(bool $contentGuard): void
     {
         $this->contentGuard = $contentGuard;
     }
 
     /**
-     * @param int|null $page
-     *
      * @throws ChapterIsClosed
      */
     public function setPage(?int $page): void
@@ -61,7 +56,7 @@ class Reader
 
     public function isPageAllowed(): bool
     {
-        return !$this->contentGuard
+        return ! $this->contentGuard
             || $this->chapter->isFree()
             || ($this->user && $this->book->isAuthor($this->user->profile))
             || ($this->user && $this->user->bookIsBought($this->edition));
@@ -72,7 +67,7 @@ class Reader
         if ($paginator = $this->chapter?->pagination()->find($paginator_id)) {
             if ($tracker = $paginator->trackTime($ms)) {
                 $tracker->update(['length' => $paginator->length, 'progress' => 100]);
-                $paginator->chapter->progress($this->user);
+                //                $paginator->chapter->progress($this->user);
                 return $tracker;
             }
         }
@@ -80,10 +75,10 @@ class Reader
 
     public function readBtn(): bool
     {
-        return !$this->nextPage()
-            && !$this->nextChapter()
+        return ! $this->nextPage()
+            && ! $this->nextChapter()
             && $this->book->ebook->status === BookStatus::COMPLETE
-            && ($this->user && !$this->user->library($this->book)->is(CollectionEnum::READ));
+            && ($this->user && ! $this->user->library($this->book)->is(CollectionEnum::READ));
     }
 
     /**
@@ -91,15 +86,15 @@ class Reader
      */
     public function getReaderPage(): array
     {
-        if (!$this->isPageAllowed()) {
+        if (! $this->isPageAllowed()) {
             throw new ChapterIsClosed();
         }
 
         return [
 
             'pagination' => [
-                'prev' => (bool)($this->prevPage() ?? $this->prevChapter()),
-                'next' => (bool)($this->nextPage() ?? $this->nextChapter()),
+                'prev' => (bool) ($this->prevPage() ?? $this->prevChapter()),
+                'next' => (bool) ($this->nextPage() ?? $this->nextChapter()),
                 'read' => $this->readBtn(),
                 'links' => $this->chapter->service()->getPaginationLinks($this->page),
             ],
@@ -108,7 +103,7 @@ class Reader
                 'chapter' => $this->chapter,
                 'paginator' => $this->paginator,
             ],
-            'redirectIfJSIsOff' => !(!$this->prevChapter() && !$this->prevPage()),
+            'redirectIfJSIsOff' => ! (! $this->prevChapter() && ! $this->prevPage()),
             'book' => $this->book->newQuery()->defaultEager()->find($this->book->id),
         ];
     }

@@ -58,7 +58,6 @@ class Edition extends Model implements ProductInterface
     use Revisionable;
     use Purgeable;
 
-
     const LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN = 'last_length_update_notification_at';
 
     /**
@@ -79,7 +78,6 @@ class Edition extends Model implements ProductInterface
 
     public bool $forceRevision = false;
 
-
     public string $trackerChildRelation = 'chapters';
 
     protected $fillable = [
@@ -96,7 +94,7 @@ class Edition extends Model implements ProductInterface
         'is_has_customers',
         'is_has_completed',
         self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN,
-        'last_updated_at'
+        'last_updated_at',
     ];
 
     protected $casts = [
@@ -167,7 +165,6 @@ class Edition extends Model implements ProductInterface
         return new EditionService($this);
     }
 
-
     public function markLastLengthUpdateNotificationAt(): void
     {
         $this->revision_history()->insert([
@@ -176,7 +173,7 @@ class Edition extends Model implements ProductInterface
             'revisionable_id' => $this->getKey(),
             'user_id' => $this->revisionableGetUser(),
             'created_at' => new DateTime,
-            'updated_at' => new DateTime
+            'updated_at' => new DateTime,
         ]);
 
     }
@@ -239,7 +236,7 @@ class Edition extends Model implements ProductInterface
 
     public function getAllowedForDiscountAttribute(): bool
     {
-        return in_array($this->getOriginal('status'), [BookStatus::COMPLETE, BookStatus::WORKING]) && !$this->isFree();
+        return in_array($this->getOriginal('status'), [BookStatus::COMPLETE, BookStatus::WORKING]) && ! $this->isFree();
     }
 
     public function scopeAllowedForDiscount(Builder $builder)
@@ -264,7 +261,7 @@ class Edition extends Model implements ProductInterface
 
     public function isFree(): bool
     {
-        return !!!(int)$this->getOriginal('price');
+        return ! (bool) (int) $this->getOriginal('price');
     }
 
     public function hasRevisionStatus(BookStatus ...$status)
@@ -277,7 +274,7 @@ class Edition extends Model implements ProductInterface
 
     public function isPublished(): bool
     {
-        return (bool)$this->getOriginal('sales_at');
+        return (bool) $this->getOriginal('sales_at');
     }
 
     public function setPublishAt(): void
@@ -292,26 +289,23 @@ class Edition extends Model implements ProductInterface
 
     /**
      * Разрешено редактировать книгу
-     * @return bool
      */
-
     public function editAllowed(): bool
     {
-        return !$this->is_deferred;
-        return !$this->isPublished()
+        return ! $this->is_deferred;
+
+        return ! $this->isPublished()
             //не опубликована
-            || $this->isFree() && !$this->is_has_customers
+            || $this->isFree() && ! $this->is_has_customers
             // или бесплатная и нет продаж
             || in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN])
             // или статус в работе или заморожен
-            || (in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && !$this->is_has_customers);
+            || (in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && ! $this->is_has_customers);
         // или статус "скрыто" или "завершена" и нет продаж
     }
 
     /**
      * Функция определяет разрешённые статусы для книги
-     *
-     * @return array
      */
     public function getAllowedStatusCases(): array
     {
@@ -335,9 +329,7 @@ class Edition extends Model implements ProductInterface
 
     /**
      * Функция определяет подлежит ли книга отложенному редактированию
-     * @return bool
      */
-
     public function shouldDeferredUpdate(): bool
     {
         return in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && $this->is_has_customers;
@@ -356,18 +348,21 @@ class Edition extends Model implements ProductInterface
     public function getIsDeferredAttribute(): bool
     {
         $this->attributes['is_deferred'] ??= $this->shouldDeferredUpdate();
+
         return $this->attributes['is_deferred'];
     }
 
     public function getIsHasCustomersAttribute()
     {
         $this->attributes['is_has_customers'] ??= $this->hasCustomers();
+
         return $this->attributes['is_has_customers'];
     }
 
     public function getIsHasCompletedAttribute()
     {
         $this->attributes['is_has_completed'] ??= $this->hasCompleted();
+
         return $this->attributes['is_has_completed'];
     }
 
@@ -379,13 +374,13 @@ class Edition extends Model implements ProductInterface
     public function shouldRevisionLength(): bool
     {
         return $this->isDirty('length')
-            && !$this->is_deferred
+            && ! $this->is_deferred
             && in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN, BookStatus::COMPLETE]);
     }
 
     protected function beforeUpdate(): void
     {
-        if (!$this->shouldRevisionLength()) {
+        if (! $this->shouldRevisionLength()) {
             $this->revisionable = array_diff_key($this->revisionable, ['length']);
         }
         $this->purgeAttributes();
@@ -398,12 +393,12 @@ class Edition extends Model implements ProductInterface
 
     public function scopeWithLastLengthRevision(Builder $builder): Builder
     {
-        return $builder->with(['revision_history' => fn($history) => $history->where('field', '=', 'length')->orderByDesc('created_at')->limit(1)]);
+        return $builder->with(['revision_history' => fn ($history) => $history->where('field', '=', 'length')->orderByDesc('created_at')->limit(1)]);
     }
 
     public function scopeWithProgress(Builder $builder, User $user): Builder
     {
-        return $builder->withMax(['trackers as progress' => fn($trackers) => $trackers->user($user)->withoutTodayScope()], 'progress');
+        return $builder->withMax(['trackers as progress' => fn ($trackers) => $trackers->user($user)->withoutTodayScope()], 'progress');
     }
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder
@@ -419,8 +414,8 @@ class Edition extends Model implements ProductInterface
     public function scopeFree(Builder $builder, bool $free = true): Builder
     {
         return $builder->when($free,
-            fn($q) => $q->where('price', '=', 0),
-            fn($q) => $q->minPrice(1)
+            fn ($q) => $q->where('price', '=', 0),
+            fn ($q) => $q->minPrice(1)
         );
     }
 
@@ -468,12 +463,12 @@ class Edition extends Model implements ProductInterface
 
     public function lengthRecount()
     {
-        $this->fill(['length' => (int)$this->chapters()->public()->sum('length')]);
+        $this->fill(['length' => (int) $this->chapters()->public()->sum('length')]);
         $this->save();
         $this->setFreeParts();
     }
 
-    public function changeChaptersOrder(array $ids, ?array $order = null)
+    public function changeChaptersOrder(array $ids, array $order = null)
     {
         Db::transaction(function () use ($ids, $order) {
             $order ??= $this->chapters()->pluck((new Chapter())->getSortOrderColumn())->toArray();
@@ -486,12 +481,12 @@ class Edition extends Model implements ProductInterface
     public function setFreeParts()
     {
         Db::transaction(function () {
-            $builder = fn() => $this->chapters()->public(withPlanned: true);
+            $builder = fn () => $this->chapters()->public(withPlanned: true);
             if ($this->isFree() || $this->status === BookStatus::FROZEN) {
                 $builder()->update(['sales_type' => ChapterSalesType::FREE]);
             } else {
                 $builder()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
-//            $this->chapters()->offset($this->free_parts); ошибка
+                //            $this->chapters()->offset($this->free_parts); ошибка
                 $builder()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
             }
             $this->chapters()->public()->get()->each->setNeighbours();
@@ -529,9 +524,10 @@ class Edition extends Model implements ProductInterface
     public static function lookUpFroze()
     {
         $date = today()->copy()->subDays(config('books.book.free_working_days_before_frozen', 30));
+
         return static::query()
             ->status(BookStatus::WORKING)
-            ->whereHas('revision_history', fn($revision_history) => $revision_history
+            ->whereHas('revision_history', fn ($revision_history) => $revision_history
                 ->whereDate('created_at', '<=', $date)
                 ->where(['field' => 'status', 'new_value' => BookStatus::WORKING->value]))
             ->get()
@@ -539,6 +535,4 @@ class Edition extends Model implements ProductInterface
                 return $edition->collectUpdateHistory()->getChunks()->last()?->date->lessThan($date);
             });
     }
-
-
 }

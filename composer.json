@@ -46,7 +46,7 @@
         "lemax10/asail": "1.x-dev",
         "phpunit/phpunit": "^8.5|^9.0",
         "barryvdh/laravel-debugbar": "^3.7",
-        "laravel/pint": "^1.4"
+        "laravel/pint": "^1.10"
     },
     "scripts": {
         "post-root-package-install": [

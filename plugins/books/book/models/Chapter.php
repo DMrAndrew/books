@@ -160,7 +160,6 @@ class Chapter extends Model
 
     public $attachMany = [];
 
-
     public function reader()
     {
         return new Reader($this->edition->book, $this);
@@ -173,7 +172,7 @@ class Chapter extends Model
      */
     public function groupedTrackers(string $groupBy = 'user_id')
     {
-        if (!in_array($groupBy, ['user_id', 'ip'])) {
+        if (! in_array($groupBy, ['user_id', 'ip'])) {
             throw new ValidationException(['column' => 'user_id or ip only']);
         }
         $tracker = (new Tracker());
@@ -189,12 +188,10 @@ class Chapter extends Model
         return $this->paginationTrackers()
             ->withoutTodayScope()
             ->whereNotNull($column)
-            ->when($groupBy === 'ip', fn($q) => $q->whereNull('user_id'))
+            ->when($groupBy === 'ip', fn ($q) => $q->whereNull('user_id'))
             ->selectRaw($raw)
-            ->groupBy($tracker->qualifyColumn('trackable_id'),$column);
+            ->groupBy($tracker->qualifyColumn('trackable_id'), $column);
     }
-
-
 
     public function service(): iChapterService
     {
@@ -208,29 +205,12 @@ class Chapter extends Model
 
     public function getTitleAttribute()
     {
-        return $this->attributes['title'] ?? false ?: ($this->exists ? '№' . $this->{$this->getSortOrderColumn()} : '');
+        return $this->attributes['title'] ?? false ?: ($this->exists ? '№'.$this->{$this->getSortOrderColumn()} : '');
     }
 
     public function isFree(): bool
     {
         return $this->sales_type === ChapterSalesType::FREE;
-    }
-
-    public function groupTrackers(string $field)
-    {
-        if (!in_array($field, ['user_id', 'ip'])) {
-            throw new \ValidationException(['column' => 'user_id or ip only']);
-        }
-        $tracker = (new Tracker());
-        $column = $tracker->qualifyColumn($field);
-        $raw = sprintf('%s, count(%s) as trackers_count, sum(%s) as time, sum(%s) as length', $column, $tracker->getQualifiedKeyName(),$tracker->qualifyColumn('time'),$tracker->qualifyColumn('length'));
-
-        $query = match ($field){
-            'ip' => fn($q) => $q->whereNull('user_id'),
-            'user_id' => fn($q) => $q,
-        };
-
-        return $query($this->paginationTrackers()->whereNotNull($column)->completed()->selectRaw($raw)->groupBy($column));
     }
 
     public function paginationTrackers()
@@ -245,7 +225,6 @@ class Chapter extends Model
     {
         Paginate::dispatch($this);
     }
-
 
     public function scopeSortOrder(Builder $builder, int $value): Builder
     {
@@ -276,8 +255,8 @@ class Chapter extends Model
     {
         return $builder
             ->where('length', '>', 0)
-            ->when($withPlanned, fn($q) => $q->where(fn($where) => $where->published()->orWhere(fn($or) => $or->planned())), fn($q) => $q->published())
-            ->whereDoesntHave('deferred', fn($deferred) => $deferred->deferred()->deferredCreate());
+            ->when($withPlanned, fn ($q) => $q->where(fn ($where) => $where->published()->orWhere(fn ($or) => $or->planned())), fn ($q) => $q->published())
+            ->whereDoesntHave('deferred', fn ($deferred) => $deferred->deferred()->deferredCreate());
     }
 
     public function scopeWithDeferredState(Builder $builder)
@@ -296,14 +275,14 @@ class Chapter extends Model
 
     public function lengthRecount()
     {
-        $this->length = (int)$this->pagination()->sum('length') ?? 0;
+        $this->length = (int) $this->pagination()->sum('length') ?? 0;
         $this->save();
         $this->edition()->first()->lengthRecount();
     }
 
     public function setNeighbours()
     {
-        $builder = fn() => $this->edition()->first()->chapters()->public();
+        $builder = fn () => $this->edition()->first()->chapters()->public();
         $sort_order = $this->{$this->getSortOrderColumn()};
         $this->update([
             'prev_id' => $builder()->maxSortOrder($sort_order)->latest($this->getSortOrderColumn())->first()?->id,
@@ -322,7 +301,6 @@ class Chapter extends Model
         }
     }
 
-
     protected function afterCreate()
     {
         $this->edition()->first()->setFreeParts();
@@ -336,7 +314,7 @@ class Chapter extends Model
         $this->lengthRecount();
     }
 
-    public function progress(?User $user = null)
+    public function progress(User $user = null)
     {
         Reading::dispatch($this, $user);
     }
@@ -345,6 +323,4 @@ class Chapter extends Model
     {
         return $this->deferred()->deferredCreateOrUpdate()->first() ?? $this->content;
     }
-
-
 }
