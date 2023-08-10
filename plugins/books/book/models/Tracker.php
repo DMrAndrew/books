@@ -17,6 +17,7 @@ use RainLab\User\Models\User;
  * @property int $time time in sec
  * @property  Model trackable
  * @property  User user
+ *
  * @method MorphTo trackable
  * @method BelongsTo user
  *
@@ -42,7 +43,7 @@ class Tracker extends Model
         'time' => 'integer',
         'length' => 'integer',
         'progress' => 'integer|between:0,100',
-        'ip' => 'required|ip'
+        'ip' => 'required|ip',
     ];
 
     protected $casts = [
@@ -67,7 +68,6 @@ class Tracker extends Model
     {
         static::addGlobalScope(new ScopeToday());
     }
-
 
     public function scopeOrderByUpdatedAt(Builder $builder, bool $asc = true): Builder
     {
@@ -107,8 +107,9 @@ class Tracker extends Model
     public function scopeLatestActiveTracker(Builder $builder)
     {
         return $builder
-            ->whereHasMorph('trackable', Pagination::class, fn($i) => $i->whereHas('chapter', fn($chapter) => $chapter->whereNull('deleted_at')))
+            ->withoutTodayScope()
+            ->userOrIpWithDefault()
+            ->whereHasMorph('trackable', Pagination::class, fn ($i) => $i->whereHas('chapter', fn ($chapter) => $chapter->whereNull('deleted_at')))
             ->orderByUpdatedAt(asc: false);
     }
-
 }

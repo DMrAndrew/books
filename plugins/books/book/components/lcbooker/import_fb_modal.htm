@@ -17,6 +17,7 @@
                     {{ form_ajax('onUploadFile',{
                     'id':'fb_upload_form',
                     'data-request-validate':'true',
+                    'data-request-flash':'true',
                     files:'true',
                     'data-request-loading':'#loading-modal-container',
                     'data-request-success':'closeModalFn(document.querySelector(`#modal-container`))'

@@ -42,7 +42,6 @@ class Trackable extends ExtensionBase
     public function computeProgress()
     {
         return false;
-
         if (!$this->model->trackerChildRelation || !$this->model->hasRelation($this->model->trackerChildRelation)) {
             return false;
         }

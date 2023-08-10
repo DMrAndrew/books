@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2ea026f7c43b2f386f978de4bec03f47",
+    "content-hash": "9de4eea3d56e544cf251d3796df87acd",
     "packages": [
         {
             "name": "abordage/laravel-last-modified",
@@ -160,11 +160,11 @@
         },
         {
             "name": "books/blacklists-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/blacklists",
-                "reference": "2a45c3a20feeeaba4443ff6a249a373c13f9ec7b"
+                "reference": "33f32b041417e56693a98e61e3c5a50ebd22f782"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -177,11 +177,11 @@
         },
         {
             "name": "books/blog-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/blog",
-                "reference": "c703c729db10d82cec43dbac25d6accd61d71800"
+                "reference": "4c71f219884cead27821e7a17463c93c03fe268d"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -194,7 +194,7 @@
         },
         {
             "name": "books/book-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "plugins/books/book",
@@ -218,7 +218,7 @@
         },
         {
             "name": "books/collections-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/collections",
@@ -235,7 +235,7 @@
         },
         {
             "name": "books/comments-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/comments",
@@ -252,7 +252,7 @@
         },
         {
             "name": "books/fileuploader-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/fileuploader",
@@ -280,7 +280,7 @@
         },
         {
             "name": "books/notifications-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/notifications",
@@ -297,7 +297,7 @@
         },
         {
             "name": "books/payment-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/payment",
@@ -314,7 +314,7 @@
         },
         {
             "name": "books/profile-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/profile",
@@ -331,11 +331,11 @@
         },
         {
             "name": "books/referral-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/referral",
-                "reference": "cf83b056ea9bff2b53d7ee6354c5eb880dda5bf0"
+                "reference": "07cf84a5cab12ad80b8c786ab6bc11d841e0b69f"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -348,7 +348,7 @@
         },
         {
             "name": "books/reviews-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/reviews",
@@ -366,7 +366,7 @@
         },
         {
             "name": "books/wallet-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/wallet",
@@ -384,7 +384,7 @@
         },
         {
             "name": "books/withdrawal-plugin",
-            "version": "dev-main",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/withdrawal",
@@ -11923,16 +11923,16 @@
         },
         {
             "name": "laravel/pint",
-            "version": "v1.10.5",
+            "version": "v1.10.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "a458fb057bfa2f5a09888a8aa349610be807b0c3"
+                "reference": "d1915b6ecc6406c00472c6b9ae75b46aa153bbb2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/a458fb057bfa2f5a09888a8aa349610be807b0c3",
-                "reference": "a458fb057bfa2f5a09888a8aa349610be807b0c3",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/d1915b6ecc6406c00472c6b9ae75b46aa153bbb2",
+                "reference": "d1915b6ecc6406c00472c6b9ae75b46aa153bbb2",
                 "shasum": ""
             },
             "require": {
@@ -11985,7 +11985,7 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2023-07-14T10:26:01+00:00"
+            "time": "2023-08-08T15:17:16+00:00"
         },
         {
             "name": "lemax10/asail",
@@ -13674,5 +13674,5 @@
         "php": "^8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }

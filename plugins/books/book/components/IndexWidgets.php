@@ -105,7 +105,7 @@ class IndexWidgets extends ComponentBase
     {
         $key = __FUNCTION__ . request()->ip();
         if (!RateLimiter::attempt($key, self::RATE_LIMIT_ATTEMPTS, fn() => 1, self::RATE_DELAY_SECONDS)) {
-            Flash::error(Lang::get('books.catalog::lang.plugin.too_many_attempt') . ' Попробуйте снова через ' . RateLimiter::availableIn($key) . ' сек.');
+            Flash::error(sprintf('%s Попробуйте снова через %s сек.',Lang::get('books.catalog::lang.plugin.too_many_attempt'),RateLimiter::availableIn($key)));
             return [];
         }
         if ($this->user) {

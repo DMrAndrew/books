@@ -19,7 +19,6 @@ use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Request;
 use ValidationException;
-use Validator;
 
 /**
  * Booker Component
@@ -69,7 +68,7 @@ class Booker extends ComponentBase
             return $redirect;
         }
         $this->user = Auth::getUser() ?? throw new ApplicationException('User required');
-        $this->book = $this->user->profile->books()->find((int)$this->property('book_id')) ?? new Book();
+        $this->book = $this->user->profile->books()->find((int) $this->property('book_id')) ?? new Book();
 
         $this->service = new BookService(user: $this->user, book: $this->book, session_key: $this->getSessionKey());
 
@@ -78,7 +77,7 @@ class Booker extends ComponentBase
             'coverUploader',
             [
                 'modelClass' => Book::class,
-                'deferredBinding' => !(bool)$this->book->id,
+                'deferredBinding' => ! (bool) $this->book->id,
                 'imageWidth' => 168,
                 'imageHeight' => 243,
             ]
@@ -99,21 +98,22 @@ class Booker extends ComponentBase
     {
         try {
             $data = post();
-            if (BookUtilities::countContentLengthForContent(post('annotation')) > 2000) {
-                throw  new ValidationException(['annotation' => 'Аннотация не должна превышать 2000 символов.']);
+            if (post('annotation') && BookUtilities::countContentLengthForContent(post('annotation')) > 2000) {
+                throw new ValidationException(['annotation' => 'Аннотация не должна превышать 2000 символов.']);
             }
             if ($this->service->getGenres()->count() === 0) {
-                throw  new ValidationException(['genres' => 'Укажите хотя бы один жанр.']);
+                throw new ValidationException(['genres' => 'Укажите хотя бы один жанр.']);
             }
 
             $book = $this->service->from($data);
-            $redirect = (bool)$this->book->id;
+            $redirect = (bool) $this->book->id;
 
-            return !$redirect ?
+            return ! $redirect ?
                 ['#about-header' => $this->renderPartial('book/about-header', ['book' => $book])]
                 : Redirect::to("/about-book/$book->id");
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
+
             return [];
         }
     }
@@ -127,7 +127,7 @@ class Booker extends ComponentBase
             collect(post('authors'))
                 ->whereNotNull('profile_id')
                 ->whereBetween('percent_value', [0, 100])
-                ->map(fn($i) => [
+                ->map(fn ($i) => [
                     'profile' => Profile::find($i['profile_id']),
                     'value' => $i['percent_value'],
                 ])
@@ -153,13 +153,13 @@ class Booker extends ComponentBase
             }
             $cycle = $this->user->profile->cycles()->create(array_merge(['user_id' => $this->user->id, 'name' => $name]));
 
-
             return [
                 '#cycle_input' => $this->renderPartial('@cycle_input', ['cycles' => $this->getCycles(), 'cycle_id' => $cycle->id]),
                 '#create_cycle_form_partial' => $this->renderPartial('@cycle_create_modal'),
             ];
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
+
             return [];
         }
     }
@@ -172,10 +172,9 @@ class Booker extends ComponentBase
     public function onSearchTag()
     {
         $term = trim(post('term'));
-        if (!$term || strlen($term) < 2) {
+        if (! $term || strlen($term) < 2) {
             return [];
         }
-
 
         $exists = $this->service->getTags();
         $like = Tag::query()
@@ -183,16 +182,15 @@ class Booker extends ComponentBase
             ->whereNotIn('id', $exists->pluck('id')->toArray())
             ->get();
 
-
-        $already_has = (bool)$exists->first(fn($i) => mb_strtolower($i->name) === mb_strtolower($term));
-        $can_create = !$already_has && !(bool)$like->first(fn($i) => mb_strtolower($i->name) === mb_strtolower($term));
+        $already_has = (bool) $exists->first(fn ($i) => mb_strtolower($i->name) === mb_strtolower($term));
+        $can_create = ! $already_has && ! (bool) $like->first(fn ($i) => mb_strtolower($i->name) === mb_strtolower($term));
 
         $res = [];
 
         if ($already_has) {
             $res[] = [
                 'disabled' => true,
-                'htm' => $this->renderPartial('select/option', ['placeholder' => 'Тэг «' . $term . '» уже добавлен на страницу']),
+                'htm' => $this->renderPartial('select/option', ['placeholder' => 'Тэг «'.$term.'» уже добавлен на страницу']),
             ];
         }
         $res = array_merge($res, collect($like)->map(function ($item) {
@@ -200,17 +198,17 @@ class Booker extends ComponentBase
                 'id' => $item->id,
                 'label' => $item->name,
                 'htm' => $this->renderPartial('select/option', ['label' => $item->name]),
-                'handler' => $this->alias . '::onAddTag',
+                'handler' => $this->alias.'::onAddTag',
             ];
         })->toArray());
 
         if ($can_create) {
             $res[] = [
                 'label' => $term,
-                'handler' => $this->alias . '::onAddTag',
+                'handler' => $this->alias.'::onAddTag',
                 'htm' => $this->renderPartial('select/option', [
                     'prepend_icon' => '#plus-stroked-16',
-                    'text' => 'Создать новый тэг «' . $term . '»',
+                    'text' => 'Создать новый тэг «'.$term.'»',
                     'active' => true,
                     'prepend_separator' => $array[0] ?? false,
                 ]),
@@ -220,33 +218,33 @@ class Booker extends ComponentBase
         return $res;
     }
 
-//    public function onSearchGenre()
-//    {
-//        $term = post('term');
-//        if (!$term && strlen($term) < 3) {
-//            return [];
-//        }
-//
-//        $array = Genre::public()
-//            ->name($term)
-//            ->get()
-//            ->diff($this->service->getGenres());
-//
-//        return collect($array)->map(function ($item) {
-//            return [
-//                'id' => $item->id,
-//                'label' => $item->name,
-//                'htm' => $this->renderPartial('select/option', ['label' => $item->name]),
-//                'handler' => $this->alias . '::onAddGenre',
-//            ];
-//        })->toArray();
-//    }
+    //    public function onSearchGenre()
+    //    {
+    //        $term = post('term');
+    //        if (!$term && strlen($term) < 3) {
+    //            return [];
+    //        }
+    //
+    //        $array = Genre::public()
+    //            ->name($term)
+    //            ->get()
+    //            ->diff($this->service->getGenres());
+    //
+    //        return collect($array)->map(function ($item) {
+    //            return [
+    //                'id' => $item->id,
+    //                'label' => $item->name,
+    //                'htm' => $this->renderPartial('select/option', ['label' => $item->name]),
+    //                'handler' => $this->alias . '::onAddGenre',
+    //            ];
+    //        })->toArray();
+    //    }
 
     public function onSearchAuthor()
     {
         try {
             $name = post('term');
-            if (!$name && strlen($name) < 1) {
+            if (! $name && strlen($name) < 1) {
                 return [];
             }
 
@@ -258,8 +256,8 @@ class Booker extends ComponentBase
                 return [
                     'id' => $item->id,
                     'label' => $item->username,
-                    'htm' => $this->renderPartial('select/option', ['label' => $item->username . " (id: $item->id)"]),
-                    'handler' => $this->alias . '::onAddAuthor',
+                    'htm' => $this->renderPartial('select/option', ['label' => $item->username." (id: $item->id)"]),
+                    'handler' => $this->alias.'::onAddAuthor',
                 ];
             })->toArray();
         } catch (Exception $ex) {
@@ -315,6 +313,7 @@ class Booker extends ComponentBase
             return $this->generateGenresInput();
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
+
             return $this->generateGenresInput();
         }
     }
@@ -334,14 +333,14 @@ class Booker extends ComponentBase
         }
     }
 
-//    public function onDeleteGenre(): array
-//    {
-//        if ($genre = Genre::find(post('id'))) {
-//            $this->service->removeGenre($genre);
-//        }
-//
-//        return $this->generateGenresInput();
-//    }
+    //    public function onDeleteGenre(): array
+    //    {
+    //        if ($genre = Genre::find(post('id'))) {
+    //            $this->service->removeGenre($genre);
+    //        }
+    //
+    //        return $this->generateGenresInput();
+    //    }
 
     /**
      * @throws ValidationException

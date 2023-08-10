@@ -104,9 +104,9 @@ function getFreqString(int $count, int $days): string
     if (!$count) {
         return '';
     }
-    $text = "%s %s в %s";
+    $text = "%s %s за %s";
     $forHumans = CarbonInterval::days($days)->cascade()
-        ->forHumans(['parts' => 1, 'aUnit' => true]);
+        ->forHumans(['parts' => 2]);
 
     return sprintf($text,
         $count,

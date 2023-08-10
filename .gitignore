@@ -35,3 +35,5 @@ docker-compose.local.yml
 /docker/nginx/domain.local.conf
 
 /backup
+
+pint.json

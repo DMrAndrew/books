@@ -62,7 +62,7 @@ class DocumentFormatter
                 $fictionBook = $document->first('FictionBook');
                 preg_match('/xmlns:(.*)=\"http:\/\/www.w3.org\/1999\/xlink\"/', $fictionBook->html(), $linkType);
 
-                return $linkType[1];
+                return $linkType[1] ?? $default;
             }
         }
 
