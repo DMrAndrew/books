@@ -3,9 +3,13 @@
 namespace Books\Book\Models;
 
 use Books\Book\Classes\ChapterService;
+use Books\Book\Classes\Contracts\iChapterService;
+use Books\Book\Classes\DeferredChapterService;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Reader;
+use Books\Book\Classes\ScopeToday;
 use Books\Book\Jobs\Paginate;
 use Books\Book\Jobs\Reading;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,6 +27,7 @@ use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
 use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
+use ValidationException;
 
 /**
  * Chapter Model
@@ -37,8 +42,7 @@ use System\Models\File;
  * * @method AttachOne picture
  * @method HasOne next
  * @method HasOne prev
- * @method MorphMany deferredContent все отложенные обновления
- * @method MorphMany deferredContentOpened отложенные обновления без слияния
+ * @method MorphMany deferred
  *
  * @property ?Chapter prev
  * @property ?Chapter next
@@ -156,14 +160,52 @@ class Chapter extends Model
 
     public $attachMany = [];
 
-    public function service(): ChapterService
+    public function reader()
     {
-        return new ChapterService($this);
+        return new Reader($this->edition->book, $this);
+    }
+
+    /**
+     * test
+     *
+     * @throws ValidationException
+     */
+    public function groupedTrackers(string $groupBy = 'user_id')
+    {
+        if (! in_array($groupBy, ['user_id', 'ip'])) {
+            throw new ValidationException(['column' => 'user_id or ip only']);
+        }
+        $tracker = (new Tracker());
+        $column = $tracker->qualifyColumn($groupBy);
+        $raw = sprintf('max( DATE(%s)) as date ,%s, count(*) as total_trackers, sum(%s) as total_time, sum(%s) as total_length, sum(%s) as total_progress',
+            $tracker->qualifyColumn('created_at'),
+            $tracker->qualifyColumn('trackable_id'),
+            $tracker->qualifyColumn('time'),
+            $tracker->qualifyColumn('length'),
+            $tracker->qualifyColumn('progress'),
+        );
+
+        return $this->paginationTrackers()
+            ->withoutTodayScope()
+            ->whereNotNull($column)
+            ->when($groupBy === 'ip', fn ($q) => $q->whereNull('user_id'))
+            ->selectRaw($raw)
+            ->groupBy($tracker->qualifyColumn('trackable_id'), $column);
+    }
+
+    public function service(): iChapterService
+    {
+        return $this->edition?->is_deferred ? $this->deferredService() : new ChapterService($this);
+    }
+
+    public function deferredService(): iChapterService
+    {
+        return new DeferredChapterService($this);
     }
 
     public function getTitleAttribute()
     {
-        return $this->attributes['title'] ?? false ?: ($this->exists ? '№' . $this->{$this->getSortOrderColumn()} : '');
+        return $this->attributes['title'] ?? false ?: ($this->exists ? '№'.$this->{$this->getSortOrderColumn()} : '');
     }
 
     public function isFree(): bool
@@ -173,16 +215,16 @@ class Chapter extends Model
 
     public function paginationTrackers()
     {
-        return $this->hasManyDeepFromRelations(
-            $this->pagination(),
-            [(new Pagination())->trackers()]);
+        return $this->hasManyDeepFromRelationsWithConstraints(
+            [$this, 'pagination'],
+            [new Pagination(), 'trackers']
+        )->withoutGlobalScope(new ScopeToday());
     }
 
     public function paginateContent()
     {
         Paginate::dispatch($this);
     }
-
 
     public function scopeSortOrder(Builder $builder, int $value): Builder
     {
@@ -209,54 +251,38 @@ class Chapter extends Model
         return $query->where('status', ChapterStatus::PUBLISHED);
     }
 
+    public function scopePublic(Builder $builder, bool $withPlanned = false)
+    {
+        return $builder
+            ->where('length', '>', 0)
+            ->when($withPlanned, fn ($q) => $q->where(fn ($where) => $where->published()->orWhere(fn ($or) => $or->planned())), fn ($q) => $q->published())
+            ->whereDoesntHave('deferred', fn ($deferred) => $deferred->deferred()->deferredCreate());
+    }
+
     public function scopeWithDeferredState(Builder $builder)
     {
         return $builder
             ->withDeferredUpdateExists()
-            ->withDeferredUpdateUnRequestedExists()
+            ->withDeferredUpdateNotRequestedExists()
             ->withDeferredUpdateRequestedExists()
-            ->withOnDeleteExists();
-    }
-
-    public function scopeWithOnDeleteExists(Builder $builder): Builder
-    {
-        return $builder->withExists(['deletedContent as on_delete_exists' => fn($content) => $content->onDeleteOpened()]);
-
-    }
-
-    public function scopeWithDeferredUpdateExists(Builder $builder): Builder
-    {
-        return $builder->withExists(['deferredContentOpened as deferred_content_exists' => fn($content) => $content->deferredOpened()]);
-
-    }
-
-    public function scopeWithDeferredUpdateUnRequestedExists(Builder $builder): Builder
-    {
-        return $builder->withExists(['deferredContentOpened as deferred_content_unrequested_exists' => fn($content) => $content->deferredOpened()->notRequested()]);
-
-    }
-
-    public function scopeWithDeferredUpdateRequestedExists(Builder $builder): Builder
-    {
-        return $builder->withExists(['deferredContentOpened as deferred_content_requested_exists' => fn($content) => $content->deferredOpened()->requested()]);
-
+            ->withDeferredDeleteExists();
     }
 
     public function scopeType(Builder $builder, ChapterStatus ...$status): Builder
     {
-        return $builder->whereIn('status', array_pluck($status,'value'));
+        return $builder->whereIn('status', array_pluck($status, 'value'));
     }
 
     public function lengthRecount()
     {
-        $this->length = (int)$this->pagination()->sum('length') ?? 0;
+        $this->length = (int) $this->pagination()->sum('length') ?? 0;
         $this->save();
-        $this->edition->lengthRecount();
+        $this->edition()->first()->lengthRecount();
     }
 
     public function setNeighbours()
     {
-        $builder = fn() => $this->edition()->first()->chapters()->published();
+        $builder = fn () => $this->edition()->first()->chapters()->public();
         $sort_order = $this->{$this->getSortOrderColumn()};
         $this->update([
             'prev_id' => $builder()->maxSortOrder($sort_order)->latest($this->getSortOrderColumn())->first()?->id,
@@ -268,17 +294,16 @@ class Chapter extends Model
     {
         if ($this->isDirty(['status'])) {
             $fresh = $this->fresh();
-            $this->edition->setFreeParts();
+            $this->edition()->first()->setFreeParts();
             if ($fresh->status === ChapterStatus::PUBLISHED) {
                 $fresh->lengthRecount();
             }
         }
     }
 
-
     protected function afterCreate()
     {
-        $this->edition->setFreeParts();
+        $this->edition()->first()->setFreeParts();
     }
 
     public function afterDelete()
@@ -289,20 +314,13 @@ class Chapter extends Model
         $this->lengthRecount();
     }
 
-    public function progress(?User $user = null)
+    public function progress(User $user = null)
     {
         Reading::dispatch($this, $user);
     }
 
     public function getContent()
     {
-        return $this->deferredContent()->notMerged()->first() ?? $this->content;
+        return $this->deferred()->deferredCreateOrUpdate()->first() ?? $this->content;
     }
-
-    public function getDeferredContentDiff()
-    {
-        return $this->content->getDiff($this->deferredContent);
-    }
-
-
 }

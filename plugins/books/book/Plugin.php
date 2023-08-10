@@ -2,6 +2,7 @@
 
 namespace Books\Book;
 
+use Books\Blog\Models\Post;
 use Books\Book\Behaviors\Contentable;
 use Books\Book\Behaviors\Prohibitable;
 use Books\Book\Behaviors\Trackable;
@@ -43,6 +44,7 @@ use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
+use Books\Book\Models\Content;
 use Books\Book\Models\Cycle;
 use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;

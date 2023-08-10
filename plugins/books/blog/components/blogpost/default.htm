@@ -1,0 +1,66 @@
+{% if privacyRestricted %}
+    <div class="ui-container-fluid">
+        <div class="ui-grid-container ui-grid-gap">
+            <div class="ui-col-sm-12">
+                <div class="blog-card__container">
+
+                    <div class="author__placeholder _indent">
+                        <svg class="square-32">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#blog-stroked-32' | theme}}"></use>
+                        </svg>
+                        <div class="ui-text-head--3 ui-text--bold">Доступ к публикации ограничен автором</div>
+                        <span>Возможно публикация доступна только подписчикам</span>
+                        <a href="/author-page/{{post.profile.id}}">
+                            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">
+                                Перейти на страницу автора
+                            </button>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="ui-container-fluid">
+        <div class="ui-grid-container ui-grid-gap">
+            <div class="ui-col-sm-9">
+                <div class="blog-card__container">
+                    <div class="blog-card wrapper _indent">
+                        <div class="blog-card__header">
+
+
+                                {% if post.profile.avatar %}
+                                <img class="square-40" src="{{ post.profile.avatar.getThumb(40,40)}} " alt="avatar">
+                                {% else %}
+                                <div class="avatar">{{ post.profile.firstLatter }}</div>
+                                {% endif %}
+
+                                <div class="">
+                                    <a href="/author-page/{{post.profile.id}}">
+                                        <div class="ui-text--bold __black">{{ post.profile.username }}</div>
+                                    </a>
+                                    <span class="blog-card__header-date">{{ post.published_at.diffForHumans }}</span>
+                                </div>
+
+                        </div>
+                        <div class="blog-card__body">
+                            <h1 class="blog-card__title ui-text-head--3 ui-text--bold _indent-small">{{ post.title }}</h1>
+                            <div class="blog-card__text typographical-block">
+                                {{ post.content|raw }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% component 'comments' %}
+            </div>
+
+            <!-- Сайдбар -->
+            <div class="ui-col-sm-3 author__sidebar">
+                {% component 'recommend' %}
+            </div>
+
+        </div>
+    </div>
+{% endif %}

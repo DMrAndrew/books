@@ -1,14 +1,7 @@
-// let openForm = (id = 'auth_popup') => document.getElementById(id).style.display = 'flex'
 let closeForm = (id = 'auth_popup') => {
     $('#' + id).hide()
 }
-// let closeContainers = () => Array.from(document.getElementsByClassName('auth__container')).forEach(e => e.style.display = 'none')
-// let openContainer = (id) => $('#' + id).show()
-// let toForm = (id) => {
-//     openForm(), closeContainers(), openContainer(id)
-// }
 
-console.log('13:25 07.07.2023')
 let loginPopup = () => oc.ajax('onGetLoginPopup');
 let registerPopup = () => oc.ajax('onGetRegisterPopup');
 let loginForm = () => oc.ajax('onGetLoginForm');
@@ -87,6 +80,9 @@ let tabElemInit = function () {
         }
     })
 }
+function refreshWidgets(){
+    oc.ajax('IndexWidgets::onRefreshWidgets')
+}
 addEventListener('page:before-cache', function () {
     // console.log('page:before-cache')
     $('*[data-header-action]').removeClass('active')
@@ -99,8 +95,15 @@ addEventListener('page:render', function () {
 });
 
 
+addEventListener('page:load', function () {
+     // console.log('page:load')
+    if (document.location.pathname === '/'  && document.querySelector('body').dataset.user === "0") {
+        refreshWidgets()
+    }
+
+});
 addEventListener('page:loaded', function () {
-    // console.log('page:loaded')
+     // console.log('page:loaded')
     initUserStuff()
     iniSelect()
 
@@ -122,7 +125,6 @@ addEventListener(`page:updated`, function () {
 
 addEventListener('page:unload', function () {
     // console.log('page:unload')
-
     window.reader && window.reader.clear()
 })
 

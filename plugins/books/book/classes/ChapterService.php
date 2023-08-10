@@ -2,9 +2,9 @@
 
 namespace Books\Book\Classes;
 
+use Books\Book\Classes\Contracts\iChapterService;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\ChapterStatus;
-use Books\Book\Classes\Enums\ContentStatus;
 use Books\Book\Classes\Enums\ContentTypeEnum;
 use Books\Book\Classes\Exceptions\UnknownFormatException;
 use Books\Book\Models\Chapter;
@@ -19,40 +19,44 @@ use Exception;
 use Illuminate\Support\Collection;
 use ValidationException;
 
-class ChapterService
+class ChapterService implements iChapterService
 {
     public function __construct(protected Chapter $chapter, protected ?Edition $edition = null)
     {
-        if (!$this->isNew() && !$this->edition?->exists) {
+        if (! $this->isNew() && ! $this->edition?->exists) {
             $this->edition = $this->chapter->edition;
         }
     }
 
     public function isNew(): bool
     {
-        return !$this->chapter->exists;
+        return ! $this->chapter->exists;
     }
 
-    /**
-     * @param Edition $edition
-     * @return ChapterService
-     */
-    public function setEdition(Edition $edition): static
+    public function setEdition(Edition $edition): iChapterService
     {
         $this->edition = $edition;
 
         return $this;
     }
 
-    /**
-     * @throws UnknownFormatException
-     * @throws Exception
-     */
+    public function getEdition(): ?Edition
+    {
+        return $this->edition;
+    }
+
+    public function getChapter(): Chapter
+    {
+        return $this->chapter;
+    }
+
+
     public function from(mixed $payload): ?Chapter
     {
+
         if ($payload instanceof \Tizis\FB2\Model\Chapter) {
-            $collection = BookUtilities::parseStringToParagraphCollection($payload->getContent(),SaveHtmlMode::WITH_WRAP);
-            if ((int)$collection->sum('length')) {
+            $collection = BookUtilities::parseStringToParagraphCollection($payload->getContent(), SaveHtmlMode::WITH_WRAP);
+            if ((int) $collection->sum('length')) {
                 $data = [
                     'title' => $payload->getTitle(),
                     'content' => $collection->pluck('html')->join(''),
@@ -65,10 +69,10 @@ class ChapterService
             $data = $payload;
         }
 
-
         if (is_array($data) || $data instanceof Collection) {
-            $data = $this->dataPrepare(is_array($data) ? $data : $data->toArray());
-            return $this->isNew() ? $this->create($data) : $this->update($data);
+            $data = static::dataPrepare(is_array($data) ? $data : $data->toArray());
+
+            return $this->isNew() ? static::create($data) : $this->update($data);
         }
         throw new UnknownFormatException();
     }
@@ -78,7 +82,7 @@ class ChapterService
      */
     protected function create(array $data): Chapter
     {
-        if (!$this->edition->id) {
+        if (! $this->edition->id) {
             throw new Exception('Edition required.');
         }
         $this->chapter->fill($data);
@@ -94,89 +98,61 @@ class ChapterService
 
     protected function update(array $data): Chapter
     {
-        return Db::transaction(function () use ($data) {
-            $this->chapter->fill($data);
+        $this->chapter->fill($data);
 
-            if (!$this->chapter->isDirty('status')) {
-                $this->chapter->published_at = $this->chapter->getOriginal('published_at');
-            }
-
-            $this->chapter->save();
-            Event::fire('books.chapter.updated', [$this->chapter]);
-
-            return $this->chapter;
-        });
-    }
-
-    public function mergeDeferred(): Chapter|bool
-    {
-        if ($content = $this->chapter->deferredContentOpened) {
-            return $this->update(['new_content' => $content->body]);
+        if (! $this->chapter->isDirty('status')) {
+            $this->chapter->published_at = $this->chapter->getOriginal('published_at');
         }
-        return false;
+
+        $this->chapter->save();
+        Event::fire('books.chapter.updated', [$this->chapter]);
+
+        return $this->chapter;
     }
 
     public function initUpdateBody(string $content): bool|int
     {
-        if (!$this->chapter->content->saved_from_editor) {
+        if (! $this->chapter->content->saved_from_editor) {
             return Content::query()->where('id', '=', $this->chapter->content->id)->update([
                 'body' => $content,
-                'saved_from_editor' => 1
+                'saved_from_editor' => 1,
             ]);
         }
+
         return false;
     }
 
+    protected function isDenied(): bool
+    {
+        return ! $this->edition->editAllowed() && ! $this->edition->is_deferred;
+    }
+
     /**
      * @throws ValidationException
      */
-    public function delete()
+    public function delete(): bool
     {
-        if (!$this->chapter->edition->editAllowed()) {
-            if ($this->edition->shouldDeferredUpdate()) {
-                $content = $this->chapter->deletedContent()->firstOrCreate(['type' => ContentTypeEnum::DEFERRED_DELETE, 'status' => ContentStatus::Pending]);
-                return $content->service()->markRequested();
-            } else {
-                throw new ValidationException(['chapter' => 'В данный момент Вы не можете удалять главы книг.']);
-            }
+        if ($this->isDenied()) {
+            throw new ValidationException(['chapter' => 'В данный момент Вы не можете удалять главы книги.']);
         }
-        return $this->actionDelete();
-    }
 
-    /**
-     * :(
-     *
-     * @return bool
-     */
-    public function actionDelete(): bool
-    {
-        return $this->chapter->delete();
-    }
+        return Db::transaction(function () {
+            //            $this->chapter->deferred()->typeNot(ContentTypeEnum::DEFERRED_DELETE)->get()->each->delete();
+            return $this->chapter->delete();
+        });
 
-    public function markCanceledDeferredUpdate()
-    {
-        return $this->chapter->deferredContentOpened?->service()->markCanceled();
-    }
-
-    public function markCanceledDeletedContent()
-    {
-        return $this->chapter->deletedContent?->service()->markCanceled();
     }
 
     /**
      * @throws ValidationException
      */
-    public function dataPrepare(array|Collection $data): array
+    protected function dataPrepare(array|Collection $data): array
     {
+        if ($this->isDenied()) {
+            throw new ValidationException(['edition' => 'В данный момент Вы не можете редактировать книгу.']);
+        }
+
         $data = collect($data);
-        if (!$this->edition->editAllowed()) {
-            if ($this->edition->shouldDeferredUpdate()) {
-                $data = $data->only(['content']);
-            } else {
-                throw new ValidationException(['edition' => 'Для этой книги запрещено редактирование глав.']);
-            }
-        }
-
 
         if ($data->has('status')) {
             $data['status'] = $data['status'] instanceof ChapterStatus ? $data['status'] : (ChapterStatus::tryFrom($data->get('status')) ?? ChapterStatus::DRAFT);
@@ -189,7 +165,7 @@ class ChapterService
                         break;
 
                     case ChapterStatus::PLANNED:
-                        if (!($data->get('published_at') instanceof Carbon)) {
+                        if (! ($data->get('published_at') instanceof Carbon)) {
                             throw new ValidationException(['published_at' => 'Не верный формат даты публикации.']);
                         }
                         $data['published_at'] = $data['published_at']->copy()->setMinutes(0)->setSeconds(0);
@@ -205,17 +181,19 @@ class ChapterService
         }
 
         if ($data->has('content')) {
-            $key = $this->edition?->shouldDeferredUpdate() ? 'deferred_content' : 'new_content';
-            $data[$key] = $data['content'];
+            $data['new_content'] = $data['content'];
             $data->forget('content');
         }
 
         return $data->toArray();
     }
 
+    /**
+     * @return null
+     */
     public function getPaginationLinks(int $page = 1)
     {
-        if (!$this->isNew()) {
+        if (! $this->isNew()) {
             $pagination = $this->chapter->pagination;
             $links = $pagination->map(function ($item) use ($pagination, $page) {
                 if (in_array($item->page, [
@@ -232,7 +210,7 @@ class ChapterService
             });
 
             return $links->filter(function ($value, $key) use ($links) {
-                return $value || ((bool)$links[$key + 1] ?? false);
+                return $value || ((bool) $links[$key + 1] ?? false);
             })->values();
         }
 
@@ -251,17 +229,19 @@ class ChapterService
                 ]
             );
         });
-        $pagination = $pages->map(function ($paginator) {
-            $page = $this->chapter->pagination()->firstOrCreate(['page' => $paginator->page], ['length' => $paginator->length]);
-            $page->fill($paginator->toArray());
-            $page->save();
+        Db::transaction(function () use ($pages) {
+            $pagination = $pages->map(function ($paginator) {
+                $page = $this->chapter->pagination()->firstOrCreate(['page' => $paginator->page], ['length' => $paginator->length]);
+                $page->fill($paginator->toArray());
+                $page->save();
 
-            return $page;
+                return $page;
+            });
+            $this->chapter->pagination()->whereNotIn('id', $pagination->pluck('id'))->delete();
+            $this->chapter->pagination()->get()->each->setNeighbours();
+            $this->chapter->lengthRecount();
+            Event::fire('books.chapter.paginated');
         });
-        $this->chapter->pagination()->whereNotIn('id', $pagination->pluck('id'))->delete();
-        $this->chapter->pagination()->get()->each->setNeighbours();
-        $this->chapter->lengthRecount();
-        Event::fire('books.chapter.paginated');
     }
 
     public function chunkContent(): Collection
@@ -271,8 +251,7 @@ class ChapterService
         });
     }
 
-
-    public function publish($forceFireEvent = true): Closure
+    public function publish(bool $forceFireEvent = true): Closure
     {
         $event = Db::transaction(function () {
             $this->chapter->fill([
@@ -281,10 +260,12 @@ class ChapterService
             ]);
             $this->chapter->save();
 
-            return fn() => Event::fire('books.chapter.published', [$this->chapter]);
+            return fn () => Event::fire('books.chapter.published', [$this->chapter]);
         });
         if ($forceFireEvent) {
             $event();
+
+            return fn () => true;
         }
 
         return $event;
@@ -301,6 +282,16 @@ class ChapterService
                 ->map(function ($chapter) {
                     return $chapter->service()->publish(forceFireEvent: false);
                 });
-        })->map(fn($callback) => is_callable($callback) ? $callback() : $callback);
+        })->each(fn ($callback) => is_callable($callback) ? $callback() : $callback);
+    }
+
+    public function merge(ContentTypeEnum $type): Chapter|bool
+    {
+        return false;
+    }
+
+    public function markCanceled(ContentTypeEnum $type)
+    {
+        // TODO: Implement markCanceled() method.
     }
 }

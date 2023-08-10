@@ -65,3 +65,9 @@ deferred_applied:
     event: Books\Notifications\Classes\Events\DeferredApplied
     items:
         - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+
+post_published:
+    name: Новая публикация в блоге
+    event: Books\Notifications\Classes\Events\PostPublished
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction

@@ -2,8 +2,6 @@
 
 namespace Books\Book\Models;
 
-use Cms\Classes\Controller;
-use DOMDocument;
 use Event;
 use Model;
 use October\Rain\Database\Builder;
@@ -70,32 +68,38 @@ class Pagination extends Model
         return $builder->where('page', '=', $page);
     }
 
-    public function setNeighbours()
+    public function setNeighbours(): void
     {
-        $builder = fn($page) => $this->chapter->pagination()->page($page)->first()?->id;
+        $builder = fn ($page) => $this->chapter->pagination()->page($page)->first()?->id;
         $this->update([
             'next_id' => $builder($this->page + 1),
             'prev_id' => $builder($this->page - 1),
         ]);
     }
 
-    public function trackTime($time = 0, $unit = 'ms')
+    /**
+     * Отслеживает время, потраченное на чтение.
+     *
+     * @param  int  $time Время, потраченное на чтение, в указанной единице измерения.
+     * @param  string  $unit Единица измерения времени (ms, s, m), в которой указано время. По умолчанию - 'ms'.
+     * @return ?Tracker Возвращает объект трекера.
+     */
+    public function trackTime(int $time = 0, string $unit = 'ms'): ?Tracker
     {
 
-        if (!$time) {
+        if (! $time) {
             return null;
         }
-        $time = (int)floor(match ($unit) {
+        $time = (int) floor(num: match ($unit) {
             'ms', 'millisecond' => $time / 1000,
             's', 'sec', 'seconds' => $time,
             'm', 'min', 'minutes' => $time * 60
         });
+
         $tracker = $this->getTracker();
         $tracker?->increment('time', $time);
         Event::fire('books.paginator.tracked', ['tracker_id' => $tracker->id]);
 
         return $tracker;
     }
-
-
 }

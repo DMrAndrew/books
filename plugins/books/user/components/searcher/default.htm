@@ -13,6 +13,7 @@
         <div class="ui-container-fluid">
             <div class="search-tabs ui-tabs">
                 <ul class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
+                    <span class="ui-tabs-link">Найдено:</span>
 
                     {% for key,tab in results %}
                     <li class="ui-tabs-link {{tab.active ? 'active' : ''}}" data-tab="{{key}}">{{tab.count}}
@@ -28,12 +29,17 @@
                 <div class="search-results ui-tabs-content {{tab.active ? 'active' : ''}}" data-tab-content="{{key}}">
 
                     {% for item in tab.items %}
-                    {% if item.type == 'Book' %}
-                    {% ajaxPartial "bookCard::standard-card" book=item  %}
-                    {% endif %}
-                    {% if tab.type == 'Profile' %}
-                    {% partial 'searcher::author' author=item %}
-                    {% endif %}
+                        {% if item.type == 'Book' %}
+                        {% ajaxPartial "bookCard::standard-card" book=item  %}
+                        {% endif %}
+
+                        {% if tab.type == 'Profile' %}
+                        {% partial 'searcher::author' author=item %}
+                        {% endif %}
+
+                        {% if tab.type == 'Post' %}
+                        {% ajaxPartial "BlogPostCard::card" post=item %}
+                        {% endif %}
                     {% endfor %}
 
                 </div>

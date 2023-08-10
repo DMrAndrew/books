@@ -47,7 +47,13 @@ function initTabs(container) {
         notEmptyTabLinks[activeIndex].click();
     } else {
         //hide all
-        document.querySelector(container).closest('.ui-tabs').style.display = 'none';
+        let el = document.querySelector(container);
+        if (el) {
+            let closest = el.closest('.ui-tabs')
+            if (closest) {
+                closest.style.display = 'none';
+            }
+        }
     }
     // addEventListener("popstate",  ev => {
     //   for (let [key, curLink] of tabLinks.entries()) {

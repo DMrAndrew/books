@@ -1,9 +1,11 @@
 <?php namespace Books\Blacklists\Components;
 
+use App\classes\PartialSpawns;
 use Books\Profile\Models\Profile;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
+use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -56,7 +58,7 @@ class Blacklist extends ComponentBase
     {
         return [
             'comments_blacklisted_profiles' => $this->profile?->profiles_blacklisted_in_comments()
-                ->paginate((int) $this->property('recordsPerPage', 16)),
+                ->paginate((int)$this->property('recordsPerPage', 16)),
         ];
     }
 
@@ -73,6 +75,7 @@ class Blacklist extends ComponentBase
             $banProfile = Profile::findOrFail(post('profile_id'));
             $this->profile->blackListCommentsFor($banProfile);
         } catch (Exception $e) {
+            Log::error($e->getMessage());
             Flash::error($e->getMessage());
             return [];
         }
@@ -94,14 +97,20 @@ class Blacklist extends ComponentBase
         try {
             $unBanProfile = Profile::findOrFail(post('profile_id'));
             $this->profile->unBlackListCommentsFor($unBanProfile);
+            Flash::success('Профиль пользователя успешно удален из Черного списка');
+
+            return starts_with($this->page->url, '/lc-blacklist') ? $this->renderList() : [];
+
         } catch (Exception $e) {
+            Log::error($e->getMessage());
             Flash::error($e->getMessage());
             return [];
         }
+    }
 
-        Flash::success('Профиль пользователя успешно удален из Черного списка');
-
-        return [];
+    public function renderList(): array
+    {
+        return [PartialSpawns::SPAWN_LC_BLACKLIST->value => $this->renderPartial('@default', $this->vals())];
     }
 
     /**

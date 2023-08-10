@@ -3,9 +3,9 @@ function openModal(container, buttonOpenModal) {
     const buttonOpen = document.querySelector(buttonOpenModal);
     const buttonClose = document.querySelector(container + ' ' + '[data-modal="close"]');
     document.body.style.overflow = 'initial';
-    if (!buttonOpen || !buttonOpen || !buttonClose) return
+    if (!modal  || !buttonClose) return
 
-    buttonOpen.addEventListener('click', e => {
+    buttonOpen?.addEventListener('click', e => {
         openModalFn(e, modal)
     })
 

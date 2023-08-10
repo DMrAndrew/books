@@ -8,6 +8,7 @@ use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Rater;
+use Books\Book\Classes\Reader;
 use Books\Book\Classes\ScopeToday;
 use Books\Catalog\Models\Genre;
 use Books\Collections\Models\Lib;
@@ -77,7 +78,6 @@ class Book extends Model
     use HasFactory;
     use HasRelationships;
     use PowerJoins;
-
 
     /**
      * @var string table associated with the model
@@ -227,14 +227,21 @@ class Book extends Model
 
     public $attachMany = [];
 
-    public static function findForPublic(int $book_id, ?User $user = null){
-           return  Book::query()->public()->find($book_id) // открыта в публичной зоне
+    public function reader()
+    {
+        return new Reader($this, ...func_get_args());
+    }
+
+    public static function findForPublic(int $book_id, ?User $user = null)
+    {
+        return Book::query()->public()->find($book_id) // открыта в публичной зоне
             ?? $user?->profile->books()->find($book_id) // пользователь автор книги
             ?? ($user ? Book::query()
-               ->whereHas('ebook' , fn($ebook) => $ebook->whereHas('customers', fn($customers) => $customers->where('user_id',$user->id)))
-               ->find($book_id)
-               : null); // пользователь купил книгу
+                ->whereHas('ebook', fn($ebook) => $ebook->whereHas('customers', fn($customers) => $customers->where('user_id', $user->id)))
+                ->find($book_id)
+                : null); // пользователь купил книгу
     }
+
     public function awardsItems()
     {
         return $this->hasManyDeepFromRelations($this->awards(), (new AwardBook())->award());
@@ -547,7 +554,7 @@ class Book extends Model
 
     public function scopeWithChapters(Builder $builder): Builder
     {
-        return $builder->with(['ebook.chapters' => fn($i) => $i->published()]);
+        return $builder->with(['ebook.chapters' => fn($i) => $i->public()]);
     }
 
     public function scopeAfterPublishedAtDate(Builder $builder, Carbon|int $date): Builder

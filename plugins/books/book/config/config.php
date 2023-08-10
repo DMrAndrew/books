@@ -10,6 +10,7 @@ return [
     'annotation_length' => env('BOOKS_ANNOTATION_LENGTH', 300),
     'minimal_price' => env('EDITION_MINIMAL_PRICE', 30),
     'minimal_free_parts' => env('EDITION_MINIMAL_FREE_PARTS', 3),
+    'free_working_days_before_frozen' => 30,
     'allowed_reader_domains' => [
         'bookstime.ru',
         'books.pomon.ru',
@@ -33,7 +34,7 @@ return [
         ],
         'rendererOptions' => [
             // how detailed the rendered HTML in-line diff is? (none, line, word, char)
-            'detailLevel' => 'char',
+            'detailLevel' => 'word',
             // renderer language: eng, cht, chs, jpn, ...
             // or an array which has the same keys with a language file
             // check the "Custom Language" section in the readme for more advanced usage

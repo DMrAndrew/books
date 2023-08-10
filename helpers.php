@@ -101,9 +101,12 @@ function comDomain(): ?string
 
 function getFreqString(int $count, int $days): string
 {
-    $text = "%s %s в %s";
+    if (!$count) {
+        return '';
+    }
+    $text = "%s %s за %s";
     $forHumans = CarbonInterval::days($days)->cascade()
-        ->forHumans(['parts' => 1, 'aUnit' => true]);
+        ->forHumans(['parts' => 2]);
 
     return sprintf($text,
         $count,

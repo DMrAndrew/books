@@ -3,6 +3,7 @@
 namespace Books\Profile\Models;
 
 use App\traits\HasUserScope;
+use Books\Blog\Models\Post;
 use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
@@ -222,6 +223,11 @@ class Profile extends Model
         return $this->belongsToManyTroughProfiler(Comment::class);
     }
 
+    public function postsThroughProfiler(): BelongsToMany
+    {
+        return $this->belongsToManyTroughProfiler(Post::class);
+    }
+
     public function reposts(): BelongsToMany
     {
         return $this->belongsToManyTroughProfiler(Repost::class);
@@ -265,6 +271,26 @@ class Profile extends Model
         return match (PrivacySettingsEnum::tryFrom($setting->value)) {
             PrivacySettingsEnum::ALL => true,
             PrivacySettingsEnum::SUBSCRIBERS => $profile->hasSubscription($this),
+            default => false
+        };
+    }
+
+    public function canSeeBlogPosts(?Profile $profile = null)
+    {
+        $profile ??= Auth::getUser()?->profile;
+
+        if ($profile != null && $profile->is($this)) {
+            return true;
+        }
+
+        $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_BLOG)->first();
+        if (!$setting) {
+            return true;
+        }
+
+        return match (PrivacySettingsEnum::tryFrom($setting->value)) {
+            PrivacySettingsEnum::ALL => true,
+            PrivacySettingsEnum::SUBSCRIBERS => (bool) $profile?->hasSubscription($this),
             default => false
         };
     }
