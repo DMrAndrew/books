@@ -19,7 +19,7 @@ class PostPublished extends BaseEvent
     {
         return [
             'type' => NotificationTypeEnum::BLOG->value,
-            'icon' => 'blog-stroked-24',
+            'icon' => 'blog-stroked-32',
             'template' => 'post_published',
         ];
     }
