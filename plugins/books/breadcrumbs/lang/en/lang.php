@@ -2,21 +2,21 @@
 
 return [
     'plugin'   => [
-        'name'        => 'Breadcrums',
+        'name'        => 'Breadcrumbs',
         'description' => 'Render breadcrumbs on page',
         'permissions' => [
             'access_settings' => 'Access breadcrumbs configuration settings',
         ],
     ],
     'settings' => [
-        'label'       => 'Breadcrums',
+        'label'       => 'Breadcrumbs',
         'description' => 'Settings breadcrumbs',
         'homepage'    => 'Home page',
         'catalog'     => 'Catalog page',
         'no_select'   => '-- No select --',
     ],
     'component' => [
-        'name'        => 'Breadcrums',
+        'name'        => 'Breadcrumbs',
         'description' => 'Render breadcrumbs on page',
     ],
     'exceptions' => [

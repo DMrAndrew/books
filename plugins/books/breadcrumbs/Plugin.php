@@ -1,6 +1,5 @@
 <?php namespace Books\Breadcrumbs;
 
-use Backend;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Books\Breadcrumbs\Components\Breadcrumbs;
@@ -115,22 +114,8 @@ class Plugin extends PluginBase
                 }
 
                 $trail->push(Message::trans('Home'), 'javascript:', [
-                    'itemid' => url($locale . $page->url)
+                    'itemid' => url($locale . $page?->url)
                 ]);
-            });
-            /** @var BreadcrumbsManager $manager */
-            $manager = app(BreadcrumbsManager::class);
-            $manager->register('catalog', static function (BreadcrumbsGenerator $trail) use ($locale) {
-                $trail->parent('home');
-
-                $page = Page::find(Settings::get('catalog'));
-
-                if ($page) {
-                    $trail->push($page->title, url($locale . '/catalog'));
-                    return;
-                }
-
-                $trail->push(Message::trans('Catalog'), url($locale . '/catalog'));
             });
         } catch (DuplicateBreadcrumbException $e) {
             trace_log($e);

@@ -2,6 +2,7 @@
 
 namespace Books\Book;
 
+use Arr;
 use Books\Blog\Models\Post;
 use Books\Book\Behaviors\Contentable;
 use Books\Book\Behaviors\Prohibitable;
@@ -53,6 +54,9 @@ use Books\Book\Models\Prohibited;
 use Books\Book\Models\SystemMessage;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Books\Collections\Models\Lib;
 use Books\Notifications\Console\NotifyUsersAboutTodayDiscounts;
 use Books\Profile\Behaviors\Slavable;
@@ -65,6 +69,7 @@ use Illuminate\Foundation\AliasLoader;
 use Mobecan\Favorites\Behaviors\Favorable;
 use October\Rain\Database\Models\DeferredBinding;
 use RainLab\Location\Behaviors\LocationModel;
+use RainLab\Location\Models\State;
 use System\Classes\PluginBase;
 use Tizis\FB2\FB2Controller;
 use Backend;
@@ -189,7 +194,6 @@ class Plugin extends PluginBase
                 ],
             ]);
         });
-
     }
 
     /**
