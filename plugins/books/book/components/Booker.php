@@ -8,6 +8,9 @@ use Books\Book\Classes\BookUtilities;
 use Books\Book\Classes\Enums\AgeRestrictionsEnum;
 use Books\Book\Models\Book;
 use Books\Book\Models\Tag;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Books\Catalog\Models\Genre;
 use Books\FileUploader\Components\ImageUploader;
 use Books\Profile\Models\Profile;
@@ -87,6 +90,8 @@ class Booker extends ComponentBase
         $this->page['age_restrictions'] = AgeRestrictionsEnum::cases();
         $this->page['cycles'] = $this->getCycles();
         $this->page['genres_list'] = Genre::public()->get()->diff($this->book->genres);
+
+        $this->registerBreadcrumbs();
     }
 
     public function onRefreshFiles()
@@ -380,5 +385,22 @@ class Booker extends ComponentBase
     public function getSessionKey()
     {
         return post('_session_key');
+    }
+
+    /**
+     * @return void
+     * @throws DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+        $manager->register('book-create', static function (BreadcrumbsGenerator $trail, $params) {
+
+            /** Главная */
+            $trail->parent('home');
+
+            /** Создание книги */
+            $trail->push('Создание книги');
+        });
     }
 }

@@ -7,6 +7,7 @@ use Books\Book\Classes\Traits\InjectBookStuff;
 use Books\Book\Models\Book;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Books\Comments\Components\Comments;
 use Books\Reposts\Components\Reposter;
 use Cms\Classes\ComponentBase;
@@ -164,7 +165,7 @@ class BookPage extends ComponentBase
 
     /**
      * @return void
-     * @throws \Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException
+     * @throws DuplicateBreadcrumbException
      */
     private function registerBreadcrumbs(): void
     {

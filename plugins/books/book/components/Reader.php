@@ -9,6 +9,7 @@ use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -195,7 +196,7 @@ class Reader extends ComponentBase
 
     /**
      * @return void
-     * @throws \Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException
+     * @throws DuplicateBreadcrumbException
      */
     private function registerBreadcrumbs(): void
     {
