@@ -7,6 +7,8 @@ use Books\Book\Classes\Reader as Service;
 use Books\Book\Classes\Traits\InjectBookStuff;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -66,6 +68,8 @@ class Reader extends ComponentBase
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
         $advert = $this->addComponent(AdvertBanner::class, 'advertBanner');
+
+        $this->registerBreadcrumbs();
     }
 
     public function onRun()
@@ -187,5 +191,32 @@ class Reader extends ComponentBase
     public function getParamPage()
     {
         return $this->param('page');
+    }
+
+    /**
+     * @return void
+     * @throws \Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+        $book = $this->book;
+        $manager->register('reader', static function (BreadcrumbsGenerator $trail, $params) use ($book) {
+
+            /** Главная */
+            $trail->parent('home');
+
+            /** Книги */
+            $trail->push('Книги', url('/listing'));
+
+            /** Жанр */
+            $genre = $book->genres->first();
+            if ($genre) {
+                $trail->push($genre->name, url('/listing?genre=' . $genre->id));
+            }
+
+            /** Название книги */
+            $trail->push($book->title);
+        });
     }
 }

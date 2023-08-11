@@ -92,11 +92,7 @@ class BookPage extends ComponentBase
         $this->addComponent(AdvertBanner::class, 'advertBanner');
         $this->addMeta();
 
-        /**
-         * Breadcrumbs
-         */
         $this->registerBreadcrumbs();
-
     }
 
     public function onRender()
@@ -166,7 +162,11 @@ class BookPage extends ComponentBase
         return $this->user && !$this->book->profiles()->user($this->user)->exists();
     }
 
-    private function registerBreadcrumbs()
+    /**
+     * @return void
+     * @throws \Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
     {
         $manager = app(BreadcrumbsManager::class);
         $book = $this->book;
