@@ -1,4 +1,6 @@
-<?php namespace Books\Book\Jobs;
+<?php
+
+namespace Books\Book\Jobs;
 
 use Books\Book\Classes\FB2Manager;
 use Books\Book\Models\Edition;
@@ -69,7 +71,6 @@ class ParseFB2 implements ShouldQueue
                 ->name('Загрузка книги: '.$this->edition->book->title)
                 ->dispatch();
 
-
         } catch (Exception $exception) {
             Log::error($exception->getMessage());
             $this->edition->setParsingFailed();
@@ -77,7 +78,8 @@ class ParseFB2 implements ShouldQueue
         }
     }
 
-    public function tags(): array{
-        return ['parsing','parseFB', get_class($this->edition).':'.$this->edition->id];
+    public function tags(): array
+    {
+        return ['parsing', 'parseFB', get_class($this->edition).':'.$this->edition->id];
     }
 }

@@ -229,19 +229,17 @@ class ChapterService implements iChapterService
                 ]
             );
         });
-        Db::transaction(function () use ($pages) {
-            $pagination = $pages->map(function ($paginator) {
-                $page = $this->chapter->pagination()->firstOrCreate(['page' => $paginator->page], ['length' => $paginator->length]);
-                $page->fill($paginator->toArray());
-                $page->save();
+        $pagination = $pages->map(function ($paginator) {
+            $page = $this->chapter->pagination()->firstOrCreate(['page' => $paginator->page], ['length' => $paginator->length]);
+            $page->fill($paginator->toArray());
+            $page->save();
 
-                return $page;
-            });
-            $this->chapter->pagination()->whereNotIn('id', $pagination->pluck('id'))->delete();
-            $this->chapter->pagination()->get()->each->setNeighbours();
-            $this->chapter->lengthRecount();
-            Event::fire('books.chapter.paginated');
+            return $page;
         });
+        $this->chapter->pagination()->whereNotIn('id', $pagination->pluck('id'))->delete();
+        $this->chapter->pagination()->get()->each->setNeighbours();
+        $this->chapter->lengthRecount();
+        Event::fire('books.chapter.paginated');
     }
 
     public function chunkContent(): Collection
