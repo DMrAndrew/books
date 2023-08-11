@@ -1,12 +1,11 @@
 <?php namespace Books\Book\Jobs;
 
-use Books\Book\Models\Chapter;
+use Books\Book\Models\Tracker;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use RainLab\User\Models\User;
 
 /**
  * Reading Job
@@ -18,7 +17,7 @@ class Reading implements ShouldQueue
     /**
      * __construct a new job instance.
      */
-    public function __construct(public Chapter $chapter, public ?User $user = null)
+    public function __construct(public Tracker $tracker)
     {
         $this->onQueue('reading');
     }
@@ -29,8 +28,7 @@ class Reading implements ShouldQueue
     public function handle(): void
     {
         try {
-            $this->chapter->computeProgress($this->user);
-            $this->chapter->edition->computeProgress($this->user);
+            $this->tracker->afterTrack();
         }
         catch (\Exception $exception){
             $this->fail($exception->getMessage());
@@ -44,6 +42,6 @@ class Reading implements ShouldQueue
      */
     public function tags(): array
     {
-        return ['reading', get_class($this->chapter).':'.$this->chapter->id, $this->user ? get_class($this->user).':'.$this->user->id : ''];
+        return ['reading', get_class($this->tracker->trackable).':'.$this->tracker->trackable->id, $this->tracker->user_id ? $this->tracker->user_id:$this->tracker->ip];
     }
 }

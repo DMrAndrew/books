@@ -1,4 +1,6 @@
-<?php namespace Books\Book\Jobs;
+<?php
+
+namespace Books\Book\Jobs;
 
 use Books\Book\Classes\GenreRater;
 use Books\Book\Models\Book;
@@ -15,6 +17,10 @@ use Illuminate\Queue\SerializesModels;
 class GenreRaterExec implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public $timeout = 600;
+
+    public $tries = 1;
 
     /**
      * __construct a new job instance.
@@ -33,7 +39,8 @@ class GenreRaterExec implements ShouldQueue, ShouldBeUnique
         (new GenreRater())->compute();
     }
 
-    public function tags(): array{
+    public function tags(): array
+    {
         return ['compute', 'GenreRaterExec'];
     }
 }
