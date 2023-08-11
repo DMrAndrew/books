@@ -1,0 +1,23 @@
+{% if breadcrumbs %}
+<div class="breadcrumbs">
+    <ol class="breadcrumbs__list" itemscope="" itemtype="http://schema.org/BreadcrumbList">
+        {% for breadcrumb in breadcrumbs %}
+        {% if breadcrumb.url %}
+        <li class="breadcrumbs__item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+            {% if not loop.last and not breadcrumb.hideLink %}
+            <a class="breadcrumbs__link" title="{{ breadcrumb.title }}" itemid="{{ breadcrumb.itemid ?? breadcrumb.url }}" href="{{ breadcrumb.url }}" itemscope="" itemtype="http://schema.org/Thing" itemprop="item">
+                {% endif %}
+                <span itemprop="name">{{ breadcrumb.title }}</span>
+                {% if not loop.last and not breadcrumb.hideLink %}
+            </a>
+            {% endif %}
+            {% if not loop.last %}
+            <span class="breadcrumbs__icon"></span>
+            {% endif %}
+            <meta itemprop="position" content="{{ loop.index }}">
+        </li>
+        {% endif %}
+        {% endfor %}
+    </ol>
+</div>
+{% endif %}

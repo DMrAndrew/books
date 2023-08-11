@@ -1,0 +1,14 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    homepage:
+        label: books.breadcrumbs::lang.settings.homepage
+        type: dropdown
+        emptyOption: books.breadcrumbs::lang.settings.no_select
+
+    catalog:
+        label: books.breadcrumbs::lang.settings.catalog
+        type: dropdown
+        emptyOption: books.breadcrumbs::lang.settings.no_select

@@ -75,7 +75,11 @@ use Books\Book\Models\Content as ContentModel;
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User', 'Books.Profile'];
+    public $require = [
+        'RainLab.User',
+        'Books.Profile',
+        'Books.Breadcrumbs',
+    ];
 
     /**
      * Returns information about this plugin.

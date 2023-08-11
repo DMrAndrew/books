@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9de4eea3d56e544cf251d3796df87acd",
+    "content-hash": "cb43f737d420e971abcd59ede7231c31",
     "packages": [
         {
             "name": "abordage/laravel-last-modified",
@@ -160,11 +160,11 @@
         },
         {
             "name": "books/blacklists-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/blacklists",
-                "reference": "33f32b041417e56693a98e61e3c5a50ebd22f782"
+                "reference": "2a45c3a20feeeaba4443ff6a249a373c13f9ec7b"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -177,11 +177,11 @@
         },
         {
             "name": "books/blog-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/blog",
-                "reference": "4c71f219884cead27821e7a17463c93c03fe268d"
+                "reference": "c703c729db10d82cec43dbac25d6accd61d71800"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -194,7 +194,7 @@
         },
         {
             "name": "books/book-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "plugins/books/book",
@@ -217,8 +217,25 @@
             }
         },
         {
+            "name": "books/breadcrumbs-plugin",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./plugins/books/breadcrumbs",
+                "reference": "b5255b26641302b1ed31ba9b60b014fef43cc4fd"
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "october-plugin",
+            "description": "No description provided yet...",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "books/collections-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/collections",
@@ -235,7 +252,7 @@
         },
         {
             "name": "books/comments-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/comments",
@@ -252,7 +269,7 @@
         },
         {
             "name": "books/fileuploader-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/fileuploader",
@@ -280,7 +297,7 @@
         },
         {
             "name": "books/notifications-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/notifications",
@@ -297,7 +314,7 @@
         },
         {
             "name": "books/payment-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/payment",
@@ -314,7 +331,7 @@
         },
         {
             "name": "books/profile-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/profile",
@@ -331,11 +348,11 @@
         },
         {
             "name": "books/referral-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/referral",
-                "reference": "07cf84a5cab12ad80b8c786ab6bc11d841e0b69f"
+                "reference": "cf83b056ea9bff2b53d7ee6354c5eb880dda5bf0"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -348,7 +365,7 @@
         },
         {
             "name": "books/reviews-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/reviews",
@@ -366,7 +383,7 @@
         },
         {
             "name": "books/wallet-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/wallet",
@@ -384,7 +401,7 @@
         },
         {
             "name": "books/withdrawal-plugin",
-            "version": "dev-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/withdrawal",
@@ -6970,6 +6987,49 @@
                 "source": "https://github.com/rainlab/sitemap-plugin/tree/v1.2.7"
             },
             "time": "2023-07-29T06:01:09+00:00"
+        },
+        {
+            "name": "rainlab/translate-plugin",
+            "version": "v2.2.7",
+            "dist": {
+                "type": "zip",
+                "url": "https://gateway.octobercms.com/composer/dist/rainlab/translate-plugin/rainlab-translate-plugin-0abf8db499fc8858a9194812188111d054b39d96-zip-64ed95.zip",
+                "reference": "0abf8db499fc8858a9194812188111d054b39d96",
+                "shasum": "7373808d2783ad3a23f297eec6ad4f46c92c0343"
+            },
+            "require": {
+                "composer/installers": "~1.0",
+                "october/rain": ">=3.1",
+                "php": ">=8.0.2"
+            },
+            "type": "october-plugin",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexey Bobkov",
+                    "email": "aleksey.bobkov@gmail.com",
+                    "role": "Co-founder"
+                },
+                {
+                    "name": "Samuel Georges",
+                    "email": "daftspunky@gmail.com",
+                    "role": "Co-founder"
+                }
+            ],
+            "description": "Translate plugin for October CMS",
+            "homepage": "https://octobercms.com/plugin/rainlab-translate",
+            "keywords": [
+                "october",
+                "octobercms",
+                "translate"
+            ],
+            "support": {
+                "source": "https://github.com/rainlab/translate-plugin/tree/v2.2.7",
+                "issues": "https://github.com/rainlab/translate-plugin/issues"
+            },
+            "time": "2023-07-29T06:04:53+00:00"
         },
         {
             "name": "rainlab/user-plugin",
@@ -13671,8 +13731,10 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.1"
+        "php": "^8.1",
+        "ext-dom": "*",
+        "ext-fileinfo": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
