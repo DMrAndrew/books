@@ -531,7 +531,7 @@ class Book extends Model
         return $q->with([
             'cover',
             'tags',
-            'genres',
+            'genres' => fn($q) => $q->withPivot(['rate_number']),
             'stats',
             'ebook' => fn($ebook) => $ebook->withActiveDiscountExist(),
             'ebook.discount',
