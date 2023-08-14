@@ -201,8 +201,7 @@ class Reader extends ComponentBase
     private function registerBreadcrumbs(): void
     {
         $manager = app(BreadcrumbsManager::class);
-        $book = $this->book;
-        $manager->register('reader', static function (BreadcrumbsGenerator $trail, $params) use ($book) {
+        $manager->register('reader', function (BreadcrumbsGenerator $trail, $params) {
 
             /** Главная */
             $trail->parent('home');
@@ -211,13 +210,13 @@ class Reader extends ComponentBase
             $trail->push('Книги', url('/listing'));
 
             /** Жанр */
-            $genre = $book->genres->first();
+            $genre = $this->book->genres->first();
             if ($genre) {
                 $trail->push($genre->name, url('/listing?genre=' . $genre->id));
             }
 
             /** Название книги */
-            $trail->push($book->title);
+            $trail->push($this->book->title);
         });
     }
 }

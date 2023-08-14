@@ -67,8 +67,6 @@ class CommercialSalesStatisticsDetail extends ComponentBase
         /**
          * Book
          */
-        //$book = $this->getAccountBooks()->where('id', $this->book_id)->first();
-
         if (!$this->book) {
             abort(404);
         }
@@ -176,12 +174,11 @@ class CommercialSalesStatisticsDetail extends ComponentBase
     {
         $manager = app(BreadcrumbsManager::class);
 
-        $book = $this->book;
-        $manager->register('lc-commercial-statistics-detail', static function (BreadcrumbsGenerator $trail, $params) use ($book) {
+        $manager->register('lc-commercial-statistics-detail', function (BreadcrumbsGenerator $trail, $params) {
             $trail->parent('commercial_cabinet');
             $trail->push('Статистика продаж', url('/lc-commercial-statistics'));
-            if ($book) {
-                $trail->push($book?->title);
+            if ($this->book) {
+                $trail->push($this->book->title);
             }
         });
     }
