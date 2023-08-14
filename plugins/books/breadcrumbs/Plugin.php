@@ -105,17 +105,34 @@ class Plugin extends PluginBase
             $manager = app(BreadcrumbsManager::class);
             $manager->register('home', static function (BreadcrumbsGenerator $trail) use ($locale) {
                 $page = Page::find(Settings::get('homepage'));
-
                 if ($page) {
-                    $trail->push($page->title, 'javascript:', [
-                        'itemid' => url($locale . $page->url)
-                    ]);
+                    $trail->push($page->title, '/');
                     return;
                 }
 
-                $trail->push(Message::trans('Home'), 'javascript:', [
-                    'itemid' => url($locale . $page?->url)
-                ]);
+                $trail->push(Message::trans('Главная'), '/');
+            });
+            $manager->register('lc', static function (BreadcrumbsGenerator $trail) use ($locale) {
+                $trail->parent('home');
+
+                $page = Page::find(Settings::get('lc'));
+                if ($page) {
+                    $trail->push($page->title, '/lc-profile');
+                    return;
+                }
+
+                $trail->push(Message::trans('Личный кабинет'), '/lc-profile');
+            });
+            $manager->register('commercial_cabinet', static function (BreadcrumbsGenerator $trail) use ($locale) {
+                $trail->parent('home');
+
+                $page = Page::find(Settings::get('commercial_cabinet'));
+                if ($page) {
+                    $trail->push($page->title, '/lc-commercial');
+                    return;
+                }
+
+                $trail->push(Message::trans('Коммерческий кабинет'), '/lc-commercial');
             });
         } catch (DuplicateBreadcrumbException $e) {
             trace_log($e);

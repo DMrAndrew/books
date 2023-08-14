@@ -13,6 +13,8 @@ return [
         'description' => 'Settings breadcrumbs',
         'homepage'    => 'Home page',
         'catalog'     => 'Catalog page',
+        'lc'            => 'Личный кабинет',
+        'commercial_cabinet'     => 'Коммерческий кабинет',
         'no_select'   => '-- No select --',
     ],
     'component' => [

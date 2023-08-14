@@ -394,13 +394,15 @@ class Booker extends ComponentBase
     private function registerBreadcrumbs(): void
     {
         $manager = app(BreadcrumbsManager::class);
+        $book = $this->book;
+
         $manager->register('book-create', static function (BreadcrumbsGenerator $trail, $params) {
-
-            /** Главная */
             $trail->parent('home');
-
-            /** Создание книги */
             $trail->push('Создание книги');
+        });
+        $manager->register('book-about', static function (BreadcrumbsGenerator $trail, $params) use ($book){
+            $trail->parent('home');
+            $trail->push($book->title);
         });
     }
 }

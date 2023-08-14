@@ -2,6 +2,9 @@
 
 use Books\Book\Classes\Enums\SellStatisticSellTypeEnum;
 use Books\Book\Models\SellStatistics;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
 use Db;
@@ -43,6 +46,8 @@ class CommercialSalesReports extends ComponentBase
             return $redirect;
         }
         $this->user = Auth::getUser();
+
+        $this->registerBreadcrumbs();
     }
 
     public function onRender()
@@ -150,5 +155,19 @@ class CommercialSalesReports extends ComponentBase
         $endYear = Carbon::createFromFormat('Y-m-d H:i:s', $sellAtRange->end_year)->year;
 
         return range($startYear, $endYear);
+    }
+
+    /**
+     * @return void
+     * @throws DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+
+        $manager->register('lc-commercial-reports', static function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('commercial_cabinet');
+            $trail->push('Ежемесячные отчеты');
+        });
     }
 }

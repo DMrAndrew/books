@@ -12,3 +12,13 @@ fields:
         label: books.breadcrumbs::lang.settings.catalog
         type: dropdown
         emptyOption: books.breadcrumbs::lang.settings.no_select
+
+    lc:
+        label: books.breadcrumbs::lang.settings.lc
+        type: dropdown
+        emptyOption: books.breadcrumbs::lang.settings.no_select
+
+    commercial_cabinet:
+        label: books.breadcrumbs::lang.settings.commercial_cabinet
+        type: dropdown
+        emptyOption: books.breadcrumbs::lang.settings.no_select

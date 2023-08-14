@@ -45,7 +45,6 @@ class Plugin extends PluginBase
         'Books.User',
         'Books.Wallet',
         'Books.Blacklists',
-        'Books.Blog',
     ];
 
     /**

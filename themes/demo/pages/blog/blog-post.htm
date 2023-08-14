@@ -1,11 +1,12 @@
-title = "Блог"
-layout = "default"
 url = "/blog/:post_slug"
+layout = "default"
+title = "Блог"
 meta_title = "Блог"
+breadcrumbs = "blogpost"
 [session]
+security = "all"
 [BlogPost]
+slug = "{{ :post_slug }}"
 ==
-<div style="margin-bottom: 16px"></div>
+{% component 'Breadcrumbs' %}
 {% component 'BlogPost' %}
-
-

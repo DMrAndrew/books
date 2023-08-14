@@ -31,4 +31,19 @@ class Settings extends Model
     {
         return Page::all()->lists('title', 'id');
     }
+    /**
+     * @return array
+     */
+    public function getLcOptions(): array
+    {
+        return Page::all()->lists('title', 'id');
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommercialCabinetOptions(): array
+    {
+        return Page::all()->lists('title', 'id');
+    }
 }
