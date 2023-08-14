@@ -5,9 +5,11 @@ namespace Books\Book\Components;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Traits\InjectBookStuff;
 use Books\Book\Models\Book;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Books\Comments\Components\Comments;
 use Books\Reposts\Components\Reposter;
-use Books\User\Classes\UserService;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -90,6 +92,8 @@ class BookPage extends ComponentBase
         $this->addComponent(BookAwards::class, 'bookAwards');
         $this->addComponent(AdvertBanner::class, 'advertBanner');
         $this->addMeta();
+
+        $this->registerBreadcrumbs();
     }
 
     public function onRender()
@@ -157,5 +161,31 @@ class BookPage extends ComponentBase
     private function supportBtn(): bool
     {
         return $this->user && !$this->book->profiles()->user($this->user)->exists();
+    }
+
+    /**
+     * @return void
+     * @throws DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+        $manager->register('book', function (BreadcrumbsGenerator $trail, $params) {
+
+            /** Главная */
+            $trail->parent('home');
+
+            /** Книги */
+            $trail->push('Книги', url('/listing'));
+
+            /** Жанр */
+            $genre = $this->book->genres->first();
+            if ($genre) {
+                $trail->push($genre->name, url('/listing?genre=' . $genre->id));
+            }
+
+            /** Название книги */
+            $trail->push($this->book->title);
+        });
     }
 }

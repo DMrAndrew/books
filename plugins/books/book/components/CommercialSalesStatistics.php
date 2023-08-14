@@ -4,6 +4,9 @@ use Books\Book\Classes\Traits\AccoutBooksTrait;
 use Books\Book\Models\Book;
 use Books\Book\Models\SellStatistics;
 use Books\Book\Traits\FormatNumberTrait;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
 use Db;
@@ -51,6 +54,8 @@ class CommercialSalesStatistics extends ComponentBase
         $this->user = Auth::getUser();
 
         $this->prepareDates();
+
+        $this->registerBreadcrumbs();
     }
 
     public function onRender()
@@ -173,5 +178,19 @@ class CommercialSalesStatistics extends ComponentBase
             $this->from = Carbon::createFromFormat('Y-m-d H:i:s', $sellAtRange->start_year);
             $this->to = Carbon::createFromFormat('Y-m-d H:i:s', $sellAtRange->end_year);
         }
+    }
+
+    /**
+     * @return void
+     * @throws DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+
+        $manager->register('lc-commercial-statistics', static function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('commercial_cabinet');
+            $trail->push('Статистика продаж');
+        });
     }
 }

@@ -5,12 +5,13 @@ description = "Ежемесячные отчеты"
 meta_title = "Ежемесячные отчеты"
 meta_description = "Ежемесячные отчеты"
 turbo_cache_control='no-cache'
+breadcrumbs="lc-commercial-reports"
 [session]
 security = "user"
 redirect = "/"
 [CommercialSalesReports]
 ==
-<div style="margin-bottom: 16px"> </div>
+{% component 'Breadcrumbs' %}
 <div class="ui-container">
     <div class="personal-area__title ui-text-head--2 ui-text--bold">Ежемесячные отчеты</div>
 </div>

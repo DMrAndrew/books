@@ -3,6 +3,9 @@
 use Books\Blog\Classes\Enums\PostStatus;
 use Books\Blog\Classes\Services\PostService;
 use Books\Blog\Models\Post;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -61,6 +64,8 @@ class BlogLC extends ComponentBase
         }
 
         $this->prepareVals();
+
+        $this->registerBreadcrumbs();
     }
 
     public function prepareVals()
@@ -177,5 +182,26 @@ class BlogLC extends ComponentBase
 
             return [];
         }
+    }
+
+    /**
+     * @return void
+     * @throws DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+
+        $post = $this->post;
+        $manager->register('lc-blog', static function (BreadcrumbsGenerator $trail, $params) use ($post) {
+            $trail->parent('lc');
+            $trail->push('Блог', url('/lc-blog'));
+
+            if ($post) {
+                $trail->push($post->title);
+            } else {
+                $trail->push('Новая запись в блоге');
+            }
+        });
     }
 }

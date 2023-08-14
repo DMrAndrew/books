@@ -5,12 +5,13 @@ description = "Статистика продаж"
 meta_title = "Статистика продаж"
 meta_description = "Статистика продаж"
 turbo_cache_control='no-cache'
+breadcrumbs="lc-commercial-statistics"
 [session]
 security = "user"
 redirect = "/"
 [CommercialSalesStatistics]
 ==
-<div style="margin-bottom: 16px"> </div>
+{% component 'Breadcrumbs' %}
 <div class="ui-container">
     <div class="personal-area__title ui-text-head--2 ui-text--bold">Статистика продаж</div>
 </div>

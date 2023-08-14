@@ -2,7 +2,7 @@
 
 namespace Books\Book;
 
-use Books\Blog\Models\Post;
+use Backend;
 use Books\Book\Behaviors\Contentable;
 use Books\Book\Behaviors\Prohibitable;
 use Books\Book\Behaviors\Trackable;
@@ -45,6 +45,7 @@ use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Content;
+use Books\Book\Models\Content as ContentModel;
 use Books\Book\Models\Cycle;
 use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
@@ -67,15 +68,17 @@ use October\Rain\Database\Models\DeferredBinding;
 use RainLab\Location\Behaviors\LocationModel;
 use System\Classes\PluginBase;
 use Tizis\FB2\FB2Controller;
-use Backend;
-use Books\Book\Models\Content as ContentModel;
 
 /**
  * Plugin Information File
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User', 'Books.Profile'];
+    public $require = [
+        'RainLab.User',
+        'Books.Profile',
+        'Books.Breadcrumbs',
+    ];
 
     /**
      * Returns information about this plugin.
@@ -185,7 +188,6 @@ class Plugin extends PluginBase
                 ],
             ]);
         });
-
     }
 
     /**

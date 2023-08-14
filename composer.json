@@ -37,6 +37,7 @@
         "books/referral-plugin": "*",
         "books/blacklists-plugin": "*",
         "books/blog-plugin": "*",
+        "books/breadcrumbs-plugin": "dev-main",
         "laracraft-tech/laravel-date-scopes": "^1.1",
         "vdlp/oc-telescope-plugin": "^2.0",
         "vdlp/oc-horizon-plugin": "*",
@@ -152,6 +153,10 @@
         "books/blog-plugin": {
             "type": "path",
             "url": "./plugins/books/blog"
+        },
+        "books/breadcrumbs-plugin": {
+            "type": "path",
+            "url": "./plugins/books/breadcrumbs"
         },
         "vdlp/oc-telescope-plugin": {
             "type": "path",

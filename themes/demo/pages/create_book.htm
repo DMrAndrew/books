@@ -1,13 +1,13 @@
 url = "/create-book/:session_key_parsed?"
 layout = "default"
 title = "Создать книгу"
+breadcrumbs = "book-create"
 [booker]
 deferredBinding = 1
 ==
-<div style="margin-bottom: 16px"></div>
+{% component 'Breadcrumbs' %}
 <!-- Тело страницы -->
 <div class="ui-container">
     <div class="create-book__title ui-text-head--2 ui-text--bold">Создание книги</div>
 </div>
-
 {% component 'booker' %}

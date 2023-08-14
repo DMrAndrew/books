@@ -1,6 +1,9 @@
 <?php namespace Books\Book\Components;
 
 use Books\Book\Classes\Traits\AccoutBooksTrait;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Cms\Classes\ComponentBase;
 use October\Rain\Database\Collection;
 use RainLab\User\Facades\Auth;
@@ -39,6 +42,8 @@ class CommercialSales extends ComponentBase
             return $redirect;
         }
         $this->user = Auth::getUser();
+
+        $this->registerBreadcrumbs();
     }
 
     public function onRender()
@@ -63,5 +68,18 @@ class CommercialSales extends ComponentBase
         });
 
         return $editionsInSale;
+    }
+
+    /**
+     * @return void
+     * @throws DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+
+        $manager->register('lc-commercial', static function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('commercial_cabinet');
+        });
     }
 }

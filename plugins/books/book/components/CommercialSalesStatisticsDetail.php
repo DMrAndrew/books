@@ -2,7 +2,11 @@
 
 use Books\Book\Classes\Enums\SellStatisticSellTypeEnum;
 use Books\Book\Classes\Traits\AccoutBooksTrait;
+use Books\Book\Models\Book;
 use Books\Book\Models\SellStatistics;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
 use Books\Book\Traits\FormatNumberTrait;
@@ -21,6 +25,7 @@ class CommercialSalesStatisticsDetail extends ComponentBase
 
     protected ?User $user;
     private int $book_id;
+    private ?Book $book;
     private string $date;
     private string $sell_type;
 
@@ -48,8 +53,11 @@ class CommercialSalesStatisticsDetail extends ComponentBase
         $this->user = Auth::getUser();
 
         $this->book_id = (int)$this->param('book_id');
+        $this->book = $this->getAccountBooks()->where('id', $this->book_id)->first();
         $this->date = (string)$this->param('date');
         $this->sell_type = (string)$this->param('sell_type');
+
+        $this->registerBreadcrumbs();
     }
 
     public function onRender()
@@ -59,14 +67,12 @@ class CommercialSalesStatisticsDetail extends ComponentBase
         /**
          * Book
          */
-        $book = $this->getAccountBooks()->where('id', $this->book_id)->first();
-
-        if (!$book) {
+        if (!$this->book) {
             abort(404);
         }
 
-        $editionIds = $book->editions->pluck('id')->toArray();
-        $this->page['book'] = $book;
+        $editionIds = $this->book->editions->pluck('id')->toArray();
+        $this->page['book'] = $this->book;
 
         /**
          * Report date
@@ -158,5 +164,22 @@ class CommercialSalesStatisticsDetail extends ComponentBase
         }
 
         return null;
+    }
+
+    /**
+     * @return void
+     * @throws DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+
+        $manager->register('lc-commercial-statistics-detail', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('commercial_cabinet');
+            $trail->push('Статистика продаж', url('/lc-commercial-statistics'));
+            if ($this->book) {
+                $trail->push($this->book->title);
+            }
+        });
     }
 }
