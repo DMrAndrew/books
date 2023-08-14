@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cb43f737d420e971abcd59ede7231c31",
+    "content-hash": "8f430eea8935283a09f9193448911bf6",
     "packages": [
         {
             "name": "abordage/laravel-last-modified",
@@ -6989,49 +6989,6 @@
             "time": "2023-07-29T06:01:09+00:00"
         },
         {
-            "name": "rainlab/translate-plugin",
-            "version": "v2.2.7",
-            "dist": {
-                "type": "zip",
-                "url": "https://gateway.octobercms.com/composer/dist/rainlab/translate-plugin/rainlab-translate-plugin-0abf8db499fc8858a9194812188111d054b39d96-zip-64ed95.zip",
-                "reference": "0abf8db499fc8858a9194812188111d054b39d96",
-                "shasum": "7373808d2783ad3a23f297eec6ad4f46c92c0343"
-            },
-            "require": {
-                "composer/installers": "~1.0",
-                "october/rain": ">=3.1",
-                "php": ">=8.0.2"
-            },
-            "type": "october-plugin",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Alexey Bobkov",
-                    "email": "aleksey.bobkov@gmail.com",
-                    "role": "Co-founder"
-                },
-                {
-                    "name": "Samuel Georges",
-                    "email": "daftspunky@gmail.com",
-                    "role": "Co-founder"
-                }
-            ],
-            "description": "Translate plugin for October CMS",
-            "homepage": "https://octobercms.com/plugin/rainlab-translate",
-            "keywords": [
-                "october",
-                "octobercms",
-                "translate"
-            ],
-            "support": {
-                "source": "https://github.com/rainlab/translate-plugin/tree/v2.2.7",
-                "issues": "https://github.com/rainlab/translate-plugin/issues"
-            },
-            "time": "2023-07-29T06:04:53+00:00"
-        },
-        {
             "name": "rainlab/user-plugin",
             "version": "v1.7.2",
             "dist": {
@@ -13726,6 +13683,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "books/breadcrumbs-plugin": 20,
         "lemax10/asail": 20
     },
     "prefer-stable": true,

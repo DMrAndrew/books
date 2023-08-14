@@ -79,14 +79,7 @@ class CommercialSales extends ComponentBase
         $manager = app(BreadcrumbsManager::class);
 
         $manager->register('lc-commercial', static function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('home');
-            $trail->push('Коммерческий кабинет');
+            $trail->parent('commercial_cabinet');
         });
-
-//        $manager->register('lc-commercial', static function (BreadcrumbsGenerator $trail, $params) {
-//            $trail->parent('commercial_cabinet');
-//
-//            $trail->push('Коммерческий кабинет', '/lc-commercial');
-//        });
     }
 }

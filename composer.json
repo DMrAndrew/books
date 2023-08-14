@@ -42,8 +42,7 @@
         "vdlp/oc-telescope-plugin": "^2.0",
         "vdlp/oc-horizon-plugin": "*",
         "abordage/laravel-last-modified": "^0.2.0",
-        "jfcherng/php-diff": "^6.15",
-        "rainlab/translate-plugin": "^2.2"
+        "jfcherng/php-diff": "^6.15"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
