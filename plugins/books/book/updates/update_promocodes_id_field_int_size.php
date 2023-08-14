@@ -26,10 +26,20 @@ return new class extends Migration
 
         Schema::table('books_orders_promocodes', function (Blueprint $table) {
             $table->unsignedBigInteger('promocode_id')->change();
+        });
+
+        Schema::table('books_orders_promocodes', function (Blueprint $table) {
             $table->foreign('promocode_id')
                 ->references('id')
                 ->on('books_book_promocodes')
                 ->onDelete('cascade');
         });
+    }
+
+    /**
+     * up builds the migration
+     */
+    public function down()
+    {
     }
 };
