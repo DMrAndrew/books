@@ -95,3 +95,6 @@
 1.0.28:
     - 'Отложенное обновление контента'
     - add_fields_content.php
+1.0.29:
+    - 'Fix'
+    - update_promocodes_id_field_int_size.php
