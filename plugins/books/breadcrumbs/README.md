@@ -13,8 +13,8 @@ breadcrums = "post"
 ```php
 <?php
 
-use Feedback\Breadcrums\Classes\BreadcrumbsGenerator;
-use Feedback\Breadcrums\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Illuminate\Support\Arr;
 
 /** @var BreadcrumbsManager $manager */
@@ -23,7 +23,7 @@ $manager = app(BreadcrumbsManager::class); // получим экземпляр 
 /**
  * Home > About
  * url pattern = '/about'
- * 
+ *
  * Регистрация обычной страницы, так как главная страница всегда имеется вызываем ее с помощью $trail->parent('home');
  */
 $manager->register('about', static function (BreadcrumbsGenerator $trail) {
@@ -34,7 +34,7 @@ $manager->register('about', static function (BreadcrumbsGenerator $trail) {
 /**
  * Home > Blog
  * url pattern = '/blog'
- * 
+ *
  * Регистрация обычной страницы, так как главная страница всегда имеется вызываем ее с помощью $trail->parent('home');
  */
 $manager->register('blog', static function (BreadcrumbsGenerator $trail) {
@@ -43,71 +43,36 @@ $manager->register('blog', static function (BreadcrumbsGenerator $trail) {
 });
 
 /**
- * Home > Blog > [Category]
- * url pattern = '/category/:slug?'
- * 
+ * Home > Books > [Book]
+ * url pattern = '/book-card/:id?'
+ *
  * Регистрация динамической страницы в $params получим переменные из паттерна ссылки
- * в данном случае получим slug на его основе ищем категорию и добавляем ее в крошки
+ * в данном случае получим title на его основе ищем книгу и добавляем ее в крошки
  */
 $manager->register('category', static function (BreadcrumbsGenerator $trail, $params) {
     $trail->parent('blog');
-    
-    $category = Category::whereSlug(Arr::get($params, 'slug'))->first();
+
+    $book = Book::whereSlug(Arr::get($params, 'title'))->first();
 
     if ($category) {
-        $trail->push($category->title, url('/category/', $category->slug));
+        $trail->push($category->title, url('/book-card/', $book->id));
     }
 });
 
 /**
- * Home > Blog > [Category] > [Post]
+ * Home > Blog > [Post]
  * url pattern = '/category/:category/post/:slug?'
- * 
+ *
  * Регистрация динамической страницы в $params получим переменные из паттерна ссылки
  * в данном случае получим category (его передадим в крошки категории) и slug на его основе ищем пост и добавляем ее в крошки
  */
 $manager->register('post', static function (BreadcrumbsGenerator $trail, $params) {
-    $trail->parent('category', ['slug' => Arr::get($params, 'category')]);
+    $trail->parent('home');
 
     $post = Post::whereSlug(Arr::get($params, 'slug'))->first();
 
     if ($post) {
-        $trail->push($post->title, url('/category/' . Arr::get($params, 'category') . '/post/' . $post->slug));
-    }
-});
-```
-
-### 3. Еще примеры
-
-```php
-<?php
-
-use Feedback\Breadcrums\Classes\BreadcrumbsGenerator;
-use Feedback\Breadcrums\Classes\BreadcrumbsManager;
-use Illuminate\Support\Arr;
-
-/** @var BreadcrumbsManager $manager */
-$manager = app(BreadcrumbsManager::class); // получим экземпляр менеджера
-
-/**
- * Home > Blog > [Category]
- * url pattern = '/category/:slug?'
- * 
- * Добавление в крошки родительсткой категории
- * в данном случае получим slug на его основе ищем категорию и добавляем ее в крошки
- */
-$manager->register('category', static function (BreadcrumbsGenerator $trail, $params) {
-    $trail->parent('blog');
-    
-    $category = Category::with('parent')->whereSlug(Arr::get($params, 'slug'))->first();    
-
-    if ($category) {
-        // если родительская категория есть, добавим в крошки и ее, но до открытой категории
-        if ($category->parent) {
-            $trail->push($category->parent->title, url('/category/', $category->parent->slug));
-        }    
-
-        $trail->push($category->title, url('/category/', $category->slug));
+        $trail->push($post->title, url('/blog/' . $post->slug));
     }
 });
 ```
