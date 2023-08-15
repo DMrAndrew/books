@@ -395,6 +395,11 @@ class Plugin extends PluginBase
             $trail->push('Приватность');
         });
 
+        $manager->register('lc-blog', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Блог');
+        });
+
         $manager->register('lc-promocodes', function (BreadcrumbsGenerator $trail, $params) {
             $trail->parent('lc');
             $trail->push('Промокоды');

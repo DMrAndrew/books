@@ -192,13 +192,12 @@ class BlogLC extends ComponentBase
     {
         $manager = app(BreadcrumbsManager::class);
 
-        $post = $this->post;
-        $manager->register('lc-blog', static function (BreadcrumbsGenerator $trail, $params) use ($post) {
+        $manager->register('lc-blog-editor', function (BreadcrumbsGenerator $trail, $params) {
             $trail->parent('lc');
             $trail->push('Блог', url('/lc-blog'));
 
-            if ($post) {
-                $trail->push($post->title);
+            if ($this->post) {
+                $trail->push($this->post->title);
             } else {
                 $trail->push('Новая запись в блоге');
             }
