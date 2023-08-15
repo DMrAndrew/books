@@ -10,6 +10,6 @@ class InvalidBreadcrumbException extends BreadcrumbsException
 {
     public function __construct($name)
     {
-        parent::__construct(trans('books.breadcrumbs::lang.exceptions.invalid', ['name' => $name]));
+        parent::__construct("Хлебная крошка с именем {$name} не найдена ");
     }
 }

@@ -5,13 +5,14 @@ description = "Реферальная программа"
 meta_title = "Реферальная программа"
 meta_description = "Реферальная программа"
 turbo_cache_control='no-cache'
+breadcrumbs="lc-referral"
 [session]
 security = "user"
 redirect = "/"
 [LCReferrer]
 [LCReferralStatistics]
 ==
-<div style="margin-bottom: 16px"> </div>
+{% component 'Breadcrumbs' %}
 <div class="ui-container">
     <div class="personal-area__title ui-text-head--2 ui-text--bold">Реклама</div>
 </div>

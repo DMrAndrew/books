@@ -168,7 +168,6 @@ class CommercialSalesStatisticsDetail extends ComponentBase
 
     /**
      * @return void
-     * @throws DuplicateBreadcrumbException
      */
     private function registerBreadcrumbs(): void
     {

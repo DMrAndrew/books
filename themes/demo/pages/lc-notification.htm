@@ -2,11 +2,13 @@ url = "/lc-notification"
 layout = "default"
 title = "Личный кабинет - Уведомления"
 description = "Личный кабинет - Уведомления"
+breadcrumbs="lc-notification"
 [session]
 security = "user"
 redirect = "/"
 [notificationLC]
 ==
+{% component 'Breadcrumbs' %}
 {% partial 'profile/personal_area_header' %}
 <div class="personal-area">
     <div class="ui-container-fluid">
