@@ -36,9 +36,6 @@ class BookService
         $this->session_key ??= hash('xxh128', Carbon::now()->toISOString());
     }
 
-    /**
-     * @return string|null
-     */
     public function getSessionKey(): ?string
     {
         return $this->session_key;
@@ -46,7 +43,7 @@ class BookService
 
     protected function isNew(): bool
     {
-        return !$this->book->exists;
+        return ! $this->book->exists;
     }
 
     protected function isBounded(): bool
@@ -57,15 +54,15 @@ class BookService
     protected function bound(): bool
     {
         $this->bound = $this->isBounded() || Db::transaction(function () {
-                foreach ($this->relations as $relation) {
-                    foreach ($this->book->$relation()->get() as $item) {
-                        $this->proxy->$relation()->add($item, $this->getSessionKey(), $item->pivot ? $item->pivot->toArray() : []);
-                    }
+            foreach ($this->relations as $relation) {
+                foreach ($this->book->$relation()->get() as $item) {
+                    $this->proxy->$relation()->add($item, $this->getSessionKey(), $item->pivot ? $item->pivot->toArray() : []);
                 }
-                Session::put($this->getSessionKey(), true);
+            }
+            Session::put($this->getSessionKey(), true);
 
-                return true;
-            });
+            return true;
+        });
 
         return $this->bound;
     }
@@ -123,7 +120,7 @@ class BookService
             $data = [
                 'title' => strip_tags($info->getTitle()) ?: 'Без названия',
                 'annotation' => $info->getAnnotation(),
-                'status' => BookStatus::PARSING
+                'status' => BookStatus::PARSING,
             ];
 
             $this->book->removeValidationRule('cover', 'max:3072');
@@ -133,7 +130,7 @@ class BookService
                 $this->book->cover()->add($cover, $this->session_key);
             }
 
-            collect(explode(',', $info->getKeywords()))->each(fn($tag) => $this->addTag($tag));
+            collect(explode(',', $info->getKeywords()))->each(fn ($tag) => $this->addTag($tag));
 
             foreach ($info->getGenres() as $item) {
                 if ($genre = Genre::query()->where('name', $item)->first()) {
@@ -141,17 +138,15 @@ class BookService
                 }
             }
             $this->save($data);
+
             return $this->book;
         });
     }
 
     /**
-     * @param array|null $data
-     * @return Book
-     *
      * @throws ValidationException
      */
-    protected function save(?array $data = null): Book
+    protected function save(array $data = null): Book
     {
         return Db::transaction(function () use ($data) {
             $data = collect($data);
@@ -159,7 +154,7 @@ class BookService
             $this->bindOwner();
 
             if ($this->getAuthors()->pluck(Author::PERCENT)->sum() !== 100) {
-                throw  new ValidationException(['authors' => 'Сумма распределения процентов от продаж должна быть равна 100.']);
+                throw new ValidationException(['authors' => 'Сумма распределения процентов от продаж должна быть равна 100.']);
             }
 
             $bookData = $data->only($this->proxy->getFillable());
@@ -206,7 +201,7 @@ class BookService
             ->authors()
             ->get()
             ->diff($authors)
-            ->each(fn(Author $author) => Event::fire('books.book::author.invited', [$author, $this->user->profile]));
+            ->each(fn (Author $author) => Event::fire('books.book::author.invited', [$author, $this->user->profile]));
 
         return $this->book;
     }
@@ -214,7 +209,7 @@ class BookService
     protected function syncRelations(): void
     {
         foreach ($this->relations as $relation) {
-            $method = 'get' . ucfirst($relation);
+            $method = 'get'.ucfirst($relation);
             $this->book->$relation()->sync($this->{$method}());
         }
 
@@ -228,7 +223,7 @@ class BookService
 
     protected function bindOwner(): void
     {
-        if (!$this->getOwnerProfile()) {
+        if (! $this->getOwnerProfile()) {
             $this->attachProfile($this->user->profile, [Author::PERCENT => 100, Author::IS_OWNER => 1, Author::ACCEPTED => 1]);
         }
     }
@@ -241,23 +236,15 @@ class BookService
         }
     }
 
-    /**
-     * @param string|Tag|null $tag
-     * @return void
-     */
     public function addTag(null|string|Tag $tag): void
     {
-        if (!$tag) {
+        if (! $tag) {
             return;
         }
         $tag = Tag::query()->firstOrCreate([Tag::NAME => mb_ucfirst(trim((is_string($tag) ? ($tag) : $tag->{Tag::NAME})))]);
         $this->proxy()->tags()->add($tag, $this->getSessionKey());
     }
 
-    /**
-     * @param Genre $genre
-     * @return void
-     */
     public function addGenre(Genre $genre): void
     {
         $this->proxy()->genres()->add($genre, $this->getSessionKey());
@@ -273,10 +260,6 @@ class BookService
         }
     }
 
-    /**
-     * @param Profile $profile
-     * @return void
-     */
     public function addProfile(Profile $profile): void
     {
         $this->bindOwner();
@@ -303,19 +286,16 @@ class BookService
 
     protected function getOwnerProfile()
     {
-        return $this->getProfiles()->first(fn($i) => $i->id === $this->user->profile->id);
+        return $this->getProfiles()->first(fn ($i) => $i->id === $this->user->profile->id);
     }
 
-    /**
-     * @return Collection
-     */
     public function getProfiles($pivot = false): Collection
     {
         $authors = $this->proxy()->profiles()->withDeferred($this->getSessionKey())->get();
         if ($pivot) {
             $this->proxy()->getDeferredAuthors($this->getSessionKey())
                 ->each(function ($bind) use ($authors) {
-                    if ($author = $authors->first(fn($i) => $i->id === $bind->slave_id)) {
+                    if ($author = $authors->first(fn ($i) => $i->id === $bind->slave_id)) {
                         $author->pivot = new Author($bind->pivot_data ?? []);
                     }
                 });
@@ -334,10 +314,6 @@ class BookService
         return $this->proxy()?->tags()->withDeferred($this->getSessionKey())->get()->sortBy(Tag::NAME);
     }
 
-    /**
-     * @param Genre $genre
-     * @return void
-     */
     public function removeGenre(Genre $genre): void
     {
         $this->proxy()->genres()->remove($genre, $this->getSessionKey());
