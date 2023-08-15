@@ -7,6 +7,9 @@ use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Cms\Classes\ComponentBase;
@@ -67,6 +70,8 @@ class Chapterer extends ComponentBase
         $this->chapter = $this->ebook->chapters()->find($this->param('chapter_id')) ?? new Chapter();
         $this->chapterManager = ($this->ebook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->ebook);
         $this->prepareVals();
+
+        $this->registerBreadcrumbs();
     }
 
     public function prepareVals()
@@ -144,5 +149,21 @@ class Chapterer extends ComponentBase
             return ['answer' => $this->chapterManager->initUpdateBody($body)];
         }
         return [];
+    }
+
+    /**
+     * @return void
+     * @throws DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+
+        $manager->register('lc-add-book-add-text', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Книги', '/lc-books');
+            $trail->push($this->book->title, '/about-book/' . $this->book->id);
+            $trail->push('Добавление текста');
+        });
     }
 }

@@ -3,11 +3,13 @@ layout = "default"
 url = "/lc-advert/:book_id?"
 meta_title = "Личный кабинет - Реклама"
 turbo_cache_control='no-cache'
+breadcrumbs="lc-advert"
 [session]
 security = "user"
 redirect = "/"
 [advertLC]
 ==
+{% component 'Breadcrumbs' %}
 {% partial 'profile/personal_area_header' %}
 
 <div class="personal-area">

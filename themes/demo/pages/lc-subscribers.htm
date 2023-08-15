@@ -2,6 +2,7 @@ title = "Подписчики"
 layout = "default"
 url = "/lc-subscribers"
 meta_title = "Личный кабинет - Подписчики"
+breadcrumbs="lc-subscribers"
 [session]
 security = "user"
 redirect = "/"
@@ -14,6 +15,7 @@ function onInit()
 }
 ?>
 ==
+{% component 'Breadcrumbs' %}
 {% partial 'profile/personal_area_header' %}
 <div class="personal-area">
     <div class="ui-container-fluid">
