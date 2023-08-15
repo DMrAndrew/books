@@ -13,6 +13,10 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
+    public $require = [
+        'Books.Profile',
+    ];
+
     /**
      * pluginDetails about this plugin.
      */

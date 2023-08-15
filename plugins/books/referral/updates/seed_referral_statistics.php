@@ -36,6 +36,13 @@ class seed_sell_statistics extends Seeder
         $referrer = Referrer::first();
         if ($referrer == null) {
             $user = User::first();
+
+            if (!$user) {
+                echo 'No Users in database found. Skip seeding `books_referral_statistics` table.';
+
+                return true;
+            }
+
             $referrer = $user->referrer()->create([
                 'target_link' => url('/some-fake-link'),
             ]);
