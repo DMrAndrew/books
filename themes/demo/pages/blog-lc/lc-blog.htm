@@ -2,12 +2,14 @@ title = "Личный кабинет - Блог"
 layout = "default"
 url = "/lc-blog"
 meta_title = "Личный кабинет - Блог"
+breadcrumbs="lc-blog"
 [session]
 security = "user"
 redirect = "/"
 [BlogLC]
 [BlogLCList]
 ==
+{% component 'Breadcrumbs' %}
 {% partial 'profile/personal_area_header' %}
 
 <div class="personal-area">
