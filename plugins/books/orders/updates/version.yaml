@@ -12,3 +12,6 @@
 1.0.5:
     - "Привязка товара в заказе к Книге"
     - update_products_table.php
+1.0.6:
+    - 'Fix'
+    - update_promocodes_id_field_int_size.php
