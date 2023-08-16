@@ -5,8 +5,11 @@
 fields:
     name:
         label: Название
+    slug:
+        label: Страница
     desc:
         label: Описание
+        type: richeditor
     active:
         label: Активный
         type: checkbox

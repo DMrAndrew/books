@@ -43,10 +43,15 @@ class Genre extends Model
      */
     public $rules = [
         'name' => 'required|string|min:3',
+        'slug' => 'string|nullable|regex:/^[a-z]+(?:-[a-z]+)*$/',
         'desc' => 'string|nullable',
         'active' => 'boolean',
         'favorite' => 'boolean',
         'parent_id' => 'nullable|exists:books_catalog_genres,id',
+    ];
+
+    public $customMessages = [
+        'slug.regex' => 'Неправильный формат строки для поля `Страница`. Используйте латинские символы (abcdefghijklmnopqrstuvwxyz) и разделитель (`-`)',
     ];
 
     /**
@@ -211,12 +216,22 @@ class Genre extends Model
         return $builder->withoutProhibited();
     }
 
-
     public function scopeNestedFavorites(Builder $builder): Builder
     {
         return $builder
             ->where(fn($q) => $q->roots()->whereHas('children', fn($q) => $q->favorite()))
             ->orWhere(fn($q) => $q->roots()->favorite())
             ->with('children', fn($q) => $q->favorite());
+    }
+
+    /**
+     * @param Builder $builder
+     * @param string $slug
+     *
+     * @return Builder
+     */
+    public function scopeSlug(Builder $builder, string $slug): Builder
+    {
+        return $builder->where('slug', $slug);
     }
 }

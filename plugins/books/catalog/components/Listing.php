@@ -14,6 +14,7 @@ use Cms\Classes\ComponentBase;
 use Exception;
 use Illuminate\Support\Collection;
 use RainLab\User\Facades\Auth;
+use Redirect;
 
 /**
  * Listing Component
@@ -49,6 +50,17 @@ class Listing extends ComponentBase
         $this->filter = new ListingFilter();
         $this->page['types'] = EditionsEnums::toArray();
         $this->page['listable'] = WidgetEnum::listable();
+    }
+
+    public function onRun()
+    {
+        if ($redirectToSlug = $this->redirectToGenreSlug()) {
+            return Redirect::to($redirectToSlug);
+        };
+
+        if ( !$this->applyGenreSlugFilter()) {
+            abort(404);
+        }
     }
 
     public function onRender()
@@ -234,5 +246,55 @@ class Listing extends ComponentBase
     public function getSessionKey()
     {
         return post('_session_key');
+    }
+
+    /**
+     * @return string|null
+     */
+    private function redirectToGenreSlug(): ?string
+    {
+        $genreId = get('genre');
+        if ($genreId && is_numeric($genreId)) {
+
+            $genre = Genre::where('id', $genreId)->first();
+
+            if ($genre) {
+                $genreSlug = (string)$genre->slug;
+                if ($genreSlug) {
+
+                    $redirectToSlug = '/listing/' . $genre->slug;
+
+                    $getParams = get();
+                    $queryParams = array_filter($getParams, function($param) {
+                        return $param != 'genre';
+                    }, ARRAY_FILTER_USE_KEY );
+
+                    $queryString = empty($queryParams) ?: '?' . http_build_query($queryParams);
+
+                    return $redirectToSlug . $queryString;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return bool
+     */
+    private function applyGenreSlugFilter(): bool
+    {
+        $genreSlug = $this->param('genre_slug');
+        if ($genreSlug) {
+            $genre = Genre::slug($genreSlug)->first();
+
+            if ($genre) {
+                $this->filter->fromParams(['genreSlug' => $genre->id]);
+            } else {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

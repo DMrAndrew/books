@@ -9,3 +9,6 @@
 1.0.3:
     - 'Пометить 18+ жанры'
     - set_adult_genres.php
+1.0.4:
+    - 'Адрес для страницы жанра'
+    - update_listing_add_seo_fields.php
