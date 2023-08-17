@@ -8,6 +8,7 @@ use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\NestedTree;
+use October\Rain\Database\Traits\Sluggable;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Database\TreeCollection;
 
@@ -22,6 +23,7 @@ class Genre extends Model
 {
     use Validation;
     use NestedTree;
+    use Sluggable;
 
     /**
      * @var string table associated with the model
@@ -49,6 +51,11 @@ class Genre extends Model
         'favorite' => 'boolean',
         'parent_id' => 'nullable|exists:books_catalog_genres,id',
     ];
+
+    /**
+     * @var array Generate slugs for these attributes.
+     */
+    protected $slugs = ['slug' => 'name'];
 
     public $customMessages = [
         'slug.regex' => 'Неправильный формат строки для поля `Страница`. Используйте латинские символы (abcdefghijklmnopqrstuvwxyz) и разделитель (`-`)',

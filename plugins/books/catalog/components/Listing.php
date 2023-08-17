@@ -274,7 +274,7 @@ class Listing extends ComponentBase
                     return $param != 'genre';
                 }, ARRAY_FILTER_USE_KEY );
 
-                $queryString = empty($queryParams) ?: '?' . http_build_query($queryParams);
+                $queryString = !empty($queryParams) ? '?' . http_build_query($queryParams) : '';
 
                 return $redirectToSlug . $queryString;
             }
