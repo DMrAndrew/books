@@ -5,9 +5,11 @@ description = "Статистика продаж подробно"
 meta_title = "Статистика продаж подробно"
 meta_description = "Статистика продаж подробно"
 turbo_cache_control='no-cache'
+breadcrumbs="lc-commercial-statistics-detail"
 [session]
 security = "user"
 redirect = "/"
 [CommercialSalesStatisticsDetail]
 ==
+{% component 'Breadcrumbs' %}
 {% component 'CommercialSalesStatisticsDetail' %}

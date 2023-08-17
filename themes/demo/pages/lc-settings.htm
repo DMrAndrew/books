@@ -3,7 +3,7 @@ layout = "default"
 url = "/lc-settings"
 title = "Личный кабинет - Настройки"
 description = "Личный кабинет - Настройки"
-
+breadcrumbs="lc-settings"
 [session]
 security = "user"
 redirect = "/"
@@ -12,6 +12,7 @@ redirect = "/"
 [bookAccount]
 requirePassword=true
 ==
+{% component 'Breadcrumbs' %}
 {% partial 'profile/personal_area_header' %}
 
 <div class="personal-area">

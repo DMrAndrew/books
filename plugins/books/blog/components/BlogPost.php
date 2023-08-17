@@ -3,6 +3,9 @@
 use Books\Blog\Models\Post;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Components\Widget;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Books\Comments\Components\Comments;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
@@ -29,19 +32,27 @@ class BlogPost extends ComponentBase
      */
     public function defineProperties()
     {
-        return [];
+        return [
+            'slug' => [
+                'title' => 'Blog post slug',
+                'description' => 'Уникальный код публикации',
+            ],
+        ];
     }
 
     public function init()
     {
-        $this->post = Post
-            ::query()
-            ->slug($this->param('post_slug'))
+        $this->post = Post::slug($this->property('slug'))
             ->published()
             ->firstOrFail();
 
-        $authUser = Auth::getUser();
-        $can_see_blog_posts = $this->post->profile->canSeeBlogPosts($authUser?->profile);
+        $this->registerBreadcrumbs();
+    }
+
+    public function onRun()
+    {
+        $profile = Auth::check() ? Auth::getUser()->profile : null;
+        $can_see_blog_posts = $this->post->profile->canSeeBlogPosts($profile);
         if (!$can_see_blog_posts) {
             $this->page['privacyRestricted'] = true;
         }
@@ -54,5 +65,22 @@ class BlogPost extends ComponentBase
 
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
+    }
+
+    /**
+     * @return void
+     * @throws DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+
+        $post = $this->post;
+        $manager->register('blogpost', static function (BreadcrumbsGenerator $trail, $params) use ($post) {
+            $trail->parent('home');
+            $trail->push($post->profile->username, '/author-page/' . $post->profile->id);
+            $trail->push('Блог', '/author-page/' . $post->profile->id);
+            $trail->push($post->title);
+        });
     }
 }

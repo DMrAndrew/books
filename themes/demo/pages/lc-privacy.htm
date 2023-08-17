@@ -2,13 +2,13 @@ url = "/lc-privacy"
 layout = "default"
 title = "Личный кабинет - Приватность"
 description = "Личный кабинет - Приватность"
-
+breadcrumbs="lc-privacy"
 [session]
 security = "user"
 redirect = "/"
 [privacyLC]
 ==
-
+{% component 'Breadcrumbs' %}
 {% partial 'profile/personal_area_header' %}
 <div class="personal-area">
     <div class="ui-container-fluid">

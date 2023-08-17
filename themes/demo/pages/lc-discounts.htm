@@ -3,12 +3,13 @@ layout = "default"
 url = "/lc-discounts/:book_id?"
 title = "Личный кабинет - Скидки"
 description = "Личный кабинет - Скидки"
-
+breadcrumbs="lc-discounts"
 [session]
 security = "user"
 redirect = "/"
 [discountLC]
 ==
+{% component 'Breadcrumbs' %}
 {% partial 'profile/personal_area_header' %}
 
 <div class="personal-area">

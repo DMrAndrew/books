@@ -1,6 +1,9 @@
 <?php namespace Books\Withdrawal\Components;
 
 use Books\Book\Traits\FormatNumberTrait;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Books\FileUploader\Components\ImageUploader;
 use Books\Withdrawal\Classes\Contracts\AgreementServiceContract;
 use Books\Withdrawal\Classes\Enums\EmploymentTypeEnum;
@@ -78,6 +81,8 @@ class WithdrawalForm extends ComponentBase
         );
 
         $component->bindModel('files', $this->withdrawal);
+
+        $this->registerBreadcrumbs();
     }
 
     public function onRun()
@@ -295,5 +300,25 @@ class WithdrawalForm extends ComponentBase
         return [
             '#ogrnip-container' => '',
         ];
+    }
+
+    /**
+     * @return void
+     * @throws DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+
+        $withdrawal = $this->withdrawal;
+        $manager->register('lc-commercial-withdraw', static function (BreadcrumbsGenerator $trail, $params) use ($withdrawal) {
+            $trail->parent('commercial_cabinet');
+            if ($withdrawal->agreement_status != WithdrawalAgreementStatusEnum::APPROVED) {
+                $trail->push('Вывод средств', url('/lc-commercial-withdraw'));
+                $trail->push('Анкета');
+            } else {
+                $trail->push('Вывод средств');
+            }
+        });
     }
 }

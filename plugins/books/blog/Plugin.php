@@ -18,6 +18,13 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
+    public $require = [
+        'RainLab.User',
+        'Books.User',
+        'Books.Blacklists',
+        'Books.Breadcrumbs',
+    ];
+
     /**
      * pluginDetails about this plugin.
      */

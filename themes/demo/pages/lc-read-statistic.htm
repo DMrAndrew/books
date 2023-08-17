@@ -2,11 +2,13 @@ title = "Личный кабинет - Статистика прочтений"
 layout = "default"
 url = "/lc-read-statistic"
 meta_title = "Личный кабинет - Статистика прочтений"
+breadcrumbs="lc-read-statistic"
 [session]
 security = "user"
 redirect = "/"
 [readStatistic]
 ==
+{% component 'Breadcrumbs' %}
 {% partial 'profile/personal_area_header' %}
 <!--<script type="module" src="{{ 'assets/js/vue/read-statistic.js'|theme }}"></script>-->
 <div class="personal-area">
