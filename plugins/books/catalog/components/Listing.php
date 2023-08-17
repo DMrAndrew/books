@@ -29,6 +29,8 @@ class Listing extends ComponentBase
 
     protected int $perPage = 12;
 
+    protected ?Genre $categorySlugGenre = null;
+
     public function componentDetails()
     {
         return [
@@ -58,7 +60,7 @@ class Listing extends ComponentBase
             return Redirect::to($redirectToSlug);
         };
 
-        if ( !$this->applyGenreSlugFilter()) {
+        if ( !$this->applyGenreSlug()) {
             abort(404);
         }
     }
@@ -66,6 +68,7 @@ class Listing extends ComponentBase
     public function onRender()
     {
         $this->page['bind'] = $this->getBind();
+        $this->page['category_slug_genre'] = $this->categorySlugGenre;
     }
 
     public function onInitQueryString()
@@ -255,24 +258,25 @@ class Listing extends ComponentBase
     {
         $genreId = get('genre');
         if ($genreId && is_numeric($genreId)) {
-
             $genre = Genre::where('id', $genreId)->first();
 
-            if ($genre) {
-                $genreSlug = (string)$genre->slug;
-                if ($genreSlug) {
+            if (!$genre) {
+                return null;
+            }
 
-                    $redirectToSlug = '/listing/' . $genre->slug;
+            $categorySlug = (string)$genre->slug;
 
-                    $getParams = get();
-                    $queryParams = array_filter($getParams, function($param) {
-                        return $param != 'genre';
-                    }, ARRAY_FILTER_USE_KEY );
+            if ($categorySlug) {
+                $redirectToSlug = '/listing/' . $genre->slug;
 
-                    $queryString = empty($queryParams) ?: '?' . http_build_query($queryParams);
+                $getParams = get();
+                $queryParams = array_filter($getParams, function($param) {
+                    return $param != 'genre';
+                }, ARRAY_FILTER_USE_KEY );
 
-                    return $redirectToSlug . $queryString;
-                }
+                $queryString = empty($queryParams) ?: '?' . http_build_query($queryParams);
+
+                return $redirectToSlug . $queryString;
             }
         }
 
@@ -282,17 +286,18 @@ class Listing extends ComponentBase
     /**
      * @return bool
      */
-    private function applyGenreSlugFilter(): bool
+    private function applyGenreSlug(): bool
     {
-        $genreSlug = $this->param('genre_slug');
-        if ($genreSlug) {
-            $genre = Genre::slug($genreSlug)->first();
+        $categorySlug = $this->param('category_slug');
+        if ($categorySlug) {
+            $genre = Genre::slug($categorySlug)->first();
 
-            if ($genre) {
-                $this->filter->fromParams(['genreSlug' => $genre->id]);
-            } else {
+            if (!$genre) {
                 return false;
             }
+
+            $this->categorySlugGenre = $genre;
+            $this->filter->fromParams(['genreSlug' => $genre->id]);
         }
 
         return true;
