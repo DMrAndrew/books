@@ -2,7 +2,7 @@
 
 namespace Books\Book;
 
-use Books\Blog\Models\Post;
+use Backend;
 use Books\Book\Behaviors\Contentable;
 use Books\Book\Behaviors\Prohibitable;
 use Books\Book\Behaviors\Trackable;
@@ -45,6 +45,7 @@ use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Content;
+use Books\Book\Models\Content as ContentModel;
 use Books\Book\Models\Cycle;
 use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
@@ -53,6 +54,9 @@ use Books\Book\Models\Prohibited;
 use Books\Book\Models\SystemMessage;
 use Books\Book\Models\Tag;
 use Books\Book\Models\Tracker;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Books\Collections\Models\Lib;
 use Books\Notifications\Console\NotifyUsersAboutTodayDiscounts;
 use Books\Profile\Behaviors\Slavable;
@@ -67,15 +71,17 @@ use October\Rain\Database\Models\DeferredBinding;
 use RainLab\Location\Behaviors\LocationModel;
 use System\Classes\PluginBase;
 use Tizis\FB2\FB2Controller;
-use Backend;
-use Books\Book\Models\Content as ContentModel;
 
 /**
  * Plugin Information File
  */
 class Plugin extends PluginBase
 {
-    public $require = ['RainLab.User', 'Books.Profile'];
+    public $require = [
+        'RainLab.User',
+        'Books.Profile',
+        'Books.Breadcrumbs',
+    ];
 
     /**
      * Returns information about this plugin.
@@ -186,6 +192,7 @@ class Plugin extends PluginBase
             ]);
         });
 
+        $this->registerBreadcrumbs();
     }
 
     /**
@@ -324,5 +331,103 @@ class Plugin extends PluginBase
         return [
             ContentDiff::class => 'book_content_diff',
         ];
+    }
+
+    /**
+     * @return void
+     * @throws DuplicateBreadcrumbException
+     */
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+
+        $manager->register('lc-profile', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+        });
+
+        $manager->register('lc-advert', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Реклама');
+        });
+
+        $manager->register('lc-awards', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Награды');
+        });
+
+        $manager->register('lc-blacklist', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Черный список');
+        });
+
+        $manager->register('lc-books', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Книги');
+        });
+
+        $manager->register('book-create', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Создание книги');
+        });
+
+        $manager->register('lc-read-statistic', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Статистика прочтений');
+        });
+
+        $manager->register('lc-comments', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Комментарии');
+        });
+
+        $manager->register('lc-discounts', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Скидки');
+        });
+
+        $manager->register('lc-notification', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Уведомления');
+        });
+
+        $manager->register('lc-privacy', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Приватность');
+        });
+
+        $manager->register('lc-blog', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Блог');
+        });
+
+        $manager->register('lc-promocodes', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Промокоды');
+        });
+
+        $manager->register('lc-referral', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Реферальная программа');
+        });
+
+        $manager->register('lc-reposts', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Репосты');
+        });
+
+        $manager->register('lc-settings', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Настройки');
+        });
+
+        $manager->register('lc-subscribers', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Подписчики');
+        });
+
+        $manager->register('lc-subscriptions', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Подписки');
+        });
     }
 }

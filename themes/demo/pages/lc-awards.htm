@@ -2,11 +2,13 @@ title = "Личный кабинет - Награды"
 layout = "default"
 url = "/lc-awards"
 meta_title = "Личный кабинет - Награды"
+breadcrumbs="lc-awards"
 [session]
 security = "user"
 redirect = "/"
 [awardsLC]
 ==
+{% component 'Breadcrumbs' %}
 {% partial 'profile/personal_area_header' %}
 
 <div class="personal-area">

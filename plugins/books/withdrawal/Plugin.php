@@ -25,7 +25,8 @@ class Plugin extends PluginBase
     public $require = [
         'RainLab.User',
         'Books.Profile',
-        'Books.Orders'
+        'Books.Orders',
+        'Books.Breadcrumbs',
     ];
 
     /**

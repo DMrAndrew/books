@@ -2,11 +2,13 @@ title = "Личный кабинет - Комментарии"
 layout = "default"
 url = "/lc-comments"
 meta_title = "Личный кабинет - Комментарии"
+breadcrumbs="lc-comments"
 [session]
 security = "user"
 redirect = "/"
 [commentsLC]
 ==
+{% component 'Breadcrumbs' %}
 {% partial 'profile/personal_area_header' %}
 
 <div class="personal-area">

@@ -1,0 +1,18 @@
+{% if breadcrumbs %}
+    <div class="ui-container-fluid">
+        <div class="ui-breadcrumbs _indent">
+        {% for breadcrumb in breadcrumbs %}
+            {% if breadcrumb.url %}
+                <a href="{{ breadcrumb.url }}" class="ui-breadcrumbs__item">{{ breadcrumb.title }}</a>
+            {% else %}
+                <span class="ui-breadcrumbs__item">{{ breadcrumb.title }}</span>
+            {% endif %}
+
+            {% if not loop.last %}
+                <div class="ui-breadcrumbs__dot"></div>
+            {% endif %}
+
+        {% endfor %}
+        </div>
+    </div>
+{% endif %}

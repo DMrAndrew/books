@@ -2,12 +2,13 @@ url = "/about-book/:book_id"
 layout = "default"
 title = "О книге"
 include_editor="true"
+breadcrumbs = "about-book"
 [session]
 security = "user"
 redirect = "/"
 [AboutBook]
 ==
-<div style="margin-bottom: 16px"></div>
+{% component 'Breadcrumbs' %}
 {% component 'AboutBook' %}
 <script>
     initTabs('[data-tabs="1"]');

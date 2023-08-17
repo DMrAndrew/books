@@ -2,6 +2,7 @@ url = "/lc-blacklist"
 layout = "default"
 title = "Личный кабинет - Черный список"
 description = "Личный кабинет - Черный список"
+breadcrumbs="lc-blacklist"
 [session]
 security = "user"
 redirect = "/"
@@ -11,6 +12,7 @@ redirect = "/"
     <meta name="turbo-cache-control" content="no-cache">
 </head>
 
+{% component 'Breadcrumbs' %}
 {% partial 'profile/personal_area_header' %}
 <div class="personal-area">
     <div class="ui-container-fluid">
