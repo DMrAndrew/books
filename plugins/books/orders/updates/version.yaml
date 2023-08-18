@@ -15,3 +15,6 @@
 1.0.6:
     - 'Fix'
     - update_promocodes_id_field_int_size.php
+1.0.7:
+    - 'Fix'
+    - update_promocodes_id_field_autoinc.php
