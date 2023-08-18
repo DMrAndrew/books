@@ -42,7 +42,8 @@
         "vdlp/oc-telescope-plugin": "^2.0",
         "vdlp/oc-horizon-plugin": "*",
         "abordage/laravel-last-modified": "^0.2.0",
-        "jfcherng/php-diff": "^6.15"
+        "jfcherng/php-diff": "^6.15",
+        "books/sitemap-plugin": "dev-main"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -157,6 +158,10 @@
         "books/breadcrumbs-plugin": {
             "type": "path",
             "url": "./plugins/books/breadcrumbs"
+        },
+        "books/sitemap-plugin": {
+            "type": "path",
+            "url": "./plugins/books/sitemap"
         },
         "vdlp/oc-telescope-plugin": {
             "type": "path",
