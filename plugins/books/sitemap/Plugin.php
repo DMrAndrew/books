@@ -1,6 +1,7 @@
 <?php namespace Books\Sitemap;
 
 use Backend;
+use Books\Sitemap\Console\GenerateSitemap;
 use System\Classes\PluginBase;
 
 /**
@@ -10,6 +11,11 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
+    public $require = [
+        'Books.Book',
+        'Books.Blog',
+    ];
+
     /**
      * pluginDetails about this plugin.
      */
@@ -28,7 +34,9 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-        //
+        if ($this->app->runningInConsole()) {
+            $this->registerConsoleCommand('fb:sitemap:generate', GenerateSitemap::class);
+        }
     }
 
     /**
@@ -40,47 +48,10 @@ class Plugin extends PluginBase
     }
 
     /**
-     * registerComponents used by the frontend.
+     * @param string $schedule
      */
-    public function registerComponents()
+    public function registerSchedule($schedule): void
     {
-        return []; // Remove this line to activate
-
-        return [
-            'Books\Sitemap\Components\MyComponent' => 'myComponent',
-        ];
-    }
-
-    /**
-     * registerPermissions used by the backend.
-     */
-    public function registerPermissions()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'books.sitemap.some_permission' => [
-                'tab' => 'Sitemap',
-                'label' => 'Some permission'
-            ],
-        ];
-    }
-
-    /**
-     * registerNavigation used by the backend.
-     */
-    public function registerNavigation()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'sitemap' => [
-                'label' => 'Sitemap',
-                'url' => Backend::url('books/sitemap/mycontroller'),
-                'icon' => 'icon-leaf',
-                'permissions' => ['books.sitemap.*'],
-                'order' => 500,
-            ],
-        ];
+        $schedule->command('sitemap:generate')->daily();
     }
 }
