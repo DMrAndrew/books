@@ -45,8 +45,11 @@ class BlogPost extends ComponentBase
         $this->post = Post::slug($this->property('slug'))
             ->published()
             ->firstOrFail();
-
+        $comments = $this->addComponent(Comments::class, 'comments');
+        $comments->bindModel($this->post);
+        $comments->bindModelOwner($this->post->profile);
         $this->registerBreadcrumbs();
+
     }
 
     public function onRun()
@@ -59,9 +62,7 @@ class BlogPost extends ComponentBase
 
         $this->page['post'] = $this->post;
 
-        $comments = $this->addComponent(Comments::class, 'comments');
-        $comments->bindModel($this->post);
-        $comments->bindModelOwner($this->post->profile);
+
 
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
