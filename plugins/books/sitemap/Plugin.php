@@ -36,7 +36,7 @@ class Plugin extends PluginBase
     public function register()
     {
         if ($this->app->runningInConsole()) {
-            $this->registerConsoleCommand('fb:sitemap:generate', GenerateSitemap::class);
+            $this->registerConsoleCommand('sitemap:generate', GenerateSitemap::class);
         }
     }
 
@@ -53,6 +53,6 @@ class Plugin extends PluginBase
      */
     public function registerSchedule($schedule): void
     {
-        $schedule->command('sitemap:generate')->daily();
+        $schedule->command('sitemap:generate')->dailyAt('04:00');
     }
 }

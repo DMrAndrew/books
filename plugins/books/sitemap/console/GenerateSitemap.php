@@ -4,8 +4,9 @@ use Books\Book\Models\Book;
 use Books\Profile\Models\Profile;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
+use October\Rain\Database\Builder;
+use Rainlab\Pages\Classes\Page;
 use Spatie\Sitemap\Sitemap;
-use Spatie\Sitemap\SitemapIndex;
 use Spatie\Sitemap\Tags\Url;
 use Books\Blog\Models\Post;
 
@@ -19,9 +20,12 @@ class GenerateSitemap extends Command
     const BOOKS_SITEMAP_NAME = 'sitemap_books';
     const BLOG_SITEMAP_NAME = 'sitemap_blog';
     const AUTHORS_SITEMAP_NAME = 'sitemap_authors';
-    const STATIC_PAGES_SITEMAP_NAME = 'pages_sitemap';
+    const STATIC_PAGES_SITEMAP_NAME = 'sitemap_pages';
 
-    const SITEMAP_PAGES_LIMIT = 50000;
+    const PAGES_PER_ONE_SITEMAP_FILE_LIMIT = 50000;
+    const DB_QUERIES_CHUNK_SIZE = 200;
+
+    protected array $sitemapFiles = [];
 
     /**
      * @var string signature for the console command.
@@ -39,13 +43,9 @@ class GenerateSitemap extends Command
     public function handle()
     {
         $this->generateBooksSitemap();
-
         $this->generateBlogSitemap();
-
         $this->generateAuthorsSitemap();
-
-        //$this->generateStaticPages();
-        //$this->info($this->getSitemapFileName(self::STATIC_PAGES_SITEMAP_NAME));
+        $this->generateStaticPagesSitemap();
 
         $this->generateMainSitemap();
 
@@ -64,33 +64,91 @@ class GenerateSitemap extends Command
     {
         $this->warn($this->getSitemapFileName(self::BOOKS_SITEMAP_NAME));
 
+        $sitemapName = self::BOOKS_SITEMAP_NAME;
+
+        $query = Book
+            ::public()
+            ->orderBy('id', 'desc');
+
+        $this->fillSitemapWithRecords($query, $sitemapName, function ($item) {
+            return url('book-card', ['book_id' => $item->id]);
+        });
+    }
+
+    /**
+     * Публикации в блоге, которые видны поисковым роботам:
+     *  - в статусе Опубликован
+     *  - открыты всем в настройках приватности
+     *
+     * @return void
+     */
+    private function generateBlogSitemap(): void
+    {
+        $this->warn($this->getSitemapFileName(self::BLOG_SITEMAP_NAME));
+
+        $sitemapName = self::BLOG_SITEMAP_NAME;
+
+        $query = Post
+            ::publicVisible()
+            ->orderBy('id', 'desc');
+
+        $this->fillSitemapWithRecords($query, $sitemapName, function ($item) {
+            return url('blog', ['post_slug' => $item->slug]);
+        });
+    }
+
+    /**
+     * @param Builder $builder
+     * @param string $sitemapName
+     * @param callable $getUrlCallback
+     *
+     * @return void
+     */
+    private function fillSitemapWithRecords(Builder $builder, string $sitemapName, callable $getUrlCallback): void
+    {
         $sitemap = Sitemap::create();
 
-        $pagesLimit = self::SITEMAP_PAGES_LIMIT;
+        /**
+         * Split into files
+         */
+        $urlsPerFile = self::PAGES_PER_ONE_SITEMAP_FILE_LIMIT;
         $pagesCount = 0;
 
-        Book::public()
-            ->orderBy('id', 'desc')
-            /**
-             * Chunking results
-             */
-            ->chunk(50, function (Collection $books) use ($sitemap, &$pagesCount, $pagesLimit) {
+        $totalCount = $builder->count();
+        $fileIndex = 0;
+        if ($totalCount > $urlsPerFile) {
+            $sitemapFilePath = $this->getIndexedSitemapFilePath($sitemapName, $fileIndex);
+        } else {
+            $sitemapFilePath = $this->getSitemapFilePath($sitemapName);
+        }
 
-                if($pagesCount >= $pagesLimit) {
-                    return false;
-                }
+        $builder
+            /**
+             * Chunking queries to limit memory usage
+             */
+            ->chunk(self::DB_QUERIES_CHUNK_SIZE, function (Collection $models) use (&$sitemap, &$pagesCount, $urlsPerFile, $getUrlCallback, $sitemapName, &$sitemapFilePath, &$fileIndex) {
 
                 /**
                  * Add each page in sitemap file
                  */
-                $books->each(function ($book) use ($sitemap, &$pagesCount, $pagesLimit) {
+                $models->each(function ($model) use (&$sitemap, &$pagesCount, $urlsPerFile, $getUrlCallback, $sitemapName, &$sitemapFilePath, &$fileIndex) {
 
-                    if($pagesCount >= $pagesLimit) {
-                        return false;
+                    /**
+                     * Each `$urlsPerFile` write new sitemap file
+                     */
+                    if($pagesCount >= $urlsPerFile) {
+                        $sitemap->writeToFile($sitemapFilePath);
+                        $this->addSitemapFile($sitemapFilePath);
+
+                        $sitemap = Sitemap::create();
+                        $pagesCount = 0;
+                        $sitemapFilePath = $this->getIndexedSitemapFilePath($sitemapName, ++$fileIndex);
                     }
 
-                    $sitemap->add(Url::create(url('book-card', ['book_id' => $book->id]))
-                        ->setLastModificationDate($book->updated_at)
+                    $url = $getUrlCallback($model);
+
+                    $sitemap->add(Url::create($url)
+                        ->setLastModificationDate($model->updated_at)
                         ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                         ->setPriority(1));
 
@@ -102,7 +160,32 @@ class GenerateSitemap extends Command
                 return true;
             });
 
-        $sitemap->writeToFile($this->getSitemapFilePath(self::BOOKS_SITEMAP_NAME));
+        if($pagesCount > 0) {
+            $sitemap->writeToFile($sitemapFilePath);
+            $this->addSitemapFile($sitemapFilePath);
+            unset($sitemap);
+        }
+    }
+
+    /**
+     * Страницы авторов:
+     *  - авторы, у которых есть в наличии опубликованная книга
+     *
+     * @return void
+     */
+    private function generateAuthorsSitemap(): void
+    {
+        $this->warn($this->getSitemapFileName(self::AUTHORS_SITEMAP_NAME));
+
+        $sitemapName = self::AUTHORS_SITEMAP_NAME;
+
+        $query = Profile
+            ::booksExists()
+            ->orderBy('id', 'desc');
+
+        $this->fillSitemapWithRecords($query, $sitemapName, function ($item) {
+            return url('author-page', ['author_id' => $item->id]);
+        });
     }
 
     /**
@@ -110,16 +193,15 @@ class GenerateSitemap extends Command
      *
      * @return void
      */
-    private function generateStaticPages(): void
+    private function generateStaticPagesSitemap(): void
     {
-        $staticPages = [
-            route('events.list.today'),
-            route('about'),
-            route('privacy'),
-            route('terms'),
-            route('faq'),
-            route('contact_support'),
-        ];
+        $this->warn($this->getSitemapFileName(self::STATIC_PAGES_SITEMAP_NAME));
+
+        $staticPages = Page::all()->filter(function ($page) {
+            return (bool) $page->viewBag['is_hidden'] == false;
+        })
+        ->pluck('url')
+        ->toArray();
 
         $sitemap = Sitemap::create();
 
@@ -141,25 +223,32 @@ class GenerateSitemap extends Command
     {
         $this->warn('sitemap.xml');
 
-        Sitemap::create()
+        $sitemap = Sitemap::create();
 
-            ->add(Url::create($this->getSitemapFileName(self::BOOKS_SITEMAP_NAME))
+        foreach ($this->sitemapFiles as $filePath) {
+            $sitemap->add(Url::create($filePath)
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
-                ->setPriority(1))
+                ->setPriority(1));
+        }
 
-            ->add(Url::create($this->getSitemapFileName(self::BLOG_SITEMAP_NAME))
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
-                ->setPriority(1))
-
-            ->add(Url::create($this->getSitemapFileName(self::AUTHORS_SITEMAP_NAME))
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
-                ->setPriority(1))
-
-//            ->add(Url::create($this->getSitemapFileName(self::STATIC_PAGES_SITEMAP_NAME))
-//                ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
-//                ->setPriority(0.1))
+        $sitemap->add(Url::create($this->getSitemapFileName(self::STATIC_PAGES_SITEMAP_NAME))
+                ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
+                ->setPriority(0.1))
 
             ->writeToFile($this->getSitemapFilePath('sitemap'));
+    }
+
+    /**
+     * @param string $sitemapName
+     * @param int $index
+     *
+     * @return string
+     */
+    private function getIndexedSitemapFilePath(string $sitemapName, int $index): string
+    {
+        $sitemapNameWithIndex = sprintf('%s_%d', $sitemapName, $index);
+
+        return $this->getSitemapFilePath($sitemapNameWithIndex);
     }
 
     /**
@@ -183,109 +272,12 @@ class GenerateSitemap extends Command
     }
 
     /**
-     * Публикации в блоге, которые видны поисковым роботам:
-     *  - в статусе Опубликован
-     *  - открыты всем в настройках приватности
+     * @param string $sitemapFilePath
      *
      * @return void
      */
-    private function generateBlogSitemap(): void
+    private function addSitemapFile(string $sitemapFilePath): void
     {
-        $this->warn($this->getSitemapFileName(self::BLOG_SITEMAP_NAME));
-
-        $sitemap = Sitemap::create();
-
-        $pagesLimit = self::SITEMAP_PAGES_LIMIT;
-        $pagesCount = 0;
-
-        Post
-            ::publicVisible()
-            ->orderBy('id', 'desc')
-
-            /**
-             * Chunking results
-             */
-            ->chunk(50, function (Collection $posts) use ($sitemap, &$pagesCount, $pagesLimit) {
-
-                if($pagesCount >= $pagesLimit) {
-                    return false;
-                }
-
-                /**
-                 * Add each page in sitemap file
-                 */
-                $posts->each(function ($post) use ($sitemap, &$pagesCount, $pagesLimit) {
-
-                    if($pagesCount >= $pagesLimit) {
-                        return false;
-                    }
-
-                    $sitemap->add(Url::create(url('blog', ['post_slug' => $post->slug]))
-                        ->setLastModificationDate($post->updated_at)
-                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                        ->setPriority(1));
-
-                    $pagesCount++;
-
-                    return true;
-                });
-
-                return true;
-            });
-
-        $sitemap->writeToFile($this->getSitemapFilePath(self::BLOG_SITEMAP_NAME));
-    }
-
-    /**
-     * Страницы авторов:
-     *  - пользователи, у которых есть в наличии опубликованная книга
-     *
-     * @return void
-     */
-    private function generateAuthorsSitemap(): void
-    {
-        $this->warn($this->getSitemapFileName(self::AUTHORS_SITEMAP_NAME));
-
-        $sitemap = Sitemap::create();
-
-        $pagesLimit = self::SITEMAP_PAGES_LIMIT;
-        $pagesCount = 0;
-
-        Profile
-            ::booksExists()
-            ->orderBy('id', 'desc')
-
-            /**
-             * Chunking results
-             */
-            ->chunk(50, function (Collection $authors) use ($sitemap, &$pagesCount, $pagesLimit) {
-
-                if($pagesCount >= $pagesLimit) {
-                    return false;
-                }
-
-                /**
-                 * Add each page in sitemap file
-                 */
-                $authors->each(function ($author) use ($sitemap, &$pagesCount, $pagesLimit) {
-
-                    if($pagesCount >= $pagesLimit) {
-                        return false;
-                    }
-
-                    $sitemap->add(Url::create(url('author-page', ['author_id' => $author->id]))
-                        ->setLastModificationDate($author->updated_at)
-                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                        ->setPriority(1));
-
-                    $pagesCount++;
-
-                    return true;
-                });
-
-                return true;
-            });
-
-        $sitemap->writeToFile($this->getSitemapFilePath(self::AUTHORS_SITEMAP_NAME));
+        $this->sitemapFiles[] = $sitemapFilePath;
     }
 }
