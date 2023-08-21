@@ -3,6 +3,7 @@
 use Books\Book\Models\Award;
 use Books\Book\Models\Book;
 use Books\Book\Models\Edition;
+use Books\Book\Models\UserBook;
 use Books\Orders\Models\Order as OrderModel;
 use Books\Orders\Classes\Services\OrderService;
 use Cms\Classes\ComponentBase;
@@ -118,6 +119,24 @@ class Order extends ComponentBase
         $order = $this->getOrder($this->getUser(), $this->book);
 
         /**
+         * Check already own
+         */
+        $alreadyOwnBook = UserBook::query()
+            ->user($this->getUser())
+            ->whereHasMorph('ownable', [Edition::class], function ($q) {
+                $q->where('id', $this->book->id);
+            })
+            ->exists();
+
+        if ($alreadyOwnBook) {
+            $error = 'Ошибка покупки книги. Обновите страницу, возможно книга уже приобретена';
+            Log::error($error);
+            Flash::error($error);
+
+            return [];
+        }
+
+        /**
          * Zero cost
          */
         if ($this->orderService->calculateAmount($order) === 0) {
@@ -143,6 +162,9 @@ class Order extends ComponentBase
                 return Redirect::to($this->currentPageUrl());
 
             } catch (Exception $e) {
+                Log::error($e->getMessage());
+                Flash::error($e->getMessage());
+
                 return [
                     '#orderPayFromBalanceSpawn' => $e->getMessage(),
                 ];

@@ -3,7 +3,7 @@
 
     <div class="ui-modal-container">
         <!-- Форма заказа -->
-        {{ form_ajax('onPayOrder', { id: 'orderForm'}) }}
+        {{ form_ajax('Order::onPayOrder', { id: 'orderForm', flash: true}) }}
         <input type="hidden" name="order_id" value="{{order.id}}">
 
         <div class="buy-book-modal__container ui-modal-content">
@@ -121,7 +121,8 @@
 
             <!-- Оплатить -->
             <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full"
-                    data-request="onPayOrder">
+                    data-request="Order::onPayOrder"
+                    data-request-flash="true">
                 <span class="ui-text--medium">Оплатить</span>
             </button>
 
