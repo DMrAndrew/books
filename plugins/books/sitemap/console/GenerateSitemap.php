@@ -1,6 +1,7 @@
 <?php namespace Books\Sitemap\Console;
 
 use Books\Book\Models\Book;
+use Books\Catalog\Models\Genre;
 use Books\Profile\Models\Profile;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
@@ -17,7 +18,8 @@ use Books\Blog\Models\Post;
  */
 class GenerateSitemap extends Command
 {
-    const BOOKS_SITEMAP_NAME = 'sitemap_books';
+    const BOOKS_SITEMAP_NAME = 'books';
+    const GENRES_SITEMAP_NAME = 'sitemap_categories';
     const BLOG_SITEMAP_NAME = 'sitemap_blog';
     const AUTHORS_SITEMAP_NAME = 'sitemap_authors';
     const STATIC_PAGES_SITEMAP_NAME = 'sitemap_pages';
@@ -43,6 +45,7 @@ class GenerateSitemap extends Command
     public function handle()
     {
         $this->generateBooksSitemap();
+        $this->generateGenresSitemap();
         $this->generateBlogSitemap();
         $this->generateAuthorsSitemap();
         $this->generateStaticPagesSitemap();
@@ -98,6 +101,46 @@ class GenerateSitemap extends Command
     }
 
     /**
+     * @return void
+     */
+    private function generateGenresSitemap(): void
+    {
+        $this->warn($this->getSitemapFileName(self::GENRES_SITEMAP_NAME));
+
+        $sitemapName = self::GENRES_SITEMAP_NAME;
+
+        $query = Genre
+            ::active()
+            ->whereNotNull('slug')
+            ->orderBy('id', 'desc');
+
+        $this->fillSitemapWithRecords($query, $sitemapName, function ($item) {
+            return url('listing', ['category_slug' => $item->slug]);
+        });
+    }
+
+    /**
+     * Страницы авторов:
+     *  - авторы, у которых есть в наличии опубликованная книга
+     *
+     * @return void
+     */
+    private function generateAuthorsSitemap(): void
+    {
+        $this->warn($this->getSitemapFileName(self::AUTHORS_SITEMAP_NAME));
+
+        $sitemapName = self::AUTHORS_SITEMAP_NAME;
+
+        $query = Profile
+            ::booksExists()
+            ->orderBy('id', 'desc');
+
+        $this->fillSitemapWithRecords($query, $sitemapName, function ($item) {
+            return url('author-page', ['author_id' => $item->id]);
+        });
+    }
+
+    /**
      * @param Builder $builder
      * @param string $sitemapName
      * @param callable $getUrlCallback
@@ -112,33 +155,39 @@ class GenerateSitemap extends Command
          * Split into files
          */
         $urlsPerFile = self::PAGES_PER_ONE_SITEMAP_FILE_LIMIT;
+        $chunkSize = self::DB_QUERIES_CHUNK_SIZE;
+
         $pagesCount = 0;
 
         $totalCount = $builder->count();
         $fileIndex = 0;
         if ($totalCount > $urlsPerFile) {
             $sitemapFilePath = $this->getIndexedSitemapFilePath($sitemapName, $fileIndex);
+            $sitemapFileName = $this->getIndexedSitemapFileName($sitemapName, $fileIndex);
         } else {
             $sitemapFilePath = $this->getSitemapFilePath($sitemapName);
+            $sitemapFileName = $this->getSitemapFileName($sitemapName);
         }
 
         $builder
             /**
              * Chunking queries to limit memory usage
              */
-            ->chunk(self::DB_QUERIES_CHUNK_SIZE, function (Collection $models) use (&$sitemap, &$pagesCount, $urlsPerFile, $getUrlCallback, $sitemapName, &$sitemapFilePath, &$fileIndex) {
+            ->chunk($chunkSize, function (Collection $models) use (&$sitemap, &$pagesCount, $urlsPerFile,
+                $getUrlCallback, $sitemapName, &$sitemapFilePath, &$sitemapFileName, &$fileIndex) {
 
                 /**
                  * Add each page in sitemap file
                  */
-                $models->each(function ($model) use (&$sitemap, &$pagesCount, $urlsPerFile, $getUrlCallback, $sitemapName, &$sitemapFilePath, &$fileIndex) {
+                $models->each(function ($model) use (&$sitemap, &$pagesCount, $urlsPerFile, $getUrlCallback,
+                    $sitemapName, &$sitemapFilePath, &$sitemapFileName, &$fileIndex) {
 
                     /**
                      * Each `$urlsPerFile` write new sitemap file
                      */
                     if($pagesCount >= $urlsPerFile) {
                         $sitemap->writeToFile($sitemapFilePath);
-                        $this->addSitemapFile($sitemapFilePath);
+                        $this->addSitemapFile($sitemapFileName);
 
                         $sitemap = Sitemap::create();
                         $pagesCount = 0;
@@ -162,30 +211,9 @@ class GenerateSitemap extends Command
 
         if($pagesCount > 0) {
             $sitemap->writeToFile($sitemapFilePath);
-            $this->addSitemapFile($sitemapFilePath);
+            $this->addSitemapFile($sitemapFileName);
             unset($sitemap);
         }
-    }
-
-    /**
-     * Страницы авторов:
-     *  - авторы, у которых есть в наличии опубликованная книга
-     *
-     * @return void
-     */
-    private function generateAuthorsSitemap(): void
-    {
-        $this->warn($this->getSitemapFileName(self::AUTHORS_SITEMAP_NAME));
-
-        $sitemapName = self::AUTHORS_SITEMAP_NAME;
-
-        $query = Profile
-            ::booksExists()
-            ->orderBy('id', 'desc');
-
-        $this->fillSitemapWithRecords($query, $sitemapName, function ($item) {
-            return url('author-page', ['author_id' => $item->id]);
-        });
     }
 
     /**
@@ -233,22 +261,30 @@ class GenerateSitemap extends Command
 
         $sitemap->add(Url::create($this->getSitemapFileName(self::STATIC_PAGES_SITEMAP_NAME))
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
-                ->setPriority(0.1))
+                ->setPriority(0.1));
 
-            ->writeToFile($this->getSitemapFilePath('sitemap'));
+        $sitemap->writeToFile($this->getSitemapFilePath('sitemap'));
     }
 
     /**
-     * @param string $sitemapName
+     * @param string $name
+     *
+     * @return string
+     */
+    private function getSitemapFileName(string $name): string
+    {
+        return $name . '.xml';
+    }
+
+    /**
+     * @param string $name
      * @param int $index
      *
      * @return string
      */
-    private function getIndexedSitemapFilePath(string $sitemapName, int $index): string
+    private function getIndexedSitemapFileName(string $name, int $index): string
     {
-        $sitemapNameWithIndex = sprintf('%s_%d', $sitemapName, $index);
-
-        return $this->getSitemapFilePath($sitemapNameWithIndex);
+        return sprintf('%s_%d', $name, $index);
     }
 
     /**
@@ -263,12 +299,13 @@ class GenerateSitemap extends Command
 
     /**
      * @param string $name
+     * @param int $index
      *
      * @return string
      */
-    private function getSitemapFileName(string $name): string
+    private function getIndexedSitemapFilePath(string $name, int $index): string
     {
-        return $name . '.xml';
+        return $this->getSitemapFilePath($this->getIndexedSitemapFileName($name, $index));
     }
 
     /**
