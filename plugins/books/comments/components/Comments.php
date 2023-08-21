@@ -140,6 +140,9 @@ class Comments extends ComponentBase
                 return [];
             }
 
+            if(!post('content')){
+                throw new ValidationException(['content' => 'Введите текст комментария']);
+            }
             $payload = post();
             if (!$this->queryComments()->find(post('parent_id'))) {
                 unset($payload['parent_id']);
