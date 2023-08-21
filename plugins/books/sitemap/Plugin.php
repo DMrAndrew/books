@@ -14,6 +14,7 @@ class Plugin extends PluginBase
     public $require = [
         'Books.Book',
         'Books.Blog',
+        'Books.Profile',
     ];
 
     /**
