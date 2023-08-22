@@ -20,7 +20,7 @@ class User extends \RainLab\User\Models\User
     {
         return $this->books()
             ->withPivot('books_book_authors', ['*'], Author::class)
-            ->orderByDesc('books_book_authors.sort_order');
+            ->orderBy('books_book_authors.sort_order');
     }
 
     public static function from(\RainLab\User\Models\User $user)
