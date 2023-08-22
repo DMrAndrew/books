@@ -3,7 +3,7 @@
 namespace Books\User;
 
 use Books\Reposts\behaviors\CanShare;
-use Books\User\Behaviors\BookUser;
+use Books\User\Behaviors\BookUser as BookUserBehavior;
 use Books\User\Behaviors\CanWithdraw;
 use Books\User\Behaviors\CountryTranslate;
 use Books\User\Classes\CookieEnum;
@@ -26,6 +26,7 @@ use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 use ValidationException;
 use Validator;
+use Books\User\Models\User as BookUser;
 
 /**
  * Plugin Information File
@@ -121,6 +122,7 @@ class Plugin extends PluginBase
         });
 
         AliasLoader::getInstance()->alias('User', User::class);
+        AliasLoader::getInstance()->alias('BookUser', BookUser::class);
         AliasLoader::getInstance()->alias('Search', Search::class);
         AliasLoader::getInstance()->alias('SearchManager', SearchManager::class);
         AliasLoader::getInstance()->alias('Country', Country::class);
@@ -133,7 +135,7 @@ class Plugin extends PluginBase
         });
 
         User::extend(function (User $model) {
-            $model->implementClassWith(BookUser::class);
+            $model->implementClassWith(BookUserBehavior::class);
             $model->implementClassWith(LocationModel::class);
             $model->implementClassWith(CanShare::class);
             $model->implementClassWith(WalletBehavior::class);
