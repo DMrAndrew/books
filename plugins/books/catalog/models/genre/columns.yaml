@@ -6,6 +6,9 @@ columns:
     name:
         label: Название
         searchable: true
+    slug:
+        label: Страница
+        searchable: true
     desc:
         label: Описание
         searchable: true

@@ -14,6 +14,7 @@ use Cms\Classes\ComponentBase;
 use Exception;
 use Illuminate\Support\Collection;
 use RainLab\User\Facades\Auth;
+use Redirect;
 
 /**
  * Listing Component
@@ -27,6 +28,8 @@ class Listing extends ComponentBase
     protected int $trackInputTime = 620;
 
     protected int $perPage = 12;
+
+    protected ?Genre $categorySlugGenre = null;
 
     public function componentDetails()
     {
@@ -51,9 +54,21 @@ class Listing extends ComponentBase
         $this->page['listable'] = WidgetEnum::listable();
     }
 
+    public function onRun()
+    {
+        if ($redirectToSlug = $this->redirectToGenreSlug()) {
+            return Redirect::to($redirectToSlug);
+        };
+
+        if ( !$this->applyGenreSlug()) {
+            abort(404);
+        }
+    }
+
     public function onRender()
     {
         $this->page['bind'] = $this->getBind();
+        $this->page['category_slug_genre'] = $this->categorySlugGenre;
     }
 
     public function onInitQueryString()
@@ -234,5 +249,57 @@ class Listing extends ComponentBase
     public function getSessionKey()
     {
         return post('_session_key');
+    }
+
+    /**
+     * @return string|null
+     */
+    private function redirectToGenreSlug(): ?string
+    {
+        $genreId = get('genre');
+        if ($genreId && is_numeric($genreId)) {
+            $genre = Genre::where('id', $genreId)->first();
+
+            if (!$genre) {
+                return null;
+            }
+
+            $categorySlug = (string)$genre->slug;
+
+            if ($categorySlug) {
+                $redirectToSlug = '/listing/' . $genre->slug;
+
+                $getParams = get();
+                $queryParams = array_filter($getParams, function($param) {
+                    return $param != 'genre';
+                }, ARRAY_FILTER_USE_KEY );
+
+                $queryString = !empty($queryParams) ? '?' . http_build_query($queryParams) : '';
+
+                return $redirectToSlug . $queryString;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return bool
+     */
+    private function applyGenreSlug(): bool
+    {
+        $categorySlug = $this->param('category_slug');
+        if ($categorySlug) {
+            $genre = Genre::slug($categorySlug)->first();
+
+            if (!$genre) {
+                return false;
+            }
+
+            $this->categorySlugGenre = $genre;
+            $this->filter->fromParams(['genreSlug' => $genre->id]);
+        }
+
+        return true;
     }
 }

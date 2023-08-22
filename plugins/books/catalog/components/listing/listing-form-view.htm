@@ -232,6 +232,12 @@
 
             </div>
             {% endif %}
+            {% if category_slug_genre %}
+                <div style="margin-bottom: 32px"> </div>
+                <div class="description typographical-block">
+                    {{ category_slug_genre.desc | raw }}
+                </div>
+            {% endif %}
         </div>
     </div>
     <script>
