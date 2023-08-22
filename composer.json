@@ -12,8 +12,8 @@
         "laravel/framework": "^9.0",
         "october/all": "^3.1",
         "rainlab/user-plugin": "^1.6",
-        "rainlab/sitemap-plugin": "^1.2",
         "rainlab/pages-plugin": "^1.5",
+        "rainlab/sitemap-plugin": "^1.2",
         "offline/oc-sentry-plugin": "^2.1",
         "rainlab/blog-plugin": "^1.6",
         "rainlab/notify-plugin": "^1.2",
@@ -42,7 +42,9 @@
         "vdlp/oc-telescope-plugin": "^2.0",
         "vdlp/oc-horizon-plugin": "*",
         "abordage/laravel-last-modified": "^0.2.0",
-        "jfcherng/php-diff": "^6.15"
+        "jfcherng/php-diff": "^6.15",
+        "books/sitemap-plugin": "dev-main",
+        "spatie/laravel-sitemap": "6.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -157,6 +159,10 @@
         "books/breadcrumbs-plugin": {
             "type": "path",
             "url": "./plugins/books/breadcrumbs"
+        },
+        "books/sitemap-plugin": {
+            "type": "path",
+            "url": "./plugins/books/sitemap"
         },
         "vdlp/oc-telescope-plugin": {
             "type": "path",
