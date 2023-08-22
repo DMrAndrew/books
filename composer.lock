@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8a066e796a6f213b08cbaf832e51563e",
+    "content-hash": "1c89e8eab510a03e3fc0a61ffdaefb31",
     "packages": [
         {
             "name": "abordage/laravel-last-modified",
@@ -160,11 +160,11 @@
         },
         {
             "name": "books/blacklists-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/blacklists",
-                "reference": "2a45c3a20feeeaba4443ff6a249a373c13f9ec7b"
+                "reference": "33f32b041417e56693a98e61e3c5a50ebd22f782"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -177,11 +177,11 @@
         },
         {
             "name": "books/blog-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/blog",
-                "reference": "c703c729db10d82cec43dbac25d6accd61d71800"
+                "reference": "4c71f219884cead27821e7a17463c93c03fe268d"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -194,7 +194,7 @@
         },
         {
             "name": "books/book-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "plugins/books/book",
@@ -218,7 +218,7 @@
         },
         {
             "name": "books/breadcrumbs-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/breadcrumbs",
@@ -235,7 +235,7 @@
         },
         {
             "name": "books/collections-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/collections",
@@ -252,7 +252,7 @@
         },
         {
             "name": "books/comments-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/comments",
@@ -269,7 +269,7 @@
         },
         {
             "name": "books/fileuploader-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/fileuploader",
@@ -297,7 +297,7 @@
         },
         {
             "name": "books/notifications-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/notifications",
@@ -314,7 +314,7 @@
         },
         {
             "name": "books/payment-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/payment",
@@ -331,7 +331,7 @@
         },
         {
             "name": "books/profile-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/profile",
@@ -348,11 +348,11 @@
         },
         {
             "name": "books/referral-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/referral",
-                "reference": "cf83b056ea9bff2b53d7ee6354c5eb880dda5bf0"
+                "reference": "07cf84a5cab12ad80b8c786ab6bc11d841e0b69f"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -365,7 +365,7 @@
         },
         {
             "name": "books/reviews-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/reviews",
@@ -383,7 +383,7 @@
         },
         {
             "name": "books/sitemap-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/sitemap",
@@ -401,7 +401,7 @@
         },
         {
             "name": "books/wallet-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/wallet",
@@ -419,7 +419,7 @@
         },
         {
             "name": "books/withdrawal-plugin",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "./plugins/books/withdrawal",
@@ -8909,6 +8909,56 @@
             "time": "2023-04-28T07:47:42+00:00"
         },
         {
+            "name": "staudenmeir/eloquent-eager-limit",
+            "version": "v1.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/staudenmeir/eloquent-eager-limit.git",
+                "reference": "8cedfcd02fb50dcf3c5a1fefc3be74d652ae0391"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/staudenmeir/eloquent-eager-limit/zipball/8cedfcd02fb50dcf3c5a1fefc3be74d652ae0391",
+                "reference": "8cedfcd02fb50dcf3c5a1fefc3be74d652ae0391",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "^9.0",
+                "php": "^8.0.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Staudenmeir\\EloquentEagerLimit\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jonas Staudenmeir",
+                    "email": "mail@jonas-staudenmeir.de"
+                }
+            ],
+            "description": "Laravel Eloquent eager loading with limit",
+            "support": {
+                "issues": "https://github.com/staudenmeir/eloquent-eager-limit/issues",
+                "source": "https://github.com/staudenmeir/eloquent-eager-limit/tree/v1.7.1"
+            },
+            "funding": [
+                {
+                    "url": "https://paypal.me/JonasStaudenmeir",
+                    "type": "custom"
+                }
+            ],
+            "time": "2022-03-20T21:56:48+00:00"
+        },
+        {
             "name": "staudenmeir/eloquent-has-many-deep",
             "version": "v1.17",
             "source": {
@@ -14454,8 +14504,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "books/breadcrumbs-plugin": 20,
-        "books/sitemap-plugin": 20,
         "lemax10/asail": 20
     },
     "prefer-stable": true,
@@ -14466,5 +14514,5 @@
         "ext-fileinfo": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }

@@ -74,7 +74,7 @@ class AdvertLC extends ComponentBase
 
     public function setBook(): void
     {
-        $this->book = $this->user->profile->books()
+        $this->book = $this->query()
             ->with(['advert', 'advert.visits', 'ebook'])
             ->find(
                 post('value') // Из селекта книги
@@ -90,13 +90,17 @@ class AdvertLC extends ComponentBase
         }
     }
 
+    public function query(){
+        return $this->user->toBookUser()->booksInAuthorOrder()->notFree();
+    }
+
     public function vals(): array
     {
 
         $visit_table = $this->book?->advert->visits->groupBy(fn($i) => $i->created_at->format('d.m.y'))->map->count();
         return [
             'book' => $this->book,
-            'books' => $this->user->profile->books()->get(),
+            'books' => $this->query()->get(),
             'sold_count' => $this->book?->ebook->getSoldCountAttribute(),
             'days_on_sale' => $this->book?->ebook->sells()->orderBy('created_at')->first()?->created_at
                 ->diffInDays(Carbon::now()) ?? '-',
