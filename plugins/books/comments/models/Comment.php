@@ -48,12 +48,9 @@ class Comment extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope('orderByDesc', fn($q) => $q->orderByDesc('id'));
+        static::addGlobalScope('orderByDesc', fn ($q) => $q->orderByDesc('id'));
     }
 
-    /**
-     * @return void
-     */
     public function afterCreate(): void
     {
         // не ответ на чужой комментарий и комментарий к книге
@@ -74,7 +71,7 @@ class Comment extends Model
 
     public function addition(): string
     {
-        return match (true){
+        return match (true) {
             $this->isDeleted() => 'Удалён',
             $this->isEdited() => 'Редактирован',
             default => ''
@@ -83,7 +80,7 @@ class Comment extends Model
 
     public function isDeleted(): bool
     {
-        return (bool)$this->{$this->getDeletedAtColumn()};
+        return (bool) $this->{$this->getDeletedAtColumn()};
     }
 
     public function scopeRoot(Builder $builder): Builder
@@ -103,20 +100,38 @@ class Comment extends Model
 
     public function toShortString(): string
     {
+        return $this->toShort().match (get_class($this->commentable)) {
+            Book::class => $this->commentable->title,
+            Profile::class => $this->commentable->username,
+            Post::class => $this->commentable->title,
+        };
+    }
+
+    public function toShort(): string
+    {
         return match (get_class($this->commentable)) {
-            Book::class => 'к книге ' . $this->commentable->title,
-            Profile::class => 'в профиле пользователя ' . $this->commentable->username,
-            Post::class => 'к посту ' . $this->commentable->title,
+            Book::class => 'к книге ',
+            Profile::class => 'в профиле ',
+            Post::class => 'к посту ',
         };
     }
 
     public function toCommentableLink(): string
     {
         return match (get_class($this->commentable)) {
-                Book::class => '/book-card/' . $this->commentable->id,
-                Profile::class => '/author-page/'. $this->commentable->id,
-                Post::class => '/blog/'. $this->commentable->slug,
-            };
+            Book::class => '/book-card/'.$this->commentable->id,
+            Profile::class => '/author-page/'.$this->commentable->id,
+            Post::class => '/blog/'.$this->commentable->slug,
+        };
+    }
+
+    public function toCommentableTitle()
+    {
+        return match (get_class($this->commentable)) {
+            Book::class => $this->commentable->title,
+            Profile::class => $this->commentable->username,
+            Post::class => $this->commentable->title,
+        };
     }
 
     public function scopeWithoutOwner(Builder $builder)
@@ -128,8 +143,8 @@ class Comment extends Model
             default => null
         };
 
-        return $builder->when($profile, fn($b) => $b
-            ->whereDoesntHave('profile', fn($p) => $p->whereIn((new Profile())->getQualifiedKeyName(), $profile)));
+        return $builder->when($profile, fn ($b) => $b
+            ->whereDoesntHave('profile', fn ($p) => $p->whereIn((new Profile())->getQualifiedKeyName(), $profile)));
 
     }
 }

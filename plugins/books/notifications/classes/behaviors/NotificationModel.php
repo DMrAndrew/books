@@ -3,6 +3,7 @@
 namespace Books\Notifications\Classes\Behaviors;
 
 use Books\Comments\Models\Comment;
+use Books\Notifications\Classes\Events\CommentCreated;
 use Books\Notifications\Classes\Events\CommentReplied;
 use Cms\Classes\Controller;
 use Exception;
@@ -43,8 +44,8 @@ class NotificationModel extends ExtensionBase
     {
 
         return match ($this->notification->event_type) {
-            CommentReplied::class => $this->notification->data['comment']['id'] ?? false ? [
-                'comment' => Comment::query()->withTrashed()->with(['parent' => fn($p) => $p->withTrashed()])->find($this->notification->data['comment']['id'] ?? null)
+            CommentReplied::class,CommentCreated::class => $this->notification->data['comment']['id'] ?? false ? [
+                'comment' => Comment::query()->withTrashed()->with(['parent' => fn($p) => $p->withTrashed(),'profile'])->find($this->notification->data['comment']['id'] ?? null)
             ] : [],
             default => []
         };
