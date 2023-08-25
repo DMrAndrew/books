@@ -22,9 +22,9 @@ package-lock.json
 _ide_helper.php
 .phpunit.result.cache
 nbproject
-*.xml
-*.htm
-*.html
+./*.xml
+./*.htm
+./*.html
 
 # Project
 /bootstrap/compiled.php
