@@ -37,13 +37,13 @@
         "books/referral-plugin": "*",
         "books/blacklists-plugin": "*",
         "books/blog-plugin": "*",
-        "books/breadcrumbs-plugin": "*",
+        "books/breadcrumbs-plugin": "dev-main",
         "laracraft-tech/laravel-date-scopes": "^1.1",
         "vdlp/oc-telescope-plugin": "^2.0",
         "vdlp/oc-horizon-plugin": "*",
         "abordage/laravel-last-modified": "^0.2.0",
         "jfcherng/php-diff": "^6.15",
-        "books/sitemap-plugin": "*",
+        "books/sitemap-plugin": "dev-main",
         "spatie/laravel-sitemap": "6.3"
     },
     "require-dev": {
