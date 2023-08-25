@@ -5,3 +5,4 @@ static-pages:
     about: {  }
     contacts: {  }
     changelog: {  }
+    edoc: {  }
