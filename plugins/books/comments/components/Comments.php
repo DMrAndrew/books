@@ -22,7 +22,7 @@ use ValidationException;
  *
  * @link https://docs.octobercms.com/3.x/extend/cms-components.html
  */
-class Comments extends ComponentBase
+class   Comments extends ComponentBase
 {
     protected Model $model;
 
