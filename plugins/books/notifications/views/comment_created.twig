@@ -1,6 +1,6 @@
 <div class="notification-menu__text notification-menu__content-wrapper">
     <a href="{{ 'author_page' | page({profile_id: comment.profile.id}) }}"
-       class="ui-link _violet">{{ comment.profile.username }}</a>
+       class="ui-link _violet">{{ comment.profile.name }}</a>
     оставил(а) комментарий {{ comment.toShort }} "<a href="{{ comment.toCommentableLink }}"
                                              class="ui-link _violet">{{ comment.toCommentableTitle }}</a>"
 </div>

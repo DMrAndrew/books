@@ -50,7 +50,6 @@ class ChapterService implements iChapterService
         return $this->chapter;
     }
 
-
     public function from(mixed $payload): ?Chapter
     {
 
@@ -251,15 +250,13 @@ class ChapterService implements iChapterService
 
     public function publish(bool $forceFireEvent = true): Closure
     {
-        $event = Db::transaction(function () {
-            $this->chapter->fill([
-                'status' => ChapterStatus::PUBLISHED,
-                'published_at' => Carbon::now(),
-            ]);
-            $this->chapter->save();
+        $this->chapter->fill([
+            'status' => ChapterStatus::PUBLISHED,
+            'published_at' => Carbon::now(),
+        ]);
+        $this->chapter->save();
 
-            return fn () => Event::fire('books.chapter.published', [$this->chapter]);
-        });
+        $event = fn () => Event::fire('books.chapter.published', [$this->chapter]);
         if ($forceFireEvent) {
             $event();
 
