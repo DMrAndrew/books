@@ -66,8 +66,7 @@ class DiscountLC extends ComponentBase
             'books' => $this->query()->get(),
             'active_at' => Carbon::tomorrow()->format('d.m.Y'),
             'bookItem' => $this->getBook(),
-            'discounts' => $this->user->profile
-                ->books()
+            'discounts' => $this->query()
                 ->has('ebook.discounts')
                 ->with('ebook.discounts', 'ebook.discounts.edition', 'ebook.discounts.edition.book')
                 ->get()->map->ebook->pluck('discounts')->flatten(1)->sortByDesc('active_at')
@@ -77,7 +76,7 @@ class DiscountLC extends ComponentBase
 
     public function query()
     {
-        return $this->user->profile->books()->allowedForDiscount();
+        return $this->user->toBookUser()->booksInAuthorOrder()->allowedForDiscount();
     }
 
 

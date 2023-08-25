@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Books\User\Models\User as BookUser;
 
 /**
  * Promocode Component
@@ -67,7 +68,7 @@ class Promocode extends ComponentBase
     public function getBook()
     {
         return $this
-            ->getNotFreeAccountBooks()
+            ->query()
             ->find(post('value') ?? post('book_id') ?? $this->param('book_id'));
     }
 
@@ -132,11 +133,16 @@ class Promocode extends ComponentBase
             ->get() ?? new Collection();
     }
 
+    public function query(){
+        return $this->user->toBookUser()->booksInAuthorOrder()->notFree();
+    }
+
     /**
      * @return Collection
      */
     private function getNotFreeAccountBooks(): Collection
     {
+        return $this->query()->get();
         $allAccountProfilesIds = $this->user->profiles->pluck('id')->toArray();
         $booksIds = Author
             ::with(['book'])

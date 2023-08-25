@@ -11,6 +11,7 @@ use Books\Profile\Models\Profile;
 use Books\User\Classes\UserEventHandler;
 use Books\User\Classes\UserService;
 use Books\User\Models\Settings;
+use Books\User\Models\User as BooksUser;
 use Carbon\Carbon;
 use Exception;
 use Log;
@@ -35,7 +36,9 @@ class BookUser extends ExtensionBase
         'see_adult',
         'asked_adult_agreement',
     ];
+
     protected array $rules = [];
+
     protected array $cast = [
         'show_birthday' => 'boolean',
         'see_adult' => 'boolean',
@@ -55,7 +58,7 @@ class BookUser extends ExtensionBase
         $this->parent->addValidationRule('show_birthday', 'boolean');
         $this->parent->addValidationRule('birthday', 'required');
         $this->parent->addValidationRule('birthday', 'required');
-//        $this->parent->addValidationRule('nickname', 'required'); багует
+        //        $this->parent->addValidationRule('nickname', 'required'); багует
         $this->parent->addDateAttribute('birthday');
         $this->parent->addFillable($this->fillable);
         $this->parent->addCasts($this->cast);
@@ -68,7 +71,7 @@ class BookUser extends ExtensionBase
 
     protected function bindEvents(): void
     {
-        $this->parent->bindEvent('model.afterCreate', fn() => (new UserEventHandler())->afterCreate($this->parent->fresh()));
+        $this->parent->bindEvent('model.afterCreate', fn () => (new UserEventHandler())->afterCreate($this->parent->fresh()));
     }
 
     protected function bindRelations(): void
@@ -109,20 +112,20 @@ class BookUser extends ExtensionBase
      */
     public function setBirthdayAttribute($value): void
     {
-        if (!$value) {
+        if (! $value) {
             $this->parent->attributes['birthday'] = null;
+
             return;
         }
 
         try {
             $date = Carbon::parse($value);
-        }
-        catch (Exception $exception){
+        } catch (Exception $exception) {
             Log::error($exception->getMessage());
             throw new ValidationException(['birthday' => 'Некорректная дата рождения']);
         }
         $date->lessThan(today()) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть больше текущего дня']);
-        $date->gte(Carbon::parse(self::MIN_BIRTHDAY)) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть меньше ' . self::MIN_BIRTHDAY]);
+        $date->gte(Carbon::parse(self::MIN_BIRTHDAY)) ?: throw new ValidationException(['birthday' => 'Дата рождения не может быть меньше '.self::MIN_BIRTHDAY]);
         $this->parent->attributes['birthday'] = $date;
     }
 
@@ -158,16 +161,21 @@ class BookUser extends ExtensionBase
 
     public function scopeUsernameLike($q, $name)
     {
-        return $q->whereHas('profiles', fn($profile) => $profile->usernameLike($name));
+        return $q->whereHas('profiles', fn ($profile) => $profile->usernameLike($name));
     }
 
     public function scopeUsername($q, $name)
     {
-        return $q->whereHas('profiles', fn($profile) => $profile->username($name));
+        return $q->whereHas('profiles', fn ($profile) => $profile->username($name));
     }
 
     public function bookIsBought(Edition $edition): bool
     {
         return $edition->isSold($this->parent);
+    }
+
+    public function toBookUser()
+    {
+        return BooksUser::from($this->parent);
     }
 }
