@@ -124,7 +124,7 @@
         </div>
 
         {% set child_count = comment.getChildCount() %}
-        {% set more_count = max(0,child_count - 5) %}
+        {% set more_count = max(0,child_count - 3) %}
         {% if more_count %}
         {% if comment.id in opened %}
 

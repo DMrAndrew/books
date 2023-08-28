@@ -115,32 +115,30 @@ class BookService
 
     protected function fromTizis(TizisBook $book): Book
     {
-        return Db::transaction(function () use ($book) {
-            $info = $book->getInfo();
-            $data = [
-                'title' => strip_tags($info->getTitle()) ?: 'Без названия',
-                'annotation' => $info->getAnnotation(),
-                'status' => BookStatus::PARSING,
-            ];
+        $info = $book->getInfo();
+        $data = [
+            'title' => strip_tags($info->getTitle()) ?: 'Без названия',
+            'annotation' => $info->getAnnotation(),
+            'status' => BookStatus::PARSING,
+        ];
 
-            $this->book->removeValidationRule('cover', 'max:3072');
-            if ($cover = $book->getCover()) {
-                $cover = (new File())->fromData(base64_decode($cover), 'cover.jpg');
-                $cover->save();
-                $this->book->cover()->add($cover, $this->session_key);
+        $this->book->removeValidationRule('cover', 'max:3072');
+        if ($cover = $book->getCover()) {
+            $cover = (new File())->fromData(base64_decode($cover), 'cover.jpg');
+            $cover->save();
+            $this->book->cover()->add($cover, $this->session_key);
+        }
+
+        collect(explode(',', $info->getKeywords()))->each(fn ($tag) => $this->addTag($tag));
+
+        foreach ($info->getGenres() as $item) {
+            if ($genre = Genre::query()->where('name', $item)->first()) {
+                $this->addGenre($genre);
             }
+        }
+        $this->save($data);
 
-            collect(explode(',', $info->getKeywords()))->each(fn ($tag) => $this->addTag($tag));
-
-            foreach ($info->getGenres() as $item) {
-                if ($genre = Genre::query()->where('name', $item)->first()) {
-                    $this->addGenre($genre);
-                }
-            }
-            $this->save($data);
-
-            return $this->book;
-        });
+        return $this->book;
     }
 
     /**
