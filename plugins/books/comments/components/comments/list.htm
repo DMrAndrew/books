@@ -1,3 +1,25 @@
 {% for comment in comments %}
 {% partial '@comment' %}
 {% endfor %}
+
+{#
+<!-- теги script и title учитываются стилями .comments-comment:nth-child(-n+3) -->
+<!-- поэтому их добавление ломает отображение первых N комментариев -->
+<!-- если понадобится, то необходимо вынести из комментариев -->
+<script>
+    $(".backlight").on("click", function(event) {
+        // event.stopPropagation();
+        // let parentid = $(this).data('comment-parent-id')
+        // let parent = $(`#comment_text_${parentid}`)
+        // parent.addClass('backlighted')
+        // setTimeout(() => parent.removeClass('backlighted'),1000)
+        // parent.get(0).scrollIntoView({behavior: 'smooth', block:'center'})
+
+    })
+</script>
+
+<style>
+    .backlighted{
+    }
+</style>
+#}

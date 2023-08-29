@@ -1,3 +1,4 @@
+{% set showedChildren = 0 %}
 <div class="comments__wrapper _indent comments-comment" id="comment_container_{{comment.id}}">
     <div class="comments-comment__avatar square-40">
         {% if comment.profile.avatar %}
@@ -35,6 +36,10 @@
                     {% endif %}
 
                     {{comment.content|raw}}
+
+                    {% if not comment.parent_id %}
+                        {% set showedChildren = showedChildren + 1 %}
+                    {% endif %}
                 </div>
                 {% partial '@textarea' item=comment cancel='#comment_'~comment.id %}
             </div>
@@ -118,24 +123,23 @@
         </div>
         {% if not comment.parent_id %}
 
-        <div class="comments-comment__sub {{ comment.id in opened ? '' : 'collapsed'}} "
-             data-collapse-more-id="{{comment.id}}">
-            {% partial '@list' comments=comment.children %}
-        </div>
+            <div class="comments-comment__sub {{ comment.id in opened ? '' : 'collapsed'}} "
+                 data-collapse-more-id="{{comment.id}}">
+                {% partial '@list' comments=comment.children %}
+            </div>
 
-        {% set child_count = comment.getChildCount() %}
-        {% set more_count = max(0,child_count - 3) %}
-        {% if more_count %}
-        {% if comment.id in opened %}
+            {% set child_count = comment.getChildCount() %}
+            {% set more_count = max(0, child_count - 3) %}
+            {% if more_count %}
+                {% if opened and comment.id in opened %}
 
-        {% else %}
-        <div class="comments-comment__more" data-collapse-more>
-            <a class="ui-link _violet cursor-pointer">Ещё {{ more_count }}
-                {{comment.replayWordForm().getCorrectSuffix(more_count) }}</a>
-        </div>
-
-        {% endif %}
-        {% endif %}
+                {% else %}
+                    <div class="comments-comment__more" data-collapse-more>
+                        <a class="ui-link _violet cursor-pointer">Ещё {{ more_count }} из {{ child_count }}
+                            {{comment.replayWordForm().getCorrectSuffix(more_count) }}</a>
+                    </div>
+                {% endif %}
+            {% endif %}
         {% endif %}
     </div>
 </div>
@@ -143,20 +147,3 @@
 {% if comment.parent_id %}
 {% partial '@list' comments=comment.children %}
 {% endif %}
-
-<script>
-    $(".backlight").on("click", function(event) {
-        // event.stopPropagation();
-        // let parentid = $(this).data('comment-parent-id')
-        // let parent = $(`#comment_text_${parentid}`)
-        // parent.addClass('backlighted')
-        // setTimeout(() => parent.removeClass('backlighted'),1000)
-        // parent.get(0).scrollIntoView({behavior: 'smooth', block:'center'})
-
-    })
-</script>
-
-<style>
-    .backlighted{
-    }
-</style>
