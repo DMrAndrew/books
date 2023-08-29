@@ -128,7 +128,7 @@ a.disabled, .nav__list-item.disabled, .personal-area__sidebar-link.disabled {
     display: none;
 }
 
-.comments-comment__sub.collapsed .comments-comment:nth-child(-n+5) {
+.comments-comment__sub.collapsed .comments-comment:nth-child(-n+3) {
     display: flex;
 }
 
