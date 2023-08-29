@@ -1,4 +1,3 @@
-{% set showedChildren = 0 %}
 <div class="comments__wrapper _indent comments-comment" id="comment_container_{{comment.id}}">
     <div class="comments-comment__avatar square-40">
         {% if comment.profile.avatar %}
@@ -36,10 +35,6 @@
                     {% endif %}
 
                     {{comment.content|raw}}
-
-                    {% if not comment.parent_id %}
-                        {% set showedChildren = showedChildren + 1 %}
-                    {% endif %}
                 </div>
                 {% partial '@textarea' item=comment cancel='#comment_'~comment.id %}
             </div>
