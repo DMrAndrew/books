@@ -20,8 +20,8 @@ function initEditor(inputName, options = []) {
                 {
                     name: /.*/,
                     attributes: true,
-                    classes: true,
-                    styles: true
+                    //classes: true,
+                    //styles: true
                 }
             ],
             disallow: [
@@ -36,6 +36,15 @@ function initEditor(inputName, options = []) {
                 },
                 {
                     name: 'audio'
+                },
+                {
+                    attributes: '*{font*}'
+                },
+                {
+                    styles: '*'
+                },
+                {
+                    classes: '*'
                 },
             ]
         },
