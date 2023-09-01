@@ -597,6 +597,16 @@ class Book extends Model
         };
     }
 
+    /**
+     * @return Collection
+     */
+    public function orderedAuthors(): Collection
+    {
+        return $this->authors
+            ->sortByDesc('percent')
+            ->sortByDesc('is_owner');
+    }
+
     protected function afterCreate(): void
     {
         $this->setDefaultCover();

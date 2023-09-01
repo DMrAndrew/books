@@ -47,8 +47,8 @@
             </a>
 
             <div class="book-card__genres tags-list">
-                {% for author in book.authors %}
-                <a href="/author-page/{{author.profile.id}}" class=" ui-link _violet">{{author.profile.username}}</a>
+                {% for author in book.orderedAuthors %}
+                <a href="/author-page/{{author.profile.id}}" class="book-card-full__author ui-link _violet">{{author.profile.username}}</a>
                 {% endfor %}
             </div>
 

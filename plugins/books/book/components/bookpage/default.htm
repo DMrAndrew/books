@@ -6,8 +6,8 @@
             <h1 class="book-card-full__title ui-text-head--2 ui-text--bold">{{book.title}}</h1>
             <div class="book-card-full__author-wrapper">
                 <div class="book-card-full__author-container tags-list">
-                    {% for profile in book.profiles %}
-                    <a href="/author-page/{{profile.id}}" class="book-card-full__author ui-link _violet">{{profile.username}}</a>
+                    {% for author in book.orderedAuthors %}
+                    <a href="/author-page/{{author.profile.id}}" class="book-card-full__author ui-link _violet">{{author.profile.username}}</a>
                     {% endfor %}
                 </div>
                 {% if supportBtn %}

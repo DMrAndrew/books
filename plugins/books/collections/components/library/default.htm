@@ -42,7 +42,7 @@
                                     <div data-tippy-block>
                                         <div class="tippymodal">
                                             <div class="tippymodal-block tags-list"><span class="tippymodal-title">Автор:</span>
-                                                {% for author in lib.book.authors %}
+                                                {% for author in lib.book.orderedAuthors %}
                                                 <a href="/author-page/{{author.profile.id}}" class="ui-link _violet">{{author.profile.username}}</a>
                                                 {% endfor %}
                                             </div>
