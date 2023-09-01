@@ -198,25 +198,30 @@ class BookService
         $this->book->setSortOrder();
         Event::fire('books.book.updated', [$this->book]);
 
-        Log::info('try to notify on update');
         // получим авторов после сохранения, отсеивая старых
-        $coauthorsToNotify = $this->book->authors()->get()->diff($authors); Log::info($coauthorsToNotify);
+        Log::info('try to notify on update');
+        $coauthorsToNotify = $this->book->authors()->get()->diff($authors);
+        Log::info($coauthorsToNotify);
         $this->notifyCoAuthors($coauthorsToNotify);
 
         return $this->book;
     }
 
-    protected function notifyCoAuthors(Collection $authors): void
+    protected function notifyCoAuthors(Collection $coAuthors): void
     {
         Log::info('notifyCoAuthors: ');
 
-        if ($authors->isEmpty()) {
+        if ($coAuthors->isEmpty()) {
             Log::info('authors is empty');
             return;
         }
 
-        Log::info($authors);
-        $authors->each(fn (Author $coAuthor) => Event::fire('books.book::author.invited', [$coAuthor, $this->user->profile]));
+        Log::info($coAuthors);
+        Log::info($this->user->profile);
+        //$authors->each(fn (Author $coAuthor) => Event::fire('books.book::author.invited', [$coAuthor, $this->user->profile]));
+        $coAuthors->each(function (Author $coAuthor) {
+            Event::fire('books.book::author.invited', [$coAuthor, $this->user->profile]);
+        });
     }
 
     protected function syncRelations(): void
