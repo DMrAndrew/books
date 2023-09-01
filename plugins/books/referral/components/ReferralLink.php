@@ -37,10 +37,6 @@ class ReferralLink extends ComponentBase
     {
         $this->processReferralLink();
 
-        if ($redirect = redirectIfUnauthorized()) {
-            return $redirect;
-        }
-
         if ($this->referrer) {
             return Redirect::to($this->referrer->target_link);
         }
