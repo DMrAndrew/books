@@ -5,6 +5,7 @@ namespace Books\Notifications\Classes\Events;
 use Books\Notifications\Classes\NotificationTypeEnum;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Log;
 
 class AuthorInvited extends BaseEvent
 {
@@ -31,11 +32,15 @@ class AuthorInvited extends BaseEvent
      */
     public static function makeParamsFromEvent(array $args, $eventName = null): array
     {
+        Log::info('makeParamsFromEvent');
+        //Log::info($args);
+        //dd($args);
+
         return array_merge(
             static::defaultParams(),
             [
                 'coauthor' => Arr::get($args, 0),
-                'author' => Arr::get($args, 1),
+                'owner' => Arr::get($args, 1),
                 'recipients' => static::getRecipients($args),
             ],
         );
@@ -47,11 +52,14 @@ class AuthorInvited extends BaseEvent
      */
     public static function getRecipients(array $args): ?Collection
     {
-        $author = Arr::get($args, 0);
+        $coAuthor = Arr::get($args, 0);
+
+        Log::info('getRecipients');
+        Log::info($coAuthor->toArray());
 
         // README: возвращаем именно такую коллекцию, а не collect() ибо во втором случае ошибка сериализации
         return new \October\Rain\Database\Collection([
-            $author->profile,
+            $coAuthor->profile,
         ]);
     }
 }
