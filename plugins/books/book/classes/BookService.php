@@ -15,6 +15,7 @@ use Db;
 use Event;
 use Exception;
 use Illuminate\Support\Collection;
+use Log;
 use RainLab\User\Models\User;
 use Session;
 use System\Models\File;
@@ -180,7 +181,8 @@ class BookService
         $this->book->save(null, $this->getSessionKey());
         Event::fire('books.book.created', [$this->book]);
 
-        $coauthorsToNotify = $this->book->authors()->owner(false)->get();
+        Log::info('try to notify on create');
+        $coauthorsToNotify = $this->book->authors()->owner(false)->get(); Log::info($coauthorsToNotify);
         $this->notifyCoAuthors($coauthorsToNotify);
 
         return $this->book;
@@ -196,8 +198,9 @@ class BookService
         $this->book->setSortOrder();
         Event::fire('books.book.updated', [$this->book]);
 
+        Log::info('try to notify on update');
         // получим авторов после сохранения, отсеивая старых
-        $coauthorsToNotify = $this->book->authors()->get()->diff($authors);
+        $coauthorsToNotify = $this->book->authors()->get()->diff($authors); Log::info($coauthorsToNotify);
         $this->notifyCoAuthors($coauthorsToNotify);
 
         return $this->book;
@@ -205,6 +208,14 @@ class BookService
 
     protected function notifyCoAuthors(Collection $authors): void
     {
+        Log::info('notifyCoAuthors: ');
+
+        if ($authors->isEmpty()) {
+            Log::info('authors is empty');
+            return;
+        }
+
+        Log::info($authors);
         $authors->each(fn (Author $author) => Event::fire('books.book::author.invited', [$author, $this->user->profile]));
     }
 
