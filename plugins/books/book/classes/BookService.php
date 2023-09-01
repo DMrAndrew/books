@@ -180,6 +180,9 @@ class BookService
         $this->book->save(null, $this->getSessionKey());
         Event::fire('books.book.created', [$this->book]);
 
+        $coauthorsToNotify = $this->book->authors()->owner(false)->get();
+        $this->notifyCoAuthors($coauthorsToNotify);
+
         return $this->book;
     }
 
@@ -194,14 +197,15 @@ class BookService
         Event::fire('books.book.updated', [$this->book]);
 
         // получим авторов после сохранения, отсеивая старых
-        $this
-            ->book
-            ->authors()
-            ->get()
-            ->diff($authors)
-            ->each(fn (Author $author) => Event::fire('books.book::author.invited', [$author, $this->user->profile]));
+        $coauthorsToNotify = $this->book->authors()->get()->diff($authors);
+        $this->notifyCoAuthors($coauthorsToNotify);
 
         return $this->book;
+    }
+
+    protected function notifyCoAuthors(Collection $authors): void
+    {
+        $authors->each(fn (Author $author) => Event::fire('books.book::author.invited', [$author, $this->user->profile]));
     }
 
     protected function syncRelations(): void
