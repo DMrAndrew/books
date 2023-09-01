@@ -91,7 +91,7 @@ class AdvertLC extends ComponentBase
     }
 
     public function query(){
-        return $this->user->toBookUser()->booksInAuthorOrder()->notFree();
+        return $this->user->toBookUser()->booksInAuthorOrder();
     }
 
     public function vals(): array
