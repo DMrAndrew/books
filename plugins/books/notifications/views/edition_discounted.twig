@@ -1,6 +1,6 @@
 <div class="notification-menu__text notification-menu__content-wrapper">
     Скидка на книгу "<a href="{{ 'book-card' | page({book_id: book.id}) }}" class="ui-link _violet">{{ book.title }}</a>"
-    от <a href="{{ 'author_page' | page({profile_id: author.id}) }}" class="ui-link _violet">{{ author.profile.username }}</a>
+    от <a href="{{ 'author_page' | page({profile_id: author.profile_id}) }}" class="ui-link _violet">{{ author.profile.username }}</a>
      - {{ new_price }} ₽, <strike>{{ old_price }} ₽</strike>
 </div>
 <a href="{{ 'book-card' | page({book_id: book.id}) }}" class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Купить</a>
