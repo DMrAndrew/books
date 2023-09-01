@@ -216,7 +216,7 @@ class BookService
         }
 
         Log::info($authors);
-        $authors->each(fn (Author $author) => Event::fire('books.book::author.invited', [$author, $this->user->profile]));
+        $authors->each(fn (Author $coAuthor) => Event::fire('books.book::author.invited', [$coAuthor, $this->user->profile]));
     }
 
     protected function syncRelations(): void
