@@ -15,6 +15,7 @@ use Db;
 use Event;
 use Exception;
 use Illuminate\Support\Collection;
+use Log;
 use RainLab\User\Models\User;
 use Session;
 use System\Models\File;
@@ -180,6 +181,10 @@ class BookService
         $this->book->save(null, $this->getSessionKey());
         Event::fire('books.book.created', [$this->book]);
 
+        Log::info('try to notify on create');
+        $coauthorsToNotify = $this->book->authors()->owner(false)->get(); Log::info($coauthorsToNotify);
+        $this->notifyCoAuthors($coauthorsToNotify);
+
         return $this->book;
     }
 
@@ -194,14 +199,29 @@ class BookService
         Event::fire('books.book.updated', [$this->book]);
 
         // получим авторов после сохранения, отсеивая старых
-        $this
-            ->book
-            ->authors()
-            ->get()
-            ->diff($authors)
-            ->each(fn (Author $author) => Event::fire('books.book::author.invited', [$author, $this->user->profile]));
+        Log::info('try to notify on update');
+        $coauthorsToNotify = $this->book->authors()->get()->diff($authors);
+        Log::info($coauthorsToNotify);
+        $this->notifyCoAuthors($coauthorsToNotify);
 
         return $this->book;
+    }
+
+    protected function notifyCoAuthors(Collection $coAuthors): void
+    {
+        Log::info('notifyCoAuthors: ');
+
+        if ($coAuthors->isEmpty()) {
+            Log::info('authors is empty');
+            return;
+        }
+
+        Log::info($coAuthors);
+        Log::info($this->user->profile);
+        //$authors->each(fn (Author $coAuthor) => Event::fire('books.book::author.invited', [$coAuthor, $this->user->profile]));
+        $coAuthors->each(function (Author $coAuthor) {
+            Event::fire('books.book::author.invited', [$coAuthor, $this->user->profile]);
+        });
     }
 
     protected function syncRelations(): void
