@@ -1,13 +1,18 @@
 {% set history = book.ebook.updateHistoryView %}
+<div itemscope itemtype="http://schema.org/Book">
 <div class="ui-container-fluid">
     <div class="book-card-full _indent">
-        <img class="book-card-full__image" src="{{book.cover.getThumb(334,488)}}" alt="" style="object-fit: fill">
+        <div itemprop="thumbnail" itemscope itemtype="http://schema.org/ImageObject">
+            <img itemprop="contentUrl" class="book-card-full__image" src="{{book.cover.getThumb(334,488)}}" alt="Обложка для книги {{book.title}}" style="object-fit: fill" >
+        </div>
         <div class="book-card-full__description">
-            <h1 class="book-card-full__title ui-text-head--2 ui-text--bold">{{book.title}}</h1>
+            <h1 class="book-card-full__title ui-text-head--2 ui-text--bold" itemprop="name">{{book.title}}</h1>
             <div class="book-card-full__author-wrapper">
                 <div class="book-card-full__author-container tags-list">
                     {% for author in book.orderedAuthors %}
-                    <a href="/author-page/{{author.profile.id}}" class="book-card-full__author ui-link _violet">{{author.profile.username}}</a>
+                    <a href="/author-page/{{author.profile.id}}" class="book-card-full__author ui-link _violet" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                        <span itemprop="name">{{author.profile.username}}</span>
+                    </a>
                     {% endfor %}
                 </div>
                 {% if supportBtn %}
@@ -24,9 +29,9 @@
                 <div class="ui-tabs">
                     <div class="ui-tabs-header">
                         <div class="ui-tabs-line"></div>
-                        <div class="ui-tabs-header-wrapper" data-tabs="1">
-                            <div class="ui-tabs-link active" data-tab="1">Электронная</div>
-                            <!--                            <div class="ui-tabs-link" data-tab="2">Аудиокнига</div>-->
+                        <div class="ui-tabs-header-wrapper" data-tabs="1" itemprop="bookFormat" itemscope itemtype="http://schema.org/BookFormat">
+                            <div class="ui-tabs-link active" data-tab="1" itemprop="ebook">Электронная</div>
+                            <!--                            <div class="ui-tabs-link" data-tab="2" itemprop="AudiobookFormat">Аудиокнига</div>-->
                             <!--                            <div class="ui-tabs-link" data-tab="3">Бумажная</div>-->
                             <!--                            <div class="ui-tabs-link" data-tab="4">Бумажная</div>-->
                             <!--                            <div class="ui-tabs-link" data-tab="5">Бумажная</div>-->
@@ -39,12 +44,12 @@
                                     {% partial 'site/book-status' status=book.ebook.status %}
                                     <span class="book-card-full-type__description-dot"></span>
                                     {% if history.items.first %}
-                                    <span>{{ history.items.first.date.format('d.m.y') }}</span>
+                                    <span itemprop="bookEdition">{{ history.items.first.date.format('d.m.y') }}</span>
                                     {% else %}
                                     <span>{{carbon(book.ebook.sales_at).format('d.m.y')}}</span>
                                     {% endif %}
                                     <span class="book-card-full-type__description-dot"></span>
-                                    <span>{{book.ebook.length}} зн.</span>
+                                    <span itemprop="size">{{book.ebook.length}} зн.</span>
                                     {% if history.items.first %}
                                     <span class="book-card-full-type__description-dot"></span>
                                     <a class="ui-link _violet cursor-pointer" data-modal="open-history">История</a>
@@ -150,11 +155,15 @@
                     </div>
                     <div class="ui-tabs-body _field" data-tabs="2">
                         <div class="ui-tabs-content " data-tab-content="1">
-                            <div class="book-card-full-description__about typographical-block">
+                            <div class="book-card-full-description__about typographical-block" >
+                                <div itemprop="about">
                                 {{book.annotation|raw}}
+                                </div>
                                 <div class="book-card__genres tags-list">
                                     {% for tag in book.tags %}
-                                    <a href="/listing/?tag={{tag.id}}" class="ui-link _violet">{{tag.name}}</a>
+                                    <a href="/listing/?tag={{tag.id}}" class="ui-link _violet">
+                                        <span itemprop="keywords">{{tag.name}}</span>
+                                    </a>
                                     {% endfor %}
                                 </div>
                             </div>
@@ -309,5 +318,6 @@
             });
         })()
     </script>
+</div>
 </div>
 
