@@ -53,7 +53,9 @@ class BookPage extends ComponentBase
     public function init(): void
     {
         $this->user = Auth::getUser();
-        $this->book_id = (int)$this->param('book_id') ?? abort(404);
+        $this->book_id = is_numeric($this->param('book_id'))
+            ? (int)$this->param('book_id')
+            : abort(404);
         $this->book = Book::findForPublic($this->book_id, $this->user);
         $this->tryInjectAdultModal();
         $this->user?->library($this->book)->get(); //Добавить в библиотеку
