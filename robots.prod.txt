@@ -1,2 +1,16 @@
 User-agent: *
 Allow: /
+Disallow: /backend
+Disallow: /lc-*
+Allow: /lc-referral
+Disallow: /search
+Disallow: /ajax
+Disallow: /all-operations
+Disallow: /notifications
+Disallow: /payment
+Sitemap: https://bookstime.ru/sitemap.xml
+Sitemap: http://bookstime.ru/sitemap_books.xml
+Sitemap: http://bookstime.ru/sitemap_categories.xml
+Sitemap: http://bookstime.ru/sitemap_blog.xml
+Sitemap: http://bookstime.ru/sitemap_authors.xml
+Sitemap: http://bookstime.ru/sitemap_pages.xml
