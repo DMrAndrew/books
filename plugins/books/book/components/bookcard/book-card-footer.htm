@@ -1,7 +1,7 @@
 <div class="{{class|default('book-card__footer')}}">
     <div class="book-card__footer-scroller">
         {% if book.age_restriction.value != 0 %}
-        <div class="book-card__footer-label">{{ book.age_restriction.getLabel }}</div>
+        <div class="book-card__footer-label" itemprop="contentRating">{{ book.age_restriction.getLabel }}</div>
         {% endif %}
         <div class="book-card__footer-wrapper ui-tooltip" data-tooltip="Количество прочитанных глав книги">
             <svg>
@@ -19,7 +19,7 @@
             <svg>
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-filled-16' | theme}}"></use>
             </svg>
-            <span>{{book.stats.comments_count|default('0')}}</span>
+            <span itemprop="commentCount">{{book.stats.comments_count|default('0')}}</span>
         </div>
         <div class="book-card__footer-wrapper">
             <svg>
