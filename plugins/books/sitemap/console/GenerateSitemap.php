@@ -18,7 +18,7 @@ use Books\Blog\Models\Post;
  */
 class GenerateSitemap extends Command
 {
-    const BOOKS_SITEMAP_NAME = 'books';
+    const BOOKS_SITEMAP_NAME = 'sitemap_books';
     const GENRES_SITEMAP_NAME = 'sitemap_categories';
     const BLOG_SITEMAP_NAME = 'sitemap_blog';
     const AUTHORS_SITEMAP_NAME = 'sitemap_authors';
