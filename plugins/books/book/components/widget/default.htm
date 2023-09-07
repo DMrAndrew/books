@@ -25,7 +25,7 @@
         {% for item in collect(widget.items).slice(0,3) %}
         <a href="/book-card/{{item.id}}" class="book-sidebar-card _indent">
             <img src="{{item.cover.getThumb(100,140)}}"
-                 class="book-sidebar-card__image" alt="Обложка" loading="lazy">
+                 class="book-sidebar-card__image" alt="Обложка для книги {{item.title}}" loading="lazy">
             <div class="book-sidebar-card__description">
                 <div class="book-sidebar-card__label">{{item.author.profile.username}}</div>
                 <div class="book-sidebar-card__title">{{item.title}}</div>
