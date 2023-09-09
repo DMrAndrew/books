@@ -2,7 +2,7 @@
     <div class="book-card__body">
         <div class="book-card__column-left">
             <a href="/book-card/{{book.id}}">
-                <img class="book-card__image" src="{{book.cover.getThumb(210,300)}}" alt="" loading="lazy">
+                <img class="book-card__image" src="{{book.cover.getThumb(210,300)}}" alt="Обложка для книги {{book.title}}" loading="lazy">
             </a>
 
             {% if user and not is_not_public_view %}

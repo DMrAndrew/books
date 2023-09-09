@@ -20,11 +20,17 @@ body {
 }
 .reader .reader__body span,
 .reader .reader__body p,
-.reader .reader__body div {
+.reader .reader__body div{
     color: rgb(31, 31, 31) !important;
 }
+
 .reader._bg-black .reader__body span,
 .reader._bg-black .reader__body p,
 .reader._bg-black .reader__body div {
     color: #fff !important;
+}
+
+.typographical-block p,
+.typographical-block span {
+    background-color: #ffffff;
 }

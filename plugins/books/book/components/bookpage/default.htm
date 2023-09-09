@@ -161,9 +161,8 @@
                                 </div>
                                 <div class="book-card__genres tags-list">
                                     {% for tag in book.tags %}
-                                    <a href="/listing/?tag={{tag.id}}" class="ui-link _violet">
-                                        <span itemprop="keywords">{{tag.name}}</span>
-                                    </a>
+                                    <a href="/listing/?tag={{tag.id}}" class="ui-link _violet"><span itemprop="keywords">
+                                        {{tag.name}}</span></a>
                                     {% endfor %}
                                 </div>
                             </div>
