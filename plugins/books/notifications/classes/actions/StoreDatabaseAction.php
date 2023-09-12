@@ -64,7 +64,7 @@ class StoreDatabaseAction extends SaveDatabaseAction
                     'event_type' => $this->host->notification_rule->getEventClass(),
                     'icon' => $this->getParam($params, 'icon'),
                     'type' => $this->getParam($params, 'type'),
-                    'body' => $this->prepareBody($params),
+                    'body' => $this->prepareBody($params, $recipient),
                     'data' => $this->getPrepareData($params, $recipient),
                     'read_at' => null,
                 ]));
@@ -82,11 +82,13 @@ class StoreDatabaseAction extends SaveDatabaseAction
 
     /**
      * @param $params
+     * @param $recipient
+     *
      * @return string
      *
      * @throws ApplicationException
      */
-    protected function prepareBody($params): string
+    protected function prepareBody($params, $recipient): string
     {
         $template = $this->getParam($params, 'template');
         $templatePath = plugins_path("books/notifications/views/{$template}.twig");
@@ -96,6 +98,9 @@ class StoreDatabaseAction extends SaveDatabaseAction
         }
 
         $markup = file_get_contents($templatePath);
+
+        // запишем информацию о получателе
+        Arr::set($params, 'recipient', $recipient);
 
         try {
             return (new Controller)
