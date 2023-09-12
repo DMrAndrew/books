@@ -1,8 +1,8 @@
 <div class="ui-container">
-    <h1 class="listing-book__title ui-text--bold">
-        <span class="ui-text-head--2">Книги </span>
-        <span>{{bind.books.total}}</span>
-    </h1>
+    <div class="listing-book__title ui-text--bold">
+        <h1 class="listing-book__title ui-text--bold ui-text-head--2" data-counter="{{bind.books.total}}">Книги</h1>
+    </div>
+
         <div class="listing-book__sort">
             <input type="hidden" name="sort" value="{{bind.sort.value}}"/>
             <span class="listing-book__sort-text">{{bind.sort.label}}</span>
