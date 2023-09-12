@@ -32,5 +32,5 @@ body {
 
 .typographical-block p,
 .typographical-block span {
-    background-color: #ffffff;
+    background-color: #ffffff !important;
 }
