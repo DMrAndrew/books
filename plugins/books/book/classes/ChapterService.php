@@ -122,10 +122,9 @@ class ChapterService implements iChapterService
     {
         $this->chapter->load('edition', 'edition.book');
 
-        if ($this->chapter->edition->status === BookStatus::HIDDEN
+        if ($this->chapter->edition->status === BookStatus::COMPLETE
             || $this->chapter->edition->status === BookStatus::WORKING)
         {
-
             $lengthDeltaUpdates = $this->chapter->edition->revision_history()
                 ->where('field', '=', 'length')
                 ->latest('id')
@@ -133,7 +132,7 @@ class ChapterService implements iChapterService
                 ->take(2)
                 ->get();
 
-            [$lastLength, $prevLength, ] = $lengthDeltaUpdates->pluck('new_value')->toArray();
+            [$lastLength, $prevLength] = $lengthDeltaUpdates->pluck('new_value')->toArray();
             $lengthDelta = $lastLength - $prevLength;
 
             if ($lengthDelta >= BookUpdated::DELTA_LENGTH_TRIGGER) {
