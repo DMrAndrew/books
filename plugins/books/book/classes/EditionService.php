@@ -6,6 +6,7 @@ use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Models\Edition;
 use Event;
 use Illuminate\Support\Collection;
+use Log;
 use ValidationException;
 use Validator;
 
@@ -76,7 +77,6 @@ class EditionService
 
     private function fireEvents(Collection $data): void
     {
-
         $events = [];
         // книга была в статусе "Скрыта" перешла в "В работе" или "Завершена"
         if (

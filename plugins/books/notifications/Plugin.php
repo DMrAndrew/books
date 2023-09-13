@@ -12,6 +12,7 @@ use Books\Notifications\Classes\Events\BookCompleted;
 use Books\Notifications\Classes\Events\BookCreated;
 use Books\Notifications\Classes\Events\BookSelling;
 use Books\Notifications\Classes\Events\BookSellingSubs;
+use Books\Notifications\Classes\Events\BookUpdated;
 use Books\Notifications\Classes\Events\CommentCreated;
 use Books\Notifications\Classes\Events\CommentReplied;
 use Books\Notifications\Classes\Events\DeferredApplied;
@@ -22,11 +23,13 @@ use Books\Notifications\Classes\Services\NotificationService;
 use Books\Notifications\Components\Notifications;
 use Books\Notifications\Components\NotificationsInHeader;
 use Books\Profile\Models\Profile;
+use Event;
 use RainLab\Notify\Classes\Notifier;
 use RainLab\Notify\Models\Notification;
 use RainLab\Notify\NotifyRules\SaveDatabaseAction;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
+use System\Models\Revision;
 
 /**
  * Plugin Information File
@@ -135,6 +138,7 @@ class Plugin extends PluginBase
         Notifier::bindEvents([
             'books.book::book.created' => BookCreated::class,
             //            'books.book::book.updated' => TestEvent::class,
+            'books.book::book.updated' => BookUpdated::class,
             'books.book::book.completed' => BookCompleted::class,
             'books.book::book.selling.full' => BookSelling::class,
             'books.book::book.selling.subs' => BookSellingSubs::class,
