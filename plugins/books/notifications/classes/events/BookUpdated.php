@@ -24,7 +24,7 @@ class BookUpdated extends BaseEvent
     {
         return [
             'type' => NotificationTypeEnum::BOOKS->value,
-            'icon' => 'check-stroked-16',
+            'icon' => 'refresh-stroked-24',
             'template' => 'book_updated',
         ];
     }
