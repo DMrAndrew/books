@@ -19,7 +19,6 @@ use Db;
 use Event;
 use Exception;
 use Illuminate\Support\Collection;
-use Log;
 use ValidationException;
 
 class ChapterService implements iChapterService

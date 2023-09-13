@@ -23,13 +23,11 @@ use Books\Notifications\Classes\Services\NotificationService;
 use Books\Notifications\Components\Notifications;
 use Books\Notifications\Components\NotificationsInHeader;
 use Books\Profile\Models\Profile;
-use Event;
 use RainLab\Notify\Classes\Notifier;
 use RainLab\Notify\Models\Notification;
 use RainLab\Notify\NotifyRules\SaveDatabaseAction;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
-use System\Models\Revision;
 
 /**
  * Plugin Information File

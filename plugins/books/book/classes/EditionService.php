@@ -6,7 +6,6 @@ use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Models\Edition;
 use Event;
 use Illuminate\Support\Collection;
-use Log;
 use ValidationException;
 use Validator;
 
