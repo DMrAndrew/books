@@ -3,6 +3,7 @@
 namespace Books\Book\Classes;
 
 use Books\Book\Classes\Contracts\iChapterService;
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\ContentTypeEnum;
@@ -11,6 +12,7 @@ use Books\Book\Models\Chapter;
 use Books\Book\Models\Content;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
+use Books\Notifications\Classes\Events\BookUpdated;
 use Carbon\Carbon;
 use Closure;
 use Db;
@@ -92,6 +94,8 @@ class ChapterService implements iChapterService
 
         Event::fire('books.chapter.created', [$this->chapter]);
 
+        $this->notifyAboutBookLengthUpdate();
+
         return $this->chapter;
     }
 
@@ -106,7 +110,35 @@ class ChapterService implements iChapterService
         $this->chapter->save();
         Event::fire('books.chapter.updated', [$this->chapter]);
 
+        $this->notifyAboutBookLengthUpdate();
+
         return $this->chapter;
+    }
+
+    /**
+     * @return void
+     */
+    protected function notifyAboutBookLengthUpdate(): void
+    {
+        $this->chapter->load('edition', 'edition.book');
+
+        if ($this->chapter->edition->status === BookStatus::COMPLETE
+            || $this->chapter->edition->status === BookStatus::WORKING)
+        {
+            $lengthDeltaUpdates = $this->chapter->edition->revision_history()
+                ->where('field', '=', 'length')
+                ->latest('id')
+                ->orderByDesc('id')
+                ->take(2)
+                ->get();
+
+            [$lastLength, $prevLength] = $lengthDeltaUpdates->pluck('new_value')->toArray();
+            $lengthDelta = $lastLength - $prevLength;
+
+            if ($lengthDelta >= BookUpdated::DELTA_LENGTH_TRIGGER) {
+                Event::fire('books.book::book.updated', [$this->chapter->edition->book, $lengthDelta]);
+            }
+        }
     }
 
     public function initUpdateBody(string $content): bool|int

@@ -199,9 +199,7 @@ class BookService
         Event::fire('books.book.updated', [$this->book]);
 
         // получим авторов после сохранения, отсеивая старых
-        Log::info('try to notify on update');
         $coauthorsToNotify = $this->book->authors()->get()->diff($authors);
-        Log::info($coauthorsToNotify);
         $this->notifyCoAuthors($coauthorsToNotify);
 
         return $this->book;
@@ -209,16 +207,10 @@ class BookService
 
     protected function notifyCoAuthors(Collection $coAuthors): void
     {
-        Log::info('notifyCoAuthors: ');
-
         if ($coAuthors->isEmpty()) {
-            Log::info('authors is empty');
             return;
         }
 
-        Log::info($coAuthors);
-        Log::info($this->user->profile);
-        //$authors->each(fn (Author $coAuthor) => Event::fire('books.book::author.invited', [$coAuthor, $this->user->profile]));
         $coAuthors->each(function (Author $coAuthor) {
             Event::fire('books.book::author.invited', [$coAuthor, $this->user->profile]);
         });

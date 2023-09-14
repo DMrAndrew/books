@@ -8,6 +8,12 @@ book_created:
     items:
         - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
 
+book_updated:
+    name: Обновление книги
+    event: Books\Notifications\Classes\Events\BookUpdated
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+
 book_completed:
     name: Завершение книги
     event: Books\Notifications\Classes\Events\BookCompleted

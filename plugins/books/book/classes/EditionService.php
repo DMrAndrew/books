@@ -76,7 +76,6 @@ class EditionService
 
     private function fireEvents(Collection $data): void
     {
-
         $events = [];
         // книга была в статусе "Скрыта" перешла в "В работе" или "Завершена"
         if (

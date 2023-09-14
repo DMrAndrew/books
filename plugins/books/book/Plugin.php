@@ -70,6 +70,7 @@ use Mobecan\Favorites\Behaviors\Favorable;
 use October\Rain\Database\Models\DeferredBinding;
 use RainLab\Location\Behaviors\LocationModel;
 use System\Classes\PluginBase;
+use System\Models\Revision;
 use Tizis\FB2\FB2Controller;
 
 /**
@@ -147,7 +148,6 @@ class Plugin extends PluginBase
         $this->extendBooksController();
 
         Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
-
 
         Book::extend(function (Book $book) {
             $book->implementClassWith(Favorable::class);

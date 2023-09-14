@@ -31,23 +31,56 @@ class BookCreated extends BaseEvent
      */
     public static function makeParamsFromEvent(array $args, $eventName = null): array
     {
+        $book = Arr::get($args, 0);
+
+        $authors = $book->orderedAuthors();
+        $authors->load('profile');
+
         return array_merge(
             static::defaultParams(),
             [
-                'book' => Arr::get($args, 0),
-                'recipients' => static::getRecipients($args),
+                'book' => $book,
+                'authors' => $authors,
+                'recipients' => static::getRecipients([$authors]),
             ],
         );
     }
 
     /**
+     * Каждому подписчику отправляем уведомление о том, что его автор опубликовал книгу
+     * Если подписчик подписан на обоих авторов из соавторства, уведомление должно придти одно
+     * Автор владелец - в приоритете
+     *
      * @param  array  $args
      * @return Collection|null
      */
     public static function getRecipients(array $args): ?Collection
     {
-        $book = Arr::get($args, 0);
+        $authors = Arr::get($args, 0);
 
-        return $book?->author?->profile?->subscribers;
+        /**
+         * add dynamic property of `subscribedForAuthor`
+         */
+        $authorsSubscribers = collect();
+        $authorsSubscribersKeys = [];
+
+        $authors->each(function ($author) use (&$authorsSubscribers, &$authorsSubscribersKeys) {
+
+            $authorSubscribers = $author?->profile?->subscribers;
+
+            if ($authorSubscribers) {
+                $authorSubscribers->each(function($subscriber) use ($author, &$authorsSubscribers, &$authorsSubscribersKeys) {
+                    if (!in_array($subscriber->id, $authorsSubscribersKeys)) {
+                        $subscriber->subscribedForAuthor = $author->id;
+                        $authorsSubscribersKeys[] = $subscriber->id;
+
+                        $authorsSubscribers->push($subscriber);
+                    }
+                });
+            }
+
+        });
+
+        return $authorsSubscribers;
     }
 }
