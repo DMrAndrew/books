@@ -67,7 +67,7 @@ class Reader
         if ($paginator = $this->chapter?->pagination()->find($paginator_id)) {
             if ($tracker = $paginator->trackTime($ms)) {
                 $tracker->update(['length' => $paginator->length, 'progress' => 100]);
-//                $paginator->chapter->progress($this->user);
+                $tracker->progress();
                 return $tracker;
             }
         }

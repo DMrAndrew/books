@@ -1,4 +1,6 @@
-<?php namespace Books\Book\Models;
+<?php
+
+namespace Books\Book\Models;
 
 use App;
 use Books\Book\Classes\PriceTag;
@@ -29,7 +31,7 @@ class Discount extends Model
      */
     public $rules = [
         'amount' => 'required|integer|min:1|max:100',
-        'active_at' => 'required|date'
+        'active_at' => 'required|date',
     ];
 
     protected $casts = ['amount' => 'integer'];
@@ -43,18 +45,18 @@ class Discount extends Model
      */
     public function setActiveAtAttribute($date): void
     {
-        if (!$date) {
+        if (! $date) {
             throw new ValidationException(['discount' => 'Укажите дату скидки.']);
         }
         $date = Carbon::parse($date)->startOfDay();
 
         if (App::environment() === 'production') {
-            if (!$date->gt(today()->endOfDay())) {
+            if (! $date->gt(today()->endOfDay())) {
                 throw new ValidationException(['discount' => 'Скидку можно установить только с завтрашнего дня.']);
             }
         } else {
             // для тестирования скидку можно установить сегодняшним днем
-            if (!$date->gt(today()->subDay()->endOfDay())) {
+            if (! $date->gt(today()->subDay()->endOfDay())) {
                 throw new ValidationException(['discount' => 'Скидку можно установить только с сегодняшнего дня.']);
             }
         }
@@ -72,14 +74,20 @@ class Discount extends Model
         return $this->active_at->isSameDay(today());
     }
 
-    public function scopeActive(Builder $builder, ?Carbon $date = null): Builder
+    public function scopeActive(Builder $builder, Carbon $date = null): Builder
     {
         $date ??= today();
-        return $builder->whereDate('active_at', '=', $date);
+
+        return $builder->whereDate($this->getQualifiedActiveAtColumn(), '=', $date);
     }
 
     public function scopeAlreadySetInMonth(Builder $builder, Carbon $carbon): Builder
     {
-        return $builder->whereMonth('active_at', '=', $carbon);
+        return $builder->whereMonth($this->getQualifiedActiveAtColumn(), '=', $carbon);
     }
+    public function getQualifiedActiveAtColumn(): string
+    {
+        return $this->qualifyColumn($this->qualifyColumn('active_at'));
+    }
+
 }

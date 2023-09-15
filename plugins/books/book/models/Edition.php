@@ -20,6 +20,7 @@ use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\AttachOne;
 use October\Rain\Database\Relations\BelongsTo;
 use October\Rain\Database\Relations\HasMany;
+use October\Rain\Database\Relations\HasOne;
 use October\Rain\Database\Relations\MorphMany;
 use October\Rain\Database\Traits\Purgeable;
 use October\Rain\Database\Traits\Revisionable;
@@ -154,10 +155,9 @@ class Edition extends Model implements ProductInterface
         return $this->morphMany(UserBook::class, 'ownable');
     }
 
-    public function discount()
+    public function discount(): HasOne
     {
-        return $this->hasOne(Discount::class, 'edition_id', 'id')
-            ->whereDate('active_at', '=', today());
+        return $this->hasOne(Discount::class, 'edition_id', 'id')->active();
     }
 
     public function service(): EditionService
@@ -224,14 +224,14 @@ class Edition extends Model implements ProductInterface
         return $builder->withExists('discount');
     }
 
-    public function scopeWithFiles(Builder $builder): Builder
-    {
-        return $builder->with(ElectronicFormats::FB2->value);
-    }
-
     public function scopeActiveDiscountExist(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
         return $builder->has('discount');
+    }
+
+    public function scopeWithFiles(Builder $builder): Builder
+    {
+        return $builder->with(ElectronicFormats::FB2->value);
     }
 
     public function getAllowedForDiscountAttribute(): bool
@@ -239,7 +239,7 @@ class Edition extends Model implements ProductInterface
         return in_array($this->getOriginal('status'), [BookStatus::COMPLETE, BookStatus::WORKING]) && ! $this->isFree();
     }
 
-    public function scopeAllowedForDiscount(Builder $builder)
+    public function scopeAllowedForDiscount(Builder $builder): Builder
     {
         return $builder->status(BookStatus::COMPLETE, BookStatus::WORKING)->free(false);
     }
@@ -254,7 +254,7 @@ class Edition extends Model implements ProductInterface
         return $this->sells()->count();
     }
 
-    public function scopeWithSellsCount(Builder $builder)
+    public function scopeWithSellsCount(Builder $builder): Builder
     {
         return $builder->withCount('sells');
     }
@@ -293,15 +293,6 @@ class Edition extends Model implements ProductInterface
     public function editAllowed(): bool
     {
         return ! $this->is_deferred;
-
-        return ! $this->isPublished()
-            //не опубликована
-            || $this->isFree() && ! $this->is_has_customers
-            // или бесплатная и нет продаж
-            || in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN])
-            // или статус в работе или заморожен
-            || (in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && ! $this->is_has_customers);
-        // или статус "скрыто" или "завершена" и нет продаж
     }
 
     /**
@@ -403,18 +394,18 @@ class Edition extends Model implements ProductInterface
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder
     {
-        return $builder->where('price', '>=', $price);
+        return $builder->where($this->getQualifiedPriceColumn(), '>=', $price);
     }
 
     public function scopeMaxPrice(Builder $builder, ?int $price): Builder
     {
-        return $builder->where('price', '<=', $price);
+        return $builder->where($this->getQualifiedPriceColumn(), '<=', $price);
     }
 
     public function scopeFree(Builder $builder, bool $free = true): Builder
     {
         return $builder->when($free,
-            fn ($q) => $q->where('price', '=', 0),
+            fn ($q) => $q->where($this->getQualifiedPriceColumn(), '=', 0),
             fn ($q) => $q->minPrice(1)
         );
     }
@@ -422,8 +413,8 @@ class Edition extends Model implements ProductInterface
     public function scopeSelling(Builder $builder): Builder
     {
         return $builder
-            ->free(false)
-            ->whereIn('status', [BookStatus::WORKING, BookStatus::COMPLETE]);
+            ->status(BookStatus::WORKING, BookStatus::COMPLETE)
+            ->free(false);
     }
 
     public function scopeEbook(Builder $builder): Builder
@@ -448,12 +439,12 @@ class Edition extends Model implements ProductInterface
 
     public function scopeType(Builder $builder, EditionsEnums ...$types): Builder
     {
-        return $builder->whereIn('type', $types);
+        return $builder->whereIn($this->getQualifiedTypeColumn(), $types);
     }
 
     public function scopeStatus(Builder $builder, BookStatus ...$status): Builder
     {
-        return $builder->whereIn('status', $status);
+        return $builder->whereIn($this->getQualifiedStatusColumn(), $status);
     }
 
     public function nextChapterSortOrder()
@@ -533,4 +524,18 @@ class Edition extends Model implements ProductInterface
                 return $edition->collectUpdateHistory()->getChunks()->last()?->date->lessThan($date);
             });
     }
+
+    public function getQualifiedStatusColumn(): string
+    {
+        return $this->qualifyColumn('status');
+    }
+    public function getQualifiedTypeColumn(): string
+    {
+        return $this->qualifyColumn('type');
+    }
+    public function getQualifiedPriceColumn(): string
+    {
+        return $this->qualifyColumn('price');
+    }
+
 }

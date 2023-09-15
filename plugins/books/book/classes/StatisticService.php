@@ -18,7 +18,7 @@ class StatisticService
 
     public function __construct(protected Carbon $from, protected ?Carbon $to = null)
     {
-        if (!$this->to) {
+        if (! $this->to) {
             $this->to = $this->from;
         }
         $this->period = (new CarbonPeriod($from, '1 day', $to));
@@ -31,17 +31,11 @@ class StatisticService
         }
     }
 
-    /**
-     * @param string $class
-     */
     public function setClass(string $class): void
     {
         $this->class = $class;
     }
 
-    /**
-     * @return CarbonPeriod
-     */
     public function getPeriod(): CarbonPeriod
     {
         return $this->period;
@@ -52,11 +46,11 @@ class StatisticService
         $dates = collect($this->period->toArray())->reverse();
         $books = $this->class::query()
             ->whereIn('id', collect($needle)->pluck('id'))
-            ->with(['trackers' => fn($trackers) => $trackers->withoutGlobalScope(new ScopeToday())->completed()])
+            ->with(['trackers' => fn ($trackers) => $trackers->withoutTodayScope()->completed()])
             ->get();
 
         $books->map(function ($book) {
-            $book->tracks = $book->trackers->groupBy(fn($i) => $i->created_at->format($this->format));
+            $book->tracks = $book->trackers->groupBy(fn ($i) => $i->updated_at->format($this->format));
 
             return $book;
         });
@@ -64,12 +58,12 @@ class StatisticService
         $common = $dates->map(function ($date) use ($books) {
             $key = $date->format($this->format);
             $filtered = $books
-                ->filter(fn($i) => $i->tracks->has($key))
-                ->each(fn($book) => $book['count'] = $book->tracks->get($key)->count() ?? 0);
+                ->filter(fn ($i) => $i->tracks->has($key))
+                ->each(fn ($book) => $book['count'] = $book->tracks->get($key)->count() ?? 0);
 
             return [
                 'date' => $this->format === 'd.m.y' ? $date->format('d.m') : $key,
-                'total' => $filtered->reduce(fn($acc, $book) => $acc + $book['count'], 0),
+                'total' => $filtered->reduce(fn ($acc, $book) => $acc + $book['count'], 0),
                 'items' => $filtered->map->only(['id', 'title', 'count']),
             ];
         });
@@ -87,7 +81,6 @@ class StatisticService
                 }),
             ];
         });
-
 
         $reversed = $common->reverse();
         $graph = [
