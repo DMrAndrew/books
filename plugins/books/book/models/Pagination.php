@@ -102,4 +102,21 @@ class Pagination extends Model
 
         return $tracker;
     }
+
+    public function scopeHasDuplicates(Builder $builder)
+    {
+        $tracker = Tracker::make();
+        $columns = ['user_id', 'ip'];
+        foreach ($columns as $groupBy) {
+            $column = $tracker->qualifyColumn($groupBy);
+            $raw = sprintf('DATE(%s) as date ,%s, count(*) as total_trackers',
+                $tracker->qualifyColumn('created_at'),
+                $column,
+            );
+            $sub_query = fn ($q) => $q->withoutTodayScope()->selectRaw($raw)->groupBy('date', $column)->having('total_trackers', '>', 1);
+            $builder->orWhereHas('trackers', $sub_query);
+        }
+
+        return $builder;
+    }
 }

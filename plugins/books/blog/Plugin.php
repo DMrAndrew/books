@@ -23,6 +23,7 @@ class Plugin extends PluginBase
         'Books.User',
         'Books.Blacklists',
         'Books.Breadcrumbs',
+        'Books.Profile'
     ];
 
     /**
