@@ -1,13 +1,16 @@
-<?php namespace Books\User\Models;
+<?php
+
+namespace Books\User\Models;
 
 use App\traits\HasIPScope;
 use Books\User\Classes\CookieEnum;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Prunable;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 /**
  * TempAdultPass Model
@@ -19,6 +22,7 @@ class TempAdultPass extends Model
     use Validation;
     use HasUlids;
     use HasIPScope;
+    use Prunable;
 
     /**
      * @var string table name
@@ -48,8 +52,8 @@ class TempAdultPass extends Model
 
     public function scopeFindByCredential(Builder $builder, string $ip, ?string $ULID): Builder
     {
-        return $builder->where(fn($b) => $b->ip($ip)
-            ->when($ULID, fn($when) => $when->orWhere(fn($i) => $i->ULID($ULID))));
+        return $builder->where(fn ($b) => $b->ip($ip)
+            ->when($ULID, fn ($when) => $when->orWhere(fn ($i) => $i->ULID($ULID))));
     }
 
     public static function lookUp()
@@ -92,5 +96,10 @@ class TempAdultPass extends Model
     public function isActive(): bool
     {
         return $this->expire_in->gt(Carbon::now());
+    }
+
+    public function prunable()
+    {
+        return static::query()->whereDate('created_at', '<', today());
     }
 }
