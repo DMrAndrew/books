@@ -13,8 +13,9 @@ use Books\User\Components\BookAccount;
 use Books\User\Components\Searcher;
 use Books\User\Components\UserSettingsLC;
 use Books\User\Models\Settings;
-use Books\Wallet\Behaviors\WalletBehavior;
 use Books\User\Models\TempAdultPass;
+use Books\User\Models\User as BookUser;
+use Books\Wallet\Behaviors\WalletBehavior;
 use Event;
 use Flash;
 use Illuminate\Foundation\AliasLoader;
@@ -26,7 +27,6 @@ use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 use ValidationException;
 use Validator;
-use Books\User\Models\User as BookUser;
 
 /**
  * Plugin Information File
@@ -54,8 +54,6 @@ class Plugin extends PluginBase
 
     /**
      * Register method, called when the plugin is first registered.
-     *
-     * @return void
      */
     public function register(): void
     {
@@ -64,15 +62,12 @@ class Plugin extends PluginBase
 
     /**
      * Boot method, called right before the request route.
-     *
-     * @return void
      */
     public function boot(): void
     {
         Event::listen('rainlab.user.getNotificationVars', function (User $model) {
             return false;
         });
-
 
         Event::listen('mobecan.socialconnect.registerUser', function (array $provider_details, array $user_details) {
 
@@ -84,7 +79,7 @@ class Plugin extends PluginBase
                 $user = new User();
 
                 $v = Validator::make($user_details, [
-                    'email' => $user->rules['email']
+                    'email' => $user->rules['email'],
                 ], $user->customMessages);
 
                 if ($v->fails()) {
@@ -92,8 +87,8 @@ class Plugin extends PluginBase
                 }
 
                 $user->fill($user_details);
-                return $user;
 
+                return $user;
 
             } catch (\Exception $exception) {
                 $msg = $exception instanceof ValidationException ?
@@ -107,9 +102,10 @@ class Plugin extends PluginBase
         });
 
         Event::listen('mobecan.socialconnect.handleLogin', function ($provider_details, $provider_response, User $user) {
-            if (!$user->exists) {
+            if (! $user->exists) {
                 CookieEnum::guest->set($user->toArray());
                 Flash::add('post_register_required', 1);
+
                 return redirect()->refresh();
             }
         });
@@ -145,8 +141,6 @@ class Plugin extends PluginBase
 
     /**
      * Registers any front-end components implemented in this plugin.
-     *
-     * @return array
      */
     public function registerComponents(): array
     {
@@ -155,5 +149,12 @@ class Plugin extends PluginBase
             Searcher::class => 'searcher',
             UserSettingsLC::class => 'userSettingsLC',
         ];
+    }
+
+    public function registerSchedule($schedule): void
+    {
+        $schedule->command('model:prune', [
+            '--model' => [TempAdultPass::class],
+        ])->dailyAt('03:10');
     }
 }
