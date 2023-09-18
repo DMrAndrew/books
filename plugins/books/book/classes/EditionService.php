@@ -60,8 +60,6 @@ class EditionService
         $this->edition->save();
         $this->edition->setFreeParts();
         Event::fire('books.edition.updated', [$this->edition]);
-
-        dd('die');
     }
 
     /**
