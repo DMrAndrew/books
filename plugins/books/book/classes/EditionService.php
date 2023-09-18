@@ -82,7 +82,7 @@ class EditionService
             $this->edition->isDirty(['status'])
             && $this->edition->getOriginal('status') === BookStatus::HIDDEN
             && in_array($data->get('status'), [BookStatus::COMPLETE, BookStatus::WORKING], true)
-            && ! $this->edition->hasRevisionStatus(BookStatus::COMPLETE)
+            && ! $this->edition->hasRevisionStatus(BookStatus::COMPLETE, BookStatus::WORKING)
         ) {
             Event::fire('books.book::book.created', [$this->edition->book]);
         }
