@@ -60,6 +60,8 @@ class EditionService
         $this->edition->save();
         $this->edition->setFreeParts();
         Event::fire('books.edition.updated', [$this->edition]);
+
+        dd('die');
     }
 
     /**
@@ -79,10 +81,10 @@ class EditionService
         $events = [];
         // книга была в статусе "Скрыта" перешла в "В работе" или "Завершена"
         if (
-            $this->edition->isDirty(['status']) &&
-            $this->edition->getOriginal('status') === BookStatus::HIDDEN &&
-            in_array($data->get('status'), [BookStatus::COMPLETE, BookStatus::WORKING], true) &&
-            ! $this->edition->hasRevisionStatus(BookStatus::COMPLETE, BookStatus::WORKING)
+            $this->edition->isDirty(['status'])
+            && $this->edition->getOriginal('status') === BookStatus::HIDDEN
+            && in_array($data->get('status'), [BookStatus::COMPLETE, BookStatus::WORKING], true)
+            && ! $this->edition->hasRevisionStatus(BookStatus::COMPLETE)
         ) {
             Event::fire('books.book::book.created', [$this->edition->book]);
         }
