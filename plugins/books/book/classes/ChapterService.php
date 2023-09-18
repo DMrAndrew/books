@@ -19,7 +19,6 @@ use Db;
 use Event;
 use Exception;
 use Illuminate\Support\Collection;
-use Log;
 use ValidationException;
 
 class ChapterService implements iChapterService
@@ -94,8 +93,6 @@ class ChapterService implements iChapterService
 
         Event::fire('books.chapter.created', [$this->chapter]);
 
-        $this->notifyAboutBookLengthUpdate();
-
         return $this->chapter;
     }
 
@@ -129,7 +126,9 @@ class ChapterService implements iChapterService
                 ->take(2)
                 ->get();
 
-            [$lastLength, $prevLength] = $lengthDeltaUpdates->pluck('new_value')->toArray();
+            $lastLength = $lengthDeltaUpdates->first()?->new_value;
+            $prevLength = $lengthDeltaUpdates->last()?->new_value;
+
             $lengthDelta = (int)$lastLength - (int)$prevLength;
 
             $lastLengthUpdatedAt = $lengthDeltaUpdates->first()?->created_at;
