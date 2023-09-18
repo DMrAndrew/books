@@ -78,7 +78,6 @@ class BookCreated extends BaseEvent
                     }
                 });
             }
-
         });
 
         return $authorsSubscribers;
