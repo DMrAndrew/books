@@ -19,6 +19,7 @@ use Db;
 use Event;
 use Exception;
 use Illuminate\Support\Collection;
+use Log;
 use ValidationException;
 
 class ChapterService implements iChapterService
@@ -54,7 +55,6 @@ class ChapterService implements iChapterService
 
     public function from(mixed $payload): ?Chapter
     {
-
         if ($payload instanceof \Tizis\FB2\Model\Chapter) {
             $collection = BookUtilities::parseStringToParagraphCollection($payload->getContent(), SaveHtmlMode::WITH_WRAP);
             if ((int) $collection->sum('length')) {
@@ -106,11 +106,8 @@ class ChapterService implements iChapterService
         if (! $this->chapter->isDirty('status')) {
             $this->chapter->published_at = $this->chapter->getOriginal('published_at');
         }
-
         $this->chapter->save();
         Event::fire('books.chapter.updated', [$this->chapter]);
-
-        $this->notifyAboutBookLengthUpdate();
 
         return $this->chapter;
     }
@@ -133,10 +130,17 @@ class ChapterService implements iChapterService
                 ->get();
 
             [$lastLength, $prevLength] = $lengthDeltaUpdates->pluck('new_value')->toArray();
-            $lengthDelta = $lastLength - $prevLength;
+            $lengthDelta = (int)$lastLength - (int)$prevLength;
 
+            $lastLengthUpdatedAt = $lengthDeltaUpdates->first()?->created_at;
+            $lastLengthUpdateNotifiedAt = $this->chapter->edition->lastLengthUpdateNotificationAt;
+
+            if ($lastLengthUpdateNotifiedAt === null
+                || $lastLengthUpdatedAt->greaterThan($lastLengthUpdateNotifiedAt))
             if ($lengthDelta >= BookUpdated::DELTA_LENGTH_TRIGGER) {
                 Event::fire('books.book::book.updated', [$this->chapter->edition->book, $lengthDelta]);
+
+                $this->chapter->edition->markLastLengthUpdateNotificationAt();
             }
         }
     }
@@ -271,6 +275,8 @@ class ChapterService implements iChapterService
         $this->chapter->pagination()->get()->each->setNeighbours();
         $this->chapter->lengthRecount();
         Event::fire('books.chapter.paginated');
+
+        $this->notifyAboutBookLengthUpdate();
     }
 
     public function chunkContent(): Collection
