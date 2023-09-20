@@ -71,8 +71,8 @@ class BookUtilities
         $exceptTags = array_map('strtolower', $exceptTags);
         $exceptAttributes = array_map('strtolower', $exceptAttributes);
 
-        $dom = new \DOMDocument();
-        $dom->loadHTML($html);
+        $dom = new \DOMDocument('1.0', 'utf-8');
+        $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
 
         $xpath = new \DOMXPath($dom);
 
@@ -196,7 +196,7 @@ class BookUtilities
 
     public static function stringToDiDom(?string $content): Document
     {
-        $diDom = new Document();
+        $diDom = new Document('1.0', 'utf-8');
         $content = $content ?: '<p></p>';
         $content = trim(Str::squish($content));
         $diDom->loadHtml($content, LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
