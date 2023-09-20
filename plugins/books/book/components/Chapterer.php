@@ -85,8 +85,6 @@ class Chapterer extends ComponentBase
 
     public function onSave()
     {
-        //dd(post());
-
         try {
             $data = collect(post());
             if ($data->has('chapter_content')) {
