@@ -45,7 +45,9 @@
         "jfcherng/php-diff": "^6.15",
         "books/sitemap-plugin": "dev-main",
         "spatie/laravel-sitemap": "6.3",
-        "laravel-notification-channels/telegram": "^3.0"
+        "laravel-notification-channels/telegram": "^3.0",
+        "ext-simplexml": "*",
+        "ext-libxml": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
