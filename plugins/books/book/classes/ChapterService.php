@@ -132,7 +132,10 @@ class ChapterService implements iChapterService
                 ->take(2)
                 ->get();
 
-            [$lastLength, $prevLength] = $lengthDeltaUpdates->pluck('new_value')->toArray();
+            //[$lastLength, $prevLength] = $lengthDeltaUpdates->pluck('new_value')->toArray();
+            $lastLength = $lengthDeltaUpdates->first()?->new_value;
+            $prevLength = $lengthDeltaUpdates->last()?->new_value;
+
             $lengthDelta = $lastLength - $prevLength;
 
             if ($lengthDelta >= BookUpdated::DELTA_LENGTH_TRIGGER) {
