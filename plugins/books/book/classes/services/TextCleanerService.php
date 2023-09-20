@@ -9,6 +9,7 @@ use Config;
 use DOMDocument;
 use DOMNode;
 use Exception;
+use Str;
 
 class TextCleanerService
 {
@@ -58,7 +59,8 @@ class TextCleanerService
         try{
             $doc = new DOMDocument('1.0', 'utf-8');
             $encodedContent = mb_convert_encoding($cleanedContent, 'HTML-ENTITIES', 'UTF-8');
-            $doc->loadHTML($encodedContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            //$doc->loadHTML($encodedContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $doc->loadHTML($encodedContent, LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
 
             /**
              * Clean attributes
@@ -97,7 +99,20 @@ class TextCleanerService
             throw new Exception('Похоже текст, который вы пытаетесь сохранить имеет невалидное форматирование.');
         }
 
-        return html_entity_decode($doc->saveHTML());
+        /**
+         * saveHTML() can add extra empty tags (<p>)
+         */
+        $outputHtml = html_entity_decode($doc->saveHTML());
+
+        /**
+         * Remove double spaces, `&nbsp`, etc
+         */
+        $outputHtmlWithCleanedSpaces = self::cleanSpaces($outputHtml);
+
+        /**
+         * Remove empty paragraphs
+         */
+        return self::cleanEmptyParagraphs($outputHtmlWithCleanedSpaces);
     }
 
     /**
@@ -305,5 +320,37 @@ class TextCleanerService
         }
 
         return array_unique($domains);
+    }
+
+    /**
+     * @param string $html
+     *
+     * @return string
+     */
+    private static function cleanSpaces(string $html): string
+    {
+        /**
+         * Convert spaces of all sizes to a standard space
+         */
+        $htmlWithRegularSpaces = preg_replace('~\s+~u', ' ', $html);
+
+        /**
+         * Remove double spaces
+         */
+        $htmlWithoutDoubleSpaces = preg_replace('/\s+/', ' ', $htmlWithRegularSpaces);
+
+        return Str::squish($htmlWithoutDoubleSpaces);
+    }
+
+    /**
+     * @param string $html
+     *
+     * @return string
+     */
+    private static function cleanEmptyParagraphs(string $html): string
+    {
+        $pattern = "/<p[^>]*>(?:\s|&nbsp;)*<\/p>/";
+
+        return Str::squish(preg_replace($pattern, '', $html));
     }
 }

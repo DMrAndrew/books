@@ -37,6 +37,7 @@ use Books\Book\Components\Promocode;
 use Books\Book\Components\Reader;
 use Books\Book\Components\ReadStatistic;
 use Books\Book\Components\Widget;
+use Books\Book\Console\CleanHTMLContent;
 use Books\Book\FormWidgets\ContentDiff;
 use Books\Book\FormWidgets\DeferredComments;
 use Books\Book\Jobs\GenreRaterExec;
@@ -110,6 +111,7 @@ class Plugin extends PluginBase
 
         $this->registerConsoleCommand('model:prune', PruneCommand::class);
         $this->registerConsoleCommand('book:discounts:notify_user_about_today_discounts', NotifyUsersAboutTodayDiscounts::class);
+        $this->registerConsoleCommand('book:content:clean_html', CleanHTMLContent::class);
     }
 
     /**
