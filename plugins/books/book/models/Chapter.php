@@ -25,7 +25,6 @@ use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
 use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
-use ValidationException;
 
 /**
  * Chapter Model
@@ -180,7 +179,7 @@ class Chapter extends Model
 
     public function getTitleAttribute()
     {
-        return $this->attributes['title'] ?? sprintf('№%s', $this->{$this->getSortOrderColumn()});
+        return $this->attributes['title'] ?? ($this->getSortOrderColumn() ? sprintf('№%s', $this->{$this->getSortOrderColumn()}) : '');
     }
 
     public function isFree(): bool
