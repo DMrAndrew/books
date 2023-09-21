@@ -5,6 +5,7 @@ use Books\Book\Classes\Services\TextCleanerService;
 use Books\Book\Models\Book;
 use Books\Profile\Models\Profile;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -38,6 +39,8 @@ class CleanHTMLContent extends Command
         $idsList = $this->argument('ids');
         $ids = explode(',', $idsList);
 
+        $csvName = storage_path() . '/' . now()->format('Y-m-d_H-i-s') . '.csv';
+
         /**
          * Чистка контента в книгах
          */
@@ -61,7 +64,7 @@ class CleanHTMLContent extends Command
                 /**
                  * Чистим главы
                  */
-                $book->ebook?->chapters?->each(function($chapter) {
+                $book->ebook?->chapters?->each(function($chapter) use ($csvName) {
                     try{
                         $this->info(" --Чистка главы [{$chapter->id}] `{$chapter->title}`");
                         $chapter->content->update([
@@ -69,14 +72,14 @@ class CleanHTMLContent extends Command
                         ]);
 
                     } catch(Throwable $ignored){
+                        $this->logToCSV($csvName, [[$ignored->getMessage()]]);
                         $this->error($ignored->getMessage());
                     }
 
                     /**
                      * Чистим пагинацию
                      */
-                    //dd($chapter->paginations);
-                    $chapter->pagination?->each(function($pagination) {
+                    $chapter->pagination?->each(function($pagination) use ($csvName) {
                         try {
                             $this->info(" -- --Чистка пагинации [{$pagination->id}]");
                             $pagination->content->update([
@@ -84,6 +87,7 @@ class CleanHTMLContent extends Command
                             ]);
 
                         } catch (Throwable $ignored) {
+                            $this->logToCSV($csvName, [[$ignored->getMessage()]]);
                             $this->error($ignored->getMessage());
                         }
                     });
@@ -117,6 +121,7 @@ class CleanHTMLContent extends Command
                         ]);
                     }
                 } catch (Throwable $ignored) {
+                    $this->logToCSV($csvName, [[$ignored->getMessage()]]);
                     $this->error($ignored->getMessage());
                 }
             }
@@ -148,6 +153,7 @@ class CleanHTMLContent extends Command
                         ]);
                     }
                 } catch (Throwable $ignored) {
+                    $this->logToCSV($csvName, [[$ignored->getMessage()]]);
                     $this->error($ignored->getMessage());
                 }
             }
@@ -179,6 +185,7 @@ class CleanHTMLContent extends Command
                         ]);
                     }
                 } catch (Throwable $ignored) {
+                    $this->logToCSV($csvName, [[$ignored->getMessage()]]);
                     $this->error($ignored->getMessage());
                 }
             }
@@ -188,6 +195,25 @@ class CleanHTMLContent extends Command
             $this->error("`{$type}` - Неизвестный тип модели для чистки HTML контента. Доступные варианты `type`: book_content, book_annotation, blog_post, author_about");
         }
 
+        $this->warn('Лог чистки записан в файл ' . $csvName);
+
         return;
+    }
+
+    /**
+     * @param string $fileName
+     * @param array $list
+     *
+     * @return void
+     */
+    function logToCSV(string $fileName, array $list): void
+    {
+        $fp = fopen($fileName, 'w');
+
+        foreach ($list as $fields) {
+            fputcsv($fp, $fields);
+        }
+
+        fclose($fp);
     }
 }
