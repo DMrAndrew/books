@@ -3,6 +3,7 @@
 use Books\Blog\Classes\Enums\PostStatus;
 use Books\Blog\Classes\Services\PostService;
 use Books\Blog\Models\Post;
+use Books\Book\Classes\Services\TextCleanerService;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
@@ -119,6 +120,11 @@ class BlogLC extends ComponentBase
 //                        break;
 //                }
 //            }
+
+            /**
+             * Clean html content
+             */
+            $data['content'] = TextCleanerService::cleanContent($data['content']);
 
             /**
              * Validate

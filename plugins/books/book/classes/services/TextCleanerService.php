@@ -39,14 +39,23 @@ class TextCleanerService
      * @throws Exception
      */
     public static function cleanContent(
-        string $inputContent,
+        ?string $inputContent,
         array $allowTags = self::DEFAULT_ALLOW_TAGS,
         array $allowAttributes = self::DEFAULT_ALLOW_ATTRIBUTES,
         array $allowClasses = self::DEFAULT_ALLOW_CLASSES,
         array $allowInlineStyles = self::DEFAULT_ALLOW_INLINE_STYLES,
 
-    ): string
+    ): ?string
     {
+        if ($inputContent === null) {
+            return null;
+        }
+
+        $inputContent = Str::squish(trim($inputContent));
+        if (mb_strlen($inputContent) == 0) {
+            return $inputContent;
+        }
+
         /**
          * Clean Tags
          */
@@ -60,7 +69,7 @@ class TextCleanerService
             $doc = new DOMDocument('1.0', 'utf-8');
             $encodedContent = mb_convert_encoding($cleanedContent, 'HTML-ENTITIES', 'UTF-8');
             //$doc->loadHTML($encodedContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-            $doc->loadHTML($encodedContent, LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
+            @$doc->loadHTML($encodedContent, LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
 
             /**
              * Clean attributes

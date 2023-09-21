@@ -6,6 +6,7 @@ use ApplicationException;
 use Books\Book\Classes\BookService;
 use Books\Book\Classes\BookUtilities;
 use Books\Book\Classes\Enums\AgeRestrictionsEnum;
+use Books\Book\Classes\Services\TextCleanerService;
 use Books\Book\Models\Book;
 use Books\Book\Models\Tag;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
@@ -103,7 +104,9 @@ class Booker extends ComponentBase
     {
         try {
             $data = post();
-            if (post('annotation') && BookUtilities::countContentLengthForContent(post('annotation')) > 2000) {
+            $data['annotation'] = TextCleanerService::cleanContent($data['annotation']);
+
+            if ($data['annotation'] && BookUtilities::countContentLengthForContent($data['annotation']) > 2000) {
                 throw new ValidationException(['annotation' => 'Аннотация не должна превышать 2000 символов.']);
             }
             if ($this->service->getGenres()->count() === 0) {
