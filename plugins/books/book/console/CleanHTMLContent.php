@@ -64,7 +64,7 @@ class CleanHTMLContent extends Command
                 /**
                  * Чистим главы
                  */
-                $book->ebook?->chapters?->each(function($chapter) use ($csvName) {
+                $book->ebook?->chapters?->each(function($chapter) use ($book, $bookId, $csvName) {
                     try{
                         $this->info(" --Чистка главы [{$chapter->id}] `{$chapter->title}`");
                         $chapter->content->update([
@@ -72,14 +72,18 @@ class CleanHTMLContent extends Command
                         ]);
 
                     } catch(Throwable $ignored){
-                        $this->logToCSV($csvName, [[$ignored->getMessage()]]);
+                        $this->logToCSV($csvName, [
+                            ["Книга [{$bookId}] `{$book->title}`"],
+                            [" --Глава [{$chapter->id}] `{$chapter->title}`"],
+                            [$ignored->getMessage()]
+                        ]);
                         $this->error($ignored->getMessage());
                     }
 
                     /**
                      * Чистим пагинацию
                      */
-                    $chapter->pagination?->each(function($pagination) use ($csvName) {
+                    $chapter->pagination?->each(function($pagination) use ($book, $bookId, $csvName) {
                         try {
                             $this->info(" -- --Чистка пагинации [{$pagination->id}]");
                             $pagination->content->update([
@@ -87,7 +91,11 @@ class CleanHTMLContent extends Command
                             ]);
 
                         } catch (Throwable $ignored) {
-                            $this->logToCSV($csvName, [[$ignored->getMessage()]]);
+                            $this->logToCSV($csvName, [
+                                ["Книга [{$bookId}] `{$book->title}`"],
+                                [" --Пагинации [{$pagination->id}]"],
+                                [$ignored->getMessage()]
+                            ]);
                             $this->error($ignored->getMessage());
                         }
                     });
@@ -121,7 +129,10 @@ class CleanHTMLContent extends Command
                         ]);
                     }
                 } catch (Throwable $ignored) {
-                    $this->logToCSV($csvName, [[$ignored->getMessage()]]);
+                    $this->logToCSV($csvName, [
+                        ["Аннотация к книге [{$bookId}] `{$book->title}`"],
+                        [$ignored->getMessage()]
+                    ]);
                     $this->error($ignored->getMessage());
                 }
             }
@@ -153,7 +164,10 @@ class CleanHTMLContent extends Command
                         ]);
                     }
                 } catch (Throwable $ignored) {
-                    $this->logToCSV($csvName, [[$ignored->getMessage()]]);
+                    $this->logToCSV($csvName, [
+                        ["Описание профиля [{$profileId}] `{$profile->username}`"],
+                        [$ignored->getMessage()]
+                    ]);
                     $this->error($ignored->getMessage());
                 }
             }
@@ -185,7 +199,10 @@ class CleanHTMLContent extends Command
                         ]);
                     }
                 } catch (Throwable $ignored) {
-                    $this->logToCSV($csvName, [[$ignored->getMessage()]]);
+                    $this->logToCSV($csvName, [
+                        ["Чистка публикации [{$postId}] `{$blogPost->title}`"],
+                        [$ignored->getMessage()]
+                    ]);
                     $this->error($ignored->getMessage());
                 }
             }
