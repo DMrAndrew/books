@@ -73,9 +73,11 @@ class CleanHTMLContent extends Command
 
                     } catch(Throwable $ignored){
                         $this->logToCSV($csvName, [
-                            ["Книга [{$bookId}] `{$book->title}`"],
-                            [" --Глава [{$chapter->id}] `{$chapter->title}`"],
-                            [$ignored->getMessage()]
+                            [
+                                "Книга [{$bookId}] `{$book->title}`",
+                                " --Глава [{$chapter->id}] `{$chapter->title}`",
+                                $ignored->getMessage()
+                            ]
                         ]);
                         $this->error($ignored->getMessage());
                     }
@@ -92,9 +94,11 @@ class CleanHTMLContent extends Command
 
                         } catch (Throwable $ignored) {
                             $this->logToCSV($csvName, [
-                                ["Книга [{$bookId}] `{$book->title}`"],
-                                [" --Пагинации [{$pagination->id}]"],
-                                [$ignored->getMessage()]
+                                [
+                                    "Книга [{$bookId}] `{$book->title}`",
+                                    " --Пагинации [{$pagination->id}]",
+                                    $ignored->getMessage()
+                                ]
                             ]);
                             $this->error($ignored->getMessage());
                         }
@@ -130,8 +134,10 @@ class CleanHTMLContent extends Command
                     }
                 } catch (Throwable $ignored) {
                     $this->logToCSV($csvName, [
-                        ["Аннотация к книге [{$bookId}] `{$book->title}`"],
-                        [$ignored->getMessage()]
+                        [
+                            "Аннотация к книге [{$bookId}] `{$book->title}`",
+                            $ignored->getMessage()
+                        ]
                     ]);
                     $this->error($ignored->getMessage());
                 }
@@ -165,8 +171,10 @@ class CleanHTMLContent extends Command
                     }
                 } catch (Throwable $ignored) {
                     $this->logToCSV($csvName, [
-                        ["Описание профиля [{$profileId}] `{$profile->username}`"],
-                        [$ignored->getMessage()]
+                        [
+                            "Описание профиля [{$profileId}] `{$profile->username}`",
+                            $ignored->getMessage()
+                        ]
                     ]);
                     $this->error($ignored->getMessage());
                 }
@@ -200,8 +208,10 @@ class CleanHTMLContent extends Command
                     }
                 } catch (Throwable $ignored) {
                     $this->logToCSV($csvName, [
-                        ["Чистка публикации [{$postId}] `{$blogPost->title}`"],
-                        [$ignored->getMessage()]
+                        [
+                            "Чистка публикации [{$postId}] `{$blogPost->title}`",
+                            $ignored->getMessage()
+                        ]
                     ]);
                     $this->error($ignored->getMessage());
                 }
@@ -228,7 +238,7 @@ class CleanHTMLContent extends Command
         $fp = fopen($fileName, 'w');
 
         foreach ($list as $fields) {
-            fputcsv($fp, $fields);
+            fputcsv($fp, $fields, ';');
         }
 
         fclose($fp);
