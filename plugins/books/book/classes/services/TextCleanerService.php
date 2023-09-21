@@ -8,11 +8,16 @@ use Books\Book\Classes\Exceptions\TextContentWrongLinkException;
 use Config;
 use DOMDocument;
 use DOMNode;
+use DOMText;
 use Exception;
 use Str;
 
 class TextCleanerService
 {
+    const PROCESS_LINK_MODE_RETURN_ERROR = 1; // возвращать ошибку, останавливать
+    const PROCESS_LINK_MODE_EXTRACT_ANCHOR = 2; // удалять ссылку, оставлять её текст в контенте
+    const PROCESS_LINK_MODE_IGNORE = 3; // игнорировать
+
     const DEFAULT_ALLOW_TAGS = [
         // js editor tags
         'h1', 'h2', 'h3', 'p', 'span', 'i', 's', 'u', 'ol', 'ul', 'a', 'img'
@@ -44,6 +49,7 @@ class TextCleanerService
         array $allowAttributes = self::DEFAULT_ALLOW_ATTRIBUTES,
         array $allowClasses = self::DEFAULT_ALLOW_CLASSES,
         array $allowInlineStyles = self::DEFAULT_ALLOW_INLINE_STYLES,
+        int $processLinksMode = self::PROCESS_LINK_MODE_RETURN_ERROR,
 
     ): ?string
     {
@@ -99,8 +105,11 @@ class TextCleanerService
             /**
              * Check links domains
              */
-            $allowDomains = self::getAppDomainWhitelist();
-            self::validateLinkHrefDomains($doc, $allowDomains);
+            self::validateLinkProcessMode($processLinksMode);
+            if ( $processLinksMode != self::PROCESS_LINK_MODE_IGNORE) {
+                $allowDomains = self::getAppDomainWhitelist();
+                self::validateLinkHrefDomains($doc, $allowDomains, $processLinksMode);
+            }
 
         } catch (TextContentWrongLinkException|TextContentLinkDomainException $e) {
             throw new Exception($e->getMessage());
@@ -260,12 +269,13 @@ class TextCleanerService
     /**
      * @param DOMNode $domNode
      * @param array $allowDomains
+     * @param int $processLinksMode
      *
      * @return void
      * @throws TextContentLinkDomainException
      * @throws TextContentWrongLinkException
      */
-    public static function validateLinkHrefDomains(DOMNode &$domNode, array $allowDomains): void
+    public static function validateLinkHrefDomains(DOMNode &$domNode, array $allowDomains, int $processLinksMode): void
     {
         /** @var DOMNode $node */
         foreach ($domNode->childNodes as $nodeKey => $node)
@@ -278,24 +288,57 @@ class TextCleanerService
                     $attributeValue = $attr->nodeValue;
 
                     if ($attributeName === "href") {
-                        if (mb_strlen($node->textContent) === 0) {
-                            throw new TextContentWrongLinkException("У ссылки `{$attributeValue}` - отсутствует якорь.");
+
+                        /**
+                         * Mode: возвращать ошибки
+                         */
+                        if ($processLinksMode === self::PROCESS_LINK_MODE_RETURN_ERROR) {
+                            if (mb_strlen($node->textContent) === 0) {
+                                throw new TextContentWrongLinkException("У ссылки `{$attributeValue}` - отсутствует якорь.");
+                            }
+
+                            $urlHost = parse_url(trim($attributeValue), PHP_URL_HOST);
+                            if ($urlHost === null) {
+                                throw new TextContentWrongLinkException("`{$node->textContent}` - Пустая ссылка или ссылка с некорректным адресом.");
+                            }
+
+                            if (!in_array($urlHost, $allowDomains)) {
+                                throw new TextContentLinkDomainException("Ссылка `{$node->textContent}` содержит недопустимый адрес. Разрешаются ссылки только на внутренние страницы сервиса.");
+                            }
                         }
 
-                        $urlHost = parse_url(trim($attributeValue), PHP_URL_HOST);
-                        if ($urlHost === null) {
-                            throw new TextContentWrongLinkException("`{$node->textContent}` - Пустая ссылка или ссылка с некорректным адресом.");
-                        }
+                        /**
+                         * Mode: заменять текст
+                         */
+                        else if ($processLinksMode === self::PROCESS_LINK_MODE_EXTRACT_ANCHOR) {
+                            /**
+                             * Отсутствует якорь - удалить (заменить пустой строкой)
+                             */
+                            if (mb_strlen($node->textContent) === 0) {
+                                $node->parentNode->replaceChild(new DOMText(''), $node);
+                            }
 
-                        if (!in_array($urlHost, $allowDomains)) {
-                            throw new TextContentLinkDomainException("Ссылка `{$node->textContent}` содержит недопустимый адрес. Разрешаются ссылки только на внутренние страницы сервиса.");
+                            /**
+                             * Пустая ссылка - удалить (заменить пустой строкой)
+                             */
+                            $urlHost = parse_url(trim($attributeValue), PHP_URL_HOST);
+                            if ($urlHost === null) {
+                                $node->parentNode->replaceChild(new DOMText(''), $node);
+                            }
+
+                            /**
+                             * Запрещенный домен - заменить ссылку на анкор
+                             */
+                            if (!in_array($urlHost, $allowDomains)) {
+                                $node->parentNode->replaceChild(new DOMText($node->textContent), $node);
+                            }
                         }
                     }
                 }
             }
 
             if($node->hasChildNodes()) {
-                self::validateLinkHrefDomains($node, $allowDomains);
+                self::validateLinkHrefDomains($node, $allowDomains, $processLinksMode);
             }
         }
     }
@@ -361,5 +404,22 @@ class TextCleanerService
         $pattern = "/<p[^>]*>(?:\s|&nbsp;)*<\/p>/";
 
         return Str::squish(preg_replace($pattern, '', $html));
+    }
+
+    /**
+     * @param int $mode
+     *
+     * @return void
+     * @throws Exception
+     */
+    private static function validateLinkProcessMode(int $mode): void
+    {
+        if (!in_array($mode, [
+            self::PROCESS_LINK_MODE_RETURN_ERROR,
+            self::PROCESS_LINK_MODE_EXTRACT_ANCHOR,
+            self::PROCESS_LINK_MODE_IGNORE,
+        ])) {
+            throw new Exception('Непонятный режим обработки ссылок');
+        }
     }
 }

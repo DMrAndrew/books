@@ -21,12 +21,16 @@ class CleanHTMLContent extends Command
      */
     protected $signature = 'book:content:clean_html
                             {type : type of record}
-                            {ids : id(s) of records}';
+                            {ids : id(s) of records}
+                            {--linksMode=1 : links process mode}';
 
     /**
      * @var string description is the console command description
      */
-    protected $description = 'Чистка html контента. Удаление лишних тегов, аттрибутов, стилей, --type = объект (book_content, book_annotation, blog_post, author_about), --id = список ID записей (через запятую)';
+    protected $description = 'Чистка html контента. Удаление лишних тегов, аттрибутов, стилей, 
+                            --type = объект (book_content, book_annotation, blog_post, author_about), 
+                            --id = список ID записей (через запятую)
+                            --linksMode = Режим обработки ссылок (1-возвращать ошибку; 2-заменять ссылку на анкор; 3-игнорировать)';
 
     /**
      * handle executes the console command.
@@ -37,6 +41,7 @@ class CleanHTMLContent extends Command
 
         $type = $this->argument('type');
         $idsList = $this->argument('ids');
+        $linksProcessMode = $this->option('linksMode');
         $ids = explode(',', $idsList);
 
         $csvName = storage_path() . '/' . now()->format('Y-m-d_H-i-s') . '.csv';
@@ -64,11 +69,11 @@ class CleanHTMLContent extends Command
                 /**
                  * Чистим главы
                  */
-                $book->ebook?->chapters?->each(function($chapter) use ($book, $bookId, $csvName) {
+                $book->ebook?->chapters?->each(function($chapter) use ($linksProcessMode, $book, $bookId, $csvName) {
                     try{
                         $this->info(" --Чистка главы [{$chapter->id}] `{$chapter->title}`");
                         $chapter->content->update([
-                            'body' => TextCleanerService::cleanContent($chapter->content->body)
+                            'body' => TextCleanerService::cleanContent($chapter->content->body, processLinksMode: $linksProcessMode)
                         ]);
 
                     } catch(Throwable $ignored){
@@ -85,11 +90,11 @@ class CleanHTMLContent extends Command
                     /**
                      * Чистим пагинацию
                      */
-                    $chapter->pagination?->each(function($pagination) use ($book, $bookId, $csvName) {
+                    $chapter->pagination?->each(function($pagination) use ($linksProcessMode, $book, $bookId, $csvName) {
                         try {
                             $this->info(" -- --Чистка пагинации [{$pagination->id}]");
                             $pagination->content->update([
-                                'body' => TextCleanerService::cleanContent($pagination->content->body)
+                                'body' => TextCleanerService::cleanContent($pagination->content->body, processLinksMode: $linksProcessMode)
                             ]);
 
                         } catch (Throwable $ignored) {
@@ -129,7 +134,7 @@ class CleanHTMLContent extends Command
 
                     if ($book->annotation) {
                         $book->update([
-                            'annotation' => TextCleanerService::cleanContent($book->annotation)
+                            'annotation' => TextCleanerService::cleanContent($book->annotation, processLinksMode: $linksProcessMode)
                         ]);
                     }
                 } catch (Throwable $ignored) {
@@ -166,7 +171,7 @@ class CleanHTMLContent extends Command
                     if ($profile->about) {
 
                         $profile->update([
-                            'about' => TextCleanerService::cleanContent($profile->about)
+                            'about' => TextCleanerService::cleanContent($profile->about, processLinksMode: $linksProcessMode)
                         ]);
                     }
                 } catch (Throwable $ignored) {
@@ -203,7 +208,7 @@ class CleanHTMLContent extends Command
                     if ($blogPost->content) {
 
                         $blogPost->update([
-                            'content' => TextCleanerService::cleanContent($blogPost->content)
+                            'content' => TextCleanerService::cleanContent($blogPost->content, processLinksMode: $linksProcessMode)
                         ]);
                     }
                 } catch (Throwable $ignored) {
