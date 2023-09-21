@@ -316,6 +316,8 @@ class TextCleanerService
                              */
                             if (mb_strlen($node->textContent) === 0) {
                                 $node->parentNode->replaceChild(new DOMText(''), $node);
+
+                                continue;
                             }
 
                             /**
@@ -324,6 +326,8 @@ class TextCleanerService
                             $urlHost = parse_url(trim($attributeValue), PHP_URL_HOST);
                             if ($urlHost === null) {
                                 $node->parentNode->replaceChild(new DOMText(''), $node);
+
+                                continue;
                             }
 
                             /**
@@ -331,6 +335,8 @@ class TextCleanerService
                              */
                             if (!in_array($urlHost, $allowDomains)) {
                                 $node->parentNode->replaceChild(new DOMText($node->textContent), $node);
+
+                                continue;
                             }
                         }
                     }
