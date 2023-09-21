@@ -317,7 +317,7 @@ class TextCleanerService
                             if (mb_strlen($node->textContent) === 0) {
                                 $node->parentNode->replaceChild(new DOMText(''), $node);
 
-                                continue;
+                                self::validateLinkHrefDomains($node, $allowDomains, $processLinksMode);
                             }
 
                             /**
@@ -327,7 +327,7 @@ class TextCleanerService
                             if ($urlHost === null) {
                                 $node->parentNode->replaceChild(new DOMText(''), $node);
 
-                                continue;
+                                self::validateLinkHrefDomains($node, $allowDomains, $processLinksMode);
                             }
 
                             /**
@@ -336,7 +336,7 @@ class TextCleanerService
                             if (!in_array($urlHost, $allowDomains)) {
                                 $node->parentNode->replaceChild(new DOMText($node->textContent), $node);
 
-                                continue;
+                                self::validateLinkHrefDomains($node, $allowDomains, $processLinksMode);
                             }
                         }
                     }
