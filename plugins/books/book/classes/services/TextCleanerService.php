@@ -39,14 +39,23 @@ class TextCleanerService
      * @throws Exception
      */
     public static function cleanContent(
-        string $inputContent,
+        ?string $inputContent,
         array $allowTags = self::DEFAULT_ALLOW_TAGS,
         array $allowAttributes = self::DEFAULT_ALLOW_ATTRIBUTES,
         array $allowClasses = self::DEFAULT_ALLOW_CLASSES,
         array $allowInlineStyles = self::DEFAULT_ALLOW_INLINE_STYLES,
 
-    ): string
+    ): ?string
     {
+        if ($inputContent === null) {
+            return null;
+        }
+
+        $inputContent = Str::squish(trim($inputContent));
+        if (mb_strlen($inputContent) == 0) {
+            return $inputContent;
+        }
+
         /**
          * Clean Tags
          */
@@ -96,7 +105,6 @@ class TextCleanerService
         } catch (TextContentWrongLinkException|TextContentLinkDomainException $e) {
             throw new Exception($e->getMessage());
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
             throw new Exception('Похоже текст, который вы пытаетесь сохранить имеет невалидное форматирование.');
         }
 
