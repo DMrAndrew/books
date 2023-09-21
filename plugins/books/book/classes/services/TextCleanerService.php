@@ -280,15 +280,16 @@ class TextCleanerService
         /** @var DOMNode $node */
         foreach ($domNode->childNodes as $nodeKey => $node)
         {
+
             $attributes = $node->attributes;
             if ($attributes) {
+
                 foreach ($attributes as $attr) {
 
                     $attributeName = $attr->nodeName;
                     $attributeValue = $attr->nodeValue;
 
                     if ($attributeName === "href") {
-
                         /**
                          * Mode: возвращать ошибки
                          */
@@ -311,32 +312,37 @@ class TextCleanerService
                          * Mode: заменять текст
                          */
                         else if ($processLinksMode === self::PROCESS_LINK_MODE_EXTRACT_ANCHOR) {
+
+                            $urlHost = parse_url(trim($attributeValue), PHP_URL_HOST);
+
                             /**
                              * Отсутствует якорь - удалить (заменить пустой строкой)
                              */
                             if (mb_strlen($node->textContent) === 0) {
-                                $node->parentNode->replaceChild(new DOMText(''), $node);
+                                $domNode->childNodes[$nodeKey]->parentNode->replaceChild(new DOMText(''), $node);
+                                self::validateLinkHrefDomains($domNode, $allowDomains, $processLinksMode);
 
-                                self::validateLinkHrefDomains($node, $allowDomains, $processLinksMode);
+                                return;
                             }
 
                             /**
                              * Пустая ссылка - удалить (заменить пустой строкой)
                              */
-                            $urlHost = parse_url(trim($attributeValue), PHP_URL_HOST);
-                            if ($urlHost === null) {
-                                $node->parentNode->replaceChild(new DOMText(''), $node);
+                            else if ($urlHost === null) {
+                                $domNode->childNodes[$nodeKey]->parentNode->replaceChild(new DOMText(''), $node);
+                                self::validateLinkHrefDomains($domNode, $allowDomains, $processLinksMode);
 
-                                self::validateLinkHrefDomains($node, $allowDomains, $processLinksMode);
+                                return;
                             }
 
                             /**
                              * Запрещенный домен - заменить ссылку на анкор
                              */
-                            if (!in_array($urlHost, $allowDomains)) {
-                                $node->parentNode->replaceChild(new DOMText($node->textContent), $node);
+                            else if (!in_array($urlHost, $allowDomains)) {
+                                $domNode->childNodes[$nodeKey]->parentNode->replaceChild(new DOMText($node->textContent), $node);
+                                self::validateLinkHrefDomains($domNode, $allowDomains, $processLinksMode);
 
-                                self::validateLinkHrefDomains($node, $allowDomains, $processLinksMode);
+                                return;
                             }
                         }
                     }
