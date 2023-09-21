@@ -80,7 +80,7 @@ class CleanHTMLContent extends Command
                         try {
                             $this->info(" -- --Чистка пагинации [{$pagination->id}]");
                             $pagination->content->update([
-                                'body' => TextCleanerService::cleanContent(htmlentities($pagination->content->body))
+                                'body' => TextCleanerService::cleanContent($pagination->content->body)
                             ]);
 
                         } catch (Throwable $ignored) {
