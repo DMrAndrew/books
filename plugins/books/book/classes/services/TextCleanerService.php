@@ -96,6 +96,7 @@ class TextCleanerService
         } catch (TextContentWrongLinkException|TextContentLinkDomainException $e) {
             throw new Exception($e->getMessage());
         } catch (Exception $e) {
+            throw new Exception($e->getMessage());
             throw new Exception('Похоже текст, который вы пытаетесь сохранить имеет невалидное форматирование.');
         }
 
