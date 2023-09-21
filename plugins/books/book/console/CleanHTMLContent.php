@@ -96,7 +96,7 @@ class CleanHTMLContent extends Command
                             $this->logToCSV($csvName, [
                                 [
                                     "Книга [{$bookId}] `{$book->title}`",
-                                    " --Пагинации [{$pagination->id}]",
+                                    " --Пагинация [{$pagination->id}]",
                                     $ignored->getMessage()
                                 ]
                             ]);
@@ -235,7 +235,7 @@ class CleanHTMLContent extends Command
      */
     function logToCSV(string $fileName, array $list): void
     {
-        $fp = fopen($fileName, 'w');
+        $fp = fopen($fileName, 'a+');
 
         foreach ($list as $fields) {
             fputcsv($fp, $fields, ';');
