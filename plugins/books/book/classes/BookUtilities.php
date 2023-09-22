@@ -71,8 +71,8 @@ class BookUtilities
         $exceptTags = array_map('strtolower', $exceptTags);
         $exceptAttributes = array_map('strtolower', $exceptAttributes);
 
-        $dom = new \DOMDocument();
-        $dom->loadHTML($html);
+        $dom = new \DOMDocument('1.0', 'utf-8');
+        $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
 
         $xpath = new \DOMXPath($dom);
 

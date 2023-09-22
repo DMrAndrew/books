@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8a066e796a6f213b08cbaf832e51563e",
+    "content-hash": "87fa4db594b9f6c8f44d6d02fa33c2e7",
     "packages": [
         {
             "name": "abordage/laravel-last-modified",
@@ -14536,7 +14536,9 @@
     "platform": {
         "php": "^8.1",
         "ext-dom": "*",
-        "ext-fileinfo": "*"
+        "ext-fileinfo": "*",
+        "ext-simplexml": "*",
+        "ext-libxml": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"

@@ -2,6 +2,7 @@
 
 namespace Books\Profile\Components;
 
+use Books\Book\Classes\Services\TextCleanerService;
 use Books\FileUploader\Components\ImageUploader;
 use Books\Profile\Models\Profile as UserProfile;
 use Cms\Classes\ComponentBase;
@@ -76,6 +77,9 @@ class ProfileLC extends ComponentBase
         try {
             $profile = $this->user->profile;
             $data = array_diff_assoc(post(), $profile->only($profile->getFillable()));
+
+            $data['about'] = TextCleanerService::cleanContent($data['about']);
+
             $profile->removeValidationRule('username', 'required');
             $profile->addValidationRule('username', 'prohibited');
             $profile->addValidationRule('username_clipboard', 'prohibited');
