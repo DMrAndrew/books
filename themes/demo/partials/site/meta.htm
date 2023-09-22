@@ -1,6 +1,5 @@
 <meta charset="utf-8">
-<title>Время книг - {{
-    this.page.meta_title ?: placeholder('pageTitle') }}</title>
+<title>{{this.page.meta_title ?? placeholder('pageTitle') ?: "Время книг"}}</title>
 <meta name="description" property="og:description"
       content="{{ str_limit(this.page.meta_description,200) ?: placeholder('pageDescription') }}">
 <meta name="title" property="og:title" content="{{ this.page.meta_title ?: placeholder('pageTitle') }}">

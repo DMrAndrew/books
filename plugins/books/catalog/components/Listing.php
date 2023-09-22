@@ -316,7 +316,7 @@ class Listing extends ComponentBase
     {
         $genre = $this->categorySlugGenre ?? $this->categoryGenre;
         if ($genre) {
-            $this->page->h1 = $genre->h1 ?? $genre->name; //dd($this->page->h1);
+            $this->page->h1 = $genre->h1 ?? $genre->name;
             $this->page->meta_title = "{$genre->name} – скачать новинки в fb2, epub, txt, pdf или читать онлайн бесплатно полные";
             $this->page->meta_description = "Электронная библиотека “Время книг” предлагает скачать книги жанра «{$genre->name}» в fb2, epub, txt, pdf или читать онлайн бесплатно";
         }
