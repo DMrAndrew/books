@@ -11,6 +11,9 @@ fields:
     desc:
         label: Описание
         type: richeditor
+    h1:
+        label: Заголовок H1
+        type: text
     active:
         label: Активный
         type: checkbox

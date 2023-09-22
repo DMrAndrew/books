@@ -1,6 +1,5 @@
 <meta charset="utf-8">
-<title>Время книг - {{
-    this.page.meta_title ?: placeholder('pageTitle') }}</title>
+<title>{{this.page.meta_title ?? placeholder('pageTitle') ?: "Время книг"}}</title>
 <meta name="description" property="og:description"
       content="{{ str_limit(this.page.meta_description,200) ?: placeholder('pageDescription') }}">
 <meta name="title" property="og:title" content="{{ this.page.meta_title ?: placeholder('pageTitle') }}">
@@ -18,7 +17,7 @@
 <link href="{{ 'assets/css/tippy.css' | theme }}" rel="stylesheet">
 <link href="{{ 'assets/css/tippy.light.css' | theme }}" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
-<link href="{{ 'assets/css/custom.css' | theme }}?v=12092023" rel="stylesheet">
+<link href="{{ 'assets/css/custom.css' | theme }}?v=22092023" rel="stylesheet">
 <!-- Временное подключение шрифтов -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

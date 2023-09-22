@@ -1,6 +1,7 @@
 <?php namespace Books\Book\Classes\Traits;
 
 use Books\Book\Models\Book;
+use Str;
 
 trait InjectBookStuff
 {
@@ -20,7 +21,18 @@ trait InjectBookStuff
         if (!$this->validate()) {
             return false;
         }
-        $this->page->meta_title = '«' . $this->book?->title . '»';
+
+        /**
+         * ХНазваниеХ – ХавторХ скачать в fb2, epub, txt, pdf или читать онлайн бесплатно
+         */
+        $title = $this->book?->title . ' - ';
+        $bookAuthors = $this->book?->orderedAuthors();
+        if ($bookAuthors) {
+            $title .= implode(', ', $bookAuthors->pluck('profile.username')->toArray());
+        }
+        $title .= " скачать в fb2, epub, txt, pdf или читать онлайн бесплатно";
+
+        $this->page->meta_title = $title;
         $this->page->meta_preview = $this->book?->cover?->path;
         $this->page->meta_description = strip_tags($this->book?->annotation);
     }
