@@ -5,6 +5,7 @@ use Books\Book\Classes\Services\TextCleanerService;
 use Books\Book\Models\Book;
 use Books\Profile\Models\Profile;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -20,12 +21,16 @@ class CleanHTMLContent extends Command
      */
     protected $signature = 'book:content:clean_html
                             {type : type of record}
-                            {ids : id(s) of records}';
+                            {ids : id(s) of records}
+                            {--linksMode=1 : links process mode}';
 
     /**
      * @var string description is the console command description
      */
-    protected $description = 'Чистка html контента. Удаление лишних тегов, аттрибутов, стилей, --type = объект (book_content, book_annotation, blog_post, author_about), --id = список ID записей (через запятую)';
+    protected $description = 'Чистка html контента. Удаление лишних тегов, аттрибутов, стилей, 
+                            --type = объект (book_content, book_annotation, blog_post, author_about), 
+                            --id = список ID записей (через запятую)
+                            --linksMode = Режим обработки ссылок (1-возвращать ошибку; 2-заменять ссылку на анкор; 3-игнорировать)';
 
     /**
      * handle executes the console command.
@@ -36,7 +41,10 @@ class CleanHTMLContent extends Command
 
         $type = $this->argument('type');
         $idsList = $this->argument('ids');
+        $linksProcessMode = $this->option('linksMode');
         $ids = explode(',', $idsList);
+
+        $csvName = storage_path() . '/' . now()->format('Y-m-d_H-i-s') . '.csv';
 
         /**
          * Чистка контента в книгах
@@ -61,29 +69,42 @@ class CleanHTMLContent extends Command
                 /**
                  * Чистим главы
                  */
-                $book->ebook?->chapters?->each(function($chapter) {
+                $book->ebook?->chapters?->each(function($chapter) use ($linksProcessMode, $book, $bookId, $csvName) {
                     try{
                         $this->info(" --Чистка главы [{$chapter->id}] `{$chapter->title}`");
                         $chapter->content->update([
-                            'body' => TextCleanerService::cleanContent($chapter->content->body)
+                            'body' => TextCleanerService::cleanContent($chapter->content->body, processLinksMode: $linksProcessMode)
                         ]);
 
                     } catch(Throwable $ignored){
+                        $this->logToCSV($csvName, [
+                            [
+                                "Книга [{$bookId}] `{$book->title}`",
+                                " --Глава [{$chapter->id}] `{$chapter->title}`",
+                                $ignored->getMessage()
+                            ]
+                        ]);
                         $this->error($ignored->getMessage());
                     }
 
                     /**
                      * Чистим пагинацию
                      */
-                    //dd($chapter->paginations);
-                    $chapter->pagination?->each(function($pagination) {
+                    $chapter->pagination?->each(function($pagination) use ($linksProcessMode, $book, $bookId, $csvName) {
                         try {
                             $this->info(" -- --Чистка пагинации [{$pagination->id}]");
                             $pagination->content->update([
-                                'body' => TextCleanerService::cleanContent(htmlentities($pagination->content->body))
+                                'body' => TextCleanerService::cleanContent($pagination->content->body, processLinksMode: $linksProcessMode)
                             ]);
 
                         } catch (Throwable $ignored) {
+                            $this->logToCSV($csvName, [
+                                [
+                                    "Книга [{$bookId}] `{$book->title}`",
+                                    " --Пагинация [{$pagination->id}]",
+                                    $ignored->getMessage()
+                                ]
+                            ]);
                             $this->error($ignored->getMessage());
                         }
                     });
@@ -113,10 +134,16 @@ class CleanHTMLContent extends Command
 
                     if ($book->annotation) {
                         $book->update([
-                            'annotation' => TextCleanerService::cleanContent($book->annotation)
+                            'annotation' => TextCleanerService::cleanContent($book->annotation, processLinksMode: $linksProcessMode)
                         ]);
                     }
                 } catch (Throwable $ignored) {
+                    $this->logToCSV($csvName, [
+                        [
+                            "Аннотация к книге [{$bookId}] `{$book->title}`",
+                            $ignored->getMessage()
+                        ]
+                    ]);
                     $this->error($ignored->getMessage());
                 }
             }
@@ -144,10 +171,16 @@ class CleanHTMLContent extends Command
                     if ($profile->about) {
 
                         $profile->update([
-                            'about' => TextCleanerService::cleanContent($profile->about)
+                            'about' => TextCleanerService::cleanContent($profile->about, processLinksMode: $linksProcessMode)
                         ]);
                     }
                 } catch (Throwable $ignored) {
+                    $this->logToCSV($csvName, [
+                        [
+                            "Описание профиля [{$profileId}] `{$profile->username}`",
+                            $ignored->getMessage()
+                        ]
+                    ]);
                     $this->error($ignored->getMessage());
                 }
             }
@@ -175,10 +208,16 @@ class CleanHTMLContent extends Command
                     if ($blogPost->content) {
 
                         $blogPost->update([
-                            'content' => TextCleanerService::cleanContent($blogPost->content)
+                            'content' => TextCleanerService::cleanContent($blogPost->content, processLinksMode: $linksProcessMode)
                         ]);
                     }
                 } catch (Throwable $ignored) {
+                    $this->logToCSV($csvName, [
+                        [
+                            "Чистка публикации [{$postId}] `{$blogPost->title}`",
+                            $ignored->getMessage()
+                        ]
+                    ]);
                     $this->error($ignored->getMessage());
                 }
             }
@@ -188,6 +227,25 @@ class CleanHTMLContent extends Command
             $this->error("`{$type}` - Неизвестный тип модели для чистки HTML контента. Доступные варианты `type`: book_content, book_annotation, blog_post, author_about");
         }
 
+        $this->warn('Лог чистки записан в файл ' . $csvName);
+
         return;
+    }
+
+    /**
+     * @param string $fileName
+     * @param array $list
+     *
+     * @return void
+     */
+    function logToCSV(string $fileName, array $list): void
+    {
+        $fp = fopen($fileName, 'a+');
+
+        foreach ($list as $fields) {
+            fputcsv($fp, $fields, ';');
+        }
+
+        fclose($fp);
     }
 }
