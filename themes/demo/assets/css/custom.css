@@ -30,7 +30,7 @@ body {
     color: #fff !important;
 }
 
-.typographical-block p,
-.typographical-block span {
+.typographical-block:not(.listing) p,
+.typographical-block:not(.listing) span{
     background-color: #ffffff !important;
 }

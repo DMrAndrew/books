@@ -29,6 +29,7 @@ class Listing extends ComponentBase
 
     protected int $perPage = 12;
 
+    protected ?Genre $categoryGenre = null;
     protected ?Genre $categorySlugGenre = null;
 
     public function componentDetails()
@@ -52,6 +53,8 @@ class Listing extends ComponentBase
         $this->filter = new ListingFilter();
         $this->page['types'] = EditionsEnums::toArray();
         $this->page['listable'] = WidgetEnum::listable();
+
+        $this->categoryGenre = Genre::find((int) get('genre'));
     }
 
     public function onRun()
@@ -69,6 +72,9 @@ class Listing extends ComponentBase
     {
         $this->page['bind'] = $this->getBind();
         $this->page['category_slug_genre'] = $this->categorySlugGenre;
+        $this->page['$genre'] = $this->categorySlugGenre ?? $this->categoryGenre;
+
+        $this->setSEOFromGenre();
     }
 
     public function onInitQueryString()
@@ -301,5 +307,18 @@ class Listing extends ComponentBase
         }
 
         return true;
+    }
+
+    /**
+     * @return void
+     */
+    private function setSEOFromGenre(): void
+    {
+        $genre = $this->categorySlugGenre ?? $this->categoryGenre;
+        if ($genre) {
+            $this->page->h1 = $genre->h1 ?? $genre->name; //dd($this->page->h1);
+            $this->page->meta_title = "{$genre->name} – скачать новинки в fb2, epub, txt, pdf или читать онлайн бесплатно полные";
+            $this->page->meta_description = "Электронная библиотека “Время книг” предлагает скачать книги жанра «{$genre->name}» в fb2, epub, txt, pdf или читать онлайн бесплатно";
+        }
     }
 }
