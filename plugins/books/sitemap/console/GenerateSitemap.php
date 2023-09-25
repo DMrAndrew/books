@@ -2,6 +2,7 @@
 
 use Books\Book\Models\Book;
 use Books\Catalog\Models\Genre;
+use Books\Catalog\Models\Type;
 use Books\Profile\Models\Profile;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,7 +20,8 @@ use Books\Blog\Models\Post;
 class GenerateSitemap extends Command
 {
     const BOOKS_SITEMAP_NAME = 'sitemap_books';
-    const GENRES_SITEMAP_NAME = 'sitemap_categories';
+    const LISTING_CATEGORIES_GENRES_SITEMAP_NAME = 'sitemap_categories_genres';
+    const LISTING_CATEGORIES_BOOK_TYPES_SITEMAP_NAME = 'sitemap_categories_types';
     const BLOG_SITEMAP_NAME = 'sitemap_blog';
     const AUTHORS_SITEMAP_NAME = 'sitemap_authors';
     const STATIC_PAGES_SITEMAP_NAME = 'sitemap_pages';
@@ -45,7 +47,8 @@ class GenerateSitemap extends Command
     public function handle()
     {
         $this->generateBooksSitemap();
-        $this->generateGenresSitemap();
+        $this->generateListingCategoriesGenresSitemap();
+        $this->generateListingCategoriesBookTypesSitemap();
         $this->generateBlogSitemap();
         $this->generateAuthorsSitemap();
         $this->generateStaticPagesSitemap();
@@ -103,11 +106,48 @@ class GenerateSitemap extends Command
     /**
      * @return void
      */
-    private function generateGenresSitemap(): void
+    private function generateListingCategoriesGenresSitemap(): void
     {
-        $this->warn($this->getSitemapFileName(self::GENRES_SITEMAP_NAME));
+        $this->warn($this->getSitemapFileName(self::LISTING_CATEGORIES_GENRES_SITEMAP_NAME));
 
-        $sitemapName = self::GENRES_SITEMAP_NAME;
+        $sitemapName = self::LISTING_CATEGORIES_GENRES_SITEMAP_NAME;
+
+        $query = Genre
+            ::active()
+            ->whereNotNull('slug')
+            ->orderBy('id', 'desc');
+
+        $this->fillSitemapWithRecords($query, $sitemapName, function ($item) {
+            return url('listing', ['category_slug' => $item->slug]);
+        });
+    }
+
+    /**
+     * @return void
+     */
+    private function generateListingCategoriesBookTypesSitemap(): void
+    {
+        $this->warn($this->getSitemapFileName(self::LISTING_CATEGORIES_BOOK_TYPES_SITEMAP_NAME));
+
+        $sitemapName = self::LISTING_CATEGORIES_BOOK_TYPES_SITEMAP_NAME;
+
+        $query = Type
+            ::whereNotNull('slug')
+            ->orderBy('id', 'desc');
+
+        $this->fillSitemapWithRecords($query, $sitemapName, function ($item) {
+            return url('listing', ['category_slug' => $item->slug]);
+        });
+    }
+
+    /**
+     * @return void
+     */
+    private function generateBookTypesSitemap(): void
+    {
+        $this->warn($this->getSitemapFileName(self::LISTING_CATEGORIES_BOOK_TYPES_SITEMAP_NAME));
+
+        $sitemapName = self::LISTING_CATEGORIES_BOOK_TYPES_SITEMAP_NAME;
 
         $query = Genre
             ::active()
