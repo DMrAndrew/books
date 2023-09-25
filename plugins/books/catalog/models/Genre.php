@@ -38,7 +38,7 @@ class Genre extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['name', 'desc', 'active', 'favorite', 'parent_id', 'adult'];
+    protected $fillable = ['name', 'slug', 'desc', 'h1', 'active', 'favorite', 'parent_id', 'adult'];
 
     /**
      * @var array rules for validation
@@ -47,6 +47,7 @@ class Genre extends Model
         'name' => 'required|string|min:3',
         'slug' => 'string|nullable|regex:/^[a-z]+(?:-[a-z]+)*$/',
         'desc' => 'string|nullable',
+        'h1' => 'string|nullable',
         'active' => 'boolean',
         'favorite' => 'boolean',
         'parent_id' => 'nullable|exists:books_catalog_genres,id',

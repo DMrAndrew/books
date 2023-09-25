@@ -3,9 +3,18 @@
 # ===================================
 
 columns:
-    Label:
+    label:
         label: Название
         searchable: true
-    icon:
-        label: Иконка
-        type: image
+#    icon:
+#        label: Иконка
+#        type: image
+    slug:
+        label: Страница
+        searchable: true
+    h1:
+        label: Заголовок H1
+        type: text
+    desc:
+        label: Описание
+        searchable: true

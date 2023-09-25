@@ -31,16 +31,27 @@ class Type extends Model
     /**
      * @var array fillable attributes are mass assignable
      */
-    protected $fillable = ['name', 'desc', 'active'];
+    protected $fillable = [
+        'type',
+        'sort_order',
+        'slug',
+        'desc',
+        'h1'
+    ];
 
     /**
      * @var array rules for validation
      */
     public $rules = [
-        'name' => 'required|string|min:3',
-        'desc' => 'nullable|string',
-        'active' => 'boolean',
-        'icon' => 'nullable|image|mimes:png',
+        'type' => 'required|integer',
+        'sort_order' => 'required|integer',
+        'slug' => 'string|nullable|regex:/^[a-z]+(?:-[a-z]+)*$/',
+        'desc' => 'string|nullable',
+        'h1' => 'string|nullable',
+    ];
+
+    public $customMessages = [
+        'slug.regex' => 'Неправильный формат строки для поля `Страница`. Используйте латинские символы (abcdefghijklmnopqrstuvwxyz) и разделитель (`-`)',
     ];
 
     /**
@@ -98,9 +109,9 @@ class Type extends Model
 
     public $attachMany = [];
 
-    public function getLabelAttribute(): string
+    public function getLabelAttribute(): ?string
     {
-        return $this->type->label();
+        return $this->type?->label();
     }
 
     public function activate()

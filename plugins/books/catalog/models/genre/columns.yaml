@@ -9,6 +9,9 @@ columns:
     slug:
         label: Страница
         searchable: true
+    h1:
+        label: Заголовок H1
+        searchable: true
     desc:
         label: Описание
         searchable: true

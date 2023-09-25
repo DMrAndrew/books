@@ -5,6 +5,7 @@
 fields:
     name:
         label: Название
+        readOnly: true
     slug:
         label: Страница
         preset: name
