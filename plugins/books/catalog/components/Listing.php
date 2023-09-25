@@ -10,6 +10,7 @@ use Books\Book\Models\Tag;
 use Books\Catalog\Classes\ListingFilter;
 use Books\Catalog\Classes\ListingService;
 use Books\Catalog\Models\Genre;
+use Books\Catalog\Models\Type;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Illuminate\Support\Collection;
@@ -29,8 +30,9 @@ class Listing extends ComponentBase
 
     protected int $perPage = 12;
 
-    protected ?Genre $categoryGenre = null;
-    protected ?Genre $categorySlugGenre = null;
+    protected Genre|null $categoryGenre = null;
+    protected Type|null $categoryType = null;
+    protected Genre|Type|null $categorySlugModel = null;
 
     public function componentDetails()
     {
@@ -55,15 +57,16 @@ class Listing extends ComponentBase
         $this->page['listable'] = WidgetEnum::listable();
 
         $this->categoryGenre = Genre::find((int) get('genre'));
+        $this->categoryType = Type::find((int) get('type'));
     }
 
     public function onRun()
     {
-        if ($redirectToSlug = $this->redirectToGenreSlug()) {
+        if ($redirectToSlug = $this->redirectToSlug()) {
             return Redirect::to($redirectToSlug);
         };
 
-        if ( !$this->applyGenreSlug()) {
+        if ( !$this->appliedSlug()) {
             abort(404);
         }
     }
@@ -71,10 +74,10 @@ class Listing extends ComponentBase
     public function onRender()
     {
         $this->page['bind'] = $this->getBind();
-        $this->page['category_slug_genre'] = $this->categorySlugGenre;
-        $this->page['$genre'] = $this->categorySlugGenre ?? $this->categoryGenre;
+        $this->page['category_slug_model'] = $this->categorySlugModel;
+        $this->page['genre'] = $this->categorySlugModel ?? $this->categoryGenre;
 
-        $this->setSEOFromGenre();
+        $this->setSEOFromSlugModel();
     }
 
     public function onInitQueryString()
@@ -260,29 +263,16 @@ class Listing extends ComponentBase
     /**
      * @return string|null
      */
-    private function redirectToGenreSlug(): ?string
+    private function redirectToSlug(): ?string
     {
-        $genreId = get('genre');
-        if ($genreId && is_numeric($genreId)) {
-            $genre = Genre::where('id', $genreId)->first();
+        if (is_null($this->param('category_slug'))) {
+            $genreId = get('genre');
+            $typeId = get('type');
 
-            if (!$genre) {
-                return null;
-            }
-
-            $categorySlug = (string)$genre->slug;
-
-            if ($categorySlug) {
-                $redirectToSlug = '/listing/' . $genre->slug;
-
-                $getParams = get();
-                $queryParams = array_filter($getParams, function($param) {
-                    return $param != 'genre';
-                }, ARRAY_FILTER_USE_KEY );
-
-                $queryString = !empty($queryParams) ? '?' . http_build_query($queryParams) : '';
-
-                return $redirectToSlug . $queryString;
+            if ($genreId && is_numeric($genreId) ) {
+                return $this->getSlugFromBookGenre($genreId);
+            } else if ($typeId && is_numeric($typeId)) {
+                return $this->getSlugFromBookType($typeId);
             }
         }
 
@@ -290,20 +280,23 @@ class Listing extends ComponentBase
     }
 
     /**
+     * Жанр имеет приоритет перед типом
+     *
      * @return bool
      */
-    private function applyGenreSlug(): bool
+    private function appliedSlug(): bool
     {
         $categorySlug = $this->param('category_slug');
-        if ($categorySlug) {
-            $genre = Genre::slug($categorySlug)->first();
 
-            if (!$genre) {
-                return false;
+        if ($categorySlug) {
+            if ($this->appliedSlugFromGenre($categorySlug)) {
+                return true;
+            }
+            if ($this->appliedSlugFromType($categorySlug)) {
+                return true;
             }
 
-            $this->categorySlugGenre = $genre;
-            $this->filter->fromParams(['genreSlug' => $genre->id]);
+            return false;
         }
 
         return true;
@@ -312,13 +305,116 @@ class Listing extends ComponentBase
     /**
      * @return void
      */
-    private function setSEOFromGenre(): void
+    private function setSEOFromSlugModel(): void
     {
-        $genre = $this->categorySlugGenre ?? $this->categoryGenre;
-        if ($genre) {
-            $this->page->h1 = $genre->h1 ?? $genre->name;
-            $this->page->meta_title = "{$genre->name} – скачать новинки в fb2, epub, txt, pdf или читать онлайн бесплатно полные";
-            $this->page->meta_description = "Электронная библиотека “Время книг” предлагает скачать книги жанра «{$genre->name}» в fb2, epub, txt, pdf или читать онлайн бесплатно";
+        if ($slugModel = $this->categorySlugModel) {
+            $name = match (true) {
+                $slugModel instanceof Genre => $slugModel->name,
+                $slugModel instanceof Type => $slugModel->type->label(),
+                default => '',
+            };
+
+            $this->page->h1 = $slugModel->h1;
+            $this->page->meta_title = "{$name} – скачать новинки в fb2, epub, txt, pdf или читать онлайн бесплатно полные";
+            $this->page->meta_description = "Электронная библиотека “Время книг” предлагает скачать книги жанра «{$name}» в fb2, epub, txt, pdf или читать онлайн бесплатно";
         }
+    }
+
+    /**
+     * @param int $genreId
+     *
+     * @return string|null
+     */
+    private function getSlugFromBookGenre(int $genreId): ?string
+    {
+        $genre = Genre::where('id', $genreId)->first();
+
+        if (!$genre) {
+            return null;
+        }
+
+        $categorySlug = (string)$genre->slug;
+
+        if ($categorySlug) {
+            $redirectToSlug = '/listing/' . $genre->slug;
+
+            $getParams = get();
+            $queryParams = array_filter($getParams, function($param) {
+                return $param != 'genre';
+            }, ARRAY_FILTER_USE_KEY );
+
+            $queryString = !empty($queryParams) ? '?' . http_build_query($queryParams) : '';
+
+            return $redirectToSlug . $queryString;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param int $typeId
+     *
+     * @return string|null
+     */
+    private function getSlugFromBookType(int $typeId): ?string
+    {
+        $type = Type::where('id', $typeId)->first();
+
+        if (!$type) {
+            return null;
+        }
+
+        $categorySlug = (string)$type->slug;
+
+        if ($categorySlug) {
+            $redirectToSlug = '/listing/' . $type->slug;
+
+            $getParams = get();
+            $queryParams = array_filter($getParams, function($param) {
+                return $param != 'type';
+            }, ARRAY_FILTER_USE_KEY );
+
+            $queryString = !empty($queryParams) ? '?' . http_build_query($queryParams) : '';
+
+            return $redirectToSlug . $queryString;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $categorySlug
+     *
+     * @return bool
+     */
+    private function appliedSlugFromGenre(string $categorySlug): bool
+    {
+        $genre = Genre::slug($categorySlug)->first();
+        if ($genre) {
+            $this->categorySlugModel = $genre;
+            $this->filter->fromParams(['genreSlug' => $genre->id]);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $categorySlug
+     *
+     * @return bool
+     */
+    private function appliedSlugFromType(string $categorySlug): bool
+    {
+        $type = Type::slug($categorySlug)->first();
+        if ($type) {
+            $this->categorySlugModel = $type;
+            $this->filter->fromParams(['typeSlug' => $type->id]);
+
+            return true;
+        }
+
+        return false;
     }
 }

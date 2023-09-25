@@ -6,9 +6,17 @@ fields:
     label:
         label: Название
         type: text
-    icon:
-        label: Иконка
-        type: fileupload
-        mode: image
-        imageHeight: 260
-        imageWidth: 260
+        disabled: true
+#    icon:
+#        label: Иконка
+#        type: fileupload
+#        mode: image
+#        imageHeight: 260
+#        imageWidth: 260
+    slug:
+        label: Страница
+    h1:
+        label: Заголовок H1
+    desc:
+        label: Описание
+        type: richeditor

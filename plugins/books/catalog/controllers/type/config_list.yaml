@@ -43,7 +43,7 @@ showCheckboxes: true
 # Toolbar widget configuration
 toolbar:
     # Partial for toolbar buttons
-    buttons: list_toolbar
+    # buttons: list_toolbar
 
     # Search widget configuration
     search:
