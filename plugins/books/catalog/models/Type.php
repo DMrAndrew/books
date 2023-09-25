@@ -4,6 +4,7 @@ namespace Books\Catalog\Models;
 
 use Books\Book\Classes\Enums\EditionsEnums;
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
 
@@ -128,5 +129,16 @@ class Type extends Model
         $this->save();
 
         return $this;
+    }
+
+    /**
+     * @param Builder $builder
+     * @param string $slug
+     *
+     * @return Builder
+     */
+    public function scopeSlug(Builder $builder, string $slug): Builder
+    {
+        return $builder->where('slug', $slug);
     }
 }
