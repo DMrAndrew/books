@@ -10,5 +10,11 @@
     - 'Пометить 18+ жанры'
     - set_adult_genres.php
 1.0.4:
-    - 'Адрес для страницы жанра'
+    - 'SEO поля для жанров'
     - update_listing_add_seo_fields.php
+1.0.5:
+    - 'H1 для жанров'
+    - update_listing_add_seo_h1.php
+1.0.6:
+    - 'SEO поля для Типов изданий в каталоге'
+    - update_listing_type_seo_fields.php

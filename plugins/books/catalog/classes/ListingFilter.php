@@ -7,6 +7,7 @@ use Books\Book\Classes\Enums\SortEnum;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Models\Tag;
 use Books\Catalog\Models\Genre;
+use Books\Catalog\Models\Type;
 use Cache;
 use Illuminate\Support\Collection;
 use Model;
@@ -61,6 +62,8 @@ class ListingFilter
     {
         if (isset($params['genreSlug'])) {
             $this->include($this->fromPost(Genre::class, $params['genreSlug'] ?? null));
+        } else if (isset($params['typeSlug'])) {
+            $this->type = EditionsEnums::tryFrom($params['typeSlug'] ?? '');
         }
     }
 

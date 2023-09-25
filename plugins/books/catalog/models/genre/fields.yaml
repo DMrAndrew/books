@@ -5,12 +5,16 @@
 fields:
     name:
         label: Название
+        readOnly: true
     slug:
         label: Страница
         preset: name
     desc:
         label: Описание
         type: richeditor
+    h1:
+        label: Заголовок H1
+        type: text
     active:
         label: Активный
         type: checkbox
