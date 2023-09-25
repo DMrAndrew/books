@@ -106,6 +106,8 @@ class ChapterService implements iChapterService
         $this->chapter->save();
         Event::fire('books.chapter.updated', [$this->chapter]);
 
+        $this->notifyAboutBookLengthUpdate();
+
         return $this->chapter;
     }
 
@@ -274,6 +276,8 @@ class ChapterService implements iChapterService
         $this->chapter->pagination()->get()->each->setNeighbours();
         $this->chapter->lengthRecount();
         Event::fire('books.chapter.paginated');
+
+        $this->notifyAboutBookLengthUpdate();
     }
 
     public function chunkContent(): Collection

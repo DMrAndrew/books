@@ -7,7 +7,6 @@ use Books\Collections\Models\Lib;
 use Books\Notifications\Classes\NotificationTypeEnum;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Log;
 
 class BookUpdated extends BaseEvent
 {
@@ -37,12 +36,15 @@ class BookUpdated extends BaseEvent
     public static function makeParamsFromEvent(array $args, $eventName = null): array
     {
         $book = Arr::get($args, 0);
+        $author = $book->authors()->owner(true)->first();
+
         $symbolsCount = (int) Arr::get($args, 1);
 
         return array_merge(
             static::defaultParams(),
             [
                 'book' => Arr::get($args, 0),
+                'author' => $author,
                 'symbols_count' => $symbolsCount,
                 'recipients' => static::getRecipients($args),
             ],
