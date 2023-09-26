@@ -3,22 +3,21 @@
 namespace Books\Book\Classes;
 
 use DiDom\Document;
-use DiDom\Element;
 use Html;
 use Illuminate\Support\Collection;
 use Str;
 
 class BookUtilities
 {
-
     /**
      * Функция удаляет из HTML все упоминания домена, если он не соответствует заданному.
      * Учитывает http и https.
      */
     public static function removeDomainFromHtml($html, $domain)
     {
-        $html = preg_replace('/<a[^>]+href="https?:\/\/(?!' . $domain . ')[^"]+"[^>]*>(.*?)<\/a>/i', '$1', $html);
-        $html = preg_replace('/https?:\/\/(?!' . $domain . ')[^"]+/i', '', $html);
+        $html = preg_replace('/<a[^>]+href="https?:\/\/(?!'.$domain.')[^"]+"[^>]*>(.*?)<\/a>/i', '$1', $html);
+        $html = preg_replace('/https?:\/\/(?!'.$domain.')[^"]+/i', '', $html);
+
         return $html;
     }
 
@@ -29,9 +28,9 @@ class BookUtilities
     {
         $html = preg_replace('/<br[^>]*>/i', '</p><p>', $html);
         $html = preg_replace('/<\/p><p>/i', '</p><p>', $html);
+
         return $html;
     }
-
 
     /**
      * Функция преобразует мнемоники в текстовое представление.
@@ -44,21 +43,23 @@ class BookUtilities
         $mnemonics = str_replace('&gt;', '>', $mnemonics);
         $mnemonics = str_replace('&amp;', '&', $mnemonics);
         $mnemonics = str_replace('&nbsp;', ' ', $mnemonics);
+
         return $mnemonics;
     }
 
     public static function convertMnemonicsToTextV1($mnemonics)
     {
-        $replace_pairs = array(
+        $replace_pairs = [
             '&#39;' => "'",
             '&quot;' => '"',
             '&lt;' => '<',
             '&gt;' => '>',
             '&amp;' => '&',
-            '&nbsp;' => ''
-        );
+            '&nbsp;' => '',
+        ];
 
         $mnemonics = strtr($mnemonics, $replace_pairs);
+
         return $mnemonics;
     }
 
@@ -93,6 +94,7 @@ class BookUtilities
         }
 
         $html = $dom->saveHTML();
+
         return $html;
     }
 
@@ -102,9 +104,9 @@ class BookUtilities
     public static function fixUnclosedTags($html)
     {
         $html = preg_replace('/<([a-z]+)(?: [^>]+)?>((?:(?!<\/\1>).)*)<\/\1>/i', '<$1>$2</$1>', $html);
+
         return $html;
     }
-
 
     public static function test()
     {
@@ -136,14 +138,15 @@ class BookUtilities
     public static function prepareXmlv2($xml)
     {
         $xml = str_replace('&', '&amp;', $xml); //символы могут быть заранее экранированы
-        $xml = str_replace(array('&amp;amp;', '&amp;quot;', '&amp;lt;', '&amp;gt;',
+        $xml = str_replace(['&amp;amp;', '&amp;quot;', '&amp;lt;', '&amp;gt;',
             '&amp;#39;', '&amp;#34;', '&amp;#60;', '&amp;#62;',
-            '&amp;#160;', '&amp;nbsp;', '"', '\'', '<', '>'
-        ),
-            array('&amp;', '&quot;', '&lt;', '&gt;',
+            '&amp;#160;', '&amp;nbsp;', '"', '\'', '<', '>',
+        ],
+            ['&amp;', '&quot;', '&lt;', '&gt;',
                 '&#39;', '&#34;', '&#60;', '&#62;',
-                '&#160;', '&nbsp;', '&#34;', '&#39;', '&lt;', '&gt;'
-            ), $xml);
+                '&#160;', '&nbsp;', '&#34;', '&#39;', '&lt;', '&gt;',
+            ], $xml);
+
         return $xml;
     }
 
@@ -152,6 +155,7 @@ class BookUtilities
         // Заменяем все найденные неправильно закрытые или открытые теги на пустую строку
         $xml = preg_replace('/<[^>]*$/', '', $xml); // Удаляем неправильно открытые теги в конце строки
         $xml = preg_replace('/^[^<]*>/', '', $xml); // Удаляем неправильно закрытые теги в начале строки
+
         return $xml;
     }
 
@@ -171,15 +175,15 @@ class BookUtilities
         $dom = self::stringToDiDom($content);
 
         if ($mode === SaveHtmlMode::STANDARD) {
-            return collect($dom->getDocument()->childNodes)->map(fn($node) => [
+            return collect($dom->getDocument()->childNodes)->map(fn ($node) => [
                 'html' => $dom->getDocument()->saveHTML($node),
-                'length' => self::countContentLength($node->textContent)
+                'length' => self::countContentLength($node->textContent),
             ]);
         }
         if ($mode === SaveHtmlMode::WITH_WRAP) {
-            return collect($dom->toElement()->children())->map(fn($node) => [
+            return collect($dom->toElement()->children())->map(fn ($node) => [
                 'html' => $node->html(),
-                'length' => self::countContentLength($node->text())
+                'length' => self::countContentLength($node->text()),
             ]);
         }
     }
@@ -200,6 +204,7 @@ class BookUtilities
         $content = $content ?: '<p></p>';
         $content = trim(Str::squish($content));
         $diDom->loadHtml($content, LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
+
         return $diDom;
     }
 
@@ -208,6 +213,7 @@ class BookUtilities
         foreach ($items as $item) {
             $str = str_replace($item, '', $str);
         }
+
         return $str;
     }
 
@@ -216,7 +222,7 @@ class BookUtilities
      */
     public static function eolAfterCloseTag($str): array|string|null
     {
-        return preg_replace('/(<\/[^>]+>)/', '$1' . PHP_EOL, $str);
+        return preg_replace('/(<\/[^>]+>)/', '$1'.PHP_EOL, $str);
     }
 
     public static function prepareForDiff(string $string): array|string|null
@@ -225,8 +231,6 @@ class BookUtilities
 
         return self::str_remove(self::eolAfterCloseTag($string), $blacklist);
     }
-
-
 }
 
 enum SaveHtmlMode: int

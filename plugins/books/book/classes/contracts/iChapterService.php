@@ -65,7 +65,7 @@ interface iChapterService
     /**
      * @return void
      */
-    public function paginate(): void;
+    public function paginate();
 
     /**
      * @return Collection
