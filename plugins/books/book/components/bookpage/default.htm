@@ -64,7 +64,7 @@
 
                                     {% if buyBtn %}
                                         {% if not book.ebook.isBought %}
-                                        <a {{user ? 'data-request="Order::onCreateOrder"' : 'onclick="loginForm()"'}}
+                                        <a {{user ? 'data-request="Order::onCreateOrder"' : 'onclick="loginPopup()"'}}
                                            class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
                                             {% if book.ebook.discount_exists %}
                                             <span>

@@ -111,16 +111,12 @@ class ChapterService implements iChapterService
         return $this->chapter;
     }
 
-    /**
-     * @return void
-     */
     protected function notifyAboutBookLengthUpdate(): void
     {
         $this->chapter->load('edition', 'edition.book');
 
         if ($this->chapter->edition->status === BookStatus::COMPLETE
-            || $this->chapter->edition->status === BookStatus::WORKING)
-        {
+            || $this->chapter->edition->status === BookStatus::WORKING) {
             $lengthDeltaUpdates = $this->chapter->edition->revision_history()
                 ->where('field', '=', 'length')
                 ->latest('id')
@@ -131,17 +127,18 @@ class ChapterService implements iChapterService
             $lastLength = $lengthDeltaUpdates->first()?->new_value;
             $prevLength = $lengthDeltaUpdates->last()?->new_value;
 
-            $lengthDelta = (int)$lastLength - (int)$prevLength;
+            $lengthDelta = (int) $lastLength - (int) $prevLength;
 
             $lastLengthUpdatedAt = $lengthDeltaUpdates->first()?->created_at;
             $lastLengthUpdateNotifiedAt = $this->chapter->edition->lastLengthUpdateNotificationAt;
 
             if ($lastLengthUpdateNotifiedAt === null
-                || $lastLengthUpdatedAt->greaterThan($lastLengthUpdateNotifiedAt))
-            if ($lengthDelta >= BookUpdated::DELTA_LENGTH_TRIGGER) {
-                Event::fire('books.book::book.updated', [$this->chapter->edition->book, $lengthDelta]);
+                || $lastLengthUpdatedAt->greaterThan($lastLengthUpdateNotifiedAt)) {
+                if ($lengthDelta >= BookUpdated::DELTA_LENGTH_TRIGGER) {
+                    Event::fire('books.book::book.updated', [$this->chapter->edition->book, $lengthDelta]);
 
-                $this->chapter->edition->markLastLengthUpdateNotificationAt();
+                    $this->chapter->edition->markLastLengthUpdateNotificationAt();
+                }
             }
         }
     }
@@ -253,7 +250,7 @@ class ChapterService implements iChapterService
         return null;
     }
 
-    public function paginate(): void
+    public function paginate()
     {
         $chunks = $this->chunkContent();
         $pages = $chunks->map(function ($chunk, $index) {
@@ -265,6 +262,7 @@ class ChapterService implements iChapterService
                 ]
             );
         });
+
         $pagination = $pages->map(function ($paginator) {
             $page = $this->chapter->pagination()->firstOrCreate(['page' => $paginator->page], ['length' => $paginator->length]);
             $page->fill($paginator->toArray());
@@ -282,7 +280,7 @@ class ChapterService implements iChapterService
 
     public function chunkContent(): Collection
     {
-        return BookUtilities::parseStringToParagraphCollection($this->chapter->content->body)->chunkWhile(function ($value, $key, $chunk) {
+        return BookUtilities::parseStringToParagraphCollection($this->chapter->content->body, SaveHtmlMode::WITH_WRAP)->chunkWhile(function ($value, $key, $chunk) {
             return $chunk->sum('length') + $value['length'] <= Pagination::RECOMMEND_MAX_LENGTH;
         });
     }

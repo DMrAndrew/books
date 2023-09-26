@@ -15,7 +15,7 @@ meta_title = "Конец ознакомительной части"
                     книги, выполнив единоразовый платеж.
                 </div>
                 <div class="stop-free__buttons">
-                    <a  class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer" {{user ? 'data-request="Order::onCreateOrder"' : 'onclick="loginForm()"'}}>
+                    <a  class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer" {{user ? 'data-request="Order::onCreateOrder"' : 'onclick="loginPopup()"'}}>
               <span>
                   {% if book.ebook.discount_exists %}
                                         <span >
