@@ -15,6 +15,7 @@ use October\Rain\Database\Traits\Validation;
  *
  * @method BelongsTo book
  * @method BelongsTo profile
+ *
  * @property  Profile profile
  */
 class Author extends Model
@@ -62,7 +63,7 @@ class Author extends Model
 
     public function scopeOwner(Builder $builder, $value = true): Builder
     {
-        return $builder->when(is_bool($value), fn($b) => $b->where('is_owner', '=', $value));
+        return $builder->when(is_bool($value), fn ($b) => $b->where('is_owner', '=', $value), fn ($b) => $b->where('is_owner', '=', true));
     }
 
     public function scopeCoAuthors(Builder $builder): Builder
