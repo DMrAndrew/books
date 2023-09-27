@@ -316,8 +316,12 @@ class Listing extends ComponentBase
             };
 
             $this->page->h1 = $slugModel->h1;
-            $this->page->meta_title = "{$name} – скачать новинки в fb2, epub, txt, pdf или читать онлайн бесплатно полные";
-            $this->page->meta_description = "Электронная библиотека “Время книг” предлагает скачать книги жанра «{$name}» в fb2, epub, txt, pdf или читать онлайн бесплатно";
+
+            $this->page->meta_title = $slugModel->meta_title
+                ?? "{$name} – скачать новинки в fb2, epub, txt, pdf или читать онлайн бесплатно полные";
+
+            $this->page->meta_description = $slugModel->meta_desc
+                ?? "Электронная библиотека “Время книг” предлагает скачать книги жанра «{$name}» в fb2, epub, txt, pdf или читать онлайн бесплатно";
         }
 
         $this->page->meta_canonical = $this->getCanonicalUrl();

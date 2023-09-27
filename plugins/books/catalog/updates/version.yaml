@@ -18,3 +18,6 @@
 1.0.6:
     - 'SEO поля для Типов изданий в каталоге'
     - update_listing_type_seo_fields.php
+1.0.7:
+    - 'Title, Description поля для Типов и Жанров'
+    - update_genres_and_types_add_seo_fields.php
