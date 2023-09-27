@@ -16,6 +16,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use RainLab\User\Facades\Auth;
 use Redirect;
+use Request;
 
 /**
  * Listing Component
@@ -315,9 +316,15 @@ class Listing extends ComponentBase
             };
 
             $this->page->h1 = $slugModel->h1;
-            $this->page->meta_title = "{$name} – скачать новинки в fb2, epub, txt, pdf или читать онлайн бесплатно полные";
-            $this->page->meta_description = "Электронная библиотека “Время книг” предлагает скачать книги жанра «{$name}» в fb2, epub, txt, pdf или читать онлайн бесплатно";
+
+            $this->page->meta_title = $slugModel->meta_title
+                ?? "{$name} – скачать новинки в fb2, epub, txt, pdf или читать онлайн бесплатно полные";
+
+            $this->page->meta_description = $slugModel->meta_desc
+                ?? "Электронная библиотека “Время книг” предлагает скачать книги жанра «{$name}» в fb2, epub, txt, pdf или читать онлайн бесплатно";
         }
+
+        $this->page->meta_canonical = $this->getCanonicalUrl();
     }
 
     /**
@@ -333,9 +340,9 @@ class Listing extends ComponentBase
             return null;
         }
 
-        $categorySlug = (string)$genre->slug;
+        $this->categorySlugModel = $genre;
 
-        if ($categorySlug) {
+        if ($genre->slug) {
             $redirectToSlug = '/listing/' . $genre->slug;
 
             $getParams = get();
@@ -364,9 +371,9 @@ class Listing extends ComponentBase
             return null;
         }
 
-        $categorySlug = (string)$type->slug;
+        $this->categorySlugModel = $type;
 
-        if ($categorySlug) {
+        if ($type->slug) {
             $redirectToSlug = '/listing/' . $type->slug;
 
             $getParams = get();
@@ -391,7 +398,6 @@ class Listing extends ComponentBase
     {
         $genre = Genre::slug($categorySlug)->first();
         if ($genre) {
-            $this->categorySlugModel = $genre;
             $this->filter->fromParams(['genreSlug' => $genre->id]);
 
             return true;
@@ -409,12 +415,29 @@ class Listing extends ComponentBase
     {
         $type = Type::slug($categorySlug)->first();
         if ($type) {
-            $this->categorySlugModel = $type;
             $this->filter->fromParams(['typeSlug' => $type->id]);
 
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @return string
+     */
+    private function getCanonicalUrl(): string
+    {
+        $canonicalParams = ['genre', 'type'];
+
+        $currentPageUrl = Request::url();
+        $getParams = get();
+
+        $filterCanonicalParams = array_filter($getParams, function($param) use ($canonicalParams) {
+            return in_array($param, $canonicalParams);
+        }, ARRAY_FILTER_USE_KEY );
+
+        return $currentPageUrl
+            . (!empty($filterCanonicalParams) ? '?' . http_build_query($filterCanonicalParams) : '');
     }
 }

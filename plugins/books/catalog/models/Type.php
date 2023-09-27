@@ -37,7 +37,9 @@ class Type extends Model
         'sort_order',
         'slug',
         'desc',
-        'h1'
+        'h1',
+        'meta_title',
+        'meta_desc',
     ];
 
     /**
@@ -49,6 +51,8 @@ class Type extends Model
         'slug' => 'string|nullable|regex:/^[a-z]+(?:-[a-z]+)*$/',
         'desc' => 'string|nullable',
         'h1' => 'string|nullable',
+        'meta_title' => 'string|nullable',
+        'meta_desc' => 'string|nullable',
     ];
 
     public $customMessages = [

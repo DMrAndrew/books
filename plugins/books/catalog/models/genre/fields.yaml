@@ -15,6 +15,12 @@ fields:
     h1:
         label: Заголовок H1
         type: text
+    meta_title:
+        label: Meta title
+        type: text
+    meta_desc:
+        label: Meta Description
+        type: text
     active:
         label: Активный
         type: checkbox
