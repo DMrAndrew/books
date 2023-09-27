@@ -20,7 +20,7 @@ class TextCleanerService
 
     const DEFAULT_ALLOW_TAGS = [
         // js editor tags
-        'h1', 'h2', 'h3', 'p', 'span', 'i', 's', 'u', 'ol', 'ul', 'a', 'img'
+        'h1', 'h2', 'h3', 'p', 'span', 'strong', 'i', 's', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote'
     ];
 
     const DEFAULT_ALLOW_ATTRIBUTES = [
