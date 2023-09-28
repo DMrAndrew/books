@@ -7,7 +7,6 @@ fields:
         label: Название
     slug:
         label: Страница
-        preset: name
     desc:
         label: Описание
         type: richeditor
