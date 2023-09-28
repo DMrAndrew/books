@@ -8,7 +8,7 @@ use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Traits\NestedTree;
-use October\Rain\Database\Traits\Sluggable;
+use October\Rain\Database\Traits\Nullable;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Database\TreeCollection;
 
@@ -23,17 +23,12 @@ class Genre extends Model
 {
     use Validation;
     use NestedTree;
-    use Sluggable;
+    use Nullable;
 
     /**
      * @var string table associated with the model
      */
     public $table = 'books_catalog_genres';
-
-    /**
-     * @var array guarded attributes aren't mass assignable
-     */
-    protected $guarded = ['*'];
 
     /**
      * @var array fillable attributes are mass assignable
@@ -56,20 +51,15 @@ class Genre extends Model
      */
     public $rules = [
         'name' => 'required|string|min:3',
-        'slug' => 'string|nullable|regex:/^[a-z]+(?:-[a-z]+)*$/',
-        'desc' => 'string|nullable',
-        'h1' => 'string|nullable',
-        'meta_title' => 'string|nullable',
-        'meta_desc' => 'string|nullable',
+        'slug' => 'sometimes|string|nullable|regex:/^[a-z]+(?:-[a-z]+)*$/',
+        'desc' => 'sometimes|string|nullable',
+        'h1' => 'sometimes|string|nullable',
+        'meta_title' => 'sometimes|string|nullable',
+        'meta_desc' => 'sometimes|string|nullable',
         'active' => 'boolean',
         'favorite' => 'boolean',
         'parent_id' => 'nullable|exists:books_catalog_genres,id',
     ];
-
-    /**
-     * @var array Generate slugs for these attributes.
-     */
-    protected $slugs = ['slug' => 'name'];
 
     public $customMessages = [
         'slug.regex' => 'Неправильный формат строки для поля `Страница`. Используйте латинские символы (abcdefghijklmnopqrstuvwxyz) и разделитель (`-`)',
@@ -79,6 +69,14 @@ class Genre extends Model
      * @var array Attributes to be cast to native types
      */
     protected $casts = [];
+
+    public $nullable = [
+        'slug',
+        'desc',
+        'h1',
+        'meta_title',
+        'meta_desc',
+    ];
 
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
