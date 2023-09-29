@@ -200,5 +200,11 @@ class BookPage extends ComponentBase
     private function setSEO(): void
     {
         $this->page->meta_canonical = Request::url();
+
+        if ($this->book->meta_title)
+        $this->page->meta_title = $this->book->meta_title;
+
+        if ($this->book->meta_desc)
+        $this->page->meta_description = $this->book->meta_desc;
     }
 }
