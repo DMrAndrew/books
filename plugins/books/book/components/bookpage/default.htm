@@ -2,7 +2,7 @@
 <div itemscope itemtype="http://schema.org/Book">
 <div class="ui-container-fluid">
     <div class="book-card-full _indent">
-        <div itemprop="thumbnail" itemscope itemtype="http://schema.org/ImageObject">
+        <div itemprop="image" itemscope itemtype="http://schema.org/ImageObject">
             <img itemprop="contentUrl" class="book-card-full__image" src="{{book.cover.getThumb(334,488)}}" alt="Обложка для книги {{book.title}}" style="object-fit: fill" >
         </div>
         <div class="book-card-full__description">
@@ -29,8 +29,8 @@
                 <div class="ui-tabs">
                     <div class="ui-tabs-header">
                         <div class="ui-tabs-line"></div>
-                        <div class="ui-tabs-header-wrapper" data-tabs="1" itemprop="bookFormat" itemscope itemtype="http://schema.org/BookFormat">
-                            <div class="ui-tabs-link active" data-tab="1" itemprop="ebook">Электронная</div>
+                        <div class="ui-tabs-header-wrapper" data-tabs="1" itemprop="bookFormat" itemscope itemtype="http://schema.org/BookFormatType">
+                            <div class="ui-tabs-link active" data-tab="1">Электронная</div>
                             <!--                            <div class="ui-tabs-link" data-tab="2" itemprop="AudiobookFormat">Аудиокнига</div>-->
                             <!--                            <div class="ui-tabs-link" data-tab="3">Бумажная</div>-->
                             <!--                            <div class="ui-tabs-link" data-tab="4">Бумажная</div>-->
@@ -49,7 +49,7 @@
                                     <span>{{carbon(book.ebook.sales_at).format('d.m.y')}}</span>
                                     {% endif %}
                                     <span class="book-card-full-type__description-dot"></span>
-                                    <span itemprop="size">{{book.ebook.length}} зн.</span>
+                                    <span>{{book.ebook.length}} зн.</span>
                                     {% if history.items.first %}
                                     <span class="book-card-full-type__description-dot"></span>
                                     <a class="ui-link _violet cursor-pointer" data-modal="open-history">История</a>
@@ -156,7 +156,7 @@
                     <div class="ui-tabs-body _field" data-tabs="2">
                         <div class="ui-tabs-content " data-tab-content="1">
                             <div class="book-card-full-description__about typographical-block" >
-                                <div itemprop="about">
+                                <div itemprop="description">
                                     {% if book.description %}
                                         {{ book.description|raw }}
                                     {% else %}
