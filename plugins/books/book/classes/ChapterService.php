@@ -106,8 +106,6 @@ class ChapterService implements iChapterService
         $this->chapter->save();
         Event::fire('books.chapter.updated', [$this->chapter]);
 
-        $this->notifyAboutBookLengthUpdate();
-
         return $this->chapter;
     }
 

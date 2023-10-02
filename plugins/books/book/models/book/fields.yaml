@@ -12,6 +12,19 @@ fields:
     annotation:
         label: Аннотация
         searchable: true
+    h1:
+        label: Заголовок H1
+        searchable: true
+    meta_title:
+        label: Meta title
+        searchable: true
+    meta_desc:
+        label: Meta description
+        searchable: true
+    description:
+        label: Описание
+        type: richeditor
+        size: tiny
     recommend:
         label: В рекомендованных
         type: checkbox

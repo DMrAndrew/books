@@ -3,6 +3,13 @@
 <meta name="description" property="og:description"
       content="{{ str_limit(this.page.meta_description,200) ?: placeholder('pageDescription') }}">
 <meta name="title" property="og:title" content="{{ this.page.meta_title ?: placeholder('pageTitle') }}">
+{% if this.page.og_type %}
+<meta property="og:type" content="{{this.page.og_type}}"/>
+{% endif %}
+{% if this.page.meta_canonical %}
+<meta property="og:url" content="{{ this.page.meta_canonical }}"/>
+<link rel="canonical" property="og:url" href="{{ this.page.meta_canonical }}"/>
+{% endif %}
 <meta name="preview" property="og:image" content="{{ this.page.meta_preview }}">
 <meta name="author" content="Mobecan">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">

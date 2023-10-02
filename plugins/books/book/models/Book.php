@@ -99,6 +99,10 @@ class Book extends Model
         'age_restriction',
         'cycle_id',
         'recommend',
+        'h1',
+        'meta_title',
+        'meta_desc',
+        'description',
     ];
 
     /**
@@ -109,6 +113,10 @@ class Book extends Model
         'annotation' => 'nullable|string',
         'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:3072|dimensions:min_width=104,min_height=150',
         'cycle_id' => 'nullable|integer|exists:books_book_cycles,id',
+        'h1' => 'nullable|string|max:255',
+        'meta_title' => 'nullable|string|max:255',
+        'meta_desc' => 'nullable|string|max:255',
+        'description' => 'nullable|string',
     ];
 
     /**
