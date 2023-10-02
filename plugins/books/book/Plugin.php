@@ -320,7 +320,6 @@ class Plugin extends PluginBase
             DeferredBinding::cleanUp(1);
         })->dailyAt('03:00');
 
-
         $schedule->command('model:prune', [
             '--model' => [Models\Promocode::class, Lib::class],
         ])->dailyAt('03:00');
