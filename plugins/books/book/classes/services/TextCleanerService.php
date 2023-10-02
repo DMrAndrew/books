@@ -20,7 +20,7 @@ class TextCleanerService
 
     const DEFAULT_ALLOW_TAGS = [
         // js editor tags
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'p', 'span', 'strong', 'i', 's', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote'
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'p', 'span', 'strong', 'b',  'i', 's', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote'
     ];
 
     const DEFAULT_ALLOW_ATTRIBUTES = [
@@ -57,6 +57,11 @@ class TextCleanerService
             return null;
         }
 
+        /**
+         * Add safe container for paginated content
+         */
+        $inputContent = "<p>{$inputContent}</p>";
+
         $inputContent = Str::squish(trim($inputContent));
         if (mb_strlen($inputContent) == 0) {
             return $inputContent;
@@ -86,6 +91,11 @@ class TextCleanerService
              * Clean classes
              */
             self::cleanClases($doc, array_merge($allowClasses, ['#text']));
+
+            /**
+             * Replace style to tag
+             */
+            //self::replaceStylesWithTags($doc, array_merge($allowInlineStyles, ['#text']));
 
             /**
              * Clean styles
@@ -130,7 +140,13 @@ class TextCleanerService
         /**
          * Remove empty paragraphs
          */
-        return self::cleanEmptyParagraphs($outputHtmlWithCleanedSpaces);
+        $output = self::cleanEmptyParagraphs($outputHtmlWithCleanedSpaces);
+
+        /**
+         * Remove temporary save container
+         */
+        $r = preg_replace('/^<p>/', '', $output, 1);
+        return preg_replace('/<\/p>$/', '', $r, 1);
     }
 
     /**
@@ -201,6 +217,74 @@ class TextCleanerService
 
             if($node->hasChildNodes()) {
                 self::cleanClases($node, $allowClasses);
+            }
+        }
+    }
+
+    /**
+     * @param DOMNode $domNode
+     * @param array $allowInlineStyles
+     *
+     * @return void
+     */
+    public static function replaceStylesWithTags(DOMNode &$domNode, array $allowInlineStyles): void
+    {
+        /** @var DOMNode $node */
+        foreach ($domNode->childNodes as $nodeKey => $node)
+        {
+            $attributes = $node->attributes;
+            if ($attributes) {
+                foreach ($attributes as $attr) {
+
+                    $attributeName = $attr->nodeName;
+                    $attributeValue = $attr->nodeValue;
+
+                    if ($attributeName === "style") {
+
+                        $filteredStyles = [];
+
+                        $usedStyles = explode(';', $attributeValue);
+                        foreach ($usedStyles as $usedStyle) {
+                            if (mb_strlen($usedStyle) > 0 && str_contains($usedStyle, ':')) {
+
+                                /**
+                                 * Whitelist styles
+                                 */
+                                @[$styleName, $styleValue] = explode(':', $usedStyle);
+                                if ($styleName == 'font-weight'
+                                    &&
+                                    ($styleValue > 400 || in_array($styleValue, ['bold', 'bolder']))
+                                )
+                                {
+                                    dd($styleName, $styleValue);
+                                }
+//                                if (in_array($styleName, $allowInlineStyles)) {
+//                                    $filteredStyles[$styleName] = $styleValue;
+//                                }
+                            }
+                        }
+
+                        $combineStyles = [];
+                        foreach ($filteredStyles as $filteredStyle => $filteredValue) {
+                            $combineStyles[] = $filteredStyle . ':' . $filteredValue;
+                        }
+
+                        $filteredInlineStyles = implode(';', $combineStyles);
+
+                        if ($filteredInlineStyles !== $attributeValue) {
+                            $domNode->childNodes[$nodeKey]->setAttribute('style', $filteredInlineStyles);
+
+                            /**
+                             * Вызываем еще раз, так как изменение аттрибута останавливает обход
+                             */
+                            self::replaceStylesWithTags($domNode, $allowInlineStyles);
+                        }
+                    }
+                }
+            }
+
+            if($node->hasChildNodes()) {
+                self::replaceStylesWithTags($node, $allowInlineStyles);
             }
         }
     }
