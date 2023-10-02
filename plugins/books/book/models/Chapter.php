@@ -179,7 +179,7 @@ class Chapter extends Model
 
     public function getTitleAttribute()
     {
-        return $this->attributes['title'] ?? ($this->getSortOrderColumn() ? sprintf('№%s', $this->{$this->getSortOrderColumn()}) : '');
+        return $this->attributes['title'] ?? ($this->{$this->getSortOrderColumn()} ? sprintf('№%s', $this->{$this->getSortOrderColumn()}) : '');
     }
 
     public function isFree(): bool

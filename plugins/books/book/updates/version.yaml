@@ -98,3 +98,6 @@
 1.0.29:
     - 'Simple tree и индексы для трекеров'
     - add_trackers_simple_tree_and_indexes.php
+1.0.30:
+    - 'SEO поля'
+    - update_books_add_seo_fields.php

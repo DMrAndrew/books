@@ -5,6 +5,7 @@ namespace Books\Catalog\Models;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Model;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Traits\Nullable;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
 
@@ -18,16 +19,12 @@ class Type extends Model
 {
     use Validation;
     use Sortable;
+    use Nullable;
 
     /**
      * @var string table associated with the model
      */
     public $table = 'books_catalog_types';
-
-    /**
-     * @var array guarded attributes aren't mass assignable
-     */
-    protected $guarded = ['*'];
 
     /**
      * @var array fillable attributes are mass assignable
@@ -37,7 +34,9 @@ class Type extends Model
         'sort_order',
         'slug',
         'desc',
-        'h1'
+        'h1',
+        'meta_title',
+        'meta_desc',
     ];
 
     /**
@@ -46,9 +45,11 @@ class Type extends Model
     public $rules = [
         'type' => 'required|integer',
         'sort_order' => 'required|integer',
-        'slug' => 'string|nullable|regex:/^[a-z]+(?:-[a-z]+)*$/',
-        'desc' => 'string|nullable',
-        'h1' => 'string|nullable',
+        'slug' => 'sometimes|string|nullable|regex:/^[a-z]+(?:-[a-z]+)*$/',
+        'desc' => 'sometimes|string|nullable',
+        'h1' => 'sometimes|string|nullable',
+        'meta_title' => 'sometimes|string|nullable',
+        'meta_desc' => 'sometimes|string|nullable',
     ];
 
     public $customMessages = [
@@ -60,6 +61,14 @@ class Type extends Model
      */
     protected $casts = [
         'type' => EditionsEnums::class,
+    ];
+
+    public $nullable = [
+        'slug',
+        'desc',
+        'h1',
+        'meta_title',
+        'meta_desc',
     ];
 
     /**

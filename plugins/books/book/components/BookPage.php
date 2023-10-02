@@ -13,6 +13,7 @@ use Books\Reposts\Components\Reposter;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Request;
 
 /**
  * BookPage Component
@@ -96,6 +97,8 @@ class BookPage extends ComponentBase
         $this->addMeta();
 
         $this->registerBreadcrumbs();
+
+        $this->setSEO();
     }
 
     public function onRender()
@@ -189,5 +192,20 @@ class BookPage extends ComponentBase
             /** Название книги */
             $trail->push($this->book->title);
         });
+    }
+
+    /**
+     * @return void
+     */
+    private function setSEO(): void
+    {
+        $this->page->og_type = 'book';
+        $this->page->meta_canonical = Request::url();
+
+        if ($this->book->meta_title)
+        $this->page->meta_title = $this->book->meta_title;
+
+        if ($this->book->meta_desc)
+        $this->page->meta_description = $this->book->meta_desc;
     }
 }

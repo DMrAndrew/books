@@ -17,6 +17,12 @@ fields:
         label: Страница
     h1:
         label: Заголовок H1
+    meta_title:
+        label: Meta title
+        type: text
+    meta_desc:
+        label: Meta Description
+        type: text
     desc:
         label: Описание
         type: richeditor
