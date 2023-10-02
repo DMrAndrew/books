@@ -57,6 +57,11 @@ class TextCleanerService
             return null;
         }
 
+        /**
+         * Add safe container for paginated content
+         */
+        $inputContent = "<p>{$inputContent}</p>";
+
         $inputContent = Str::squish(trim($inputContent));
         if (mb_strlen($inputContent) == 0) {
             return $inputContent;
@@ -130,7 +135,13 @@ class TextCleanerService
         /**
          * Remove empty paragraphs
          */
-        return self::cleanEmptyParagraphs($outputHtmlWithCleanedSpaces);
+        $output = self::cleanEmptyParagraphs($outputHtmlWithCleanedSpaces);
+
+        /**
+         * Remove temporary save container
+         */
+        $r = preg_replace('/^<p>/', '', $output, 1);
+        return preg_replace('/<\/p>$/', '', $r, 1);
     }
 
     /**
