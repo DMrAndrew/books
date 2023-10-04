@@ -20,7 +20,7 @@ class TextCleanerService
 
     const DEFAULT_ALLOW_TAGS = [
         // js editor tags
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'p', 'span', 'strong', 'i', 's', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote'
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'p', 'span', 'strong', 'b',  'i', 's', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote'
     ];
 
     const DEFAULT_ALLOW_ATTRIBUTES = [
@@ -56,6 +56,11 @@ class TextCleanerService
         if ($inputContent === null) {
             return null;
         }
+
+        /**
+         * Add safe container for paginated content
+         */
+        $inputContent = "<p>{$inputContent}</p>";
 
         $inputContent = Str::squish(trim($inputContent));
         if (mb_strlen($inputContent) == 0) {
@@ -130,7 +135,13 @@ class TextCleanerService
         /**
          * Remove empty paragraphs
          */
-        return self::cleanEmptyParagraphs($outputHtmlWithCleanedSpaces);
+        $output = self::cleanEmptyParagraphs($outputHtmlWithCleanedSpaces);
+
+        /**
+         * Remove temporary save container
+         */
+        $r = preg_replace('/^<p>/', '', $output, 1);
+        return preg_replace('/<\/p>$/', '', $r, 1);
     }
 
     /**

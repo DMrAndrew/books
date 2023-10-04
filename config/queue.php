@@ -20,7 +20,7 @@ return [
 
 
     'batching' => [
-        'table' => 'books.job_batches'
+        'table' => env('DB_DATABASE') . '.job_batches'
     ],
     /*
     |--------------------------------------------------------------------------
