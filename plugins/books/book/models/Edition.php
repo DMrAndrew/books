@@ -27,6 +27,8 @@ use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Models\User;
+use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
+use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
 use System\Models\Revision;
 
@@ -58,6 +60,7 @@ class Edition extends Model implements ProductInterface
     use SoftDelete;
     use Revisionable;
     use Purgeable;
+    use HasRelationships;
 
     const LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN = 'last_length_update_notification_at';
 
@@ -70,6 +73,10 @@ class Edition extends Model implements ProductInterface
      * @var array guarded attributes aren't mass assignable
      */
     protected $guarded = ['*'];
+
+    protected $appends = [
+        'read_percent',
+    ];
 
     protected $revisionable = ['length', 'status', 'price'];
 
@@ -150,6 +157,14 @@ class Edition extends Model implements ProductInterface
         ],
     ];
 
+    public function pagination(): HasManyDeep
+    {
+        return $this->hasManyDeepFromRelationsWithConstraints(
+            [$this, 'chapters'],
+            [new Chapter(), 'pagination'],
+        );
+    }
+
     public function products(): MorphMany
     {
         return $this->morphMany(UserBook::class, 'ownable');
@@ -217,6 +232,16 @@ class Edition extends Model implements ProductInterface
     public function priceTag(): PriceTag
     {
         return new PriceTag($this, $this->discount);
+    }
+
+    public function scopeWithReadLength(Builder $builder, User $user): Builder
+    {
+        return $builder->withSum(['trackers as read_length' => fn ($trackers) => $trackers->withoutTodayScope()->user($user)->latest('updated_at')->limit(1)], 'length');
+    }
+
+    public function getReadPercentAttribute(): int
+    {
+        return min(100, (int) ceil((($this->read_length ?? 0) * 100) / $this->length));
     }
 
     public function scopeWithActiveDiscountExist(Builder $builder): Builder
@@ -529,13 +554,14 @@ class Edition extends Model implements ProductInterface
     {
         return $this->qualifyColumn('status');
     }
+
     public function getQualifiedTypeColumn(): string
     {
         return $this->qualifyColumn('type');
     }
+
     public function getQualifiedPriceColumn(): string
     {
         return $this->qualifyColumn('price');
     }
-
 }
