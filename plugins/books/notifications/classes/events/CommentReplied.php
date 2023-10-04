@@ -62,8 +62,10 @@ class CommentReplied extends BaseEvent
         ]);
 
         // except user that replies
-        $repliedCommentOwner = $comment->profiler?->master;
+        $repliedCommentOwner = new DBCollection([
+            $comment->profiler?->master
+        ]);
 
-        return $recipients->diff(new DBCollection([$repliedCommentOwner]));
+        return $recipients->diff($repliedCommentOwner);
     }
 }
