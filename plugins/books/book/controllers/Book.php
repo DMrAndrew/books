@@ -54,7 +54,7 @@ class Book extends Controller
     public function listExtendQuery($query)
     {
         /**
-         * Search by user profile
+         * Поиск по профилям
          */
         $bookTableName = (new BookModel())->getTable();
         $authorsTableName = (new Author)->getTable();

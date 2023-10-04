@@ -10,11 +10,13 @@ columns:
         label: Название
         searchable: true
 
-#    profile_name:
-#        label: Авторы
-#        relation: authors
-#        valueFrom: profile_name
-#        searchable: true
+    profiles:
+        label: Авторы
+        type: text
+        default: '-'
+        valueFrom: profile_names
+        searchable: true
+        select: username
 
     recommend:
         label: В рекомендованных
