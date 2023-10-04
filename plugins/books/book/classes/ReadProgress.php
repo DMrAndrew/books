@@ -106,33 +106,40 @@ class ReadProgress
     public function compute(): int
     {
         $children = $this->parent_tracker->children()->withoutTodayScope()->get();
-        $progress = $this->progress($children->unique('trackable_id'));
-        $this->parent_tracker->fill([
-            'length' => $children->unique('trackable_id')->sum('length'),
-            'time' => $children->sum('time'),
-            'progress' => $progress,
-        ]);
+        $this->parent_tracker->fill($this->progress($children));
         $this->parent_tracker->updated_at = $this->tracker->updated_at;
         $this->parent_tracker->save(['timestamps' => false, 'force' => true]);
         $this->parent_tracker->afterTrack();
 
-        return $progress;
+        return $this->parent_tracker->progress;
     }
 
-    public function progress(Collection $trackers): int
+    public function progress(Collection $trackers): array
     {
+        $first_or_last = $this->parent_relation === 'chapter'
+            && $this->tracker->trackable->page == 1
+            && ($this->tracker->trackable->chapter->prev()->public()->doesntExist()
+                || $this->tracker->trackable->chapter->next()->public()->doesntExist());
+
+        $time = $trackers->sum('time');
+
         /**
          * Для первой и последней частей сразу засчитываем прочтение всей части при переходе на 1-ю страницу
          */
-        if ($this->parent_relation === 'chapter'
-            && $this->tracker->trackable->page == 1
-            && ($this->tracker->trackable->chapter->prev()->public()->doesntExist()
-                || $this->tracker->trackable->chapter->next()->public()->doesntExist())) {
-            return 100;
+        if ($first_or_last) {
+            return [
+                'length' => $this->tracker->trackable->chapter->pagination()->sum('length'),
+                'time' => $time,
+                'progress' => 100,
+            ];
         }
 
-        return (int) ceil($trackers->pluck('progress')
-            ->pad($this->getTotalItems(), 0)
-            ->avg());
+        return [
+            'length' => $trackers->unique('trackable_id')->sum('length'),
+            'time' => $time,
+            'progress' => (int) ceil($trackers->pluck('progress')
+                ->pad($this->getTotalItems(), 0)
+                ->avg()),
+        ];
     }
 }
