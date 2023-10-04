@@ -9,6 +9,13 @@ columns:
     title:
         label: Название
         searchable: true
+
+#    profile_name:
+#        label: Авторы
+#        relation: authors
+#        valueFrom: profile_name
+#        searchable: true
+
     recommend:
         label: В рекомендованных
         searchable: true
