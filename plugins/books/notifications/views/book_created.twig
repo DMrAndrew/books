@@ -1,5 +1,5 @@
 <div class="notification-menu__text notification-menu__content-wrapper">
-    {% if authors and authors.length > 0 %}
+    {% if authors and authors|length > 0 %}
         {% for author in authors  %}
             {% if author.id == recipient.subscribedForAuthor %}
                 <a href="{{ 'author_page' | page({profile_id: author.profile.id}) }}" class="ui-link _violet">{{ author.profile.username }}</a> опубликовал(а) новую книгу "<a href="{{ 'book-card' | page({book_id: book.id}) }}" class="ui-link _violet">{{ book.title }}</a>"
