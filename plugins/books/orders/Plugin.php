@@ -11,6 +11,7 @@ use Books\Orders\Components\AuthorSupport;
 use Books\Orders\Components\BalanceDeposit;
 use Books\Orders\Components\BuyAwards;
 use Books\Orders\Components\Order;
+use Books\Orders\Console\DiscardOldOrders;
 use Books\Orders\Models\BalanceDeposit as DepositModel;
 use Books\Orders\Models\OrderProduct;
 use Books\Orders\Models\OrderPromocode;
@@ -48,8 +49,12 @@ class Plugin extends PluginBase
      */
     public function register()
     {
+        parent::register();
+
         $this->app->bind(OrderServiceContract::class, OrderService::class);
         $this->app->bind(OrderReceiptServiceContract::class, OrderReceiptService::class);
+
+        $this->registerConsoleCommand('book:orders:discard_old_orders', DiscardOldOrders::class);
     }
 
     /**
@@ -119,5 +124,15 @@ class Plugin extends PluginBase
                 ],
             ],
         ];
+    }
+
+    /**
+     * @param $schedule
+     *
+     * @return void
+     */
+    public function registerSchedule($schedule): void
+    {
+        $schedule->command('book:orders:discard_old_orders')->dailyAt('04:10');
     }
 }

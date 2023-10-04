@@ -765,6 +765,11 @@ class Book extends Model
         return Html::limit($this->annotation ?? '', config('books.book::config.annotation_length', 300), '...');
     }
 
+    public function getProfileNamesAttribute(): string
+    {
+        return implode(', ', $this->authors()->with('profile')->get()->pluck('profile.username')->toArray());
+    }
+
     public function isWorking(): bool
     {
         return $this->status === BookStatus::WORKING;

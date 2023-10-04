@@ -9,6 +9,15 @@ columns:
     title:
         label: Название
         searchable: true
+
+    profiles:
+        label: Авторы
+        type: text
+        default: '-'
+        valueFrom: profile_names
+        searchable: true
+        select: username
+
     recommend:
         label: В рекомендованных
         searchable: true
