@@ -44,7 +44,9 @@ class HasLibrary extends ExtensionBase
             ->sortByDesc('id')
             ->groupBy(fn ($i) => $i->type->value);
 
-        $libs[CollectionEnum::READING->value] = $libs[CollectionEnum::READING->value]->sortByDesc(fn($c) => $c->book->ebook->read_percent);
+        if ($libs[CollectionEnum::READING->value] ?? false) {
+            $libs[CollectionEnum::READING->value] = $libs[CollectionEnum::READING->value]?->sortByDesc(fn ($c) => $c->book->ebook->read_percent);
+        }
         $libs[CollectionEnum::LOVED->value] = $libs->flatten(1)->filter(fn ($i) => $i->loved);
 
         return $libs;
