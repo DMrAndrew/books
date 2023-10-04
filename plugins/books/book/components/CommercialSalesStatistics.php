@@ -166,18 +166,21 @@ class CommercialSalesStatistics extends ComponentBase
      */
     private function prepareDates()
     {
-        $sellAtRange = SellStatistics
-            ::whereIn('profile_id', $this->user->profiles->pluck('id'))
-            ->select(DB::raw('MIN(sell_at) AS start_year, MAX(sell_at) AS end_year'))
-            ->first();
-
-        if ($sellAtRange->start_year === null || $sellAtRange->end_year === null) {
-            $this->from = Carbon::now()->startOfYear();
-            $this->to = Carbon::now()->endOfYear();
-        } else {
-            $this->from = Carbon::createFromFormat('Y-m-d H:i:s', $sellAtRange->start_year);
-            $this->to = Carbon::createFromFormat('Y-m-d H:i:s', $sellAtRange->end_year);
-        }
+        $this->from = Carbon::now()->startOfMonth();
+        $this->to = Carbon::now()->endOfMonth();
+        return;
+//        $sellAtRange = SellStatistics
+//            ::whereIn('profile_id', $this->user->profiles->pluck('id'))
+//            ->select(DB::raw('MIN(sell_at) AS start_year, MAX(sell_at) AS end_year'))
+//            ->first();
+//
+//        if ($sellAtRange->start_year === null || $sellAtRange->end_year === null) {
+//            $this->from = Carbon::now()->startOfYear();
+//            $this->to = Carbon::now()->endOfYear();
+//        } else {
+//            $this->from = Carbon::createFromFormat('Y-m-d H:i:s', $sellAtRange->start_year);
+//            $this->to = Carbon::createFromFormat('Y-m-d H:i:s', $sellAtRange->end_year);
+//        }
     }
 
     /**
