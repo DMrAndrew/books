@@ -15,6 +15,7 @@ use Books\Profile\Classes\SlaveScope;
 use Books\Profile\Factories\ProfileFactory;
 use Books\Profile\Traits\Subscribable;
 use Books\Reposts\Models\Repost;
+use Books\User\Classes\BoolOptionsEnum;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
@@ -293,6 +294,18 @@ class Profile extends Model
             PrivacySettingsEnum::SUBSCRIBERS => (bool) $profile?->hasSubscription($this),
             default => false
         };
+    }
+
+    public function scopeSettingsEnabledBlogPostNotifications(Builder $builder): Builder
+    {
+        return $builder
+            ->whereHas('user', function ($q) {
+                $q->whereDoesntHave('settings', function ($query) {
+                    $query
+                        ->type(UserSettingsEnum::NOTIFY_NEW_RECORD_BLOG)
+                        ->where('value', BoolOptionsEnum::ON);
+                });
+            });
     }
 
     public function scopeShortPublicEager(Builder $builder)

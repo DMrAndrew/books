@@ -52,6 +52,9 @@ class PostPublished extends BaseEvent
     {
         $profile = Arr::get($args, 0);
 
-        return $profile?->subscribers;
+        return $profile
+            ?->subscribers()
+            ->settingsEnabledBlogPostNotifications()
+            ->get();
     }
 }
