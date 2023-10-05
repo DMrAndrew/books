@@ -54,7 +54,9 @@ class Comment extends Model
     public function afterCreate(): void
     {
         // не ответ на чужой комментарий и комментарий к книге
-        if (empty($this->parent_id) && get_class($this->commentable) === Book::class) {
+        if (empty($this->parent_id)
+            && in_array(get_class($this->commentable), [Book::class, Profile::class, Post::class])
+        ) {
             Event::fire('books.comments::comment.created', [$this]);
         }
 
