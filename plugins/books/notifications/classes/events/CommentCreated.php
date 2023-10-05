@@ -2,7 +2,10 @@
 
 namespace Books\Notifications\Classes\Events;
 
+use Books\Blog\Models\Post;
+use Books\Book\Models\Book;
 use Books\Notifications\Classes\NotificationTypeEnum;
+use Books\Profile\Models\Profile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -48,14 +51,30 @@ class CommentCreated extends BaseEvent
     {
         $comment = Arr::get($args, 0);
 
-        return $comment
-            ->commentable
-            ->authors
-            ->filter(static function ($author) use ($comment): bool {
-                return $author->profile->user_id !== $comment->user_id;
-            })
-            ->transform(static function ($author) {
-                return $author->profile;
-            });
+        return match (get_class($comment->commentable)) {
+
+            /**
+             * Комментарий к книге
+             */
+            Book::class => $comment
+                ->commentable
+                ->authors
+                ->filter(static function ($author) use ($comment): bool {
+                    return $author->profile->user_id !== $comment->user_id;
+                })
+                ->transform(static function ($author) {
+                    return $author->profile;
+                }),
+
+            /**
+             * Комментарий к профилю
+             */
+            Profile::class => new Collection([$comment->commentable]),
+
+            /**
+             * Комментарий к публикации в блоге
+             */
+            Post::class => new Collection([$comment->commentable->profile]),
+        };
     }
 }
