@@ -69,12 +69,18 @@ class CommentCreated extends BaseEvent
             /**
              * Комментарий к профилю
              */
-            Profile::class => new Collection([$comment->commentable]),
+            Profile::class => (new Collection([$comment->commentable]))
+                ->filter(function ($profile) use ($comment) {
+                    return $profile->user->id !== $comment->user->id;
+                }),
 
             /**
              * Комментарий к публикации в блоге
              */
-            Post::class => new Collection([$comment->commentable->profile]),
+            Post::class => (new Collection([$comment->commentable->profile]))
+                ->filter(function ($profile) use ($comment) {
+                    return $profile->user->id !== $comment->user->id;
+                }),
         };
     }
 }
