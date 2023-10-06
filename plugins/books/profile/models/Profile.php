@@ -298,17 +298,22 @@ class Profile extends Model
 
     public function scopeSettingsEnabledBlogPostNotifications(Builder $builder): Builder
     {
-        return $builder
-            ->whereHas('user', function ($q) {
+        return $builder->whereHas('user', function ($q) {
                 $q->settingsEnabledBlogPostNotifications();
             });
     }
 
     public function scopeSettingsEnabledUpdateLibraryItemsNotifications(Builder $builder): Builder
     {
-        return $builder
-            ->whereHas('user', function ($q) {
+        return $builder->whereHas('user', function ($q) {
                 $q->settingsEnabledUpdateLibraryItemsNotifications();
+            });
+    }
+
+    public function scopeSettingsEnabledBookDiscountNotifications(Builder $builder): Builder
+    {
+        return $builder->whereHas('user', function ($q) {
+                $q->settingsEnabledBookDiscountNotifications();
             });
     }
 

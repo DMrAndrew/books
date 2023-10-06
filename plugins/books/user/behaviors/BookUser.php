@@ -192,6 +192,16 @@ class BookUser extends ExtensionBase
             });
     }
 
+    public function scopeSettingsEnabledBookDiscountNotifications(Builder $builder): Builder
+    {
+        return $builder
+            ->whereDoesntHave('settings', function ($query) {
+                $query
+                    ->type(UserSettingsEnum::NOTIFY_BOOK_DISCOUNT)
+                    ->valueIs(BoolOptionsEnum::ON);
+            });
+    }
+
     public function bookIsBought(Edition $edition): bool
     {
         return $edition->isSold($this->parent);
