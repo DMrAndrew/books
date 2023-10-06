@@ -8,13 +8,16 @@ use Books\Comments\Models\Comment;
 use Books\Orders\Models\Order;
 use Books\Profile\Models\OperationHistory;
 use Books\Profile\Models\Profile;
+use Books\User\Classes\BoolOptionsEnum;
 use Books\User\Classes\UserEventHandler;
 use Books\User\Classes\UserService;
+use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
 use Books\User\Models\User as BooksUser;
 use Carbon\Carbon;
 use Exception;
 use Log;
+use October\Rain\Database\Builder;
 use October\Rain\Extension\ExtensionBase;
 use RainLab\User\Models\User;
 use ValidationException;
@@ -167,6 +170,36 @@ class BookUser extends ExtensionBase
     public function scopeUsername($q, $name)
     {
         return $q->whereHas('profiles', fn ($profile) => $profile->username($name));
+    }
+
+    public function scopeSettingsEnabledBlogPostNotifications(Builder $builder): Builder
+    {
+        return $builder
+            ->whereDoesntHave('settings', function ($query) {
+                $query
+                    ->type(UserSettingsEnum::NOTIFY_NEW_RECORD_BLOG)
+                    ->valueIs(BoolOptionsEnum::ON);
+            });
+    }
+
+    public function scopeSettingsEnabledUpdateLibraryItemsNotifications(Builder $builder): Builder
+    {
+        return $builder
+            ->whereDoesntHave('settings', function ($query) {
+                $query
+                    ->type(UserSettingsEnum::NOTIFY_UPDATE_LIBRARY_ITEMS)
+                    ->valueIs(BoolOptionsEnum::ON);
+            });
+    }
+
+    public function scopeSettingsEnabledBookDiscountNotifications(Builder $builder): Builder
+    {
+        return $builder
+            ->whereDoesntHave('settings', function ($query) {
+                $query
+                    ->type(UserSettingsEnum::NOTIFY_BOOK_DISCOUNT)
+                    ->valueIs(BoolOptionsEnum::ON);
+            });
     }
 
     public function bookIsBought(Edition $edition): bool
