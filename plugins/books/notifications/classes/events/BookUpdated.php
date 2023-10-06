@@ -10,7 +10,7 @@ use Illuminate\Support\Collection;
 
 class BookUpdated extends BaseEvent
 {
-    const DELTA_LENGTH_TRIGGER = 5000;
+    const DELTA_LENGTH_TRIGGER = 2;//5000;
 
     public string $eventName = 'Обновление книги';
 
@@ -59,11 +59,14 @@ class BookUpdated extends BaseEvent
 
         return Lib::query()
             ->book($book)
-            ->whereIn('type', [
-                CollectionEnum::INTERESTED->value,
-                CollectionEnum::READING->value,
-            ])
+            ->where(function ($q) {
+                $q->where('type', CollectionEnum::INTERESTED->value)
+                    ->orWhere('type', CollectionEnum::READING->value);
+            })
             ->with('favorites.user')
+            ->whereHas('favorites.user', function ($q) {
+                $q->settingsEnabledUpdateLibraryItemsNotifications();
+            })
             ->get()
             ->transform(static function (Lib $lib) {
                 return $lib?->favorites?->first()?->user;

@@ -45,9 +45,9 @@ class Lib extends Model
         return $builder->whereHas('book', fn ($book) => $book->public());
     }
 
-    public function scopeBook(Builder $builder, Book $user): Builder
+    public function scopeBook(Builder $builder, Book $book): Builder
     {
-        return $builder->where('book_id', '=', $user->id);
+        return $builder->where('book_id', '=', $book->id);
     }
 
     public function scopeType(Builder $builder, ?CollectionEnum ...$type): Builder

@@ -300,11 +300,15 @@ class Profile extends Model
     {
         return $builder
             ->whereHas('user', function ($q) {
-                $q->whereDoesntHave('settings', function ($query) {
-                    $query
-                        ->type(UserSettingsEnum::NOTIFY_NEW_RECORD_BLOG)
-                        ->where('value', BoolOptionsEnum::ON);
-                });
+                $q->settingsEnabledBlogPostNotifications();
+            });
+    }
+
+    public function scopeSettingsEnabledUpdateLibraryItemsNotifications(Builder $builder): Builder
+    {
+        return $builder
+            ->whereHas('user', function ($q) {
+                $q->settingsEnabledUpdateLibraryItemsNotifications();
             });
     }
 
