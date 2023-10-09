@@ -60,7 +60,6 @@ class BookUpdated extends BaseEvent
         return Lib::query()
             ->book($book)
             ->whereIn('type', [
-                CollectionEnum::INTERESTED->value,
                 CollectionEnum::READING->value,
             ])
             ->with('favorites.user')
