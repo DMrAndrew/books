@@ -1,5 +1,10 @@
 <div class="notification-menu__text notification-menu__content-wrapper">
+    {% if owner %}
     <a href="{{ 'author_page' | page({profile_id: owner.id}) }}" class="ui-link _violet">{{ owner.username }}</a>, указал(а) вас соавтором в книге "<a href="{{ 'book-card' | page({book_id: coauthor.book.id}) }}" class="ui-link _violet">{{ coauthor.book.title }}</a>". Вам назначен гонорар в размере {{ coauthor.percent }}%
+    {% elseif author %}
+        {# обратная совместимость для старых уведомлений #}
+        <a href="{{ 'author_page' | page({profile_id: author.id}) }}" class="ui-link _violet">{{ author.username }}</a>, указал(а) вас соавтором в книге "<a href="{{ 'book-card' | page({book_id: coauthor.book.id}) }}" class="ui-link _violet">{{ coauthor.book.title }}</a>". Вам назначен гонорар в размере {{ coauthor.percent }}%
+    {% endif %}
 </div>
 <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2"
         onclick="oc.ajax('onAcceptedCoAuthorInvite',{

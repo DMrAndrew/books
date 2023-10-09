@@ -6,6 +6,7 @@ use Books\Comments\Models\Comment;
 use Books\Notifications\Classes\NotificationTypeEnum;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use October\Rain\Database\Collection as DBCollection;
 
 class CommentReplied extends BaseEvent
 {
@@ -37,6 +38,7 @@ class CommentReplied extends BaseEvent
          */
         $comment = Arr::get($args, 0);
         $comment->load(['parent' => fn($p) => $p->withTrashed()]);
+
         return array_merge(
             static::defaultParams(),
             [
@@ -55,8 +57,15 @@ class CommentReplied extends BaseEvent
         $comment = Arr::get($args, 0);
 
         // README: возвращаем именно такую коллекцию, а не collect() ибо во втором случае ошибка сериализации
-        return new \October\Rain\Database\Collection([
+        $recipients = new DBCollection([
             $comment->parent?->profiler?->master, // отвечаем на комментарий профилю, с которого был написан комментарий
         ]);
+
+        // except user that replies
+        $repliedCommentOwner = new DBCollection([
+            $comment->profiler?->master
+        ]);
+
+        return $recipients->diff($repliedCommentOwner);
     }
 }

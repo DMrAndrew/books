@@ -60,10 +60,12 @@ class BookUpdated extends BaseEvent
         return Lib::query()
             ->book($book)
             ->whereIn('type', [
-                CollectionEnum::INTERESTED->value,
                 CollectionEnum::READING->value,
             ])
             ->with('favorites.user')
+            ->whereHas('favorites.user', function ($q) {
+                $q->settingsEnabledUpdateLibraryItemsNotifications();
+            })
             ->get()
             ->transform(static function (Lib $lib) {
                 return $lib?->favorites?->first()?->user;

@@ -150,10 +150,10 @@
                                 {% if item.type.value == 3  %}
                                 <div class="book-mini-card__progress book-mini-card-progress">
                                     <div class="book-mini-card-progress__item-wrapper">
-                                        <div class="book-mini-card-progress__line" style="width:{{lib.book.editions.first.progress|default('0')}}% "  >
+                                        <div class="book-mini-card-progress__line" style="width:{{lib.book.ebook.readPercent}}% "  >
                                     </div>
                                 </div>
-                                <div class="book-mini-card-progress__text">{{lib.book.editions.first.progress|default('0')}} %</div>
+                                <div class="book-mini-card-progress__text">{{lib.book.ebook.readPercent}} %</div>
                             </div>
                             {% endif %}
                         </div>

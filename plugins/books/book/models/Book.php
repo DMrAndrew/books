@@ -41,8 +41,8 @@ use WordForm;
  *
  * @method HasOne author
  * @method HasOne advert
- * @property Advert advert
  *
+ * @property Advert advert
  * @property  Author author
  *
  * @method HasMany editions
@@ -239,12 +239,12 @@ class Book extends Model
         return new Reader($this, ...func_get_args());
     }
 
-    public static function findForPublic(int $book_id, ?User $user = null)
+    public static function findForPublic(int $book_id, User $user = null)
     {
         return Book::query()->public()->find($book_id) // открыта в публичной зоне
             ?? $user?->profile->books()->find($book_id) // пользователь автор книги
             ?? ($user ? Book::query()
-                ->whereHas('ebook', fn($ebook) => $ebook->whereHas('customers', fn($customers) => $customers->where('user_id', $user->id)))
+                ->whereHas('ebook', fn ($ebook) => $ebook->whereHas('customers', fn ($customers) => $customers->where('user_id', $user->id)))
                 ->find($book_id)
                 : null); // пользователь купил книгу
     }
@@ -254,9 +254,9 @@ class Book extends Model
         return $this->hasManyDeepFromRelations($this->awards(), (new AwardBook())->award());
     }
 
-    public function scopeWithSumAwardItems(Builder $builder, ?int $ofLastDays = null)
+    public function scopeWithSumAwardItems(Builder $builder, int $ofLastDays = null)
     {
-        return $builder->withSum(['awardsItems' => fn($awards) => $awards->when($ofLastDays, fn($b) => $b->ofLastDays($b))], 'rate');
+        return $builder->withSum(['awardsItems' => fn ($awards) => $awards->when($ofLastDays, fn ($b) => $b->ofLastDays($b))], 'rate');
     }
 
     public function scopeOrderByPopularGenres(Builder $builder)
@@ -266,12 +266,10 @@ class Book extends Model
 
     public function scopeOrderByGenresRate(Builder $builder, Genre ...$genres)
     {
-        if (!count($genres)) {
+        if (! count($genres)) {
             return $builder;
         }
-        $builder->withAvg(['bookGenre as genres_rate'
-            => fn($g) => $g->whereIn('genre_id', array_pluck($genres, 'id'))]
-            , 'rate_number');
+        $builder->withAvg(['bookGenre as genres_rate' => fn ($g) => $g->whereIn('genre_id', array_pluck($genres, 'id'))], 'rate_number');
         $builder->orderByRaw('-genres_rate desc');
 
         return $builder;
@@ -324,8 +322,6 @@ class Book extends Model
 
     /**
      * Аккаунты, у которых есть книга (включая покупки по промокоду)
-     *
-     * @return HasManyDeep
      */
     public function customers(): HasManyDeep
     {
@@ -337,8 +333,6 @@ class Book extends Model
 
     /**
      * Записи для статистики коммерческого кабинета, т.е. только те где книгу купили за деньги
-     *
-     * @return HasManyDeep
      */
     public function sells(): HasManyDeep
     {
@@ -348,13 +342,12 @@ class Book extends Model
         );
     }
 
-
     public function isAuthor(Profile $profile)
     {
         return $this->authors()->where('profile_id', $profile->id)->exists();
     }
 
-    public function isCommentAllowed(?User $user = null): bool
+    public function isCommentAllowed(User $user = null): bool
     {
         if ($this->ebook()->value('comment_allowed')) {
             return true;
@@ -381,18 +374,17 @@ class Book extends Model
 
     public function scopeWithCountEditionSells(Builder $builder, ?Closure $callback): Builder
     {
-        return $builder->withCount(['sells' => $callback ?? fn($b) => $b]);
+        return $builder->withCount(['sells' => $callback ?? fn ($b) => $b]);
     }
 
-    public function scopeWithReadTime(Builder $builder, ?Closure $callback = null): Builder
+    public function scopeWithReadTime(Builder $builder, Closure $callback = null): Builder
     {
-        return $builder->withSum(['paginationTrackers' => fn($trackers) => $trackers->when($callback, $callback)], 'time');
+        return $builder->withSum(['paginationTrackers' => fn ($trackers) => $trackers->when($callback, $callback)], 'time');
     }
 
-
-    public function scopeWithReadChaptersTrackersCount(Builder $builder, ?Closure $callback = null): Builder
+    public function scopeWithReadChaptersTrackersCount(Builder $builder, Closure $callback = null): Builder
     {
-        return $builder->withCount(['chaptersTrackers' => fn($trackers) => $trackers
+        return $builder->withCount(['chaptersTrackers' => fn ($trackers) => $trackers
             ->withoutTodayScope()
             ->completed()
             ->when($callback, $callback)]);
@@ -400,16 +392,16 @@ class Book extends Model
 
     public function scopeWithLastLengthUpdate(Builder $builder): Builder
     {
-        return $builder->with(['editions' => fn($editions) => $editions->withLastLengthRevision()]);
+        return $builder->with(['editions' => fn ($editions) => $editions->withLastLengthRevision()]);
     }
 
     public function scopeType(Builder $builder, ?EditionsEnums $type): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if (!$type) {
+        if (! $type) {
             return $builder;
         }
 
-        return $builder->whereHas('editions', fn($e) => $e->type($type));
+        return $builder->whereHas('editions', fn ($e) => $e->type($type));
     }
 
     public function scopeRecommend(Builder $builder, ?bool $value = true): Builder|\Illuminate\Database\Eloquent\Builder
@@ -419,59 +411,60 @@ class Book extends Model
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn($e) => $e->minPrice($price));
+        return $builder->whereHas('editions', fn ($e) => $e->minPrice($price));
     }
 
     public function scopeMaxPrice(Builder $builder, ?int $price): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn($e) => $e->maxPrice($price));
+        return $builder->whereHas('editions', fn ($e) => $e->maxPrice($price));
     }
 
     public function scopeFree(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn($e) => $e->free());
+        return $builder->whereHas('editions', fn ($e) => $e->free());
     }
 
     public function scopeNotFree(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn($e) => $e->free(false));
+        return $builder->whereHas('editions', fn ($e) => $e->free(false));
     }
 
     public function scopeComplete(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn($e) => $e->status(BookStatus::COMPLETE));
+        return $builder->whereHas('editions', fn ($e) => $e->status(BookStatus::COMPLETE));
     }
 
     public function scopeEditionTypeIn(Builder $builder, BookStatus ...$status): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn($query) => $query->type($status));
+        return $builder->whereHas('editions', fn ($query) => $query->type($status));
     }
 
-    public function scopeDiffWithUnloved(Builder $builder, ?User $user = null)
+    public function scopeDiffWithUnloved(Builder $builder, User $user = null)
     {
         $user ??= Auth::getUser();
+
         return $builder->hasGenres($user?->unloved_genres ?? getUnlovedFromCookie(), 'exclude');
     }
 
     public function scopeHasGenres(Builder $builder, ?array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if ($ids === null || !count($ids)) {
+        if ($ids === null || ! count($ids)) {
             return $builder;
         }
 
         return $builder->{$mode == 'include' ? 'whereHas' : 'whereDoesntHave'}('genres',
-            fn($genres) => $genres->where(fn($q) => $q->whereIn((new Genre())->getQualifiedKeyName(), $ids))
+            fn ($genres) => $genres->where(fn ($q) => $q->whereIn((new Genre())->getQualifiedKeyName(), $ids))
                 ->orWhereIn((new Genre())->qualifyColumn('parent_id'), $ids));
     }
 
     public function scopeHasTags(Builder $builder, ?array $ids, $mode = 'include'): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if ($ids === null || !count($ids)) {
+        if ($ids === null || ! count($ids)) {
             return $builder;
         }
 
         return $builder->{$mode == 'include' ? 'whereHas' : 'whereDoesntHave'}('tags',
-            fn($tags) => $tags->whereIn('id', $ids));
+            fn ($tags) => $tags->whereIn('id', $ids));
     }
 
     public function scopeSearchByString(Builder $query, string $string)
@@ -486,12 +479,12 @@ class Book extends Model
 
     public function scopeAdult(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        if (!shouldRestrictAdult()) {
+        if (! shouldRestrictAdult()) {
             return $builder;
         }
 
         return $builder->where('age_restriction', '<', '18')
-            ->whereDoesntHave('genres', fn($genres) => $genres->adult());
+            ->whereDoesntHave('genres', fn ($genres) => $genres->adult());
     }
 
     public function scopePublic(Builder $q)
@@ -506,7 +499,7 @@ class Book extends Model
 
     public function isProhibited(): bool
     {
-        return !!static::query()->prohibitedOnly()->orWhere(fn($b) => $b->hasProhibitedGenres(true))->find($this->id);
+        return (bool) static::query()->prohibitedOnly()->orWhere(fn ($b) => $b->hasProhibitedGenres(true))->find($this->id);
     }
 
     public function scopeGenresExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
@@ -516,7 +509,7 @@ class Book extends Model
 
     public function scopeHasProhibitedGenres(Builder $builder, bool $has = false)
     {
-        return $builder->{$has ? 'whereHas' : 'whereDoesntHave'}('genres', fn($genres) => $genres->prohibitedOnly());
+        return $builder->{$has ? 'whereHas' : 'whereDoesntHave'}('genres', fn ($genres) => $genres->prohibitedOnly());
     }
 
     public function scopeOnlyPublicStatus(Builder $q): Builder|\Illuminate\Database\Eloquent\Builder
@@ -540,7 +533,7 @@ class Book extends Model
             'tags',
             'genres' => fn ($q) => $q->withPivot(['rate_number']),
             'stats',
-            'ebook' => fn($ebook) => $ebook->withActiveDiscountExist(),
+            'ebook' => fn ($ebook) => $ebook->withActiveDiscountExist(),
             'ebook.discount',
             'author.profile',
             'authors.profile',
@@ -551,17 +544,17 @@ class Book extends Model
 
     public function scopeAllowedForDiscount(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn($editions) => $editions->allowedForDiscount());
+        return $builder->whereHas('editions', fn ($editions) => $editions->allowedForDiscount());
     }
 
     public function scopeActiveDiscountExist(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn($editions) => $editions->activeDiscountExist());
+        return $builder->whereHas('editions', fn ($editions) => $editions->activeDiscountExist());
     }
 
     public function scopeWithChapters(Builder $builder): Builder
     {
-        return $builder->with(['ebook.chapters' => fn($i) => $i->public()]);
+        return $builder->with(['ebook.chapters' => fn ($i) => $i->public()]);
     }
 
     public function scopeAfterPublishedAtDate(Builder $builder, Carbon|int $date): Builder
@@ -573,37 +566,36 @@ class Book extends Model
         return $builder->whereHas('editions', fn ($editions) => $editions->whereDate(Edition::make()->qualifyColumn('sales_at'), '>=', $date));
     }
 
-    public function scopeLikesCount(Builder $builder, ?Closure $callback = null): Builder
+    public function scopeLikesCount(Builder $builder, Closure $callback = null): Builder
     {
-        return $builder->withCount(['favorites as likes_count' => fn($f) => $f->when($callback, $callback)]);
+        return $builder->withCount(['favorites as likes_count' => fn ($f) => $f->when($callback, $callback)]);
     }
 
-    public function scopeInLibCount(Builder $builder, ?Closure $callback = null): Builder
+    public function scopeInLibCount(Builder $builder, Closure $callback = null): Builder
     {
-        return $builder->withCount(['libs as in_lib_count' => fn($libs) => $libs->notWatched()->when($callback, $callback)]);
+        return $builder->withCount(['libs as in_lib_count' => fn ($libs) => $libs->notWatched()->when($callback, $callback)]);
     }
 
-    public function scopeLikeExists(Builder $builder, ?User $user = null): Builder
+    public function scopeLikeExists(Builder $builder, User $user = null): Builder
     {
         $user ??= Auth::getUser();
 
-        return $builder->withExists(['favorites as user_liked' => fn($favorites) => $favorites->user($user)]);
+        return $builder->withExists(['favorites as user_liked' => fn ($favorites) => $favorites->user($user)]);
     }
 
-    public function scopeInLibExists(Builder $builder, ?User $user = null): Builder
+    public function scopeInLibExists(Builder $builder, User $user = null): Builder
     {
         $user ??= Auth::getUser();
 
-        return $builder->withExists(['libs as in_user_lib' => fn($libs) => $libs->notWatched()->whereHas(
-            'favorites', fn($favorites) => $favorites->user($user)
+        return $builder->withExists(['libs as in_user_lib' => fn ($libs) => $libs->notWatched()->whereHas(
+            'favorites', fn ($favorites) => $favorites->user($user)
         )]);
     }
 
     public function scopeWithProgress(Builder $builder, User $user): Builder
     {
-        return $builder->with(['editions' => fn($edition) => $edition->withProgress($user)]);
+        return $builder->with(['editions' => fn ($edition) => $edition->withProgress($user)]);
     }
-
 
     public function getCollectedRate(WidgetEnum $widget)
     {
@@ -613,9 +605,6 @@ class Book extends Model
         };
     }
 
-    /**
-     * @return Collection
-     */
     public function orderedAuthors(): Collection
     {
         return $this->authors
@@ -643,8 +632,9 @@ class Book extends Model
 
     public function scopeSortByStatValue(Builder $builder, StatsEnum $stat, bool $asc = false)
     {
-        return $builder->orderByPowerJoins('stats.' . $stat->mapStatAttribute(), $asc ? 'asc' : 'desc');
+        return $builder->orderByPowerJoins('stats.'.$stat->mapStatAttribute(), $asc ? 'asc' : 'desc');
     }
+
 
     public function refreshAllowedVisits(): int
     {
@@ -681,8 +671,6 @@ class Book extends Model
 
     /**
      * Try set default book cover if not exists one.
-     *
-     * @return void
      */
     protected function setDefaultCover(): void
     {
@@ -707,12 +695,11 @@ class Book extends Model
     public function setSortOrder()
     {
         $this->authors()->each(function ($author) {
-            if (!$author->sort_order) {
+            if (! $author->sort_order) {
                 $author->update(['sort_order' => ($author->profile->authorships()->max('sort_order') ?? 0) + 1]);
             }
         });
     }
-
 
     public static function wordForm(): WordForm
     {
@@ -732,7 +719,7 @@ class Book extends Model
     public function getDeferredAuthor($key, int|Profile $profile)
     {
         return $this->getDeferredAuthors($key)
-            ?->first(fn($bind) => $bind->slave_id == (is_int($profile) ? $profile : $profile->id))
+            ?->first(fn ($bind) => $bind->slave_id == (is_int($profile) ? $profile : $profile->id))
             ?? null;
     }
 
@@ -748,15 +735,16 @@ class Book extends Model
         $this->save();
     }
 
-    public function buyAward(Award $award, ?User $user = null): ?\Illuminate\Database\Eloquent\Model
+    public function buyAward(Award $award, User $user = null): ?\Illuminate\Database\Eloquent\Model
     {
         $user ??= Auth::getUser();
-        if (!$user) {
+        if (! $user) {
             return null;
         }
+
         return $this->awards()->create([
             'user_id' => $user->id,
-            'award_id' => $award->id
+            'award_id' => $award->id,
         ]);
     }
 

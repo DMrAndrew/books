@@ -66,8 +66,13 @@ class DiscountCreated extends BaseEvent
             ->with('favorites.user')
             ->whereHas('favorites', function ($query) use ($bookId) {
                 return $query->whereHas('user', function ($query) use ($bookId) {
-                    return $query->whereDoesntHave('ownedBooks', function ($q) use ($bookId) {
-                        return $q->where('ownable_id', $bookId);
+
+                    /** Настройки уведомлений в ЛК */
+                    $query->settingsEnabledBookDiscountNotifications()
+
+                    /** Книга еще не куплена */
+                    ->whereDoesntHave('ownedBooks', function ($q) use ($bookId) {
+                        $q->where('ownable_id', $bookId);
                     });
                 });
             })
