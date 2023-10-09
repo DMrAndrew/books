@@ -63,7 +63,7 @@ class Author extends Model
 
     public function scopeOwner(Builder $builder, $value = true): Builder
     {
-        return $builder->where('is_owner', '=', is_bool($value) || is_null($value) ? $value : true);
+        return $builder->when(is_null($value), fn ($q) => $q, fn ($q) => $q->where('is_owner', '=', is_bool($value) ? $value : true));
     }
 
     public function scopeCoAuthors(Builder $builder): Builder
