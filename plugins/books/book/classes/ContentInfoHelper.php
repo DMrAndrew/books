@@ -17,10 +17,7 @@ class ContentInfoHelper
 
     public function isVisible(): bool
     {
-        if ($this->isBadDelete()) {
-            return false;
-        }
-        return true;
+        return $this->isBadDelete();
     }
 
     public function label(): string
@@ -28,7 +25,7 @@ class ContentInfoHelper
         return sprintf('%s главы', $this->deferred->type->label());
     }
 
-    public function length()
+    public function length(): bool|int
     {
         if ($this->deferred->type === ContentTypeEnum::DEFERRED_DELETE) {
             return false;
