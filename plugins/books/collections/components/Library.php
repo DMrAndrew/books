@@ -39,7 +39,7 @@ class Library extends ComponentBase
         $this->bindCollection();
     }
 
-    public function bindCollection(?CollectionEnum $activeTab = null)
+    public function bindCollection(CollectionEnum $activeTab = null)
     {
         if ($this->user) {
             $lib = $this->user->getLib();
@@ -52,7 +52,6 @@ class Library extends ComponentBase
                     'items' => $lib[$item->value] ?? [],
                 ];
             });
-
 
             $this->page['user'] = $this->user;
             $this->page['library'] = $collection;

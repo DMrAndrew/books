@@ -32,10 +32,6 @@ class AuthorInvited extends BaseEvent
      */
     public static function makeParamsFromEvent(array $args, $eventName = null): array
     {
-        Log::info('makeParamsFromEvent');
-        //Log::info($args);
-        //dd($args);
-
         return array_merge(
             static::defaultParams(),
             [
@@ -53,9 +49,6 @@ class AuthorInvited extends BaseEvent
     public static function getRecipients(array $args): ?Collection
     {
         $coAuthor = Arr::get($args, 0);
-
-        Log::info('getRecipients');
-        Log::info($coAuthor->toArray());
 
         // README: возвращаем именно такую коллекцию, а не collect() ибо во втором случае ошибка сериализации
         return new \October\Rain\Database\Collection([

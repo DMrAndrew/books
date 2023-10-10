@@ -3,6 +3,9 @@
 # ===================================
 
 columns:
+    id:
+        label: ID
+        searchable: true
     username:
         label: Псевдоним
         searchable: true

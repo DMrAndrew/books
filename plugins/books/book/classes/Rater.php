@@ -58,7 +58,7 @@ class Rater
     function setBuilder(Builder $builder): static
     {
         $this->builder = $builder->with('stats')
-            ->when($this->book?->exists, fn($b) => $b->where('id', $this->book->id));
+            ->when($this->book?->exists, fn($b) => $b->where(Book::make()->getQualifiedKeyName(), $this->book->id));
 
         return $this;
     }

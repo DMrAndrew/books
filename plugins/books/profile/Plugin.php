@@ -4,6 +4,8 @@ namespace Books\Profile;
 
 use Backend;
 use Books\Book\FormWidgets\SystemMessagePreview;
+use Books\Book\Models\Author;
+use Books\Book\Models\Book as BookModel;
 use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Classes\Contracts\SellStatisticService as SellStatisticServiceContract;
 use Books\Orders\Classes\Services\OrderService;
@@ -130,6 +132,25 @@ class Plugin extends PluginBase
                 ],
             ]);
         });
+
+        UsersController::extendListColumns(function ($list, $model) {
+            if (!$model instanceof User) {
+                return;
+            }
+
+            /**
+             * Профили
+             */
+            $list->addColumns([
+                'profiles' => [
+                    'label' => 'Профили',
+                    'relation' => 'profiles',
+                    'valueFrom' => 'username',
+                    'searchable' => true,
+                ],
+            ]);
+        });
+
         UsersController::extend(function (UsersController $controller) {
             $controller->formConfig = '$/books/user/config/config_form.yaml';
             $controller->listConfig = '$/books/user/config/config_list.yaml';
