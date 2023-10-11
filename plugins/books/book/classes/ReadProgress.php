@@ -3,8 +3,10 @@
 namespace Books\Book\Classes;
 
 use Books\Book\Models\Chapter;
+use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
 use Books\Book\Models\Tracker;
+use Books\Collections\classes\CollectionEnum;
 use Db;
 use October\Rain\Database\Collection;
 
@@ -28,6 +30,22 @@ class ReadProgress
 
         $this->value = $this->tracker->user_id ?? $this->tracker->ip;
 
+        $this->addToReading();
+
+    }
+
+    public function addToReading(): void
+    {
+        if (get_class($this->tracker->trackable) === Edition::class) {
+            $book = $this->tracker->trackable->book;
+            $user = $this->tracker->user;
+            $lib = $user->library($book);
+            if ($lib->is(CollectionEnum::INTERESTED)) {
+                if ($book->paginationTrackers()->user($this->tracker->user)->distinct('trackable_id')->count() > 3) {
+                    $lib->reading();
+                }
+            }
+        }
     }
 
     public function validate(): bool
