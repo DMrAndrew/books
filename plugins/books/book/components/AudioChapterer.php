@@ -12,6 +12,7 @@ use Books\Book\Models\Edition;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
+use Books\FileUploader\Components\FileUploader;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Cms\Classes\ComponentBase;
@@ -66,12 +67,27 @@ class AudioChapterer extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
+
         $this->user = Auth::getUser();
         $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
         $this->audiobook = $this->getAudioBook();
         $this->chapter = $this->audiobook->chapters()->find($this->param('chapter_id')) ?? new Chapter();
         $this->chapterManager = ($this->audiobook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->audiobook);
         $this->prepareVals();
+
+        $component = $this->addComponent(
+            FileUploader::class,
+            'audioUploader',
+            [
+                'modelClass' => Chapter::class,
+                'deferredBinding' => false,
+                "placeholderText" => "",
+                "maxSize" => 30,
+                //"isMulti" => false,
+                "fileTypes" => ".mp3,.aac",
+            ]
+        );
+        $component->bindModel('audio', $this->chapter);
 
         $this->registerBreadcrumbs();
     }
@@ -132,7 +148,7 @@ class AudioChapterer extends ComponentBase
                 throw new ValidationException($validator);
             }
 
-            $this->chapter = $this->chapterManager->from($data->toArray()); dd($this->chapter);
+            $this->chapter = $this->chapterManager->from($data->toArray());
 
             return Redirect::to('/about-book/' . $this->book->id)->withFragment('#electronic')->setLastModified(now());
         } catch (Exception $ex) {

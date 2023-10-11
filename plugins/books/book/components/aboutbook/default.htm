@@ -10,7 +10,7 @@
                     <div class="ui-tabs-link " data-tab="ecommerce">Продажи электронной
                         книги
                     </div>
-                    <div class="ui-tabs-link " data-tab="4">Аудиокнига</div>
+                    <div class="ui-tabs-link " data-tab="audiobook">Аудиокнига</div>
                     <!--                    <div class="ui-tabs-link " data-tab="5">Продажи аудиокниги</div>-->
                 </div>
             </div>
@@ -27,7 +27,7 @@
                     {% partial 'ebooker::settings' authors=book.profiles %}
                 </div>
 
-                <div class="ui-tabs-content" data-tab-content="4">
+                <div class="e-book-sale ui-tabs-content wrapper"data-tab-content="audiobook">
                     {% partial 'audiobooker::chapters' authors=book.profiles %}
                 </div>
 

@@ -1,0 +1,169 @@
+<div id="audiobooker-chapters">
+    {% if audiobook and audiobook.chapters.count() %}
+
+    <a href="/book-add-audio/{{book.id}}">
+        <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">
+            Добавить аудиотекст
+        </button>
+    </a>
+
+    <div class="about-book__chapter-container">
+        <ul id="sortable">
+            {% for chapter in audiobook.chapters %}
+            <li>
+                <input type="hidden" name="chapters[{{chapter.id}}]" value="{{chapter.id}}"/>
+                <div class="chapter-book">
+
+                    <svg class="chapter-book__drag square-24 handle hide-mobile">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#move-vertical-24' | theme}}"></use>
+                    </svg>
+
+                    <div class="chapter-book__body">
+                        <div class="chapter-book__title ui-text-head--3">
+                            <a class="ui-link _violet" href="/book-add-text/{{book.id}}/{{chapter.id}}">
+                    <span class="ui-text--bold chapter-title">
+                        {{ chapter.title|raw }}
+                    </span>
+                            </a>
+                            {% if not chapter.isFree %}
+                            <svg class="square-16">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#lock-filled-16' | theme}}"></use>
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="chapter-book__info-container">
+
+                            {% partial '@chapter-status' chapter=chapter %}
+
+                            {% if chapter.status.value != 'draft' and chapter.deferred.first.type.tag != 'create' %}
+                            <div class="chapter-book__status">
+                                <span>{{chapter.sales_type.getLabel()}}</span>
+                            </div>
+                            {% endif %}
+                            {% if chapter.deferred.first.type.tag == 'create' %}
+                            <div class="chapter-book__status">
+                                <span>Новая глава</span>
+                            </div>
+                            {% endif %}
+                            {% if chapter.published_at %}
+                            <div class="chapter-book__status">
+                                <span>{{carbon(chapter.published_at).format('d.m.y')}}</span>
+                            </div>
+                            {% endif %}
+                            <div class="chapter-book__status">
+                                <span>{{chapter.length}} зн.</span>
+                            </div>
+                        </div>
+
+                        {% for deferred in chapter.deferred %}
+                        {% if deferred.infoHelper.isVisible %}
+                        <div class="chapter-book__info-container">
+                            <div class="chapter-book__status">
+                                <svg class="square-16 attention">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
+                                </svg>
+
+                                <span class="ui-tooltip" data-tooltip="{{deferred.updated_at.format('H:i d.m.y')}}">{{deferred.infoHelper.label}}&nbsp;</span>
+                                {% if deferred.infoHelper.length %}
+                                <span>{{deferred.infoHelper.length}} зн. &nbsp;</span>
+                                {% endif %}
+                                {% if deferred.infoHelper.cancelAllowed %}
+                                <span onclick="uiconfirm(`{{deferred.infoHelper.cancelMessage}}`, () => oc.ajax('onCancel',{
+                                    data:{
+                                        flash:true,
+                                        chapter_id:`{{chapter.id}}`,
+                                        type: `{{deferred.infoHelper.typeValue}}`
+                                    }
+                                }))" class="ui-tooltip square-16" data-tooltip="Отменить">
+                                <svg class="square-16 ">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                                </svg>
+                                </span>
+                                {% endif %}
+
+                                {% if deferred.infoHelper.requestAllowed %}
+
+                                <span onclick="oc.ajax('onRequestDeferredModal',{
+                                    data:{
+                                        flash:true,
+                                        chapter_id:`{{chapter.id}}`
+                                    }
+                                })" class="ui-tooltip square-16" data-tooltip="Запросить слияние">
+                                <svg class="square-16 color-yellow">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme}}"></use>
+                                </svg>
+                            </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="chapter-book__action dropdown-menu">
+                        <svg class="square-16" data-dropdown="button">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
+                        </svg>
+
+                        <div class="dropdown-menu__container" data-dropdown="menu">
+                            <div class="dropdown-menu__wrapper">
+                                <a data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">
+                                    <button class="dropdown-menu__item">Редактировать</button>
+                                </a>
+                                <a onclick="deleteChapter(`{{chapter.id}}`)" class=" cursor-pointer">
+                                    <button class="dropdown-menu__item">Удалить</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% else %}
+
+    <div class="author__placeholder _indent">
+        <svg class="square-32">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-stroked-24' | theme}}"></use>
+        </svg>
+        <div class="ui-text-head--3 ui-text--bold">У вас нет добавленных аудиокниг</div>
+        <span>Загрузите свою первую аудиокнигу прямо сейчас</span>
+        <a data-turbo="false" href="/book-add-audio/{{book.id}}">
+            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile" type="submit">
+                Добавить аудиокнигу
+            </button>
+        </a>
+    </div>
+    {% endif %}
+    <style>
+        .chapter-title {
+            display: inherit;
+        }
+
+        .chapter-title > p {
+            margin-inline-end: 3px;
+        }
+    </style>
+
+    <script>
+        if (initSortable) {
+            initSortable('#sortable', 'audiobooker::onUpdateSortOrder')
+        }
+        openDropdown();
+
+        function deleteChapter(id) {
+            id && uiconfirm('Удалить часть?', () => oc.ajax('audiobooker::onDeleteChapter', {
+                    data: {
+                        chapter_id: id
+                    },
+                    flash: true
+                })
+            )
+        }
+    </script>
+
+</div>
