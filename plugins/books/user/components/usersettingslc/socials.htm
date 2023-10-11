@@ -1,6 +1,10 @@
 <form class="personal-area__wrapper">
     <div class="personal-area__wrap _indent-large ui-text--bold ui-text-head--2">Управление аккаунтами</div>
 
+    <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">
+        Входить в аккаунт можно с помощью любимой социальной сети
+    </div>
+
     <div class="personal-area-security">
         {% for social in socials %}
 
@@ -8,9 +12,14 @@
             <div class="personal-area-security__social">
                 <svg class="square-16 _{{social.short_tag}}">
                     <use
-                        xlink:href="{{('assets/icon-sprite/svg-sprite.svg#social-'~social.tag~'-stroked-16') | theme}}"></use>
+                        xlink:href="{{('assets/icon-sprite/svg-sprite.svg#social-'~social.tag~'-stroked-16') | theme}}">
+                    </use>
                 </svg>
-                <span>{{social.exists ? '':'Подключите аккаунт '}}  {{social.label}}</span>
+                <span>
+                    {{ social.exists
+                        ? social.label ~ ' - подключен'
+                        : 'Подключите аккаунт ' ~ social.label }}
+                </span>
             </div>
             {% if not social.exists %}
             <a href="{{social.url}}"
