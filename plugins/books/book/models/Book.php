@@ -158,6 +158,7 @@ class Book extends Model
     public $hasOne = [
         'author' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'owner'],
         'ebook' => [Edition::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'ebook'],
+        'audiobook' => [Edition::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'audio'],
         'stats' => [Stats::class, 'key' => 'book_id', 'otherKey' => 'id'],
         'advert' => [Advert::class, 'key' => 'book_id', 'otherKey' => 'id'],
     ];

@@ -3,9 +3,9 @@
 namespace Books\Book\Components;
 
 use Books\Book\Classes\ChapterService;
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
-use Books\Book\Classes\Services\TextCleanerService;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
@@ -28,13 +28,13 @@ use Validator;
  *
  * @link https://docs.octobercms.com/3.x/extend/cms-components.html
  */
-class Chapterer extends ComponentBase
+class AudioChapterer extends ComponentBase
 {
     protected User $user;
 
     protected Book $book;
 
-    protected Edition $ebook;
+    protected Edition $audiobook;
 
     protected Chapter $chapter;
 
@@ -68,9 +68,9 @@ class Chapterer extends ComponentBase
         }
         $this->user = Auth::getUser();
         $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
-        $this->ebook = $this->book->ebook;
-        $this->chapter = $this->ebook->chapters()->find($this->param('chapter_id')) ?? new Chapter();
-        $this->chapterManager = ($this->ebook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->ebook);
+        $this->audiobook = $this->getAudioBook();
+        $this->chapter = $this->audiobook->chapters()->find($this->param('chapter_id')) ?? new Chapter();
+        $this->chapterManager = ($this->audiobook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->audiobook);
         $this->prepareVals();
 
         $this->registerBreadcrumbs();
@@ -79,7 +79,7 @@ class Chapterer extends ComponentBase
     public function prepareVals()
     {
         $this->page['book'] = $this->book;
-        $this->page['ebook'] = $this->ebook;
+        $this->page['audiobook'] = $this->audiobook;
         $this->page['chapter'] = $this->chapter;
         $this->page['times'] = collect(CarbonPeriod::create(today(), '1 hour', today()->copy()->addHours(23))->toArray())->map->format('H:i');
     }
@@ -88,11 +88,8 @@ class Chapterer extends ComponentBase
     {
         try {
             $data = collect(post());
-            if ($data->has('chapter_content')) {
-                $data['content'] = $data['chapter_content'] = TextCleanerService::cleanContent($data['chapter_content']);
-            }
 
-            $data['type'] = EditionsEnums::Ebook;
+            $data['type'] = EditionsEnums::Audio;
 
             if ($status = $data['action'] ?? false) {
                 switch ($status) {
@@ -128,14 +125,14 @@ class Chapterer extends ComponentBase
             $validator = Validator::make(
                 $data->toArray(),
                 collect((new Chapter())->rules)->only([
-                    'title', 'content', 'published_at',
+                    'title', 'content', 'published_at', 'type'
                 ])->toArray()
             );
             if ($validator->fails()) {
                 throw new ValidationException($validator);
             }
 
-            $this->chapter = $this->chapterManager->from($data->toArray());
+            $this->chapter = $this->chapterManager->from($data->toArray()); dd($this->chapter);
 
             return Redirect::to('/about-book/' . $this->book->id)->withFragment('#electronic')->setLastModified(now());
         } catch (Exception $ex) {
@@ -163,11 +160,20 @@ class Chapterer extends ComponentBase
     {
         $manager = app(BreadcrumbsManager::class);
 
-        $manager->register('lc-add-book-add-text', function (BreadcrumbsGenerator $trail, $params) {
+        $manager->register('lc-add-book-add-audio', function (BreadcrumbsGenerator $trail, $params) {
             $trail->parent('lc');
             $trail->push('Книги', '/lc-books');
             $trail->push($this->book->title, '/about-book/' . $this->book->id);
-            $trail->push('Добавление текста');
+            $trail->push('Добавление аудиокниги');
         });
+    }
+
+    private function getAudioBook(): Edition
+    {
+        return $this->book->audiobook
+            ?? $this->book->audiobook()->create([
+                'type' => EditionsEnums::Audio,
+                'status' => BookStatus::HIDDEN
+            ]);
     }
 }

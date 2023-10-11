@@ -18,6 +18,8 @@ use Books\Book\Classes\WidgetService;
 use Books\Book\Components\AboutBook;
 use Books\Book\Components\AdvertBanner;
 use Books\Book\Components\AdvertLC;
+use Books\Book\Components\AudioBooker;
+use Books\Book\Components\AudioChapterer;
 use Books\Book\Components\AwardsLC;
 use Books\Book\Components\BookAwards;
 use Books\Book\Components\BookCard;
@@ -208,8 +210,10 @@ class Plugin extends PluginBase
             AboutBook::class => 'AboutBook',
             Booker::class => 'booker',
             EBooker::class => 'ebooker',
+            AudioBooker::class => 'audiobooker',
             LCBooker::class => 'LCBooker',
             Chapterer::class => 'Chapterer',
+            AudioChapterer::class => 'AudioChapterer',
             BookPage::class => 'BookPage',
             Reader::class => 'reader',
             BookCard::class => 'bookCard',
