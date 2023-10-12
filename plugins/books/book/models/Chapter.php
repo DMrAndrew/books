@@ -102,7 +102,7 @@ class Chapter extends Model
         'type' => EditionsEnums::class,
         'status' => ChapterStatus::class,
         'sales_type' => ChapterSalesType::class,
-        'audio' => ['nullable', 'file', 'mimes:mp3,mp4'],
+        //'audio' => ['nullable', 'file', 'mimes:mp3,aac'],
         'picture' => ['nullable', 'file', 'jpeg,jpg,png'],
     ];
 

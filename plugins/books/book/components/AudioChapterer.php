@@ -81,7 +81,7 @@ class AudioChapterer extends ComponentBase
             [
                 'modelClass' => Chapter::class,
                 'deferredBinding' => false,
-                "placeholderText" => "",
+                //"placeholderText" => "Скан паспорта с пропиской (данные паспорта не хранятся и удаляются сразу после проверки)",
                 "maxSize" => 30,
                 //"isMulti" => false,
                 "fileTypes" => ".mp3,.aac",

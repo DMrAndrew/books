@@ -20,7 +20,7 @@
 
                     <div class="chapter-book__body">
                         <div class="chapter-book__title ui-text-head--3">
-                            <a class="ui-link _violet" href="/book-add-text/{{book.id}}/{{chapter.id}}">
+                            <a class="ui-link _violet" href="/book-add-audio/{{book.id}}/{{chapter.id}}">
                     <span class="ui-text--bold chapter-title">
                         {{ chapter.title|raw }}
                     </span>
@@ -109,7 +109,7 @@
 
                         <div class="dropdown-menu__container" data-dropdown="menu">
                             <div class="dropdown-menu__wrapper">
-                                <a data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">
+                                <a data-turbo="false" href="/book-add-audio/{{book.id}}/{{chapter.id}}">
                                     <button class="dropdown-menu__item">Редактировать</button>
                                 </a>
                                 <a onclick="deleteChapter(`{{chapter.id}}`)" class=" cursor-pointer">
