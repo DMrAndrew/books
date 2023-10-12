@@ -2,6 +2,7 @@
 
 namespace Books\Book\Components;
 
+use Books\Book\Classes\BookService;
 use Books\Book\Classes\ChapterService;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterStatus;
@@ -18,6 +19,7 @@ use Carbon\CarbonPeriod;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
+use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
@@ -71,7 +73,11 @@ class AudioChapterer extends ComponentBase
         $this->user = Auth::getUser();
         $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
         $this->audiobook = $this->getAudioBook();
-        $this->chapter = $this->audiobook->chapters()->find($this->param('chapter_id')) ?? new Chapter();
+        $this->chapter = $this->audiobook->chapters()->find($this->param('chapter_id'))
+            ?? new Chapter([
+                'edition_id' => $this->audiobook->id,
+                'type' => EditionsEnums::Audio,
+            ]);
         $this->chapterManager = ($this->audiobook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->audiobook);
         $this->prepareVals();
 
@@ -80,10 +86,8 @@ class AudioChapterer extends ComponentBase
             'audioUploader',
             [
                 'modelClass' => Chapter::class,
-                'deferredBinding' => false,
-                //"placeholderText" => "Скан паспорта с пропиской (данные паспорта не хранятся и удаляются сразу после проверки)",
+                'deferredBinding' => ! (bool) $this->chapter->id,
                 "maxSize" => 30,
-                //"isMulti" => false,
                 "fileTypes" => ".mp3,.aac",
             ]
         );
@@ -102,6 +106,12 @@ class AudioChapterer extends ComponentBase
 
     public function onSave()
     {
+
+//        $uploadedFile = (new Chapter())->audio()->withDeferred($this->getSessionKey())->get()?->first();
+//        if (!$uploadedFile) {
+//            throw new ValidationException(['audio' => 'Файл не найден.']);
+//        }
+
         try {
             $data = collect(post());
 
@@ -141,14 +151,16 @@ class AudioChapterer extends ComponentBase
             $validator = Validator::make(
                 $data->toArray(),
                 collect((new Chapter())->rules)->only([
-                    'title', 'content', 'published_at', 'type'
+                    'title', 'audio', 'published_at', 'type'
                 ])->toArray()
             );
             if ($validator->fails()) {
                 throw new ValidationException($validator);
             }
 
-            $this->chapter = $this->chapterManager->from($data->toArray());
+            $this->chapter
+                ->fill($data->toArray())
+                ->save(sessionKey: $this->getSessionKey());
 
             return Redirect::to('/about-book/' . $this->book->id)->withFragment('#electronic')->setLastModified(now());
         } catch (Exception $ex) {
@@ -168,6 +180,25 @@ class AudioChapterer extends ComponentBase
         return [];
     }
 
+    private function getAudioBook(): Edition
+    {
+        return $this->book->audiobook
+            ?? $this->book->audiobook()->create([
+                'type' => EditionsEnums::Audio,
+                'status' => BookStatus::HIDDEN
+            ]);
+    }
+
+    public function getSessionKey()
+    {
+        return post('_session_key');
+    }
+
+    public function onRefreshFiles()
+    {
+        $this->pageCycle();
+    }
+
     /**
      * @return void
      * @throws DuplicateBreadcrumbException
@@ -182,14 +213,5 @@ class AudioChapterer extends ComponentBase
             $trail->push($this->book->title, '/about-book/' . $this->book->id);
             $trail->push('Добавление аудиокниги');
         });
-    }
-
-    private function getAudioBook(): Edition
-    {
-        return $this->book->audiobook
-            ?? $this->book->audiobook()->create([
-                'type' => EditionsEnums::Audio,
-                'status' => BookStatus::HIDDEN
-            ]);
     }
 }
