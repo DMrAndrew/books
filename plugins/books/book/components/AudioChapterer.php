@@ -106,12 +106,6 @@ class AudioChapterer extends ComponentBase
 
     public function onSave()
     {
-
-//        $uploadedFile = (new Chapter())->audio()->withDeferred($this->getSessionKey())->get()?->first();
-//        if (!$uploadedFile) {
-//            throw new ValidationException(['audio' => 'Файл не найден.']);
-//        }
-
         try {
             $data = collect(post());
 
@@ -162,22 +156,12 @@ class AudioChapterer extends ComponentBase
                 ->fill($data->toArray())
                 ->save(sessionKey: $this->getSessionKey());
 
-            return Redirect::to('/about-book/' . $this->book->id)->withFragment('#electronic')->setLastModified(now());
+            return Redirect::to('/book-add-audio/' . $this->book->id . '/' . $this->chapter->id);
+
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
             return [];
         }
-    }
-
-    public function onInitEditor()
-    {
-        if ($this->chapterManager->isNew()) {
-            return [];
-        }
-        if ($body = post('body')) {
-            return ['answer' => $this->chapterManager->initUpdateBody($body)];
-        }
-        return [];
     }
 
     private function getAudioBook(): Edition

@@ -435,4 +435,16 @@ class Plugin extends PluginBase
             $trail->push('Подписки');
         });
     }
+
+    /**
+     * @return array []
+     */
+    public function registerMarkupTags(): array
+    {
+        return [
+            'functions' => [
+                'humanFileSize' => function(string|int $kilobytes) { return humanFileSize($kilobytes); }
+            ],
+        ];
+    }
 }
