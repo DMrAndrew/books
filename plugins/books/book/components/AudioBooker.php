@@ -8,6 +8,8 @@ use Books\Book\Models\Chapter;
 use Books\Book\Models\Content;
 use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
+use Exception;
+use Flash;
 use RainLab\User\Facades\Auth;
 
 /**
@@ -71,5 +73,30 @@ class AudioBooker extends ComponentBase
                     'type' => EditionsEnums::Audio,
                     'status' => BookStatus::HIDDEN,
                 ]);
+    }
+
+    protected function renderChapters()
+    {
+        return [
+            '#audiobooker-chapters' => $this->renderPartial('@chapters', ['audiobook' => $this->audiobook]),
+        ];
+    }
+
+    public function onDeleteChapter(): array
+    {
+        try {
+            $chapter_id = post('chapter_id');
+            if ($chapter = $this->audiobook->chapters()->find($chapter_id)) {
+                $chapter->service()->delete();
+            }
+
+            $this->fresh();
+
+            return $this->renderChapters();
+        } catch (Exception $ex) {
+            Flash::error($ex->getMessage());
+
+            return $this->renderChapters();
+        }
     }
 }

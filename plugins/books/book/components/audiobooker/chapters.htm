@@ -21,9 +21,9 @@
                     <div class="chapter-book__body">
                         <div class="chapter-book__title ui-text-head--3">
                             <a class="ui-link _violet" href="/book-add-audio/{{book.id}}/{{chapter.id}}">
-                    <span class="ui-text--bold chapter-title">
-                        {{ chapter.title|raw }}
-                    </span>
+                                <span class="ui-text--bold chapter-title">
+                                    {{ chapter.title|raw }}
+                                </span>
                             </a>
                             {% if not chapter.isFree %}
                             <svg class="square-16">
@@ -42,7 +42,7 @@
                             {% endif %}
                             {% if chapter.deferred.first.type.tag == 'create' %}
                             <div class="chapter-book__status">
-                                <span>Новая глава</span>
+                                <span>Новая часть</span>
                             </div>
                             {% endif %}
                             {% if chapter.published_at %}
@@ -51,9 +51,17 @@
                             </div>
                             {% endif %}
                             <div class="chapter-book__status">
-                                <span>{{chapter.length}} зн.</span>
+                                <span>{{ humanFileSize(chapter.audio.file_size) }}</span>
                             </div>
                         </div>
+
+                        {% if chapter.audio %}
+                        <div class="personal-area__wrap _indent-large ui-input">
+                            <div class="personal-area__wrap _indent-medium">
+                                {% partial 'audioplayer/default' audiofile = chapter.audio %}
+                            </div>
+                        </div>
+                        {% endif %}
 
                         {% for deferred in chapter.deferred %}
                         {% if deferred.infoHelper.isVisible %}
@@ -81,21 +89,6 @@
                                         xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
                                 </svg>
                                 </span>
-                                {% endif %}
-
-                                {% if deferred.infoHelper.requestAllowed %}
-
-                                <span onclick="oc.ajax('onRequestDeferredModal',{
-                                    data:{
-                                        flash:true,
-                                        chapter_id:`{{chapter.id}}`
-                                    }
-                                })" class="ui-tooltip square-16" data-tooltip="Запросить слияние">
-                                <svg class="square-16 color-yellow">
-                                    <use
-                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme}}"></use>
-                                </svg>
-                            </span>
                                 {% endif %}
                             </div>
                         </div>
