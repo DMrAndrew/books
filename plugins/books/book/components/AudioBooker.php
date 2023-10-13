@@ -49,13 +49,7 @@ class AudioBooker extends ComponentBase
         }
 
         $this->vals();
-        //$this->setAllowedStatuses();
         $this->service = new EditionService($this->audiobook);
-    }
-
-    protected function setAllowedStatuses()
-    {
-        //$this->page['bookStatusCases'] = $this->audiobook->getAllowedStatusCases();
     }
 
     public function vals()
@@ -77,8 +71,5 @@ class AudioBooker extends ComponentBase
                     'type' => EditionsEnums::Audio,
                     'status' => BookStatus::HIDDEN,
                 ]);
-            //?? throw new ApplicationException('Аудиокнига не найдена.');
-
-        //dd($this->audiobook);
     }
 }
