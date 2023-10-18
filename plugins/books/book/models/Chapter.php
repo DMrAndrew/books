@@ -10,6 +10,7 @@ use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Reader;
 use Books\Book\Classes\ScopeToday;
+use Books\Book\Classes\Services\AudioFileHelper;
 use Books\Book\Jobs\Paginate;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -287,5 +288,23 @@ class Chapter extends Model
     public function getQualifiedStatusColumn(): string
     {
         return $this->qualifyColumn('status');
+    }
+
+    public function getAudioLengthAttribute(): ?string
+    {
+        if ($this->type != EditionsEnums::Audio || !$this->audio) {
+            return null;
+        }
+
+        return AudioFileHelper::getAudioLengthHumanReadable(file: $this->audio);
+    }
+
+    public function getAudioLengthShortAttribute(): ?string
+    {
+        if ($this->type != EditionsEnums::Audio || !$this->audio) {
+            return null;
+        }
+
+        return AudioFileHelper::getAudioLengthHumanReadableShort(file: $this->audio);
     }
 }
