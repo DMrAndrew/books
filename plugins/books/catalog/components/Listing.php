@@ -399,6 +399,7 @@ class Listing extends ComponentBase
         $genre = Genre::slug($categorySlug)->first();
         if ($genre) {
             $this->filter->fromParams(['genreSlug' => $genre->id]);
+            $this->categorySlugModel = $genre;
 
             return true;
         }
@@ -416,6 +417,7 @@ class Listing extends ComponentBase
         $type = Type::slug($categorySlug)->first();
         if ($type) {
             $this->filter->fromParams(['typeSlug' => $type->id]);
+            $this->categorySlugModel = $type;
 
             return true;
         }
