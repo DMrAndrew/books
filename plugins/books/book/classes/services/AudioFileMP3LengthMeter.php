@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace Books\Book\Classes\Services;
 
-class AudioFileMP3LengthMeter
-{
-    protected $filename;
+use Books\Book\Classes\Contracts\iAudioFileFormatLengthMeter;
 
-    public function __construct($filename)
+class AudioFileMP3LengthMeter implements iAudioFileFormatLengthMeter
+{
+    protected string $filename;
+
+    public function __construct(string $filename)
     {
         $this->filename = $filename;
     }
@@ -28,7 +30,7 @@ class AudioFileMP3LengthMeter
     }
 
     //Read entire file, frame by frame... ie: Variable Bit Rate (VBR)
-    public function getDuration($use_cbr_estimate = false)
+    public function getDuration($use_cbr_estimate = false): int
     {
         $fd = fopen($this->filename, "rb");
 
@@ -59,11 +61,11 @@ class AudioFileMP3LengthMeter
             }
             if ($use_cbr_estimate && !empty($info))
             {
-                return $this->estimateDuration($info['Bitrate'],$offset);
+                return (int) $this->estimateDuration($info['Bitrate'],$offset);
             }
         }
 
-        return round($duration);
+        return (int) round($duration);
     }
 
     private function estimateDuration($bitrate,$offset)

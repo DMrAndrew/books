@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace Books\Book\Classes\Services;
 
+use Exception;
 use System\Models\File;
 
-class AudioFileHelper
+class AudioFileLengthHelper
 {
     /**
      * @param File $file
@@ -14,11 +15,25 @@ class AudioFileHelper
      */
     public static function getAudioLengthInSeconds(File $file): ?int
     {
-        return match($file->extension) {
-            'aac' => 250,
-            'mp3' => (new AudioFileMP3LengthMeter($file->getPath()))->getDuration(),
+        $lengthMeterClass = match($file->extension) {
+            'mp3' => AudioFileMP3LengthMeter::class,
+            'aac' => AudioFileAACLengthMeter::class,
             default => null
         };
+
+        if (!$lengthMeterClass) {
+            return null;
+        }
+
+        try {
+            $filePath = $file->getLocalPath();
+            $lengthMeter = new $lengthMeterClass($filePath);
+
+            return $lengthMeter->getDuration();
+
+        } catch (Exception $e) {
+            return null;
+        }
     }
 
     /**

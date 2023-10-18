@@ -10,7 +10,7 @@ use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Reader;
 use Books\Book\Classes\ScopeToday;
-use Books\Book\Classes\Services\AudioFileHelper;
+use Books\Book\Classes\Services\AudioFileLengthHelper;
 use Books\Book\Jobs\Paginate;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -296,7 +296,7 @@ class Chapter extends Model
             return null;
         }
 
-        return AudioFileHelper::getAudioLengthHumanReadable(file: $this->audio);
+        return AudioFileLengthHelper::getAudioLengthHumanReadable(file: $this->audio);
     }
 
     public function getAudioLengthShortAttribute(): ?string
@@ -305,6 +305,6 @@ class Chapter extends Model
             return null;
         }
 
-        return AudioFileHelper::getAudioLengthHumanReadableShort(file: $this->audio);
+        return AudioFileLengthHelper::getAudioLengthHumanReadableShort(file: $this->audio);
     }
 }
