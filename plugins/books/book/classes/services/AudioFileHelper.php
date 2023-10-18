@@ -15,8 +15,8 @@ class AudioFileHelper
     public static function getAudioLengthInSeconds(File $file): ?int
     {
         return match($file->extension) {
-            'aac' => (new AudioFileMP3LengthMeter($file->getPath()))->getDuration(),
-            'mp3' => 250,
+            'aac' => 250,
+            'mp3' => (new AudioFileMP3LengthMeter($file->getPath()))->getDuration(),
             default => null
         };
     }
@@ -46,12 +46,16 @@ class AudioFileHelper
     }
 
     /**
-     * @param int $seconds
+     * @param int|null $seconds
      *
-     * @return string
+     * @return string|null
      */
-    public static function formatSecondsToHumanReadableTime(int $seconds): string
+    public static function formatSecondsToHumanReadableTime(?int $seconds): ?string
     {
+        if (!$seconds) {
+            return null;
+        }
+
         $dtF = new \DateTime('@0');
         $dtT = new \DateTime("@$seconds");
 
@@ -70,12 +74,16 @@ class AudioFileHelper
     }
 
     /**
-     * @param int $seconds
+     * @param int|null $seconds
      *
-     * @return string
+     * @return string|null
      */
-    public static function formatSecondsToHumanReadableTimeShort(int $seconds): string
+    public static function formatSecondsToHumanReadableTimeShort(?int $seconds): ?string
     {
+        if (!$seconds) {
+            return null;
+        }
+
         // day+
         if ($seconds > 24 * 60 * 60) {
             return gmdate("d H:i:s", $seconds);
