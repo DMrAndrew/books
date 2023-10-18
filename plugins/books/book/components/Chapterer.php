@@ -88,7 +88,7 @@ class Chapterer extends ComponentBase
         try {
             $data = collect(post());
             if ($data->has('chapter_content')) {
-                $data['content'] = $data['chapter_content']= TextCleanerService::cleanContent($data['chapter_content']);
+                $data['content'] = $data['chapter_content'] = TextCleanerService::cleanContent($data['chapter_content']);
             }
 
             if ($status = $data['action'] ?? false) {

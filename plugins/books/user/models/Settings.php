@@ -60,7 +60,7 @@ class Settings extends Model
         return $builder->whereIn('type', collect($types)->pluck('value')->toArray());
     }
 
-    public function scopeValue(Builder $builder, BoolOptionsEnum|PrivacySettingsEnum ...$types): Builder
+    public function scopeValueIs(Builder $builder, BoolOptionsEnum|PrivacySettingsEnum ...$types): Builder
     {
         return $builder->whereIn('value', collect($types)->pluck('value')->toArray());
     }

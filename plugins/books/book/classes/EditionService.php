@@ -31,7 +31,8 @@ class EditionService
         $this->edition->fill($data->toArray());
 
         if ($this->edition->isDirty(['status']) && ! in_array($this->edition->status, $this->edition->getAllowedStatusCases())) {
-            throw new ValidationException(['status' => 'В данный момент Вы не можете перевести издание в статус `'.$this->edition->status->name.'`']);
+            throw new ValidationException(['status' => sprintf('В данный момент Вы не можете перевести издание в статус `%s`',$this->edition->status->name)]);
+           // throw new ValidationException(['status' => 'В данный момент Вы не можете перевести издание в статус `'.$this->edition->status->name.'`']);
         }
         //        if ($this->edition->isDirty(['free_parts', 'price']) && !$this->edition->editAllowed()) {
         //            throw new ValidationException(['edition' => 'Для книги запрещено редактирование продаж']);
@@ -76,7 +77,6 @@ class EditionService
 
     private function fireEvents(Collection $data): void
     {
-        $events = [];
         // книга была в статусе "Скрыта" перешла в "В работе" или "Завершена"
         if (
             $this->edition->isDirty(['status'])

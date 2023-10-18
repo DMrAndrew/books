@@ -214,22 +214,22 @@ return [
             'balanceMaxShift' => 2,
             'balanceCooldown' => 2,
         ],
-        'supervisor-3' => [
-            'connection' => 'redis',
-            'queue' => ['clearTrackers'],
-            'balance' => 'auto',
-            'autoScalingStrategy' => 'size',
-            'maxProcesses' => 20,
-            'minProcesses' => 2,
-            'maxTime' => 0,
-            'maxJobs' => 10,
-            'memory' => 1024,
-            'tries' => 1,
-            'timeout' => 10000,
-            'nice' => 0,
-            'balanceMaxShift' => 2,
-            'balanceCooldown' => 2,
-        ],
+//        'supervisor-3' => [
+//            'connection' => 'redis',
+//            'queue' => ['clearTrackers'],
+//            'balance' => 'auto',
+//            'autoScalingStrategy' => 'size',
+//            'maxProcesses' => 20,
+//            'minProcesses' => 2,
+//            'maxTime' => 0,
+//            'maxJobs' => 10,
+//            'memory' => 1024,
+//            'tries' => 1,
+//            'timeout' => 10000,
+//            'nice' => 0,
+//            'balanceMaxShift' => 2,
+//            'balanceCooldown' => 2,
+//        ],
 
     ],
 
@@ -258,9 +258,9 @@ return [
             'supervisor-2' => [
                 'maxProcesses' => 10,
             ],
-            'supervisor-3' => [
-                'maxProcesses' => 5,
-            ]
+//            'supervisor-3' => [
+//                'maxProcesses' => 5,
+//            ]
 
         ],
     ],

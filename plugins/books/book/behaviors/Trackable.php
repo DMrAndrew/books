@@ -113,7 +113,8 @@ class Trackable extends ExtensionBase
                 ->chapters()
                 ->select('id')
                 ->with(['pagination' => fn($p) => $p->select(['id', 'chapter_id'])->countUserTrackers($user)])
-                ->get()->pluck('pagination')
+                ->get()
+                ->pluck('pagination')
                 ->flatten(1)
                 ->pluck('trackers_count')->sum();
             if ($trackers_count > 3) {

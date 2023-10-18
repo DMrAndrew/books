@@ -3,6 +3,7 @@
 namespace Books\Book\Classes;
 
 use Books\Book\Models\Book;
+use Books\Book\Models\Chapter;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use October\Rain\Database\Collection;
@@ -46,6 +47,7 @@ class StatisticService
         $dates = collect($this->period->toArray())->reverse();
         $books = $this->class::query()
             ->whereIn('id', collect($needle)->pluck('id'))
+            ->when($this->class === Chapter::class, fn ($q) => $q->public())
             ->with(['trackers' => fn ($trackers) => $trackers->withoutTodayScope()->completed()])
             ->get();
 

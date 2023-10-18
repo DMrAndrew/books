@@ -3,7 +3,6 @@
 namespace Books\Book\Classes;
 
 use DiDom\Document;
-use Html;
 use Illuminate\Support\Collection;
 use Str;
 
@@ -180,6 +179,7 @@ class BookUtilities
                 'length' => self::countContentLength($node->textContent),
             ]);
         }
+
         if ($mode === SaveHtmlMode::WITH_WRAP) {
             return collect($dom->toElement()->children())->map(fn ($node) => [
                 'html' => $node->html(),
@@ -201,7 +201,7 @@ class BookUtilities
     public static function stringToDiDom(?string $content): Document
     {
         $diDom = new Document();
-        $content = $content ?: '<p></p>';
+        $content = $content ? "<p>{$content}</p>" : '<p></p>';
         $content = trim(Str::squish($content));
         $diDom->loadHtml($content, LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
 

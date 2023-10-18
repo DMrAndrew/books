@@ -36,7 +36,6 @@ class BookUpdated extends BaseEvent
     public static function makeParamsFromEvent(array $args, $eventName = null): array
     {
         $book = Arr::get($args, 0);
-        $author = $book->authors()->owner(true)->first();
 
         $symbolsCount = (int) Arr::get($args, 1);
 
@@ -44,7 +43,6 @@ class BookUpdated extends BaseEvent
             static::defaultParams(),
             [
                 'book' => Arr::get($args, 0),
-                'author' => $author,
                 'symbols_count' => $symbolsCount,
                 'recipients' => static::getRecipients($args),
             ],
@@ -62,10 +60,12 @@ class BookUpdated extends BaseEvent
         return Lib::query()
             ->book($book)
             ->whereIn('type', [
-                CollectionEnum::INTERESTED->value,
                 CollectionEnum::READING->value,
             ])
             ->with('favorites.user')
+            ->whereHas('favorites.user', function ($q) {
+                $q->settingsEnabledUpdateLibraryItemsNotifications();
+            })
             ->get()
             ->transform(static function (Lib $lib) {
                 return $lib?->favorites?->first()?->user;
