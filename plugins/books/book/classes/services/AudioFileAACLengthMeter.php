@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace Books\Book\Classes\Services;
 
 use Books\Book\Classes\Contracts\iAudioFileFormatLengthMeter;
+use Owenoj\LaravelGetId3\GetId3;
 
 class AudioFileAACLengthMeter implements iAudioFileFormatLengthMeter
 {
-    protected string $filename;
+    private string $filename;
 
     public function __construct(string $filename)
     {
@@ -16,26 +17,13 @@ class AudioFileAACLengthMeter implements iAudioFileFormatLengthMeter
 
     public function getDuration(): int
     {
-        return (int) self::getDurationOfWavInMs();
-    }
+        $getID3 = new getID3($this->filename);
+        $fileInfo = $getID3->extractInfo();
 
-    private function getDurationOfWavInMs(): float|int|string
-    {
-        $time = self::getDurationOfWav();
+        if (isset($fileInfo['playtime_seconds'])) {
+            return (int) $fileInfo['playtime_seconds'];
+        }
 
-        list($hms, $milli) = explode('.', $time);
-        list($hours, $minutes, $seconds) = explode(':', $hms);
-        $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
-
-        return ($totalSeconds * 1000) + $milli;
-    }
-
-    /**
-     * @return string
-     */
-    private function getDurationOfWav() {
-        $cmd = "ffmpeg -i " . escapeshellarg($this->filename) . " 2>&1 | grep 'Duration' | cut -d ' ' -f 4 | sed s/,//";
-
-        return exec($cmd);
+        return 0;
     }
 }

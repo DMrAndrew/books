@@ -23,7 +23,7 @@ id:'audioChaptererForm',
     {% if chapter.audio %}
         <div class="personal-area__wrap _indent-large ui-input">
             <div class="personal-area__wrap _indent-medium">
-                {% partial 'audioplayer/audio-data' audiofile = chapter.audio %}
+                {% partial 'audioplayer/audio-data' chapter=chapter audiofile=chapter.audio %}
                 {% partial 'audioplayer/default' audiofile = chapter.audio %}
             </div>
         </div>
