@@ -64,6 +64,12 @@
                                 {% partial 'audioplayer/default' audiofile = chapter.audio %}
                             </div>
                         </div>
+                        {% else %}
+                        <div class="chapter-book__info-container">
+                            <div class="chapter-book__status">
+                                <span>Аудиофайл не загружен</span>
+                            </div>
+                        </div>
                         {% endif %}
 
                         {% for deferred in chapter.deferred %}

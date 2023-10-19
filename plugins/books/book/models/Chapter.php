@@ -296,7 +296,22 @@ class Chapter extends Model
             return null;
         }
 
-        return AudioFileLengthHelper::getAudioLengthHumanReadable(file: $this->audio);
+        /**
+         * Считаем длительность в секундах один раз,
+         * и сохраняем в поле length, чтобы не парсить файл при каждом запросе,
+         * так как файлы не редактируются
+         */
+        if (!$this->length) {
+            $durationInSeconds = AudioFileLengthHelper::getAudioLengthInSeconds(file: $this->audio);
+            if ($durationInSeconds) {
+                $this->length = $durationInSeconds;
+                $this->saveQuietly();
+            }
+
+            return AudioFileLengthHelper::formatSecondsToHumanReadableTime($durationInSeconds);
+        }
+
+        return AudioFileLengthHelper::formatSecondsToHumanReadableTime($this->length);
     }
 
     public function getAudioLengthShortAttribute(): ?string
@@ -305,6 +320,16 @@ class Chapter extends Model
             return null;
         }
 
-        return AudioFileLengthHelper::getAudioLengthHumanReadableShort(file: $this->audio);
+        if (!$this->length) {
+            $durationInSeconds = AudioFileLengthHelper::getAudioLengthInSeconds(file: $this->audio);
+            if ($durationInSeconds) {
+                $this->length = $durationInSeconds;
+                $this->saveQuietly();
+            }
+
+            return AudioFileLengthHelper::getAudioLengthHumanReadableShort($durationInSeconds);
+        }
+
+        return AudioFileLengthHelper::getAudioLengthHumanReadableShort($this->length);
     }
 }

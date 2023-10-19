@@ -68,7 +68,7 @@ class AudioFileMP3LengthMeter implements iAudioFileFormatLengthMeter
         return (int) round($duration);
     }
 
-    private function estimateDuration($bitrate,$offset)
+    private function estimateDuration($bitrate, $offset)
     {
         $kbps = ($bitrate*1000)/8;
         $datasize = filesize($this->filename) - $offset;

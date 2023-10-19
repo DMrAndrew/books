@@ -27,6 +27,16 @@ id:'audioChaptererForm',
                 {% partial 'audioplayer/default' audiofile = chapter.audio %}
             </div>
         </div>
+
+        <button data-request="AudioChapterer::onDeleteAudiofile"
+                data-request-data="chapter_id:{{ chapter.id }}"
+                data-request-flash="1"
+                data-request-confirm="Вы действительно хотите удалить аудиофайл?"
+                type="button"
+                class="personal-area__wrap _indent-large ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">
+            Удалить аудиофайл
+        </button>
+
     {% else %}
         <div class="personal-area__wrap _indent-large ui-input">
             <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">

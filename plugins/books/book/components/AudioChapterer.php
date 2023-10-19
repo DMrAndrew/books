@@ -164,6 +164,31 @@ class AudioChapterer extends ComponentBase
         }
     }
 
+    public function onDeleteAudiofile()
+    {
+        try {
+            $chapterId = post('chapter_id');
+            $chapter = Chapter::findOrFail($chapterId);
+
+            if (!in_array(
+                $this->user->profile->id,
+                $chapter->edition->book->authors->pluck('profile_id')->toArray()
+            )) {
+                abort(404);
+            }
+
+            $chapter->audio->delete();
+            $chapter->length = null;
+            $chapter->save();
+
+            return Redirect::refresh();
+
+        } catch (Exception $e) {
+            Flash::error($e->getMessage());
+            return [];
+        }
+    }
+
     private function getAudioBook(): Edition
     {
         return $this->book->audiobook

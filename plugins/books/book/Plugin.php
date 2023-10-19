@@ -443,7 +443,7 @@ class Plugin extends PluginBase
     {
         return [
             'functions' => [
-                'humanFileSize' => function(string|int $kilobytes) { return humanFileSize($kilobytes); }
+                'humanFileSize' => function(mixed $kilobytes) { return humanFileSize($kilobytes); }
             ],
         ];
     }
