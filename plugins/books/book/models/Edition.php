@@ -8,6 +8,7 @@ use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\ElectronicFormats;
 use Books\Book\Classes\PriceTag;
+use Books\Book\Classes\Services\AudioFileLengthHelper;
 use Books\Book\Classes\UpdateHistory;
 use Books\Book\Classes\UpdateHistoryView;
 use Books\Book\Jobs\ParseFB2;
@@ -566,5 +567,23 @@ class Edition extends Model implements ProductInterface
     public function getQualifiedPriceColumn(): string
     {
         return $this->qualifyColumn('price');
+    }
+
+    public function getAudioLengthAttribute(): ?string
+    {
+        if ($this->type != EditionsEnums::Audio) {
+            return null;
+        }
+
+        return AudioFileLengthHelper::formatSecondsToHumanReadableTime($this->length);
+    }
+
+    public function getAudioLengthShortAttribute(): ?string
+    {
+        if ($this->type != EditionsEnums::Audio) {
+            return null;
+        }
+
+        return AudioFileLengthHelper::getAudioLengthHumanReadableShort($this->length);
     }
 }
