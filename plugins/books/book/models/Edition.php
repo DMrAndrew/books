@@ -241,7 +241,10 @@ class Edition extends Model implements ProductInterface
 
     public function getReadPercentAttribute(): int
     {
-        return min(100, (int) ceil((($this->read_length ?? 0) * 100) / $this->length));
+        return match ($this->type) {
+            EditionsEnums::Ebook => min(100, (int) ceil((($this->read_length ?? 0) * 100) / $this->length)),
+            EditionsEnums::Audio => 0, // todo
+        };
     }
 
     public function scopeWithActiveDiscountExist(Builder $builder): Builder
