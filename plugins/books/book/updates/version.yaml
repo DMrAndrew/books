@@ -101,3 +101,6 @@
 1.0.30:
     - 'SEO поля'
     - update_books_add_seo_fields.php
+1.0.31:
+    - 'Внешние ключи'
+    - update_foreign_keys.php

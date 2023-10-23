@@ -12,3 +12,6 @@
 1.0.4:
     - 'История операций'
     - create_operation_histories_table.php
+1.0.5:
+    - 'Внешние ключи'
+    - update_foreign_keys.php

@@ -10,3 +10,6 @@
 1.0.4:
     - 'Withdrawal update birthday field type'
     - update_birthday_field_type.php
+1.0.5:
+    - 'Внешние ключи'
+    - update_foreign_keys.php
