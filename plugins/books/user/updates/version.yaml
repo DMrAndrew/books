@@ -11,3 +11,6 @@
 1.0.3:
     - 'Псевдоним для пользователя'
     - add_users_nickname.php
+1.0.4:
+    - 'Внешние ключи'
+    - update_foreign_keys.php
