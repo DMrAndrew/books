@@ -67,8 +67,6 @@ class Review extends Model
         'approval_at'
     ];
 
-
-
     /**
      * @var array hasOne and other relations
      */
