@@ -74,6 +74,7 @@ class AudioBooker extends ComponentBase
             ?? new Edition([
                 'type' => EditionsEnums::Audio,
                 'status' => BookStatus::HIDDEN,
+                'book_id' => $this->property('book_id'),
             ]);
     }
 
