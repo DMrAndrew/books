@@ -36,7 +36,7 @@ class ReadProgress
 
     public function addToReading(): void
     {
-        if (get_class($this->tracker->trackable) === Edition::class) {
+        if (get_class($this->tracker->trackable) === Edition::class && $this->tracker->user_id) {
             $book = $this->tracker->trackable->book;
             $user = $this->tracker->user;
             $lib = $user->library($book);

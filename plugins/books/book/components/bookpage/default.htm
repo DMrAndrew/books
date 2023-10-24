@@ -10,9 +10,9 @@
             <div class="book-card-full__author-wrapper">
                 <div class="book-card-full__author-container tags-list">
                     {% for author in book.orderedAuthors %}
-                    <a href="/author-page/{{author.profile.id}}" class="book-card-full__author ui-link _violet" itemprop="author" itemscope itemtype="http://schema.org/Person">
-                        <span itemprop="name">{{author.profile.username}}</span>
-                    </a>
+                    <a href="/author-page/{{author.profile.id}}" class="book-card-full__author ui-link _violet"
+                       itemprop="author" itemscope itemtype="http://schema.org/Person">
+                        <span itemprop="name">{{author.profile.username}}</span></a>
                     {% endfor %}
                 </div>
                 {% if supportBtn %}

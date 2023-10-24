@@ -1,4 +1,7 @@
 1.0.1:
     - "Библиотека"
     - create_lib_table.php
+1.0.2:
+    - 'Внешние ключи'
+    - update_foreign_keys.php
 

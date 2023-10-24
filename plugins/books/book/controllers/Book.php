@@ -64,5 +64,7 @@ class Book extends Controller
 
         $query->leftJoin($authorsTableName, $authorsTableName . '.book_id', '=', $bookTableName . '.id');
         $query->leftJoin($profileTableName, $authorsTableName . '.profile_id', '=', $profileTableName . '.id');
+
+        $query->groupBy($bookTableName . '.id');
     }
 }

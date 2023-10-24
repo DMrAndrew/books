@@ -1,3 +1,6 @@
 1.0.1:
     - 'Комментарии'
     - create_comments_table.php
+1.0.2:
+    - 'Внешние ключи'
+    - update_foreign_keys.php
