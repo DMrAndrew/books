@@ -5,6 +5,7 @@
         <!-- Форма заказа -->
         {{ form_ajax('Order::onOrderSubmit', { id: 'orderForm', flash: true}) }}
         <input type="hidden" name="order_id" value="{{order.id}}">
+        <input type="hidden" name="edition_id" value="{{edition.id}}">
 
         <div class="buy-book-modal__container ui-modal-content">
 
