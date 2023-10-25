@@ -64,6 +64,7 @@ use WordForm;
  * @method HasOne ebook
  *
  * @property  Edition ebook
+ * @property  Edition audiobook
  *
  * @method AttachOne cover
  *
