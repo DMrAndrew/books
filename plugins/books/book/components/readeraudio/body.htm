@@ -1,0 +1,18 @@
+{% if redirectIfJSIsOff %}
+<noscript>
+    <meta http-equiv="refresh" content="0;url=https://bookstime.ru">
+</noscript>
+{% endif %}
+<input type="hidden" name="paginator_id" value="{{reader.paginator.id}}"/>
+<div class="reader__body">
+
+    {% if reader.chapter.audio %}
+        <div class="personal-area__wrap _indent-large ui-input">
+            <div class="personal-area__wrap _indent-medium">
+                {% partial 'audioplayer/default' audiofile = reader.chapter.audio %}
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% partial '@pagination' %}

@@ -13,13 +13,11 @@ use Illuminate\Database\Eloquent\Collection;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
-class Reader
+class ReaderAudio
 {
     protected Edition $edition;
 
     protected Collection $chapters;
-
-    protected Collection $pagination;
 
     protected Pagination $paginator;
 
@@ -28,36 +26,27 @@ class Reader
     public function __construct(
         protected Book $book,
         protected ?Chapter $chapter = null,
-        protected ?int $page = 1,
         protected ?User $user = null
     )
     {
-        //TODO refactor
-        //With Next and Prev
         $this->user ??= Auth::getUser();
         $this->book = Book::query()->withChapters()->defaultEager()->find($this->book->id)
             ?? $this->user?->profile->books()->withChapters()->defaultEager()->find($this->book->id)
             ?? abort(404);
         $this->page ??= 1;
-        $this->edition = $this->book->ebook;
-        $this->chapters = $this->edition->chapters;
-        $this->chapter = $this->edition->chapters()->with('content')->find($this->chapter?->id) ?? $this->chapters->first();
-        $this->setPage($this->page);
-    }
-
-    public function setContentGuard(bool $contentGuard): void
-    {
-        $this->contentGuard = $contentGuard;
+        $this->edition = $this->book->audiobook;
+        $this->chapters = $this->edition->chapters()->whereHas('audio')->get();
+        $this->chapter = $this->edition->chapters()->with('audio')->find($this->chapter?->id) ?? $this->chapters->first();
     }
 
     /**
      * @throws ChapterIsClosed
      */
-    public function setPage(?int $page): void
-    {
-        $this->page = $page;
-        $this->paginator = $this->chapter?->pagination()->page($this->page)?->first() ?? abort(404);
-    }
+//    public function setPage(?int $page): void
+//    {
+//        $this->page = $page;
+//        $this->paginator = $this->chapter?->pagination()->page($this->page)?->first() ?? abort(404);
+//    }
 
     public function isPageAllowed(): bool
     {
@@ -67,22 +56,10 @@ class Reader
             || ($this->user && $this->user->bookIsBought($this->edition));
     }
 
-    public function track(?int $ms, int $paginator_id)
-    {
-        if ($paginator = $this->chapter?->pagination()->find($paginator_id)) {
-            if ($tracker = $paginator->trackTime($ms)) {
-                $tracker->update(['length' => $paginator->length, 'progress' => 100]);
-                $tracker->progress();
-                return $tracker;
-            }
-        }
-    }
-
     public function readBtn(): bool
     {
-        return ! $this->nextPage()
-            && ! $this->nextChapter()
-            && $this->book->ebook->status === BookStatus::COMPLETE
+        return ! $this->nextChapter()
+            && $this->book->audiobook->status === BookStatus::COMPLETE
             && ($this->user && ! $this->user->library($this->book)->is(CollectionEnum::READ));
     }
 
@@ -97,35 +74,17 @@ class Reader
 
         return [
             'pagination' => [
-                'prev' => (bool) ($this->prevPage() ?? $this->prevChapter()),
-                'next' => (bool) ($this->nextPage() ?? $this->nextChapter()),
+                'prev' => (bool) ($this->prevChapter()),
+                'next' => (bool) ($this->nextChapter()),
                 'read' => $this->readBtn(),
-                'links' => $this->chapter->service()->getPaginationLinks($this->page),
             ],
             'chapters' => $this->chapters,
             'reader' => [
                 'chapter' => $this->chapter,
-                'paginator' => $this->paginator,
             ],
-            'redirectIfJSIsOff' => ! (! $this->prevChapter() && ! $this->prevPage()),
+            'redirectIfJSIsOff' => ! (! $this->prevChapter()),
             'book' => $this->book->newQuery()->defaultEager()->find($this->book->id),
         ];
-    }
-
-    /**
-     * @return Pagination|null $pagination
-     */
-    public function nextPage(): ?Pagination
-    {
-        return $this->paginator->next;
-    }
-
-    /**
-     * @return Pagination|null $pagination
-     */
-    public function prevPage(): ?Pagination
-    {
-        return $this->paginator->prev;
     }
 
     /**
@@ -142,5 +101,21 @@ class Reader
     public function prevChapter(): ?Chapter
     {
         return $this->chapter->prev;
+    }
+
+    /**
+     * @return Pagination|null $pagination
+     */
+    public function nextPage(): ?Pagination
+    {
+        return $this->paginator->next;
+    }
+
+    /**
+     * @return Pagination|null $pagination
+     */
+    public function prevPage(): ?Pagination
+    {
+        return $this->paginator->prev;
     }
 }

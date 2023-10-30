@@ -37,6 +37,7 @@ use Books\Book\Components\LCBooker;
 use Books\Book\Components\OutOfFree;
 use Books\Book\Components\Promocode;
 use Books\Book\Components\Reader;
+use Books\Book\Components\ReaderAudio;
 use Books\Book\Components\ReadStatistic;
 use Books\Book\Components\Widget;
 use Books\Book\Console\CleanHTMLContent;
@@ -216,6 +217,7 @@ class Plugin extends PluginBase
             AudioChapterer::class => 'AudioChapterer',
             BookPage::class => 'BookPage',
             Reader::class => 'reader',
+            ReaderAudio::class => 'readeraudio',
             BookCard::class => 'bookCard',
             ReadStatistic::class => 'readStatistic',
             Widget::class => 'widget',
