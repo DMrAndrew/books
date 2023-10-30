@@ -1,23 +1,15 @@
-<div id="ebooker-chapters">
-    {% if ebook.chapters.count() %}
+<div id="audiobooker-chapters">
+    {% if audiobook and audiobook.chapters.count() %}
 
-
-    <a href="/book-add-text/{{book.id}}">
-        <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Добавить текст
+    <a href="/book-add-audio/{{book.id}}">
+        <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">
+            Добавить аудиотекст
         </button>
     </a>
-    {% if mass_request %}
-    <a href="#" data-request="onRequestDeferredModal">
-        <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--1">Запросить
-            слияние
-        </button>
-    </a>
-    {% endif %}
-
 
     <div class="about-book__chapter-container">
-        <ul id="sortable">
-            {% for chapter in ebook.chapters %}
+        <ul id="audio-sortable">
+            {% for chapter in audiobook.chapters %}
             <li>
                 <input type="hidden" data-sortable="true" name="chapters[{{chapter.id}}]" value="{{chapter.id}}"/>
                 <div class="chapter-book">
@@ -28,10 +20,10 @@
 
                     <div class="chapter-book__body">
                         <div class="chapter-book__title ui-text-head--3">
-                            <a class="ui-link _violet" href="/book-add-text/{{book.id}}/{{chapter.id}}">
-                    <span class="ui-text--bold chapter-title">
-                        {{ chapter.title|raw }}
-                    </span>
+                            <a class="ui-link _violet" href="/book-add-audio/{{book.id}}/{{chapter.id}}">
+                                <span class="ui-text--bold chapter-title">
+                                    {{ chapter.title|raw }}
+                                </span>
                             </a>
                             {% if not chapter.isFree %}
                             <svg class="square-16">
@@ -50,7 +42,7 @@
                             {% endif %}
                             {% if chapter.deferred.first.type.tag == 'create' %}
                             <div class="chapter-book__status">
-                                <span>Новая глава</span>
+                                <span>Новая часть</span>
                             </div>
                             {% endif %}
                             {% if chapter.published_at %}
@@ -59,9 +51,26 @@
                             </div>
                             {% endif %}
                             <div class="chapter-book__status">
-                                <span>{{chapter.length}} зн.</span>
+                                <span>{{ humanFileSize(chapter.audio.file_size) }}</span>
+                            </div>
+                            <div class="chapter-book__status">
+                                <span>{{ chapter.audio_length }}</span>
                             </div>
                         </div>
+
+                        {% if chapter.audio %}
+                        <div class="personal-area__wrap _indent-large ui-input">
+                            <div class="personal-area__wrap _indent-medium">
+                                {% partial 'audioplayer/default' audiofile = chapter.audio %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="chapter-book__info-container">
+                            <div class="chapter-book__status">
+                                <span>Аудиофайл не загружен</span>
+                            </div>
+                        </div>
+                        {% endif %}
 
                         {% for deferred in chapter.deferred %}
                         {% if deferred.infoHelper.isVisible %}
@@ -90,21 +99,6 @@
                                 </svg>
                                 </span>
                                 {% endif %}
-
-                                {% if deferred.infoHelper.requestAllowed %}
-
-                                <span onclick="oc.ajax('onRequestDeferredModal',{
-                                    data:{
-                                        flash:true,
-                                        chapter_id:`{{chapter.id}}`
-                                    }
-                                })" class="ui-tooltip square-16" data-tooltip="Запросить слияние">
-                                <svg class="square-16 color-yellow">
-                                    <use
-                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme}}"></use>
-                                </svg>
-                            </span>
-                                {% endif %}
                             </div>
                         </div>
                         {% endif %}
@@ -117,7 +111,7 @@
 
                         <div class="dropdown-menu__container" data-dropdown="menu">
                             <div class="dropdown-menu__wrapper">
-                                <a data-turbo="false" href="/book-add-text/{{book.id}}/{{chapter.id}}">
+                                <a data-turbo="false" href="/book-add-audio/{{book.id}}/{{chapter.id}}">
                                     <button class="dropdown-menu__item">Редактировать</button>
                                 </a>
                                 <a onclick="deleteChapter(`{{chapter.id}}`)" class=" cursor-pointer">
@@ -136,13 +130,13 @@
 
     <div class="author__placeholder _indent">
         <svg class="square-32">
-            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-stroked-24' | theme}}"></use>
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-stroked-24' | theme}}"></use>
         </svg>
-        <div class="ui-text-head--3 ui-text--bold">У вас нет добавленных глав в книге</div>
-        <span>Добавьте свою первую главу прямо сейчас</span>
-        <a data-turbo="false" href="/book-add-text/{{book.id}}">
-            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile" type="submit">Добавить
-                текст
+        <div class="ui-text-head--3 ui-text--bold">У вас нет добавленных аудиокниг</div>
+        <span>Загрузите свою первую аудиокнигу прямо сейчас</span>
+        <a data-turbo="false" href="/book-add-audio/{{book.id}}">
+            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile" type="submit">
+                Добавить аудиокнигу
             </button>
         </a>
     </div>
@@ -159,12 +153,12 @@
 
     <script>
         if (initSortable) {
-            initSortable('#sortable', 'ebooker::onUpdateSortOrder')
+            initSortable('#audio-sortable', 'audiobooker::onUpdateSortOrder')
         }
         openDropdown();
 
         function deleteChapter(id) {
-            id && uiconfirm('Удалить часть?', () => oc.ajax('ebooker::onDeleteChapter', {
+            id && uiconfirm('Удалить часть?', () => oc.ajax('audiobooker::onDeleteChapter', {
                     data: {
                         chapter_id: id
                     },

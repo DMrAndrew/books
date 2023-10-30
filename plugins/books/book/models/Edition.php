@@ -8,6 +8,7 @@ use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\ElectronicFormats;
 use Books\Book\Classes\PriceTag;
+use Books\Book\Classes\Services\AudioFileLengthHelper;
 use Books\Book\Classes\UpdateHistory;
 use Books\Book\Classes\UpdateHistoryView;
 use Books\Book\Jobs\ParseFB2;
@@ -241,7 +242,10 @@ class Edition extends Model implements ProductInterface
 
     public function getReadPercentAttribute(): int
     {
-        return min(100, (int) ceil((($this->read_length ?? 0) * 100) / $this->length));
+        return match ($this->type) {
+            EditionsEnums::Ebook => min(100, (int) ceil((($this->read_length ?? 0) * 100) / $this->length)),
+            EditionsEnums::Audio => 0, // todo
+        };
     }
 
     public function scopeWithActiveDiscountExist(Builder $builder): Builder
@@ -321,24 +325,26 @@ class Edition extends Model implements ProductInterface
     }
 
     /**
-     * Функция определяет разрешённые статусы для книги
+     * Функция определяет разрешённые статусы для издания
      */
     public function getAllowedStatusCases(): array
     {
         $cases = collect(BookStatus::publicCases());
 
-        $cases = match ($this->getOriginal('status')) {
-            BookStatus::WORKING => $this->is_has_customers ? $cases->forget(BookStatus::HIDDEN) : $cases,
-            // нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
-            BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value),
-            // Из “Завершено” можем перевести только в статус “Скрыто”.
-            BookStatus::HIDDEN => $this->isPublished() && $this->is_has_completed && $this->is_has_customers ? $cases->only(BookStatus::COMPLETE->value) : $cases,
-            //Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”,
-            // то книгу можно вернуть в статус “Скрыто”, но редактирование и удаление глав будет невозможным если есть продажи.
-            default => collect()
-        };
+        if ($this->exists) {
+            $cases = match ($this->getOriginal('status')) {
+                BookStatus::WORKING => $this->is_has_customers ? $cases->forget(BookStatus::HIDDEN) : $cases,
+                // нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
+                BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value),
+                // Из “Завершено” можем перевести только в статус “Скрыто”.
+                BookStatus::HIDDEN => $this->isPublished() && $this->is_has_completed && $this->is_has_customers ? $cases->only(BookStatus::COMPLETE->value) : $cases,
+                //Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”,
+                // то книгу можно вернуть в статус “Скрыто”, но редактирование и удаление глав будет невозможным если есть продажи.
+                default => collect()
+            };
 
-        $cases[$this->getOriginal('status')->value] = $this->getOriginal('status');
+            $cases[$this->getOriginal('status')->value] = $this->getOriginal('status');
+        }
 
         return $cases->toArray();
     }
@@ -563,5 +569,23 @@ class Edition extends Model implements ProductInterface
     public function getQualifiedPriceColumn(): string
     {
         return $this->qualifyColumn('price');
+    }
+
+    public function getAudioLengthAttribute(): ?string
+    {
+        if ($this->type != EditionsEnums::Audio) {
+            return null;
+        }
+
+        return AudioFileLengthHelper::formatSecondsToHumanReadableTime($this->length);
+    }
+
+    public function getAudioLengthShortAttribute(): ?string
+    {
+        if ($this->type != EditionsEnums::Audio) {
+            return null;
+        }
+
+        return AudioFileLengthHelper::getAudioLengthHumanReadableShort($this->length);
     }
 }

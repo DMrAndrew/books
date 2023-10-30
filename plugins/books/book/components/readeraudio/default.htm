@@ -1,0 +1,58 @@
+
+<div class="reader" style="padding-top: 16px">
+    <div class="ui-container-fluid">
+        <!-- Хлебные крошки -->
+        {% component 'Breadcrumbs' %}
+
+        <!-- Тело страницы -->
+        <div class="ui-grid-container ui-grid-gap">
+            <div class="ui-col-sm-8 ui-col-md-9">
+                <a href="/book-card/{{book.id}}" class="ui-link _violet">
+                <h1 class="reader__title ui-text-head--2 ui-text--bold">
+                    {{book.title}}
+                </h1>
+                </a>
+
+                <div class="reader__header reader-header">
+                    <div class="reader-header__dropdown">
+                        <select  class="book-select" name="chapter_id" data-request="readeraudio::onChapter" id="reader-chapter-select" style="display: none">
+                            {% for chapter in chapters %}
+                            <option  value="{{chapter.id}}"
+                                     {{ reader.chapter.id == chapter.id ? 'selected' : ''  }}
+                            >{{chapter.title|md}}</option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                    <div class="reader-header__action">
+                        {% if book.ebook.exists %}
+                            <a href="/reader/{{book.ebook.id}}" class="reader-header__button">Текст</a>
+                        {% else %}
+                            <button class="reader-header__button" disabled>Текст</button>
+                        {% endif %}
+                    </div>
+                    <div class="reader-header__action">
+                        <button class="reader-header__button" disabled>Аудио</button>
+                    </div>
+                </div>
+                <div id="reader-body-spawn">
+                {% partial '@body' %}
+                </div>
+            </div>
+            <div class="reader__sidebar ui-col-sm-4 ui-col-md-3">
+                <div class="reader-user-section">
+                    {% partial '@user-section' %}
+                </div>
+
+<!--                <div class="reader__advert">-->
+<!--                    <img  alt="">-->
+<!--                </div>-->
+                {% component 'advertBanner' %}
+                {% component 'recommend' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% if ask_adult %}
+{% partial 'auth/adult-modal' active=1 %}
+{% endif %}

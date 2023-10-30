@@ -1,0 +1,27 @@
+{% if chapter.status.value == 'planned' %}
+<div class="chapter-book__status _waiting">
+    <svg class="square-16">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#clock-stroked-24' | theme}}"></use>
+    </svg>
+    <span>Опубликуется {{ carbon(chapter.published_at).format('d.m.y') }} в {{ carbon(chapter.published_at).format('H:i') }}</span>
+</div>
+{% endif %}
+{% if chapter.status.value == 'published' %}
+<div class="chapter-book__status _success">
+    <svg class="square-16">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>
+    </svg>
+    <span>Опубликовано </span>
+</div>
+{% endif %}
+
+{% if chapter.status.value == 'draft' %}
+<div class="chapter-book__status _draft">
+    <svg class="square-16">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>
+    </svg>
+    <span>Черновик</span>
+</div>
+{% endif %}
+
+

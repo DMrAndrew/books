@@ -1,0 +1,127 @@
+<div class="ui-container">
+    {% if not chapter.audio %}
+        <div class="create-book__title ui-text-head--2 ui-text--bold">Добавление аудиокниги в <a href="/about-book/{{book.id}}#electronic" class="ui-link _violet cursor-pointer">«{{book.title}}»</a></div>
+    {% else %}
+        <div class="create-book__title ui-text-head--2 ui-text--bold">Редактирование аудиокниги «{{chapter.title}}» в <a href="/about-book/{{book.id}}#electronic" class="ui-link _violet cursor-pointer">«{{book.title}}»</a></div>
+    {% endif %}
+</div>
+
+{{ form_ajax('AudioChapterer::onSave',{
+class: 'lc-book-text ui-container-fluid wrapper',
+id:'audioChaptererForm',
+'data-request-validate':'true',
+'data-request-flash':'true',
+'data-request-complete':'iniSelect()'
+}) }}
+    <div class="personal-area__wrap _indent-large ui-input">
+        <label class="ui-input-label">Название части</label>
+        <input class="ui-input-item _size-32" value="{{chapter.title}}" name="title" type="text">
+        <div class="ui-select-hitn"></div>
+        <div class="ui-select-error" data-validate-for="title"></div>
+    </div>
+
+    {% if chapter.audio %}
+        <div class="personal-area__wrap _indent-large ui-input">
+            <div class="personal-area__wrap _indent-medium">
+                {% partial 'audioplayer/audio-data' chapter=chapter audiofile=chapter.audio %}
+                {% partial 'audioplayer/default' audiofile = chapter.audio %}
+            </div>
+        </div>
+
+        <button data-request="AudioChapterer::onDeleteAudiofile"
+                data-request-data="chapter_id:{{ chapter.id }}"
+                data-request-flash="1"
+                data-request-confirm="Вы действительно хотите удалить аудиофайл?"
+                type="button"
+                class="personal-area__wrap _indent-large ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">
+            Удалить аудиофайл
+        </button>
+
+    {% else %}
+        <div class="personal-area__wrap _indent-large ui-input">
+            <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">
+                Загружайте файлы в формате <span class="attention">.MP3 или .AAC</span>
+                и размером <span class="attention">не более 10 МБ</span>.
+            </div>
+
+            {% component 'audioUploader' %}
+
+        </div>
+    {% endif %}
+
+    {% if not chapter.id  or not audiobooker.is_deferred %}
+    <div class="personal-area__wrap _indent-large">
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" name="action" value="publish_now" class="chapter-action-radio"
+                   {{ chapter.status.value == 'published'? 'checked':'' }}
+            hidden/>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">Опубликовать сейчас</span>
+        </label>
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" name="action" value="save_as_draft" class="chapter-action-radio"
+                   {{ chapter.id ? (chapter.status.value == 'draft' ? 'checked':'') : 'checked' }}
+
+                   hidden/>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">Сохранить как черновик</span>
+        </label>
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" id="published_at_radio" value="published_at" class="chapter-action-radio"
+                   {{ chapter.status.value == 'planned' ? 'checked':'' }}
+            name="action" hidden/>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">Назначить дату публикации</span>
+        </label>
+
+        <div class="personal-area__wrap _indent-small ui-input" id="published_at_input" style="display: none">
+
+        </div>
+            <label class="ui-input-label">Дата публикации</label>
+        <div class="personal-area__datetime">
+            <input class="ui-input-item _size-32" type="text" id="datepicker" name="published_at_date" value="{{chapter.published_at ? carbon(chapter.published_at).format('d.m.Y') : ''}}" >
+           {% set time = carbon(chapter.published_at).format('H:i') %}
+            <select id="time" name="published_at_time">
+                {%  for opt in times %}
+                <option value="{{opt}}" {{opt == time ? 'selected': ''}}>{{opt}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        </div>
+        <div class="ui-select-hitn"></div>
+        <div class="ui-select-error" data-validate-for="published_at"></div>
+        <div class="ui-select-hitn"></div>
+        <div class="ui-select-error" data-validate-for="action"></div>
+    </div>
+    <script>
+        $(function () {
+            if(document.querySelector('input[class = "chapter-action-radio"]:checked').id == 'published_at_radio'){
+                $('#published_at_input').show()
+            }
+            $('.chapter-action-radio').on('change', function (e) {
+                let input = $('#published_at_input')
+                if (e.target.id === 'published_at_radio') {
+                    input.show()
+                } else {
+                    input.hide()
+                }
+            })
+            initDatepicker("#datepicker")
+        });
+        new SlimSelect({
+            select: '#multiple',
+        })
+
+        new SlimSelect({
+            select: '#time',
+            settings: {
+                showSearch: false
+            }
+        })
+    </script>
+    {% endif %}
+
+    <button href="#" class="ui-button ui-button-size--32 ui-button-view--2" >{{ chapter.id ? 'Сохранить' : 'Добавить' }}</button>
+{{ form_close() }}
+
+

@@ -2,21 +2,24 @@
 
 namespace Books\Book\Components;
 
+use Books\Book\Classes\BookService;
 use Books\Book\Classes\ChapterService;
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
-use Books\Book\Classes\Services\TextCleanerService;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
+use Books\FileUploader\Components\FileUploader;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
+use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
@@ -28,13 +31,13 @@ use Validator;
  *
  * @link https://docs.octobercms.com/3.x/extend/cms-components.html
  */
-class Chapterer extends ComponentBase
+class AudioChapterer extends ComponentBase
 {
     protected User $user;
 
     protected Book $book;
 
-    protected Edition $ebook;
+    protected Edition $audiobook;
 
     protected Chapter $chapter;
 
@@ -66,12 +69,29 @@ class Chapterer extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
+
         $this->user = Auth::getUser();
         $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
-        $this->ebook = $this->book->ebook;
-        $this->chapter = $this->ebook->chapters()->find($this->param('chapter_id')) ?? new Chapter();
-        $this->chapterManager = ($this->ebook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->ebook);
+        $this->audiobook = $this->getAudioBook();
+        $this->chapter = $this->audiobook->chapters()->find($this->param('chapter_id'))
+            ?? new Chapter([
+                'edition_id' => $this->audiobook->id,
+                'type' => EditionsEnums::Audio,
+            ]);
+        $this->chapterManager = ($this->audiobook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->audiobook);
         $this->prepareVals();
+
+        $component = $this->addComponent(
+            FileUploader::class,
+            'audioUploader',
+            [
+                'modelClass' => Chapter::class,
+                'deferredBinding' => ! (bool) $this->chapter->id,
+                "maxSize" => 30,
+                "fileTypes" => ".mp3,.aac",
+            ]
+        );
+        $component->bindModel('audio', $this->chapter);
 
         $this->registerBreadcrumbs();
     }
@@ -79,7 +99,7 @@ class Chapterer extends ComponentBase
     public function prepareVals()
     {
         $this->page['book'] = $this->book;
-        $this->page['ebook'] = $this->ebook;
+        $this->page['audiobook'] = $this->audiobook;
         $this->page['chapter'] = $this->chapter;
         $this->page['times'] = collect(CarbonPeriod::create(today(), '1 hour', today()->copy()->addHours(23))->toArray())->map->format('H:i');
     }
@@ -88,11 +108,8 @@ class Chapterer extends ComponentBase
     {
         try {
             $data = collect(post());
-            if ($data->has('chapter_content')) {
-                $data['content'] = $data['chapter_content'] = TextCleanerService::cleanContent($data['chapter_content']);
-            }
 
-            $data['type'] = EditionsEnums::Ebook;
+            $data['type'] = EditionsEnums::Audio;
 
             if ($status = $data['action'] ?? false) {
                 switch ($status) {
@@ -128,31 +145,67 @@ class Chapterer extends ComponentBase
             $validator = Validator::make(
                 $data->toArray(),
                 collect((new Chapter())->rules)->only([
-                    'title', 'content', 'published_at',
+                    'title', 'audio', 'published_at', 'type'
                 ])->toArray()
             );
             if ($validator->fails()) {
                 throw new ValidationException($validator);
             }
 
-            $this->chapter = $this->chapterManager->from($data->toArray());
+            $this->chapter
+                ->fill($data->toArray())
+                ->save(sessionKey: $this->getSessionKey());
 
-            return Redirect::to('/about-book/' . $this->book->id)->withFragment('#electronic')->setLastModified(now());
+            return Redirect::to('/book-add-audio/' . $this->book->id . '/' . $this->chapter->id);
+
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
             return [];
         }
     }
 
-    public function onInitEditor()
+    public function onDeleteAudiofile()
     {
-        if ($this->chapterManager->isNew()) {
+        try {
+            $chapterId = post('chapter_id');
+            $chapter = Chapter::findOrFail($chapterId);
+
+            if (!in_array(
+                $this->user->profile->id,
+                $chapter->edition->book->authors->pluck('profile_id')->toArray()
+            )) {
+                abort(404);
+            }
+
+            $chapter->audio->delete();
+            $chapter->length = null;
+            $chapter->save();
+
+            return Redirect::refresh();
+
+        } catch (Exception $e) {
+            Flash::error($e->getMessage());
             return [];
         }
-        if ($body = post('body')) {
-            return ['answer' => $this->chapterManager->initUpdateBody($body)];
-        }
-        return [];
+    }
+
+    private function getAudioBook(): Edition
+    {
+        return $this->book->audiobook
+            ?? $this->book->audiobook()->create([
+                'type' => EditionsEnums::Audio,
+                'status' => BookStatus::HIDDEN
+            ]);
+    }
+
+    public function getSessionKey()
+    {
+        return post('_session_key');
+    }
+
+    public function onRefreshFiles()
+    {
+        $this->pageCycle();
     }
 
     /**
@@ -163,11 +216,11 @@ class Chapterer extends ComponentBase
     {
         $manager = app(BreadcrumbsManager::class);
 
-        $manager->register('lc-add-book-add-text', function (BreadcrumbsGenerator $trail, $params) {
+        $manager->register('lc-add-book-add-audio', function (BreadcrumbsGenerator $trail, $params) {
             $trail->parent('lc');
             $trail->push('Книги', '/lc-books');
             $trail->push($this->book->title, '/about-book/' . $this->book->id);
-            $trail->push('Добавление текста');
+            $trail->push('Добавление аудиокниги');
         });
     }
 }

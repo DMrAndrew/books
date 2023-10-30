@@ -1,0 +1,14 @@
+url = "/book-add-audio/:book_id/:chapter_id?"
+layout = "default"
+title = "Добавление аудиокниги"
+breadcrumbs="lc-add-book-add-audio"
+[session]
+security = "user"
+redirect = "/"
+[AudioChapterer]
+deferredBinding = 1
+==
+{% component 'Breadcrumbs' %}
+<!-- Тело страницы -->
+{% component 'AudioChapterer' %}
+

@@ -10,6 +10,7 @@ use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Reader;
 use Books\Book\Classes\ScopeToday;
+use Books\Book\Classes\Services\AudioFileLengthHelper;
 use Books\Book\Jobs\Paginate;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -102,7 +103,7 @@ class Chapter extends Model
         'type' => EditionsEnums::class,
         'status' => ChapterStatus::class,
         'sales_type' => ChapterSalesType::class,
-        'audio' => ['nullable', 'file', 'mimes:mp3,mp4'],
+        //'audio' => ['nullable', 'file', 'mimes:mp3,aac'],
         'picture' => ['nullable', 'file', 'jpeg,jpg,png'],
     ];
 
@@ -287,5 +288,48 @@ class Chapter extends Model
     public function getQualifiedStatusColumn(): string
     {
         return $this->qualifyColumn('status');
+    }
+
+    public function getAudioLengthAttribute(): ?string
+    {
+        if ($this->type != EditionsEnums::Audio || !$this->audio) {
+            return null;
+        }
+
+        /**
+         * Считаем длительность в секундах один раз,
+         * и сохраняем в поле length, чтобы не парсить файл при каждом запросе,
+         * так как файлы не редактируются
+         */
+        if (!$this->length) {
+            $durationInSeconds = AudioFileLengthHelper::getAudioLengthInSeconds(file: $this->audio);
+            if ($durationInSeconds) {
+                $this->length = $durationInSeconds;
+                $this->saveQuietly();
+            }
+
+            return AudioFileLengthHelper::formatSecondsToHumanReadableTime($durationInSeconds);
+        }
+
+        return AudioFileLengthHelper::formatSecondsToHumanReadableTime($this->length);
+    }
+
+    public function getAudioLengthShortAttribute(): ?string
+    {
+        if ($this->type != EditionsEnums::Audio || !$this->audio) {
+            return null;
+        }
+
+        if (!$this->length) {
+            $durationInSeconds = AudioFileLengthHelper::getAudioLengthInSeconds(file: $this->audio);
+            if ($durationInSeconds) {
+                $this->length = $durationInSeconds;
+                $this->saveQuietly();
+            }
+
+            return AudioFileLengthHelper::getAudioLengthHumanReadableShort($durationInSeconds);
+        }
+
+        return AudioFileLengthHelper::getAudioLengthHumanReadableShort($this->length);
     }
 }

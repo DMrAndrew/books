@@ -31,7 +31,7 @@
                         <div class="ui-tabs-line"></div>
                         <div class="ui-tabs-header-wrapper" data-tabs="1" itemprop="bookFormat" itemscope itemtype="http://schema.org/BookFormatType">
                             <div class="ui-tabs-link active" data-tab="1">Электронная</div>
-                            <!--                            <div class="ui-tabs-link" data-tab="2" itemprop="AudiobookFormat">Аудиокнига</div>-->
+                            <div class="ui-tabs-link" data-tab="2" itemprop="AudiobookFormat">Аудиокнига</div>
                             <!--                            <div class="ui-tabs-link" data-tab="3">Бумажная</div>-->
                             <!--                            <div class="ui-tabs-link" data-tab="4">Бумажная</div>-->
                             <!--                            <div class="ui-tabs-link" data-tab="5">Бумажная</div>-->
@@ -56,25 +56,46 @@
                                     {% endif %}
                                 </div>
 
-                                <div class="book-card-full-type__link-wrapper {{buyBtn and readBtn ? '_double' : ''}}">
-                                    {% if readBtn %}
+                                <div class="book-card-full-type__link-wrapper {{buyBtn_ebook and readBtn_ebook ? '_double' : ''}}">
+                                    {% if readBtn_ebook %}
                                     <a href="/reader/{{book.ebook.id}}"
                                        class="ui-button ui-button-size--56 ui-button-view--2 ui-button--full">Читать</a>
                                     {% endif %}
 
-                                    {% if buyBtn %}
+                                    {% if buyBtn_ebook %}
                                         {% if not book.ebook.isBought %}
-                                        <a {{user ? 'data-request="Order::onCreateOrder"' : 'onclick="loginPopup()"'}}
-                                           class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
+
+                                        {% if user %}
+                                            <a href="javascript:;"
+                                               data-request="Order::onCreateOrder"
+                                               data-request-flash="1"
+                                               data-request-validate="1"
+                                               data-request-data="edition_id: {{ book.ebook.id }}"
+                                            class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
                                             {% if book.ebook.discount_exists %}
                                             <span>
-                                                <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
-                                                <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
-                                              </span>
+                                                        <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
+                                                        <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
+                                                      </span>
                                             {% else %}
-                                           <span> Купить {{book.ebook.price}} ₽</span>
+                                            <span> Купить {{book.ebook.price}} ₽</span>
+                                            {% endif %}
+                                            </a>
+
+                                        {% else %}
+                                        <a onclick="loginPopup()" class="ui-button ui-button-size--56
+                                            ui-button-view--1 ui-button--full cursor-pointer">
+                                            {% if book.ebook.discount_exists %}
+                                                <span>
+                                                    <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
+                                                    <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
+                                                </span>
+                                            {% else %}
+                                                <span> Купить {{book.ebook.price}} ₽</span>
                                             {% endif %}
                                         </a>
+                                        {% endif %}
+
                                         {% endif %}
                                     {% endif %}
                                 </div>
@@ -89,43 +110,86 @@
                                 <!--                                </div>-->
                             </div>
                         </div>
-                        <!--                        <div class="ui-tabs-content" data-tab-content="2">-->
-                        <!--                            <div class="book-card-full-type">-->
-                        <!--                                <div class="book-card-full-type__description _indent-bottom">-->
-                        <!--                                    <svg class="square-16">-->
-                        <!--                                        <use-->
-                        <!--                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>-->
-                        <!--                                    </svg>-->
-                        <!--                                    <span>В работе</span>-->
-                        <!--                                    <span class="book-card-full-type__description-dot"></span>-->
-                        <!--                                    <span>18.01.21</span>-->
-                        <!--                                    <span class="book-card-full-type__description-dot"></span>-->
-                        <!--                                    <span>03 ч 31 мин</span>-->
-                        <!--                                    <span class="book-card-full-type__description-dot"></span>-->
-                        <!--                                    <a href="#" class="ui-link _violet">История</a>-->
-                        <!--                                </div>-->
+                        <div class="ui-tabs-content" data-tab-content="2">
+                            <div class="book-card-full-type">
+                                <div class="book-card-full-type__description _indent-bottom">
+                                    <svg class="square-16">
+                                        <use
+                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>
+                                    </svg>
+                                    <span>В работе</span>
+                                    <span class="book-card-full-type__description-dot"></span>
+                                    <span>18.01.21</span>
+                                    <span class="book-card-full-type__description-dot"></span>
+                                    <span>03 ч 31 мин</span>
+                                    <span class="book-card-full-type__description-dot"></span>
+<!--                                    <a href="#" class="ui-link _violet">История</a>-->
+                                </div>
 
-                        <!--                                <div class="book-card-full-type__link-wrapper _double">-->
-                        <!--                                    <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full">Слушать</a>-->
-                        <!--                                    <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
-                        <!--                                </div>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
-                        <!--                        <div class="ui-tabs-content" data-tab-content="3">-->
-                        <!--                            <div class="book-card-full-type__link-wrapper">-->
-                        <!--                                <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
-                        <!--                        <div class="ui-tabs-content" data-tab-content="4">-->
-                        <!--                            <div class="book-card-full-type__link-wrapper">-->
-                        <!--                                <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
-                        <!--                        <div class="ui-tabs-content" data-tab-content="5">-->
-                        <!--                            <div class="book-card-full-type__link-wrapper">-->
-                        <!--                                <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
+<!--                                <div class="book-card-full-type__link-wrapper _double">-->
+<!--                                    <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full">Слушать</a>-->
+<!--                                    <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
+<!--                                </div>-->
+                                <div class="book-card-full-type__link-wrapper {{buyBtn_audiobook and readBtn_audiobook ? '_double' : ''}}">
+                                    {% if readBtn_audiobook %}
+                                    <a href="/readeraudio/{{book.ebook.id}}"
+                                       class="ui-button ui-button-size--56 ui-button-view--2 ui-button--full">Слушать</a>
+                                    {% endif %}
+
+                                    {% if buyBtn_audiobook %}
+                                    {% if not book.audiobook.isBought %}
+
+                                    {% if user %}
+                                    <a href="javascript:;"
+                                       data-request="Order::onCreateOrder"
+                                       data-request-flash="1"
+                                       data-request-validate="1"
+                                       data-request-data="edition_id: {{ book.audiobook.id }}"
+                                       class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
+                                        {% if book.audiobook.discount_exists %}
+                                        <span>
+                                                        <span class="ui-text--medium">Купить {{book.audiobook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.audiobook.priceTag.initialPrice}} ₽</span></span>
+                                                        <span class="ui-text-body--3 ui-text--regular">Скидка {{book.audiobook.discount.amount}}%</span>
+                                                      </span>
+                                        {% else %}
+                                        <span> Купить {{book.audiobook.price}} ₽</span>
+                                        {% endif %}
+                                    </a>
+
+                                    {% else %}
+                                    <a onclick="loginPopup()" class="ui-button ui-button-size--56
+                                            ui-button-view--1 ui-button--full cursor-pointer">
+                                        {% if book.audiobook.discount_exists %}
+                                        <span>
+                                                    <span class="ui-text--medium">Купить {{book.audiobook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.audiobook.priceTag.initialPrice}} ₽</span></span>
+                                                    <span class="ui-text-body--3 ui-text--regular">Скидка {{book.audiobook.discount.amount}}%</span>
+                                                </span>
+                                        {% else %}
+                                        <span> Купить {{book.audiobook.price}} ₽</span>
+                                        {% endif %}
+                                    </a>
+                                    {% endif %}
+
+                                    {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="3">
+                            <div class="book-card-full-type__link-wrapper">
+                                <a href="#" class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full">Купить 139 ₽</a>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="4">
+                            <div class="book-card-full-type__link-wrapper">
+                                <a href="#" class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full">Купить 139 ₽</a>
+                            </div>
+                        </div>
+                        <div class="ui-tabs-content" data-tab-content="5">
+                            <div class="book-card-full-type__link-wrapper">
+                                <a href="#" class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full">Купить 139 ₽</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
