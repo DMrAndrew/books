@@ -245,6 +245,14 @@ class AudioPlayer {
         //     }
         // });
     }
+
+    playFromPosition(seconds) {
+        const self = this;
+        this.howlPlayer.forEach((el, index) => {
+            el.seek(seconds);
+            self.playPause(true);
+        });
+    }
 }
 
 function initAudioPlayer(options = {}) {

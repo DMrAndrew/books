@@ -5,6 +5,7 @@
  * и включено расширение mbstring (Multibyte String Functions)
  */
 
+use Books\Book\Classes\Services\AudioFileLengthHelper;
 use Books\Book\Models\Book;
 use Books\User\Classes\CookieEnum;
 use Books\User\Classes\UserService;
@@ -171,6 +172,34 @@ function humanFileSize(mixed $bytes): ?string
     if ($factor == 0) $dec = 0;
 
     return sprintf("%.{$dec}f %s", $bytes / (1024 ** $factor), $size[$factor]);
+}
+
+/**
+ * @param mixed $seconds
+ *
+ * @return string|null
+ */
+function humanTime(mixed $seconds): ?string
+{
+    if (!$seconds) {
+        return null;
+    }
+
+    return AudioFileLengthHelper::formatSecondsToHumanReadableTime($seconds);
+}
+
+/**
+ * @param mixed $seconds
+ *
+ * @return string|null
+ */
+function humanTimeShort(mixed $seconds): ?string
+{
+    if (!$seconds) {
+        return null;
+    }
+
+    return AudioFileLengthHelper::formatSecondsToHumanReadableTimeShort($seconds);
 }
 
 ?>

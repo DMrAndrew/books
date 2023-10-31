@@ -12,6 +12,14 @@
                 {% partial 'audioplayer/default' audiofile = reader.chapter.audio %}
             </div>
         </div>
+
+        {% if audioProgress %}
+            <button id="playFromButton"
+                    class="book-card-full__author ui-link _violet"
+                    onclick="playFromPosition({{audioProgress}});">
+                Продолжить прослушивание с {{ humanTime(audioProgress) }}
+            </button>
+        {% endif %}
     {% endif %}
 
 </div>
@@ -22,27 +30,18 @@
 {% set progressSaveStepSeconds = constant('Books\\Book\\Models\\AudioReadProgress::SAVE_USER_AUDIO_READ_PROGRESS_STEP_SECONDS') %}
 <script>
     const options = {
-        onPlayCallback: function (player) {
-            trackProgress(player);
-        },
-        onPauseCallback: function (player) {
-            stopTrackingProgress(player);
-        },
-        onEndCallback: function (player) {
-            nextChapter(player);
-        }
+        onPlayCallback: (player) => trackProgress(player),
+        onPauseCallback: (player) => stopTrackingProgress(player),
+        onEndCallback: (player) => nextChapter(player),
     };
     initAudioPlayer(options);
-
-    //const players = window.audioPlayer;
-    //const audioBookPlayer = window.audioPlayer[Object.keys(players)[0]];
 
     const progressSaveTimeout = {{ progressSaveTimeout * 1000 }};
     const progressSaveStepSeconds = {{ progressSaveStepSeconds }};
     var progressT;
 
     function trackProgress(player) {
-        console.log('track once for play button press');
+        //console.log('track once for play button press');
         progressT = setInterval(function() {
             updateProgress(player);
         }, progressSaveTimeout)
@@ -50,7 +49,7 @@
 
     function updateProgress(player) {
         let progress = parseInt(player.currentSeek());
-        console.log(progress);
+        //console.log(progress);
 
         if (progress >= progressSaveStepSeconds) {
             oc.ajax('onSaveProgress', {
@@ -60,15 +59,14 @@
                     progress: progress
                 },
                 progressBar: false,
-                error: (e) => console.log(e), // function (e) {console.log(e);}
+                error: (e) => console.log(e),
             })
         }
 
-        console.log('send progress: ' + progress + ' sec');
+        //console.log('send progress: ' + progress + ' sec');
     }
 
     function stopTrackingProgress(player) {
-        console.log('stopSendingProgress');
         clearTimeout(progressT);
     }
 
@@ -76,5 +74,12 @@
         console.log('load next chapter');
     }
 
+    function playFromPosition(seconds) {
+        const players = window.audioPlayer;
+        const player = window.audioPlayer[Object.keys(players)[0]];
+
+        player.playFromPosition(seconds);
+        $('#playFromButton').fadeOut(1900);
+    }
 </script>
 {% endif %}

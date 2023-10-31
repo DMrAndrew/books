@@ -2,7 +2,6 @@
 
 namespace Books\Book\Components;
 
-use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\ReaderAudio as Service;
 use Books\Book\Classes\Traits\InjectBookStuff;
 use Books\Book\Models\AudioReadProgress;
@@ -15,7 +14,6 @@ use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
-use ValidationException;
 use Validator;
 
 /**
@@ -128,6 +126,7 @@ class ReaderAudio extends ComponentBase
         }
 
         $this->page['user'] = $this->user;
+        $this->page['audioProgress'] = $this->getAudioReadProgress();
     }
 
     public function onNext()
@@ -238,5 +237,23 @@ class ReaderAudio extends ComponentBase
             /** Название книги */
             $trail->push($this->book->title);
         });
+    }
+
+    /**
+     * @return int|null
+     */
+    private function getAudioReadProgress(): ?int
+    {
+        if (!$this->user || !$this->book || !$this->chapter) {
+            return null;
+        }
+
+        $audioReadProgress = AudioReadProgress
+            ::user($this->user)
+            ->book($this->book)
+            ->chapter($this->chapter)
+            ->first();
+
+        return $audioReadProgress?->progress;
     }
 }

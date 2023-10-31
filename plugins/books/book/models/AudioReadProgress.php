@@ -1,6 +1,8 @@
 <?php namespace Books\Book\Models;
 
+use App\traits\HasUserScope;
 use Model;
+use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
 
 /**
@@ -11,6 +13,7 @@ use October\Rain\Database\Traits\Validation;
 class AudioReadProgress extends Model
 {
     use Validation;
+    use HasUserScope;
 
     const SAVE_USER_AUDIO_READ_PROGRESS_STEP_SECONDS = 2;
     const SAVE_USER_AUDIO_READ_PROGRESS_TIMEOUT_SECONDS = 1;
@@ -30,4 +33,14 @@ class AudioReadProgress extends Model
         'chapter_id',
         'progress',
     ];
+
+    public function scopeBook(Builder $builder, ?Book $book = null): Builder
+    {
+        return $builder->where($this->qualifyColumn('book_id'), '=', $book?->id);
+    }
+
+    public function scopeChapter(Builder $builder, ?Chapter $chapter = null): Builder
+    {
+        return $builder->where($this->qualifyColumn('chapter_id'), '=', $chapter?->id);
+    }
 }
