@@ -29,19 +29,19 @@
 {% set progressSaveTimeout = constant('Books\\Book\\Models\\AudioReadProgress::SAVE_USER_AUDIO_READ_PROGRESS_TIMEOUT_SECONDS') %}
 {% set progressSaveStepSeconds = constant('Books\\Book\\Models\\AudioReadProgress::SAVE_USER_AUDIO_READ_PROGRESS_STEP_SECONDS') %}
 <script>
-    const options = {
+    var options = {
         onPlayCallback: (player) => trackProgress(player),
         onPauseCallback: (player) => stopTrackingProgress(player),
         onEndCallback: (player) => nextChapter(player),
     };
+    window.audioPlayer = null;
     initAudioPlayer(options);
 
-    const progressSaveTimeout = {{ progressSaveTimeout * 1000 }};
-    const progressSaveStepSeconds = {{ progressSaveStepSeconds }};
+    var progressSaveTimeout = {{ progressSaveTimeout * 1000 }};
+    var progressSaveStepSeconds = {{ progressSaveStepSeconds }};
     var progressT;
 
     function trackProgress(player) {
-        //console.log('track once for play button press');
         progressT = setInterval(function() {
             updateProgress(player);
         }, progressSaveTimeout)
@@ -49,7 +49,6 @@
 
     function updateProgress(player) {
         let progress = parseInt(player.currentSeek());
-        //console.log(progress);
 
         if (progress >= progressSaveStepSeconds) {
             oc.ajax('onSaveProgress', {
@@ -62,8 +61,6 @@
                 error: (e) => console.log(e),
             })
         }
-
-        //console.log('send progress: ' + progress + ' sec');
     }
 
     function stopTrackingProgress(player) {
