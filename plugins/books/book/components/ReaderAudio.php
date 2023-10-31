@@ -2,9 +2,9 @@
 
 namespace Books\Book\Components;
 
-use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\ReaderAudio as Service;
 use Books\Book\Classes\Traits\InjectBookStuff;
+use Books\Book\Models\AudioReadProgress;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
@@ -14,6 +14,7 @@ use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
+use Validator;
 
 /**
  * Reader Component
@@ -125,6 +126,7 @@ class ReaderAudio extends ComponentBase
         }
 
         $this->page['user'] = $this->user;
+        $this->page['audioProgress'] = $this->getAudioReadProgress();
     }
 
     public function onNext()
@@ -167,9 +169,48 @@ class ReaderAudio extends ComponentBase
         ];
     }
 
-    public function onTrack()
+    /**
+     * @return array
+     */
+    public function onSaveProgress(): array
     {
-        //return $this->service()->track((int) post('ms'), (int) post('paginator_id'));
+        /**
+         * Only for authenticated users
+         */
+        $user = Auth::getUser();
+        if (!$user) {
+            return [];
+        }
+
+        /**
+         * Validation
+         */
+        $data = [
+            'user_id' => $user->id,
+            'book_id' => post('book'),
+            'chapter_id' => post('chapter'),
+            'progress' => post('progress'),
+        ];
+        $validation = Validator::make(
+            $data,
+            (new AudioReadProgress())->rules
+        );
+        if ($validation->fails()) {
+            return [];
+        }
+
+        /**
+         * Update progress
+         */
+        AudioReadProgress::updateOrCreate([
+            'user_id' => $data['user_id'],
+            'book_id' => $data['book_id'],
+            'chapter_id' => $data['chapter_id'],
+        ],[
+            'progress' => $data['progress'],
+        ]);
+
+        return [];
     }
 
     /**
@@ -196,5 +237,23 @@ class ReaderAudio extends ComponentBase
             /** Название книги */
             $trail->push($this->book->title);
         });
+    }
+
+    /**
+     * @return int|null
+     */
+    private function getAudioReadProgress(): ?int
+    {
+        if (!$this->user || !$this->book || !$this->chapter) {
+            return null;
+        }
+
+        $audioReadProgress = AudioReadProgress
+            ::user($this->user)
+            ->book($this->book)
+            ->chapter($this->chapter)
+            ->first();
+
+        return $audioReadProgress?->progress;
     }
 }

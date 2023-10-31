@@ -21,7 +21,7 @@ class AudioPlayer {
     played = false;
     rate = +1;
 
-    constructor(el) {
+    constructor(el, options = {}) {
         this.isMobile = "ontouchstart" in document.documentElement
         this.container = el
         this.playlist = JSON.parse(el.dataset.sounds)
@@ -38,11 +38,16 @@ class AudioPlayer {
         this.rateBtns = el.querySelectorAll('.audioplayer__rate-btn')
         this.volumeInput = el.querySelector('.audioplayer__volume-input')
         this.seekInput = el.querySelector('.audioplayer__seek')
+        this.onPlayCallback = options.onPlayCallback;
+        this.onPauseCallback = options.onPauseCallback;
+        this.onEndCallback = options.onEndCallback;
+
         this.howlPlayer = this.playlist.map((el, index) => {
             return new Howl({
                 src: el,
-                onplay: () => this.step(),
-                onend: () => this.handleSongEnd(),
+                onplay: () => {this.step(); this.eventPlay();},
+                onpause: () => this.eventStop(),
+                onend: () => {this.handleSongEnd(); this.eventEnd();},
                 onrate: () => this.handleRateChange(),
                 volume: this.volumeInput.value,
             });
@@ -109,6 +114,33 @@ class AudioPlayer {
         sessionStorage.setItem(self.howlPlayer[self.songIndex]._src, seek);
         if (self.howlPlayer[self.songIndex].playing()) {
             requestAnimationFrame(self.step.bind(self));
+        }
+    }
+
+    currentSeek() {
+        const self = this;
+
+        return self.howlPlayer[self.songIndex].seek() || 0;
+    }
+
+    eventPlay() {
+        const self = this;
+        if (typeof this.onPlayCallback === 'function') {
+            this.onPlayCallback(self);
+        }
+    }
+
+    eventStop () {
+        const self = this;
+        if (typeof this.onPauseCallback === 'function') {
+            this.onPauseCallback(self);
+        }
+    }
+
+    eventEnd () {
+        const self = this;
+        if (typeof this.onEndCallback === 'function') {
+            this.onEndCallback(self);
         }
     }
 
@@ -213,16 +245,24 @@ class AudioPlayer {
         //     }
         // });
     }
+
+    playFromPosition(seconds) {
+        const self = this;
+        this.howlPlayer.forEach((el, index) => {
+            el.seek(seconds);
+            self.playPause(true);
+        });
+    }
 }
 
-function initAudioPlayer() {
+function initAudioPlayer(options = {}) {
     if(!window.audioPlayer){
         window.audioPlayer = [];
     }
     const containers = document.querySelectorAll('.audioplayer');
     containers.forEach((el) => {
         if(el.dataset.sounds){
-            window.audioPlayer[(new Date()).getTime()] = new AudioPlayer(el);
+            window.audioPlayer[(new Date()).getTime()] = new AudioPlayer(el, options);
         }
     });
 }

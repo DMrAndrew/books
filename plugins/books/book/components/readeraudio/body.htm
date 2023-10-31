@@ -12,7 +12,71 @@
                 {% partial 'audioplayer/default' audiofile = reader.chapter.audio %}
             </div>
         </div>
+
+        {% if audioProgress %}
+            <button id="playFromButton"
+                    class="book-card-full__author ui-link _violet"
+                    onclick="playFromPosition({{audioProgress}});">
+                Продолжить прослушивание с {{ humanTime(audioProgress) }}
+            </button>
+        {% endif %}
     {% endif %}
 
 </div>
 {% partial '@pagination' %}
+
+{% if reader.chapter.audio %}
+{% set progressSaveTimeout = constant('Books\\Book\\Models\\AudioReadProgress::SAVE_USER_AUDIO_READ_PROGRESS_TIMEOUT_SECONDS') %}
+{% set progressSaveStepSeconds = constant('Books\\Book\\Models\\AudioReadProgress::SAVE_USER_AUDIO_READ_PROGRESS_STEP_SECONDS') %}
+<script>
+    var options = {
+        onPlayCallback: (player) => trackProgress(player),
+        onPauseCallback: (player) => stopTrackingProgress(player),
+        onEndCallback: (player) => nextChapter(player),
+    };
+    window.audioPlayer = null;
+    initAudioPlayer(options);
+
+    var progressSaveTimeout = {{ progressSaveTimeout * 1000 }};
+    var progressSaveStepSeconds = {{ progressSaveStepSeconds }};
+    var progressT;
+
+    function trackProgress(player) {
+        progressT = setInterval(function() {
+            updateProgress(player);
+        }, progressSaveTimeout)
+    }
+
+    function updateProgress(player) {
+        let progress = parseInt(player.currentSeek());
+
+        if (progress >= progressSaveStepSeconds) {
+            oc.ajax('onSaveProgress', {
+                data: {
+                    book: "{{ book.id }}",
+                    chapter: "{{ reader.chapter.id }}",
+                    progress: progress
+                },
+                progressBar: false,
+                error: (e) => console.log(e),
+            })
+        }
+    }
+
+    function stopTrackingProgress(player) {
+        clearTimeout(progressT);
+    }
+
+    function nextChapter(player) {
+        console.log('load next chapter');
+    }
+
+    function playFromPosition(seconds) {
+        const players = window.audioPlayer;
+        const player = window.audioPlayer[Object.keys(players)[0]];
+
+        player.playFromPosition(seconds);
+        $('#playFromButton').fadeOut(1900);
+    }
+</script>
+{% endif %}
