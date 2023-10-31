@@ -16,3 +16,63 @@
 
 </div>
 {% partial '@pagination' %}
+{% if reader.chapter.audio %}
+<script>
+    const options = {
+        onPlayCallback: function (player) {
+            trackProgress(player);
+        },
+        onPauseCallback: function (player) {
+            stopTrackingProgress(player);
+        },
+        onEndCallback: function (player) {
+            nextChapter(player);
+        }
+    };
+    initAudioPlayer(options);
+
+    //const players = window.audioPlayer;
+    //const audioBookPlayer = window.audioPlayer[Object.keys(players)[0]];
+
+    const progressSaveDelay = 500;
+    const progressSaveMinTime = 1;
+    var progressT;
+
+
+    function trackProgress(player) {
+        console.log('track once for play button press');
+        progressT = setInterval(function() {
+            updateProgress(player);
+        }, progressSaveDelay)
+    }
+
+    function updateProgress(player) {
+        let progress = parseInt(player.currentSeek());
+        console.log(progress);
+
+        if (progress >= progressSaveMinTime) {
+            oc.ajax('onSaveProgress', {
+                data: {
+                    book: "{{ book.id }}",
+                    chapter: "{{ reader.chapter.id }}",
+                    progress: progress
+                },
+                progressBar: false,
+                error: (e) => console.log(e), // function (e) {console.log(e);}
+            })
+        }
+
+        console.log('send progress: ' + progress + ' sec');
+    }
+
+    function stopTrackingProgress(player) {
+        console.log('stopSendingProgress');
+        clearTimeout(progressT);
+    }
+
+    function nextChapter(player) {
+        console.log('load next chapter');
+    }
+
+</script>
+{% endif %}

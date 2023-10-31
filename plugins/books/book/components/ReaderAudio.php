@@ -167,9 +167,9 @@ class ReaderAudio extends ComponentBase
         ];
     }
 
-    public function onTrack()
+    public function onSaveProgress()
     {
-        //return $this->service()->track((int) post('ms'), (int) post('paginator_id'));
+        return [200];
     }
 
     /**
