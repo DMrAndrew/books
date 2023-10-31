@@ -5,6 +5,7 @@ namespace Books\Book\Components;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\ReaderAudio as Service;
 use Books\Book\Classes\Traits\InjectBookStuff;
+use Books\Book\Models\AudioReadProgress;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
@@ -14,6 +15,8 @@ use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
+use ValidationException;
+use Validator;
 
 /**
  * Reader Component
@@ -167,9 +170,48 @@ class ReaderAudio extends ComponentBase
         ];
     }
 
-    public function onSaveProgress()
+    /**
+     * @return array
+     */
+    public function onSaveProgress(): array
     {
-        return [200];
+        /**
+         * Only for authenticated users
+         */
+        $user = Auth::getUser();
+        if (!$user) {
+            return [];
+        }
+
+        /**
+         * Validation
+         */
+        $data = [
+            'user_id' => $user->id,
+            'book_id' => post('book'),
+            'chapter_id' => post('chapter'),
+            'progress' => post('progress'),
+        ];
+        $validation = Validator::make(
+            $data,
+            (new AudioReadProgress())->rules
+        );
+        if ($validation->fails()) {
+            return [];
+        }
+
+        /**
+         * Update progress
+         */
+        AudioReadProgress::updateOrCreate([
+            'user_id' => $data['user_id'],
+            'book_id' => $data['book_id'],
+            'chapter_id' => $data['chapter_id'],
+        ],[
+            'progress' => $data['progress'],
+        ]);
+
+        return [];
     }
 
     /**
