@@ -262,8 +262,8 @@ class WidgetService
                         ->get()
                         ->pluck('favorable')
                         ->pluck('book_id')
-                        ->toArray()
-                    ) ?? [])->diffWithUnloved();
+                        ->toArray() ?? []
+                    ))->diffWithUnloved();
             })
             ->distinct((new Book())->getQualifiedKeyName())
             ->limit($this->limit)
