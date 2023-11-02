@@ -156,6 +156,8 @@ class AudioChapterer extends ComponentBase
                 ->fill($data->toArray())
                 ->save(sessionKey: $this->getSessionKey());
 
+            $this->chapter->edition->chapters->each->setNeighbours();
+
             return Redirect::to('/book-add-audio/' . $this->book->id . '/' . $this->chapter->id);
 
         } catch (Exception $ex) {

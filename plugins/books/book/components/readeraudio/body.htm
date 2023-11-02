@@ -68,7 +68,10 @@
     }
 
     function nextChapter(player) {
-        console.log('load next chapter');
+        let playNextChapterBtn = document.getElementById("audioNext")
+        if (playNextChapterBtn) {
+            playNextChapterBtn.click();
+        }
     }
 
     function playFromPosition(seconds) {
