@@ -256,12 +256,14 @@ class WidgetService
             ->defaultEager()
             ->whereIn((new Book())->getQualifiedKeyName(), $ids)
             ->when($this->diffWithUser, function ($builder) {
-                $builder->whereNotIn((new Book())->getQualifiedKeyName(), $this->user?->queryLibs()
-                    ->with('favorable')
-                    ->get()
-                    ->pluck('favorable')
-                    ->pluck('book_id')
-                    ->toArray() ?? [])->diffWithUnloved();
+                $builder->whereNotIn((new Book())->getQualifiedKeyName(),
+                    array_filter($this->user?->queryLibs()
+                        ->with('favorable')
+                        ->get()
+                        ->pluck('favorable')
+                        ->pluck('book_id')
+                        ->toArray() ?? []
+                    ))->diffWithUnloved();
             })
             ->distinct((new Book())->getQualifiedKeyName())
             ->limit($this->limit)
