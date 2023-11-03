@@ -2,7 +2,10 @@
 
 namespace Books\Book\Components;
 
+use Books\Book\Classes\DownloadService;
+use Books\Book\Classes\Enums\ElectronicFormats;
 use Books\Book\Classes\Enums\WidgetEnum;
+use Books\Book\Classes\Exceptions\DownloadNotAllowed;
 use Books\Book\Classes\Traits\InjectBookStuff;
 use Books\Book\Models\Book;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
@@ -11,6 +14,9 @@ use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Books\Comments\Components\Comments;
 use Books\Reposts\Components\Reposter;
 use Cms\Classes\ComponentBase;
+use Exception;
+use Flash;
+use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Request;
@@ -55,7 +61,7 @@ class BookPage extends ComponentBase
     {
         $this->user = Auth::getUser();
         $this->book_id = is_numeric($this->param('book_id'))
-            ? (int)$this->param('book_id')
+            ? (int) $this->param('book_id')
             : abort(404);
         $this->book = Book::findForPublic($this->book_id, $this->user);
         $this->tryInjectAdultModal();
@@ -63,7 +69,7 @@ class BookPage extends ComponentBase
         $this->book = Book::query()
             ->withChapters()
             ->defaultEager()
-            ->with(['cycle' => fn($cycle) => $cycle->booksEager()])
+            ->with(['cycle' => fn ($cycle) => $cycle->booksEager()])
             ->find($this->book->id);
 
         $comments = $this->addComponent(Comments::class, 'comments');
@@ -87,7 +93,6 @@ class BookPage extends ComponentBase
 
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
-
 
         $reposts = $this->addComponent(Reposter::class, 'reposts');
         $reposts->bindSharable($this->book);
@@ -116,6 +121,7 @@ class BookPage extends ComponentBase
             'supportBtn' => $this->supportBtn(),
             'book' => $this->book,
             'cycle' => $this->book->cycle,
+            'download_btn' => $this->book->ebook->isDownloadAllowed($this->user),
         ];
     }
 
@@ -160,16 +166,13 @@ class BookPage extends ComponentBase
     /**
      * Запретить поддерживать автора книги где он сам является автором
      * свои профили поддерживать нельзя
-     *
-     * @return bool
      */
     private function supportBtn(): bool
     {
-        return $this->user && !$this->book->profiles()->user($this->user)->exists();
+        return $this->user && ! $this->book->profiles()->user($this->user)->exists();
     }
 
     /**
-     * @return void
      * @throws DuplicateBreadcrumbException
      */
     private function registerBreadcrumbs(): void
@@ -186,7 +189,7 @@ class BookPage extends ComponentBase
             /** Жанр */
             $genre = $this->book->genres->first();
             if ($genre) {
-                $trail->push($genre->name, url('/listing?genre=' . $genre->id));
+                $trail->push($genre->name, url('/listing?genre='.$genre->id));
             }
 
             /** Название книги */
@@ -194,18 +197,35 @@ class BookPage extends ComponentBase
         });
     }
 
-    /**
-     * @return void
-     */
     private function setSEO(): void
     {
         $this->page->og_type = 'book';
         $this->page->meta_canonical = Request::url();
 
-        if ($this->book->meta_title)
-        $this->page->meta_title = $this->book->meta_title;
+        if ($this->book->meta_title) {
+            $this->page->meta_title = $this->book->meta_title;
+        }
 
-        if ($this->book->meta_desc)
-        $this->page->meta_description = $this->book->meta_desc;
+        if ($this->book->meta_desc) {
+            $this->page->meta_description = $this->book->meta_desc;
+        }
+    }
+
+    public function onDownload()
+    {
+        try {
+            $format = ElectronicFormats::tryFrom(post('format')) ?? ElectronicFormats::default();
+            if (! $this->book->ebook->isDownloadAllowed($this->user)) {
+                throw new DownloadNotAllowed();
+            }
+
+            return (new DownloadService($this->book, $format))->getFile()->download();
+        } catch (Exception $exception) {
+            Flash::error($exception->getMessage());
+            Log::error($exception->getMessage());
+
+            return [];
+        }
+
     }
 }

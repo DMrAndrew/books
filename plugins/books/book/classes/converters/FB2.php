@@ -2,12 +2,13 @@
 
 namespace Books\Book\Classes\Converters;
 
+use Books\Book\Classes\Enums\ElectronicFormats;
 use Books\Book\Models\Book;
 
 /*****************************************************************************************
  *  Класс, преобразует @link \Books\Book\Models\Book в формат FictionBook (fb2)
  ******************************************************************************************/
-class FB2
+class FB2 extends BaseConverter
 {
     protected array $tags = ['img[src|alt]', 'div[id]', 'blockquote[id]',
         'h1[id]', 'h2[id]', 'h3[id]', 'h4[id]', 'h5[id]', 'h6[id]',
@@ -29,8 +30,9 @@ class FB2
 
     protected string $cover = '';
 
-    public function __construct(public Book $book)
+    public function __construct(Book $book)
     {
+        parent::__construct($book);
         $this->cleaner = new Cleaner();
         $this->content = '';
     }
@@ -64,7 +66,6 @@ class FB2
 
     public function discription()
     {
-
         $date = date('Y-m-d');
         $pattern = collect([
             '<description>',
@@ -358,7 +359,7 @@ class bgFB2
         return $content;
     }
 
-    public function section($content, $options)
+    public function  section($content, $options)
     {
 
         // Преобразуем элементы оформления текста
