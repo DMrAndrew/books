@@ -82,7 +82,12 @@ class ReaderAudio extends ComponentBase
     public function onRun()
     {
         if (! $this->chapter) {
-            $firstChapter = $this->book->audiobook?->chapters()->first();
+            // proceed from last progress
+            if ($lastReadedChapter = $this->getLastReadedChapter()) {
+                return Redirect::to(sprintf('/readeraudio/%s/%s', $this->book->id, $lastReadedChapter->id));
+            }
+
+            // otherwise first chapter
             if ($firstChapter = $this->book->audiobook?->chapters()->first()) {
                 return Redirect::to(sprintf('/readeraudio/%s/%s', $this->book->id, $firstChapter->id));
             }
@@ -211,6 +216,32 @@ class ReaderAudio extends ComponentBase
         ]);
 
         return [];
+    }
+
+    /**
+     * @return Chapter|null
+     */
+    private function getLastReadedChapter(): ?Chapter
+    {
+        if (!$this->user) {
+            return null;
+        }
+
+        $readedChapters = AudioReadProgress::query()
+            ->book($this->book)
+            ->user($this->user)
+            ->get();
+
+        if (!$readedChapters) {
+            return null;
+        }
+
+        return $this->book->audiobook
+            ?->chapters()
+            ->whereIn('id', $readedChapters->pluck('chapter_id')->toArray())
+            ->orderByDesc('sort_order')
+            ->get()
+            ->first();
     }
 
     /**
