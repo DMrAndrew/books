@@ -537,6 +537,8 @@ class Book extends Model
             'stats',
             'ebook' => fn ($ebook) => $ebook->withActiveDiscountExist(),
             'ebook.discount',
+            'audiobook' => fn ($audiobook) => $audiobook->withActiveDiscountExist(),
+            'audiobook.discount',
             'author.profile',
             'authors.profile',
         ])
