@@ -114,7 +114,7 @@
                                 <a data-turbo="false" href="/book-add-audio/{{book.id}}/{{chapter.id}}">
                                     <button class="dropdown-menu__item">Заменить</button>
                                 </a>
-                                <a onclick="deleteChapter(`{{chapter.id}}`)" class=" cursor-pointer">
+                                <a onclick="deleteAudioChapter(`{{chapter.id}}`)" class=" cursor-pointer">
                                     <button class="dropdown-menu__item">Удалить</button>
                                 </a>
                             </div>
@@ -157,7 +157,7 @@
         }
         openDropdown();
 
-        function deleteChapter(id) {
+        function deleteAudioChapter(id) {
             id && uiconfirm('Удалить часть?', () => oc.ajax('audiobooker::onDeleteChapter', {
                     data: {
                         chapter_id: id
