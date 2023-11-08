@@ -248,6 +248,14 @@ class Edition extends Model implements ProductInterface
         };
     }
 
+    public function getTitleAttribute(): string
+    {
+        return match ($this->type) {
+            EditionsEnums::Ebook => $this->book->title,
+            default => $this->book->title . ' ('. EditionsEnums::Audio->label().') ',
+        };
+    }
+
     public function scopeWithActiveDiscountExist(Builder $builder): Builder
     {
         return $builder->withExists('discount');
