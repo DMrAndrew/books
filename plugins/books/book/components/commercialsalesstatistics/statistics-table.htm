@@ -5,7 +5,7 @@
             <thead>
             <tr>
                 <td class="table__col">Дата</td>
-                <td class="table__col _wide">Книга</td>
+                <td class="table__col _wide">Издание</td>
                 <td class="table__col">Тип продажи</td>
                 <td class="table__col">Цена</td>
                 <td class="table__col">Количество</td>
@@ -27,7 +27,7 @@
                     <td class="table__col _left">{{ record.count }}</td>
                     <td class="table__col _left">{{ record.reward }}</td>
                     <td class="table__col _left">
-                        {% if previousDetailLink != record.book_id ~ record.date ~ record.sell_type %}
+                        {% if previousDetailLink != record.edition_id ~ record.date ~ record.sell_type %}
                             <a href="{{ 'lc-commercial-statistics-detail'|page({book_id: record.book_id, date: record.date, sell_type: record.sell_type}) }}" class="ui-link _violet">Подробнее</a>
                         {% endif %}
                     </td>

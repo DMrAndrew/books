@@ -84,10 +84,10 @@ class CommercialSalesReports extends ComponentBase
         $groupedCompleted = $completedEditionsSell->groupBy('edition_id');
         $completedData = [];
         $groupedCompleted->each(function($groupedEdition) use (&$completedData) {
-            $book = $groupedEdition->first()->edition->book;
+            $edition = $groupedEdition->first()->edition;
             $completedData[] = [
-                'id' => $book->id,
-                'title' => $book->title,
+                'id' => $edition->id,
+                'title' => $edition->title,
                 'sells_sum_amount' => $this->formatNumber($groupedEdition->sum('price')),
                 'tax_sum_amount' => $this->formatNumber($groupedEdition->sum('tax_value')),
                 'reward_sum_amount' => $this->formatNumber($groupedEdition->sum('reward_value')),
@@ -109,10 +109,10 @@ class CommercialSalesReports extends ComponentBase
         $groupedIncompleted = $workingEditionsSell->groupBy('edition_id');
         $incompletedData = [];
         $groupedIncompleted->each(function($groupedEdition) use (&$incompletedData) {
-            $book = $groupedEdition->first()->edition->book;
+            $edition = $groupedEdition->first()->edition;
             $incompletedData[] = [
-                'id' => $book->id,
-                'title' => $book->title,
+                'id' => $edition->id,
+                'title' => $edition->title,
                 'sells_sum_amount' => $this->formatNumber($groupedEdition->sum('price')),
                 'tax_sum_amount' => $this->formatNumber($groupedEdition->sum('tax_value')),
                 'reward_sum_amount' => $this->formatNumber($groupedEdition->sum('reward_value')),

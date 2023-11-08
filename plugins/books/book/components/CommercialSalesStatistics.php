@@ -2,6 +2,7 @@
 
 use Books\Book\Classes\Traits\AccoutBooksTrait;
 use Books\Book\Models\Book;
+use Books\Book\Models\Edition;
 use Books\Book\Models\SellStatistics;
 use Books\Book\Traits\FormatNumberTrait;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
@@ -11,6 +12,7 @@ use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
 use Db;
 use Flash;
+use Illuminate\Database\Eloquent\Collection;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -21,8 +23,7 @@ use RainLab\User\Models\User;
  */
 class CommercialSalesStatistics extends ComponentBase
 {
-    use FormatNumberTrait,
-        AccoutBooksTrait;
+    use FormatNumberTrait;
 
     protected ?User $user;
 
@@ -60,7 +61,7 @@ class CommercialSalesStatistics extends ComponentBase
 
     public function onRender()
     {
-        $this->page['books'] = $this->getAccountBooks();
+        $this->page['editions'] = $this->getAccountEditions();
         $this->page['from'] = $this->from->format('d.m.Y');
         $this->page['to'] = $this->to->format('d.m.Y');
     }
@@ -70,7 +71,7 @@ class CommercialSalesStatistics extends ComponentBase
      */
     public function onFilterStatistics(): array
     {
-        $bookId = post('book_id');
+        $editionId = post('edition_id');
         $period = post('dates');
 
         if (empty($period)) {
@@ -112,13 +113,15 @@ class CommercialSalesStatistics extends ComponentBase
         $statisticsData = [];
         foreach ($groupedByDay as $day => $group) {
             $group->each(function ($sell) use (&$statisticsData, $day) {
+                $edition = $sell->edition;
                 $book = $sell->edition->book;
                 $statisticsData[$day][] = [
                     'id' => $sell->id,
                     'date' => $sell->day,
                     'sell_type' => $sell->sell_type->value,
                     'book_id' => $book->id,
-                    'title' => $book->title,
+                    'edition_id' => $edition->id,
+                    'title' => $edition->title,
                     'type' => $sell->sell_type->getLabel(),
                     'price' => $this->formatNumber($sell->price),
                     'count' => 1,
@@ -133,7 +136,7 @@ class CommercialSalesStatistics extends ComponentBase
                 foreach ($statisticsData[$day] as &$itemJ) {
                     if (
                         $itemI['id'] !== $itemJ['id']
-                        && $itemI['book_id'] === $itemJ['book_id']
+                        && $itemI['edition_id'] === $itemJ['edition_id']
                         && $itemI['type'] === $itemJ['type']
                         && $itemI['price'] === $itemJ['price']
                     ) {
@@ -195,5 +198,17 @@ class CommercialSalesStatistics extends ComponentBase
             $trail->parent('commercial_cabinet');
             $trail->push('Статистика продаж');
         });
+    }
+
+    /**
+     * @return Collection
+     */
+    private function getAccountEditions(): Collection
+    {
+        $books = $this->user->toBookUser()->booksInAuthorOrder()->get();
+
+        return Edition::query()
+            ->whereIn('book_id', $books->pluck('id')->toArray())
+            ->get();
     }
 }

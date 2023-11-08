@@ -32,14 +32,25 @@ class SellStatisticService implements SellStatisticServiceContract
             return true;
         }
 
-        $book = $order->editions()
+        $edition = $order->editions()
             ->first()
-            ?->orderable
-            ?->book;
+            ?->orderable;
+
+        $book = $edition->book;
 
         $rewardTaxedCoefficient = $this->orderService->getAuthorRewardCoefficient();
 
-        $book->authors->each(function ($author) use ($editionsAmount, $book, $order, $rewardTaxedCoefficient) {
+        /**
+         * Статистику записываем каждому соавтору
+         */
+        $book->authors->each(function ($author) use (
+                $edition,
+                $editionsAmount,
+                $book,
+                $order,
+                $rewardTaxedCoefficient
+            ) {
+
             $profile = $author->profile;
 
             $authorRewardPartRounded = intdiv(($editionsAmount * $author->percent), 100);
@@ -48,7 +59,6 @@ class SellStatisticService implements SellStatisticServiceContract
             /**
              * Сохранить статистику продажи
              */
-            $edition = $book->editions()->first();
             $sellType = $edition->status === BookStatus::COMPLETE
                 ? SellStatisticSellTypeEnum::SELL
                 : SellStatisticSellTypeEnum::SUBSCRIBE;
