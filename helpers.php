@@ -152,7 +152,11 @@ function restrictProhibited(Book $book): bool
  */
 function formatMoneyAmount(mixed $number): string
 {
-    return number_format((int)$number, 2, '.', ' ');
+    if (null === $number) {
+        return '';
+    }
+
+    return number_format(floatval($number), 2, '.', ' ');
 }
 
 /**

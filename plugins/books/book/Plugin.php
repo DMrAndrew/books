@@ -447,7 +447,8 @@ class Plugin extends PluginBase
             'functions' => [
                 'humanFileSize' => function(mixed $kilobytes) { return humanFileSize($kilobytes); },
                 'humanTime' => function(mixed $seconds) { return humanTime($seconds); },
-                'humanTimeShort' => function(mixed $seconds) { return humanTimeShort($seconds); }
+                'humanTimeShort' => function(mixed $seconds) { return humanTimeShort($seconds); },
+                'formatMoneyAmount' => function(mixed $number) { return formatMoneyAmount($number); }
             ],
         ];
     }

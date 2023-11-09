@@ -13,10 +13,7 @@
                         <option value="">Выберите произведение</option>
                         {% for edition in editions %}
                         <option  value="{{edition.id}}" {{editionItem.id == edition.id ? 'selected' : ''}}>
-                        {{edition.book.title}}
-                        {{edition.type.value != 1
-                            ? '(' ~ edition.type.label ~ ')'
-                            : ''}}
+                        {{edition.title}}
                         </option>
                         {% endfor %}
 
