@@ -9,7 +9,6 @@ use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
 use Db;
 use Flash;
-use Books\Book\Traits\FormatNumberTrait;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -20,8 +19,6 @@ use RainLab\User\Models\User;
  */
 class CommercialSalesReports extends ComponentBase
 {
-    use FormatNumberTrait;
-
     protected ?User $user;
 
     public function componentDetails()
@@ -88,16 +85,16 @@ class CommercialSalesReports extends ComponentBase
             $completedData[] = [
                 'id' => $edition->id,
                 'title' => $edition->title,
-                'sells_sum_amount' => $this->formatNumber($groupedEdition->sum('price')),
-                'tax_sum_amount' => $this->formatNumber($groupedEdition->sum('tax_value')),
-                'reward_sum_amount' => $this->formatNumber($groupedEdition->sum('reward_value')),
+                'sells_sum_amount' => $groupedEdition->sum('price'),
+                'tax_sum_amount' => $groupedEdition->sum('tax_value'),
+                'reward_sum_amount' => $groupedEdition->sum('reward_value'),
             ];
         });
 
         $completedSummary = [
-            'sells_sum_amount' => $this->formatNumber($completedEditionsSell->sum('price')),
-            'tax_sum_amount' => $this->formatNumber($completedEditionsSell->sum('tax_value')),
-            'reward_sum_amount' => $this->formatNumber($completedEditionsSell->sum('reward_value')),
+            'sells_sum_amount' => $completedEditionsSell->sum('price'),
+            'tax_sum_amount' => $completedEditionsSell->sum('tax_value'),
+            'reward_sum_amount' => $completedEditionsSell->sum('reward_value'),
         ];
 
         /**
@@ -113,16 +110,16 @@ class CommercialSalesReports extends ComponentBase
             $incompletedData[] = [
                 'id' => $edition->id,
                 'title' => $edition->title,
-                'sells_sum_amount' => $this->formatNumber($groupedEdition->sum('price')),
-                'tax_sum_amount' => $this->formatNumber($groupedEdition->sum('tax_value')),
-                'reward_sum_amount' => $this->formatNumber($groupedEdition->sum('reward_value')),
+                'sells_sum_amount' => $groupedEdition->sum('price'),
+                'tax_sum_amount' => $groupedEdition->sum('tax_value'),
+                'reward_sum_amount' => $groupedEdition->sum('reward_value'),
             ];
         });
 
         $incompletedSummary = [
-            'sells_sum_amount' => $this->formatNumber($workingEditionsSell->sum('price')),
-            'tax_sum_amount' => $this->formatNumber($workingEditionsSell->sum('tax_value')),
-            'reward_sum_amount' => $this->formatNumber($workingEditionsSell->sum('reward_value')),
+            'sells_sum_amount' => $workingEditionsSell->sum('price'),
+            'tax_sum_amount' => $workingEditionsSell->sum('tax_value'),
+            'reward_sum_amount' => $workingEditionsSell->sum('reward_value'),
         ];
 
         return [
