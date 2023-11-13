@@ -1,13 +1,13 @@
 <?php namespace Books\Videoblog\Models;
 
 use App\traits\HasUserScope;
-use Books\Blog\Classes\Enums\VideoBlogPostStatus;
 use Books\Profile\Models\Profile;
 use Books\Profile\Models\Profiler;
 use Books\Profile\Models\Subscriber;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
+use Books\Videoblog\Classes\Enums\VideoBlogPostStatus;
 use Exception;
 use Illuminate\Support\Str;
 use Model;
@@ -31,10 +31,7 @@ class Videoblog extends Model
     use HasUserScope;
 
     const TITLE_MAX_LENGTH = 60;
-    const PREVIEW_MAX_LENGTH = 500;
     const MAX_CREATE_SLUG_ATTEMPTS = 10;
-    const AVAILABLE_IMAGE_EXTENSIONS = ['jpeg', 'jpg', 'png'];
-    const MAX_IMAGE_SIZE_MB = 3;
 
     /**
      * @var string table name
@@ -48,8 +45,8 @@ class Videoblog extends Model
         'user_id' => 'nullable|integer|exists:users,id',
         'profile_id' => 'required|exists:books_profile_profiles,id',
         'title' => 'required|string|max:' . self::TITLE_MAX_LENGTH,
-        'slug' => ['string', 'regex:/^[a-z0-9\/\:_\-\*\[\]\+\?\|]*$/i', 'unique:books_blog_posts,slug'],
-        'embed' => 'string',
+        'slug' => ['string', 'regex:/^[a-z0-9\/\:_\-\*\[\]\+\?\|]*$/i', 'unique:books_videoblog_videoblogs,slug'],
+        'link' => 'string',
         'content' => 'required',
         'published_at' => 'nullable|date',
     ];
@@ -64,6 +61,7 @@ class Videoblog extends Model
         'title',
         'content',
         'embed',
+        'link',
         'published_at',
     ];
 
@@ -81,11 +79,7 @@ class Videoblog extends Model
         'profile' => Profile::class
     ];
 
-    public $attachMany = [
-        'content_images' => File::class,
-    ];
-
-    public static array $endingArray = ['Видео Блог', 'Видео Блога', 'Видео Блогов'];
+    public static array $endingArray = ['Видеоблог', 'Видеоблога', 'Видеоблогов'];
 
     public static function boot(): void
     {
@@ -93,10 +87,6 @@ class Videoblog extends Model
 
         static::creating(function ($post) {
             $post->generateSlugFromTitle();
-        });
-
-        static::saving(function ($post) {
-            $post->fillPreviewFromContent();
         });
 
         static::deleting(function ($post) {
@@ -137,18 +127,12 @@ class Videoblog extends Model
         $this->comments()->delete();
     }
 
-    /**
-     * @return void
-     */
-    public function fillPreviewFromContent(): void
-    {
-        $this->attributes['preview'] = substr(strip_tags($this->attributes['content']), 0, self::PREVIEW_MAX_LENGTH);
-    }
 
     public static function wordForm(): WordForm
     {
         return new WordForm(...self::$endingArray);
     }
+
 
     /**
      * @param Builder $builder

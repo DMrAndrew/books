@@ -1,8 +1,14 @@
 <?php namespace Books\Videoblog;
 
 use Backend;
-use Books\Blog\Classes\Services\PostService;
-use Books\Blog\Classes\Services\VideoBlogPostService;
+use Books\Profile\Models\Profile;
+use Books\Videoblog\Behaviors\HasVideoBlog;
+use Books\Videoblog\Classes\Services\VideoBlogPostService;
+use Books\Videoblog\Components\VideoBlogLC;
+use Books\Videoblog\Components\VideoBlogLCList;
+use Books\Videoblog\Components\VideoBlogList;
+use Books\Videoblog\Components\VideoBlogPost;
+use Books\Videoblog\Components\VideoBlogPostCard;
 use System\Classes\PluginBase;
 
 /**
@@ -46,7 +52,9 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-        //
+        Profile::extend(function (Profile $model) {
+            $model->implementClassWith(HasVideoBlog::class);
+        });
     }
 
     /**
@@ -54,7 +62,13 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return [];
+        return [
+            VideoBlogPost::class => 'VideoBlogPost',
+            VideoBlogPostCard::class => 'VideoBlogPostCard',
+            VideoBlogList::class => 'VideoBlogList',
+            VideoBlogLC::class => 'VideoBlogLC',
+            VideoBlogLCList::class => 'VideoBlogLCList',
+        ];
     }
 
     /**
@@ -62,8 +76,6 @@ class Plugin extends PluginBase
      */
     public function registerPermissions()
     {
-        return []; // Remove this line to activate
-
         return [
             'books.videoblog.some_permission' => [
                 'tab' => 'Videoblog',
@@ -77,12 +89,10 @@ class Plugin extends PluginBase
      */
     public function registerNavigation()
     {
-        return []; // Remove this line to activate
-
         return [
             'videoblog' => [
                 'label' => 'Videoblog',
-                'url' => Backend::url('books/videoblog/mycontroller'),
+                'url' => Backend::url('books/videoblog/videoblog'),
                 'icon' => 'icon-play-circle-o',
                 'permissions' => ['books.videoblog.*'],
                 'order' => 500,

@@ -1,2 +1,4 @@
 v1.0.1: First version of Videoblog
-v1.0.2: Create migration Videoblog
+v1.0.2:
+    - 'Create migration Videoblog'
+    - create_videoblogs_table.php

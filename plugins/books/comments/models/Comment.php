@@ -6,6 +6,7 @@ use App\traits\HasUserScope;
 use Books\Blog\Models\Post;
 use Books\Book\Models\Book;
 use Books\Profile\Models\Profile;
+use Books\Videoblog\Models\Videoblog;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\SimpleTree;
@@ -106,6 +107,7 @@ class Comment extends Model
             Book::class => $this->commentable->title,
             Profile::class => $this->commentable->username,
             Post::class => $this->commentable->title,
+            Videoblog::class => $this->commentable->title,
         };
     }
 
@@ -115,6 +117,7 @@ class Comment extends Model
             Book::class => 'к книге ',
             Profile::class => 'в профиле ',
             Post::class => 'к посту ',
+            Videoblog::class => 'к видеоблогу ',
         };
     }
 
@@ -124,6 +127,7 @@ class Comment extends Model
             Book::class => '/book-card/'.$this->commentable->id,
             Profile::class => '/author-page/'.$this->commentable->id,
             Post::class => '/blog/'.$this->commentable->slug,
+            Videoblog::class => '/videoblog/'.$this->commentable->slug,
         };
     }
 
@@ -133,6 +137,7 @@ class Comment extends Model
             Book::class => $this->commentable->title,
             Profile::class => $this->commentable->username,
             Post::class => $this->commentable->title,
+            Videoblog::class => $this->commentable->title,
         };
     }
 
@@ -142,6 +147,7 @@ class Comment extends Model
             Book::class => $this->commentable->profile()->select((new Profile())->getQualifiedKeyName()),
             Profile::class => [$this->commentable->id],
             Post::class => $this->commentable->profile()->select((new Profile())->getQualifiedKeyName()),
+            Videoblog::class => $this->commentable->profile()->select((new Profile())->getQualifiedKeyName()),
             default => null
         };
 
