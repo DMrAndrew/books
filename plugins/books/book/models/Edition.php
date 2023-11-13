@@ -222,7 +222,10 @@ class Edition extends Model implements ProductInterface
 
     public function collectUpdateHistory(): UpdateHistory
     {
-        return new UpdateHistory($this->revision_history()->where('field', '=', 'length')->get());
+        return new UpdateHistory(
+            $this->revision_history()->where('field', '=', 'length')->get(),
+            $this->type
+        );
     }
 
     public function getUpdateHistoryViewAttribute(): UpdateHistoryView
