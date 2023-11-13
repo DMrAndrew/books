@@ -70,7 +70,11 @@
                             <span>{{posts_paginator.total?:''}}</span>
                             {% endif %}
                         </div>
-                        <!--                        <div class="ui-tabs-link " data-tab="6">Видеоблог</div>-->
+                        <div class="ui-tabs-link " data-tab="6">Видеоблог
+                            {% if videoblog_posts_paginator.total %}
+                            <span>{{videoblog_posts_paginator.total?:''}}</span>
+                            {% endif %}
+                        </div>
                         <div class="ui-tabs-link " data-tab="7">Подписки
                             {% if subscriptions.count %}
                             <span>{{subscriptions.count?:''}}</span>
@@ -121,6 +125,10 @@
         <div class="author-cycles ui-tabs-content" data-tab-content="5">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Блог <span
                 class="ui-text-body--2">{{posts_paginator.total?:''}}</span></div>
+        </div>
+        <div class="author-cycles ui-tabs-content" data-tab-content="6">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Видеоблог <span
+                class="ui-text-body--2">{{videoblog_posts_paginator.total?:''}}</span></div>
         </div>
         <div class="ui-tabs-content" data-tab-content="7">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписки <span
@@ -241,6 +249,10 @@
                 <!-- Блог -->
                 <div class="author-blog ui-tabs-content" id="author-posts" data-tab-content="5">
                     {% partial 'author_space::author-blog-tab' posts_paginator=posts_paginator %}
+                </div>
+                <!-- Видеоблог -->
+                <div class="author-blog ui-tabs-content" id="author-videoposts" data-tab-content="6">
+                    {% partial 'author_space::author-videoblog-tab' posts_paginator=videoblog_posts_paginator %}
                 </div>
                 <!-- Подписки -->
                 <div class="author-blog ui-tabs-content" data-tab-content="7">

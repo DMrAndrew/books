@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Books\Blog\Classes\Enums;
+namespace Books\Videoblog\Classes\Enums;
 
 enum VideoBlogPostStatus: string
 {
