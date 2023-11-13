@@ -15,8 +15,8 @@ class AudioReadProgress extends Model
     use Validation;
     use HasUserScope;
 
-    const SAVE_USER_AUDIO_READ_PROGRESS_STEP_SECONDS = 2;
-    const SAVE_USER_AUDIO_READ_PROGRESS_TIMEOUT_SECONDS = 1;
+    const SAVE_USER_AUDIO_READ_PROGRESS_STEP_SECONDS = 60; // минимальный прогресс для сохранения
+    const SAVE_USER_AUDIO_READ_PROGRESS_TIMEOUT_SECONDS = 60; // сохраняем прогресс каждые хх секунд
 
     public $table = 'books_book_audio_read_progresses';
 
