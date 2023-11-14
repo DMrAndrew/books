@@ -32,7 +32,9 @@ class AuthorSpace extends ComponentBase
 
     protected $videoBlogPostsCurrentPage = 1;
 
-    protected int $perPage = 15;
+    protected int $perPage = 2;
+
+    protected int $perVideoblogPage = 2;
 
     /**
      * componentDetails
@@ -149,8 +151,8 @@ class AuthorSpace extends ComponentBase
         return [
             'can_see_videoblog_posts' => $can_see_videoblog_posts,
             'videoblog_posts_paginator' => $can_see_videoblog_posts ? CustomPaginator::from(
-                $this->profile->videoblog_posts()->orderByDesc('id')->paginate(
-                    $this->perPage,
+                $this->profile->videoblog_posts()->published()->orderByDesc('id')->paginate(
+                    $this->perVideoblogPage,
                     $this->videoBlogPostsCurrentPage()
                 )
             ) : collect(),

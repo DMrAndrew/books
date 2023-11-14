@@ -230,11 +230,6 @@ class Profile extends Model
         return $this->belongsToManyTroughProfiler(Post::class);
     }
 
-    public function videoPostsThroughProfiler(): BelongsToMany
-    {
-        return $this->belongsToManyTroughProfiler(Videoblog::class);
-    }
-
     public function reposts(): BelongsToMany
     {
         return $this->belongsToManyTroughProfiler(Repost::class);
@@ -304,8 +299,6 @@ class Profile extends Model
 
     public function canSeeVideoBlogPosts(?Profile $profile = null)
     {
-        return true;
-
         $profile ??= Auth::getUser()?->profile;
 
         if ($profile != null && $profile->is($this)) {
