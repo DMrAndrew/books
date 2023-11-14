@@ -32,9 +32,9 @@ class AuthorSpace extends ComponentBase
 
     protected $videoBlogPostsCurrentPage = 1;
 
-    protected int $perPage = 2;
+    protected int $perPage = 15;
 
-    protected int $perVideoblogPage = 2;
+    protected int $perVideoblogPage = 6;
 
     /**
      * componentDetails
