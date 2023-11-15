@@ -13,6 +13,7 @@ use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use October\Rain\Support\Facades\Event;
 use RainLab\User\Facades\Auth;
 use Redirect;
@@ -118,8 +119,9 @@ class VideoBlogLC extends ComponentBase
 
             VideoBlogPostService::getYoutubeEmbedCode($post);
 
+
             if ($post->wasRecentlyCreated) {
-                Event::fire('books.blog::post.published', [$this->profile, $post]);
+                Event::fire('books.videoblog::post.published', [$this->profile, $post]);
             }
 
             /**

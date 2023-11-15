@@ -324,6 +324,13 @@ class Profile extends Model
             });
     }
 
+    public function scopeSettingsEnabledVideoBlogPostNotifications(Builder $builder): Builder
+    {
+        return $builder->whereHas('user', function ($q) {
+            $q->settingsEnabledVideoBlogPostNotifications();
+        });
+    }
+
     public function scopeSettingsEnabledUpdateLibraryItemsNotifications(Builder $builder): Builder
     {
         return $builder->whereHas('user', function ($q) {
