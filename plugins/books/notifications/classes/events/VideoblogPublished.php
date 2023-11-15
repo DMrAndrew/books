@@ -19,7 +19,6 @@ class VideoblogPublished extends BaseEvent
      */
     public static function defaultParams(): array
     {
-        Log::info('VideoblogPublished - defaultParams');
         return [
             'type' => NotificationTypeEnum::VIDEOBLOG->value,
             'icon' => 'video-blog-stroked-32',
@@ -37,7 +36,7 @@ class VideoblogPublished extends BaseEvent
     {
         $profile = Arr::get($args, 0);
         $post = Arr::get($args, 1);
-        Log::info('VideoblogPublished - makeParamsFromEvent');
+
         return array_merge(
             static::defaultParams(),
             [
@@ -55,7 +54,7 @@ class VideoblogPublished extends BaseEvent
     public static function getRecipients(array $args): ?Collection
     {
         $profile = Arr::get($args, 0);
-        Log::info('VideoblogPublished - getRecipients');
+
         return $profile
             ?->subscribers()
             ->settingsEnabledVideoBlogPostNotifications()
