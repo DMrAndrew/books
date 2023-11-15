@@ -1,0 +1,7 @@
+{% if postsCount == 0 %}
+    {% partial __SELF__ ~ '::create_first_blog' %}
+{% else %}
+    {% partial __SELF__ ~ '::list' %}
+{% endif %}
+
+
