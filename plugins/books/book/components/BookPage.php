@@ -111,15 +111,17 @@ class BookPage extends ComponentBase
     public function vals()
     {
         return [
-            'buyBtn' => $this->buyBtn(),
-            'readBtn' => $this->readBtn(),
+            'buyBtn_ebook' => $this->buyButtonForEbook(),
+            'readBtn_ebook' => $this->readButtonForEbook(),
+            'buyBtn_audiobook' => $this->buyButtonForAudiobook(),
+            'readBtn_audiobook' => $this->readButtonForAudiobook(),
             'supportBtn' => $this->supportBtn(),
             'book' => $this->book,
             'cycle' => $this->book->cycle,
         ];
     }
 
-    public function buyBtn(): bool
+    public function buyButtonForEbook(): bool
     {
         /**
          * Авторизованным пользователям
@@ -150,11 +152,55 @@ class BookPage extends ComponentBase
         return true;
     }
 
-    public function readBtn(): bool
+    public function readButtonForEbook(): bool
     {
         return $this->book->ebook->isFree()
             || ($this->user && $this->book->ebook->isSold($this->user))
             || $this->book->ebook->chapters->some->isFree();
+    }
+
+    /**
+     * @return bool
+     */
+    private function buyButtonForAudiobook(): bool
+    {
+        /**
+         * Авторизованным пользователям
+         */
+        if ($this->user) {
+            /**
+             * Автор не может купить
+             */
+            if ($this->book->profiles()->user($this->user)->exists()) {
+                return false;
+            }
+
+            /**
+             * Уже куплена
+             */
+            if ($this->book->audiobook?->isSold($this->user)) {
+                return false;
+            }
+        }
+
+        /**
+         * Книга бесплатная
+         */
+        if ($this->book->audiobook?->isFree()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    private function readButtonForAudiobook(): bool
+    {
+        return $this->book->audiobook?->isFree()
+            || ($this->user && $this->book->audiobook?->isSold($this->user))
+            || $this->book->audiobook?->chapters->some->isFree();
     }
 
     /**
@@ -203,9 +249,9 @@ class BookPage extends ComponentBase
         $this->page->meta_canonical = Request::url();
 
         if ($this->book->meta_title)
-        $this->page->meta_title = $this->book->meta_title;
+            $this->page->meta_title = $this->book->meta_title;
 
         if ($this->book->meta_desc)
-        $this->page->meta_description = $this->book->meta_desc;
+            $this->page->meta_description = $this->book->meta_desc;
     }
 }

@@ -43,11 +43,11 @@
                                     <tr>
                                         <td class="table__col _wide">{{ record.type }}</td>
                                         <td class="table__col _right">{{ record.count }}</td>
-                                        <td class="table__col _right">{{ record.price }}</td>
-                                        <td class="table__col _right">{{ record.amount }}</td>
+                                        <td class="table__col _right">{{ formatMoneyAmount(record.price) }}</td>
+                                        <td class="table__col _right">{{ formatMoneyAmount(record.amount) }}</td>
                                         <td class="table__col _right">{{ record.tax_rate }}</td>
-                                        <td class="table__col _right">{{ record.tax_value }}</td>
-                                        <td class="table__col _right">{{ record.reward }}</td>
+                                        <td class="table__col _right">{{ formatMoneyAmount(record.tax_value) }}</td>
+                                        <td class="table__col _right">{{ formatMoneyAmount(record.reward) }}</td>
                                     </tr>
                                     {% endfor %}
                                 {% endfor %}
@@ -56,10 +56,10 @@
                                     <td class="table__col _bold _wide _right">Итого:</td>
                                     <td class="table__col _bold _right">{{ summary.sells_count }}</td>
                                     <td class="table__col _bold _right"></td>
-                                    <td class="table__col _bold _right">{{ summary.sells_amount_total }}</td>
+                                    <td class="table__col _bold _right">{{ formatMoneyAmount(summary.sells_amount_total) }}</td>
                                     <td class="table__col _bold _right"></td>
-                                    <td class="table__col _bold _right">{{ summary.sells_tax_total }}</td>
-                                    <td class="table__col _bold _right">{{ summary.sells_reward_total }}</td>
+                                    <td class="table__col _bold _right">{{ formatMoneyAmount(summary.sells_tax_total) }}</td>
+                                    <td class="table__col _bold _right">{{ formatMoneyAmount(summary.sells_reward_total) }}</td>
                                 </tr>
                                 {% endif %}
 

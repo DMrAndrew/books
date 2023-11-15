@@ -5,6 +5,7 @@
         <!-- Форма заказа -->
         {{ form_ajax('Order::onOrderSubmit', { id: 'orderForm', flash: true}) }}
         <input type="hidden" name="order_id" value="{{order.id}}">
+        <input type="hidden" name="edition_id" value="{{edition.id}}">
 
         <div class="buy-book-modal__container ui-modal-content">
 
@@ -23,7 +24,7 @@
                 <div class="buy-book-modal__wrapper">
                     <div class="buy-book-modal__wrapper-item">
                         <label class="ui-checkbox">
-                            <span class="ui-checkbox-text">{{book.title}}</span>
+                            <span class="ui-checkbox-text">{{book.title}} ({{edition.type.labelShort}})</span>
                         </label>
                         <div class="buy-book-modal__price">{{book.ebook.priceTag.price}} ₽</div>
                     </div>

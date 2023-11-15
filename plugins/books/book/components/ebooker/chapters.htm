@@ -19,7 +19,7 @@
         <ul id="sortable">
             {% for chapter in ebook.chapters %}
             <li>
-                <input type="hidden" name="chapters[{{chapter.id}}]" value="{{chapter.id}}"/>
+                <input type="hidden" data-sortable="true" name="chapters[{{chapter.id}}]" value="{{chapter.id}}"/>
                 <div class="chapter-book">
 
                     <svg class="chapter-book__drag square-24 handle hide-mobile">

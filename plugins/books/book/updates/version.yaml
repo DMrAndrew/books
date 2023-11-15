@@ -104,3 +104,6 @@
 1.0.31:
     - 'Внешние ключи'
     - update_foreign_keys.php
+1.0.33:
+    - 'Прогресс прослушивания аудиокниги'
+    - create_audio_read_progresses_table.php

@@ -5,6 +5,7 @@
  * и включено расширение mbstring (Multibyte String Functions)
  */
 
+use Books\Book\Classes\Services\AudioFileLengthHelper;
 use Books\Book\Models\Book;
 use Books\User\Classes\CookieEnum;
 use Books\User\Classes\UserService;
@@ -151,7 +152,58 @@ function restrictProhibited(Book $book): bool
  */
 function formatMoneyAmount(mixed $number): string
 {
-    return number_format((int)$number, 2, '.', ' ');
+    if (null === $number) {
+        return '';
+    }
+
+    return number_format(floatval($number), 2, '.', ' ');
+}
+
+/**
+ * @param mixed $bytes
+ *
+ * @return string|null
+ */
+function humanFileSize(mixed $bytes): ?string
+{
+    if (!$bytes) {
+        return null;
+    }
+
+    $dec = 2;
+    $size   = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+    $factor = floor((strlen($bytes) - 1) / 3);
+    if ($factor == 0) $dec = 0;
+
+    return sprintf("%.{$dec}f %s", $bytes / (1024 ** $factor), $size[$factor]);
+}
+
+/**
+ * @param mixed $seconds
+ *
+ * @return string|null
+ */
+function humanTime(mixed $seconds): ?string
+{
+    if (!$seconds) {
+        return null;
+    }
+
+    return AudioFileLengthHelper::formatSecondsToHumanReadableTime($seconds);
+}
+
+/**
+ * @param mixed $seconds
+ *
+ * @return string|null
+ */
+function humanTimeShort(mixed $seconds): ?string
+{
+    if (!$seconds) {
+        return null;
+    }
+
+    return AudioFileLengthHelper::formatSecondsToHumanReadableTimeShort($seconds);
 }
 
 ?>

@@ -1,6 +1,18 @@
+{% set typeEbook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Ebook') %}
+{% set typeAudiobook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Audio') %}
+
+{% if edition.type == typeEbook %}
 <div class="book-card__info-wrap _color-green ui-tooltip" data-tooltip="Электронная книга">
     <svg class="book-card__favorit-active">
         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>
     </svg>
     {% partial 'book/book-price' edition=edition %}
 </div>
+{% elseif edition.type == typeAudiobook %}
+<div class="book-card__info-wrap _color-green ui-tooltip" data-tooltip="Аудиокнига">
+    <svg class="book-card__favorit-active">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-16' | theme}}"></use>
+    </svg>
+    {% partial 'book/book-price' edition=edition %}
+</div>
+{% endif %}
