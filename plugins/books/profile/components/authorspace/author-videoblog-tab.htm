@@ -1,0 +1,47 @@
+{% if can_see_videoblog_posts and videoblog_posts_paginator.count %}
+    {% set posts = videoblog_posts_paginator.getCollection %}
+
+    {% if not posts[0] %}
+        <div class="author__placeholder _indent">
+            <svg class="square-32">
+                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#blog-stroked-32' | theme}}"></use>
+            </svg>
+            <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
+                одной публикации</div>
+            <span>Когда они появятся, вы увидите их здесь</span>
+        </div>
+    {% else %}
+        <div class="ui-grid-container ui-grid-gap">
+            {% for post in posts %}
+            {% partial "VideoBlogPostCard::card" post=post %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <nav class="posts__pagination ui-pagination" style="margin-top: 25px">
+        <ul class="ui-pagination-list">
+
+            {% for link in videoblog_posts_paginator.linkCollectionCompact %}
+            <li>
+                <a class="ui-pagination-item cursor-pointer {{ link.active ? 'active' : '' }} "
+                   data-request="{{__SELF__}}::onVideoBlogPage"
+                   data-request-data="videoblog-page:{{ link.url }}"
+                   data-request-complete=" $('#author-videoposts')[0].scrollIntoView() "
+                >
+                    {{link.label}}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+
+{% else %}
+    <div class="author__placeholder _indent">
+        <svg class="square-32">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#blog-stroked-32' | theme}}"></use>
+        </svg>
+        <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
+            одной публикации</div>
+        <span>Когда они появятся, вы увидите их здесь</span>
+    </div>
+{% endif %}

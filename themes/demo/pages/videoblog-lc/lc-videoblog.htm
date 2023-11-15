@@ -1,0 +1,33 @@
+title = "Личный кабинет - Ведеоблог"
+layout = "default"
+url = "/lc-videoblog"
+meta_title = "Личный кабинет - Ведеоблог"
+breadcrumbs="lc-videoblog"
+[session]
+security = "user"
+redirect = "/"
+[VideoBlogLC]
+[VideoBlogLCList]
+==
+{% component 'Breadcrumbs' %}
+{% partial 'profile/personal_area_header' %}
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
+            {% partial "profile/sidebarmenu" %}
+            <div class="ui-col-sm-9">
+                <div class="personal-area__subtitle">
+                    <span class="ui-text-head--3 ui-text--bold">Видеоблог</span>
+                    <svg class="square-16">
+                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                    </svg>
+                </div>
+
+                <div id="comments-spawn">
+                    {% component 'VideoBlogLCList' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
