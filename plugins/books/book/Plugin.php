@@ -407,6 +407,11 @@ class Plugin extends PluginBase
             $trail->push('Блог');
         });
 
+        $manager->register('lc-videoblog', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('lc');
+            $trail->push('Видеоблог');
+        });
+
         $manager->register('lc-promocodes', function (BreadcrumbsGenerator $trail, $params) {
             $trail->parent('lc');
             $trail->push('Промокоды');
