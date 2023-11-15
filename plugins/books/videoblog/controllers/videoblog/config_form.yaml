@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Videoblog
+
+# Model Form Field configuration
+form: $/books/videoblog/models/videoblog/fields.yaml
+
+# Model Class name
+modelClass: Books\Videoblog\Models\Videoblog
+
+# Default redirect location
+defaultRedirect: books/videoblog/videoblog
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: books/videoblog/videoblog/update/:id
+    redirectClose: books/videoblog/videoblog
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/videoblog/videoblog
+    redirectClose: books/videoblog/videoblog
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title

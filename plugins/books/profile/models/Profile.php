@@ -19,6 +19,7 @@ use Books\User\Classes\BoolOptionsEnum;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
+use Books\Videoblog\Models\Videoblog;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
@@ -296,11 +297,38 @@ class Profile extends Model
         };
     }
 
+    public function canSeeVideoBlogPosts(?Profile $profile = null)
+    {
+        $profile ??= Auth::getUser()?->profile;
+
+        if ($profile != null && $profile->is($this)) {
+            return true;
+        }
+
+        $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_VIDEO_BLOG)->first();
+        if (!$setting) {
+            return true;
+        }
+
+        return match (PrivacySettingsEnum::tryFrom($setting->value)) {
+            PrivacySettingsEnum::ALL => true,
+            PrivacySettingsEnum::SUBSCRIBERS => (bool) $profile?->hasSubscription($this),
+            default => false
+        };
+    }
+
     public function scopeSettingsEnabledBlogPostNotifications(Builder $builder): Builder
     {
         return $builder->whereHas('user', function ($q) {
                 $q->settingsEnabledBlogPostNotifications();
             });
+    }
+
+    public function scopeSettingsEnabledVideoBlogPostNotifications(Builder $builder): Builder
+    {
+        return $builder->whereHas('user', function ($q) {
+            $q->settingsEnabledVideoBlogPostNotifications();
+        });
     }
 
     public function scopeSettingsEnabledUpdateLibraryItemsNotifications(Builder $builder): Builder

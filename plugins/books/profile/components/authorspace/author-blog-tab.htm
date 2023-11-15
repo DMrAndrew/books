@@ -18,9 +18,9 @@
         </div>
     {% endif %}
 
-    <nav class="posts__pagination ui-pagination">
+    <nav class="posts__pagination ui-pagination"  style="margin-top: 25px">
         <ul class="ui-pagination-list">
-            {% for link in posts_paginator.getLinks %}
+            {% for link in posts_paginator.linkCollectionCompact %}
             <li>
                 <a class="ui-pagination-item cursor-pointer {{ link.active ? 'active' : '' }} "
                    data-request="{{__SELF__}}::onBlogPage"

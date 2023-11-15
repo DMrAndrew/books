@@ -182,6 +182,16 @@ class BookUser extends ExtensionBase
             });
     }
 
+    public function scopeSettingsEnabledVideoBlogPostNotifications(Builder $builder): Builder
+    {
+        return $builder
+            ->whereDoesntHave('settings', function ($query) {
+                $query
+                    ->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_VIDEO_BLOG)
+                    ->valueIs(BoolOptionsEnum::ON);
+            });
+    }
+
     public function scopeSettingsEnabledUpdateLibraryItemsNotifications(Builder $builder): Builder
     {
         return $builder
