@@ -18,21 +18,8 @@
         </div>
     {% endif %}
 
-    <nav class="posts__pagination ui-pagination"  style="margin-top: 25px">
-        <ul class="ui-pagination-list">
-            {% for link in posts_paginator.linkCollectionCompact %}
-            <li>
-                <a class="ui-pagination-item cursor-pointer {{ link.active ? 'active' : '' }} "
-                   data-request="{{__SELF__}}::onBlogPage"
-                   data-request-data="blog-page:{{ link.url }}"
-                   data-request-complete=" $('#author-posts')[0].scrollIntoView() "
-                >
-                    {{link.label}}
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
-    </nav>
+{% partial 'site/ajax_paginator' paginator=posts_paginator function='onBlogPage' customPageName='blog-page' customTagName='#author-posts' %}
+
 {% else %}
     <div class="author__placeholder _indent">
         <svg class="square-32">
