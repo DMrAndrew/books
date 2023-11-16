@@ -100,6 +100,6 @@ class TempAdultPass extends Model
 
     public function prunable()
     {
-        return static::query()->whereDate('created_at', '<', today());
+        return static::query()->whereDate('expire_in', '<', now());
     }
 }
