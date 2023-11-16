@@ -57,7 +57,7 @@ class FB2 extends BaseConverter
             $this->css,
             $this->book->annotation,
             $this->book->title,
-            $this->content,
+            $this->body(),
             $this->book->ebook->cover->path
         );
 
@@ -101,8 +101,10 @@ class FB2 extends BaseConverter
 
     }
 
-    public function body($content)
+    public function body()
     {
+
+        $chapters = collect();
         // Заменяем заголовки на жирный текст в ячейках таблиц
         $content = preg_replace_callback('/(<td([^>]*?)>)(.*?)(<\/td>)/is',
             function ($matches) {
