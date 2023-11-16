@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Audio Controller
+
+# Model Form Field configuration
+form: $/books/book/models/audiocontroller/fields.yaml
+
+# Model Class name
+modelClass: Books\Book\Models\AudioController
+
+# Default redirect location
+defaultRedirect: books/book/audiocontroller
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: books/book/audiocontroller/update/:id
+    redirectClose: books/book/audiocontroller
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: books/book/audiocontroller
+    redirectClose: books/book/audiocontroller
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title
