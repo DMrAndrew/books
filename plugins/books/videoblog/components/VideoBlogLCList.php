@@ -1,5 +1,6 @@
 <?php namespace Books\Videoblog\Components;
 
+use App\classes\CustomPaginator;
 use Books\Profile\Models\Profile;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
@@ -12,7 +13,12 @@ use RainLab\User\Facades\Auth;
 class VideoBlogLCList extends ComponentBase
 {
     protected Profile $profile;
+
     protected int $postsCount;
+
+    protected $videoBlogPostsCurrentPage = 1;
+
+    protected int $perVideoblogPage = 6;
 
     public function componentDetails()
     {
@@ -31,7 +37,7 @@ class VideoBlogLCList extends ComponentBase
             'recordsPerPage' => [
                 'title' => 'Публикаций на странице',
                 'comment' => 'Количество публикаций отображаемых на одной странице',
-                'default' => 16,
+                'default' => $this->perVideoblogPage,
             ],
         ];
     }
@@ -55,6 +61,26 @@ class VideoBlogLCList extends ComponentBase
     {
         $this->page['profile'] = $this->profile;
         $this->page['postsCount'] = $this->postsCount;
-        $this->page['posts'] = $this->profile->videoblog_posts()->orderByDesc('id')->paginate((int) $this->property('recordsPerPage', 16));
+        $this->page['posts'] = CustomPaginator::from($this->getPosts());
+    }
+
+    public function onVideoBlogPage()
+    {
+        return [
+            '#videoposts' => $this->renderPartial('@list', ['post' => $this->getPosts()]),
+        ];
+    }
+    public function videoBlogPostsCurrentPage(): int
+    {
+        return (int)(post('videoblog-lc') ?? $this->videoBlogPostsCurrentPage);
+    }
+
+    protected function getPosts(): CustomPaginator
+    {
+        return CustomPaginator::from($this->profile->videoblog_posts()->orderByDesc('id')->paginate(
+            $this->perVideoblogPage,
+            $this->videoBlogPostsCurrentPage()
+        )
+        );
     }
 }
