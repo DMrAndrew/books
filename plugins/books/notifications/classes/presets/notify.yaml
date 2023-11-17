@@ -80,6 +80,6 @@ post_published:
 
 videoblog_published:
     name: Новая публикация в видеоблоге
-    event: Books\Notifications\Classes\Events\VideoblogPublish
+    event: Books\Notifications\Classes\Events\VideoblogPublished
     items:
         - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
