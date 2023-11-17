@@ -37,6 +37,8 @@ class VideoblogPublished extends BaseEvent
         $profile = Arr::get($args, 0);
         $post = Arr::get($args, 1);
 
+        //dd($profile, $post);
+
         return array_merge(
             static::defaultParams(),
             [

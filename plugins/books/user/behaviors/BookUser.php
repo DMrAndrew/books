@@ -187,7 +187,7 @@ class BookUser extends ExtensionBase
         return $builder
             ->whereDoesntHave('settings', function ($query) {
                 $query
-                    ->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_VIDEO_BLOG)
+                    ->type(UserSettingsEnum::NOTIFY_NEW_RECORD_VIDEO_BLOG)
                     ->valueIs(BoolOptionsEnum::ON);
             });
     }
