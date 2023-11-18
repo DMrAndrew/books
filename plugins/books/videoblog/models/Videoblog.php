@@ -16,7 +16,6 @@ use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
-use System\Models\File;
 use WordForm;
 
 /**
@@ -46,9 +45,22 @@ class Videoblog extends Model
         'profile_id' => 'required|exists:books_profile_profiles,id',
         'title' => 'required|string|max:' . self::TITLE_MAX_LENGTH,
         'slug' => ['string', 'regex:/^[a-z0-9\/\:_\-\*\[\]\+\?\|]*$/i', 'unique:books_videoblog_videoblogs,slug'],
-        'link' => 'string',
+        'link' => 'required|youtubelink',
         'content' => 'required',
         'published_at' => 'nullable|date',
+    ];
+
+    public $customMessages = [
+        'title.required' => 'Добавьте пожалуйста заголовок к видеоблогу',
+        'content.required' => 'Добавьте пожалуйста описание видеоблога',
+        'link.required' =>  'Вставьте пожалуйста ссылку на видео',
+
+
+    ];
+
+    public $attributeNames = [
+        'title' => 'Заголовок',
+        'content' => 'Описание',
     ];
 
     /**

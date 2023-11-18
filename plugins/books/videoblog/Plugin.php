@@ -3,6 +3,7 @@
 use Backend;
 use Books\Profile\Models\Profile;
 use Books\Videoblog\Behaviors\HasVideoBlog;
+use Books\Videoblog\Classes\rules\YouTubeUrl;
 use Books\Videoblog\Classes\Services\VideoBlogPostService;
 use Books\Videoblog\Components\VideoBlogLC;
 use Books\Videoblog\Components\VideoBlogLCList;
@@ -10,6 +11,7 @@ use Books\Videoblog\Components\VideoBlogList;
 use Books\Videoblog\Components\VideoBlogPost;
 use Books\Videoblog\Components\VideoBlogPostCard;
 use System\Classes\PluginBase;
+use Validator;
 
 /**
  * Plugin Information File
@@ -55,6 +57,7 @@ class Plugin extends PluginBase
         Profile::extend(function (Profile $model) {
             $model->implementClassWith(HasVideoBlog::class);
         });
+        Validator::extend('youtubelink', YouTubeUrl::class);
     }
 
     /**
