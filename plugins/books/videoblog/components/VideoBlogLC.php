@@ -100,6 +100,12 @@ class VideoBlogLC extends ComponentBase
                 $data->toArray(),
                 collect((new Videoblog())->rules)->only([
                     'title', 'content', 'published_at'
+                ])->toArray(),
+                collect((new Videoblog())->customMessages)->only([
+                    'title', 'content', 'published_at'
+                ])->toArray(),
+                collect((new Videoblog())->attributeNames)->only([
+                    'title', 'content', 'published_at'
                 ])->toArray()
             );
             if ($validator->fails()) {
