@@ -6,9 +6,6 @@
 1.0.2:
     - '18+ для жанров'
     - genres_add_adult.php
-1.0.3:
-    - 'Пометить 18+ жанры'
-    - set_adult_genres.php
 1.0.4:
     - 'SEO поля для жанров'
     - update_listing_add_seo_fields.php
@@ -21,3 +18,6 @@
 1.0.7:
     - 'Title, Description поля для Типов и Жанров'
     - update_genres_and_types_add_seo_fields.php
+1.0.8:
+    - 'Пометить 18+ жанры'
+    - set_adult_genres.php
