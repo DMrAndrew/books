@@ -4,3 +4,6 @@
 1.0.2:
     - 'Внешние ключи'
     - update_foreign_keys.php
+1.0.3:
+    - 'Deleted by'
+    - comments_deleted_by.php
