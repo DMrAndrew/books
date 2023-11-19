@@ -4,9 +4,11 @@ namespace Books\Comments\behaviors;
 
 use Books\Book\Models\Book;
 use Books\Comments\Models\Comment;
+use Books\Profile\Models\Profile;
 use October\Rain\Database\Model;
 use October\Rain\Extension\ExtensionBase;
 use RainLab\User\Models\User;
+use ValidationException;
 
 class Commentable extends ExtensionBase
 {
@@ -22,7 +24,7 @@ class Commentable extends ExtensionBase
 
     public function addComment(User $user, array $payload)
     {
-        if (!$this->model->isCommentAllowed()) {
+        if (! $this->model->isCommentAllowed()) {
             return false;
         }
         $payload['user_id'] = $user->id;
@@ -32,10 +34,26 @@ class Commentable extends ExtensionBase
         return $comment;
     }
 
-    public function deleteComment(Comment $comment)
+    public function deleteComment(Comment $comment, ?Profile $actionBy): void
     {
+        if (! is_null($actionBy)) {
+            $comment->deleted_by_id = $actionBy->id;
+            $comment->save();
+        }
         $comment->delete();
         $this->after($comment);
+    }
+
+    public function restoreComment(Comment $comment, ?Profile $actionBy): void
+    {
+        if (! $comment->isDeleted()) {
+            throw new ValidationException(['comment' => 'Комментарий не может быть восстановлен']);
+        }
+
+        if ($comment->deletedBy && ! $comment->deletedBy->is($actionBy)) {
+            throw new ValidationException(['comment' => 'Вы не можете восстановить этот комментарий']);
+        }
+        $comment->restore();
     }
 
     protected function after($comment)
@@ -45,16 +63,16 @@ class Commentable extends ExtensionBase
         }
     }
 
-//    public function scopeWithoutOwner(Builder $builder)
-//    {
-//        $profile = match (get_class($this->model)) {
-//            Book::class => $this->model->profile()->select((new Profile())->getQualifiedKeyName()),
-//            Profile::class => [$this->model->id],
-//            default => null
-//        };
-//
-//        return $builder->when($profile, fn($b) => $b->whereDoesntHave('profile', fn($p) => $p->whereIn((new Profile())->getQualifiedKeyName(), $profile)));
-//
-//    }
+    //    public function scopeWithoutOwner(Builder $builder)
+    //    {
+    //        $profile = match (get_class($this->model)) {
+    //            Book::class => $this->model->profile()->select((new Profile())->getQualifiedKeyName()),
+    //            Profile::class => [$this->model->id],
+    //            default => null
+    //        };
+    //
+    //        return $builder->when($profile, fn($b) => $b->whereDoesntHave('profile', fn($p) => $p->whereIn((new Profile())->getQualifiedKeyName(), $profile)));
+    //
+    //    }
 
 }
