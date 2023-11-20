@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use Books\Book\Controllers\AudioController;
+use Books\Book\Http\AudioController;
 
-Route::get('audio/{id}', [AudioController::class, 'getAudioChunked'])->name('audio.listen.public');
+Route::get('allow-play-audio-check-token', [AudioController::class, 'allowPlayAudioCheckToken']);

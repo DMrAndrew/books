@@ -177,9 +177,11 @@ return [
     |
     */
 
-    'unencrypt_cookies' => env('UNENCRYPT_COOKIES', [
-        // 'my_cookie',
-    ]),
+    'unencrypt_cookies' => array_merge(env('UNENCRYPT_COOKIES', [
+             // my_cookie
+        ]), [
+            'listen_audio_token_',
+        ]),
 
     /*
     |--------------------------------------------------------------------------

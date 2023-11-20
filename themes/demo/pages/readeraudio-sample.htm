@@ -4,6 +4,13 @@ url = "/readeraudio/sample"
 meta_title = "Аудиокнига"
 meta_description = "Аудиокнига"
 ==
+<?php
+function onInit()
+{
+    Books\Book\Classes\Services\AudioFileListenTokenService::generateListenTokenForUser();
+}
+?>
+==
 
 <div class="ui-container-fluid">
 
@@ -13,19 +20,18 @@ meta_description = "Аудиокнига"
 
 <br>
 
-<h2>Audio tag MP3</h2>
+<h2>Audio tag MP3 via direct link (test nginx chunking)</h2>
 <div>
     <audio controls preload="none">
-        <source src="/audio/1" type="audio/mpeg">
+        <source src="/storage/app/uploads/public/655/38b/034/65538b0348f0c363579159.mp3" type="audio/mpeg">
         Your browser does not support the audio tag.
     </audio>
 </div>
 
-<h2>Audio tag AAC</h2>
+<h2>Audio tag AAC via direct link (test nginx chunking)</h2>
 <div>
     <audio controls preload="none">
-        <!-- <source src="/audio/2" type="audio/x-hx-aac-adts">-->
-        <source src="/audio/2" type="audio/aac">
+        <source src="/storage/app/uploads/public/653/295/3c4/6532953c4cda6350033085.aac" type="audio/aac">
         Your browser does not support the audio tag.
     </audio>
 </div>
