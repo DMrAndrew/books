@@ -2,11 +2,11 @@
 
 namespace Books\Book\Components;
 
-use Books\Book\Classes\BookService;
 use Books\Book\Classes\ChapterService;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Services\AudioFileListenTokenService;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
@@ -19,7 +19,6 @@ use Carbon\CarbonPeriod;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
-use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
@@ -92,6 +91,8 @@ class AudioChapterer extends ComponentBase
             ]
         );
         $component->bindModel('audio', $this->chapter);
+
+        AudioFileListenTokenService::generateListenTokenForUser();
 
         $this->registerBreadcrumbs();
     }

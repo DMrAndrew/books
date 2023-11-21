@@ -1,7 +1,7 @@
 <div id="audiobooker-chapters">
     {% if audiobook and audiobook.chapters.count() %}
 
-    <a href="/book-add-audio/{{book.id}}">
+    <a href="/book-add-audio/{{book.id}}" data-turbo="false">
         <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">
             Добавить аудиотекст
         </button>
