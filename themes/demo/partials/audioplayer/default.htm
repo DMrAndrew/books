@@ -1,6 +1,12 @@
-{#  @var audiofile #}
 <!-- audioplayer -->
-<!--<div class="audioplayer" data-sounds='["{{ audiofile.getPath() }}", "http://localhost/storage/app/uploads/public/652/8f4/7a2/6528f47a29297040671807.aac"]' tabindex="0">-->
+{# default <audio> tag player #}
+{#  <div>
+    <audio controls preload="none">
+        <source src="{{ audiofile.getPath() }}" type="audio/mpeg">
+        Your browser does not support the audio tag.
+    </audio>
+</div> #}
+
 <div class="audioplayer" data-sounds='["{{ audiofile.getPath() }}"]' tabindex="0">
     <div class="audioplayer__header">
         <div class="audioplayer__left">

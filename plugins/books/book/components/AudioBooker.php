@@ -5,6 +5,7 @@ use ApplicationException;
 use Books\Book\Classes\EditionService;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Services\AudioFileListenTokenService;
 use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use Exception;
@@ -54,6 +55,8 @@ class AudioBooker extends ComponentBase
         $this->vals();
         $this->setAllowedStatuses();
         $this->service = new EditionService($this->audiobook);
+
+        AudioFileListenTokenService::generateListenTokenForUser();
     }
 
     public function vals()

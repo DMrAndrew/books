@@ -45,6 +45,8 @@ class AudioPlayer {
         this.howlPlayer = this.playlist.map((el, index) => {
             return new Howl({
                 src: el,
+                html5: true,
+                autoplay: false,
                 onplay: () => {this.step(); this.eventPlay();},
                 onpause: () => this.eventStop(),
                 onend: () => {this.handleSongEnd(); this.eventEnd();},

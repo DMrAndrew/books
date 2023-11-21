@@ -3,6 +3,7 @@
 namespace Books\Book\Components;
 
 use Books\Book\Classes\ReaderAudio as Service;
+use Books\Book\Classes\Services\AudioFileListenTokenService;
 use Books\Book\Classes\Traits\InjectBookStuff;
 use Books\Book\Models\AudioReadProgress;
 use Books\Book\Models\Book;
@@ -75,6 +76,8 @@ class ReaderAudio extends ComponentBase
         //$recommend = $this->addComponent(Widget::class, 'recommend');
         //$recommend->setUpWidget(WidgetEnum::recommend, short: true);
         //$advert = $this->addComponent(AdvertBanner::class, 'advertBanner');
+
+        AudioFileListenTokenService::generateListenTokenForUser();
 
         $this->registerBreadcrumbs();
     }
