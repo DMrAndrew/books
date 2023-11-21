@@ -26,7 +26,7 @@ class AudioFileListenTokenService implements iAudioFileListenTokenService
 
     /**
      * Генерирует токен на прослушивание аудиофайлов на странице
-     * Сохраняет в кеш для хранения на сервере и в куки для хранения у пользователя
+     * Сохраняет в кеш на сервере и в куки у пользователя
      *
      * @return void
      */
