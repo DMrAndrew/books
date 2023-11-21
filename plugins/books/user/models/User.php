@@ -19,8 +19,8 @@ class User extends \RainLab\User\Models\User
     public function booksInAuthorOrder(): HasManyDeep
     {
         return $this->books()
-            ->withPivot('books_book_authors', ['*'], Author::class)
-            ->orderBy('books_book_authors.sort_order');
+            ->withPivot(Author::make()->getTable(), ['*'], Author::class)
+            ->orderBy(Author::make()->qualifyColumn('sort_order'),'desc');
     }
 
     public static function from(\RainLab\User\Models\User $user)

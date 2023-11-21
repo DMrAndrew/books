@@ -8,6 +8,7 @@ use Books\Book\Models\Book;
 use Books\Profile\Models\Profile;
 use Model;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Relations\HasOne;
 use October\Rain\Database\Traits\SimpleTree;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
@@ -17,7 +18,11 @@ use WordForm;
 /**
  * Comment Model
  *
- * @link https://docs.octobercms.com/3.x/extend/system/models.html
+ * @link https://docs.octobercms.com/3.x/extend/system/models.html\
+ *
+ * @method HasOne deletedBy
+ *
+ * @property int deleted_by_id
  */
 class Comment extends Model
 {
@@ -31,7 +36,7 @@ class Comment extends Model
      */
     public $table = 'books_comments_comments';
 
-    protected $fillable = ['parent_id', 'user_id', 'content'];
+    protected $fillable = ['parent_id', 'user_id', 'content', 'deleted_by_id'];
 
     /**
      * @var array rules for validation
@@ -39,11 +44,16 @@ class Comment extends Model
     public $rules = [
         'parent_id' => 'nullable|integer|exists:books_comments_comments,id',
         'user_id' => 'nullable|integer|exists:users,id',
+        'deleted_by_id' => 'nullable|integer|exists:books_profile_profiles,id',
         'content' => 'string|min:1',
     ];
 
     public $morphTo = [
         'commentable' => [],
+    ];
+
+    public $hasOne = [
+        'deletedBy' => [Profile::class, 'key' => 'id', 'otherKey' => 'deleted_by_id'],
     ];
 
     protected static function booted()

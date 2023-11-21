@@ -91,7 +91,7 @@
 
                 {# Владелец комментария восстановить комментарий #}
                 {% elseif comment.isDeleted()
-                and(user and user.profile.id == comment.profile.id)
+                and(user and user.profile.id == comment.deleted_by_id)
                 %}
                 <div class="comments-comment__action-wrapper" data-tippy-continer data-tippy-offset="[0, 0]">
                     <svg class="square-16" data-tippy-init>
