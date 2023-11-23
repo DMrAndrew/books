@@ -6,9 +6,14 @@ namespace Books\Book\Classes;
 use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Promocode;
+use Carbon\Carbon;
+use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 
 class PriceTag
 {
+    protected array $discountsArr = [];
+
     public function __construct(protected Edition    $edition,
                                 protected ?Discount  $discount = null,
                                 protected ?Promocode $promocode = null
@@ -42,6 +47,7 @@ class PriceTag
         if ($this->promocode) {
             return 100;
         }
+        $this->authorProgramDiscount();
         return $this->discount?->amount ?? 0;
     }
 
@@ -61,5 +67,16 @@ class PriceTag
         return $this->discount;
     }
 
+    public function authorProgramDiscount()
+    {
+        $author = $this->edition->book->profile->user;
+        $authorBirthday = $author->birthday->format('d-m');
+        $reader = Auth::getUser();
+        $readerBithday = $reader->birthday->format('d-m');
+        $nowDate = Carbon::now();
+        $programs = $this->edition->book->profile->user->programs();
+//        dd($reader->ownedBooks->count());
 
+
+    }
 }
