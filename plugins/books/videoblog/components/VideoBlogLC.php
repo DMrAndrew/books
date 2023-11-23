@@ -126,9 +126,7 @@ class VideoBlogLC extends ComponentBase
             VideoBlogPostService::getYoutubeEmbedCode($post);
 
             if ($post->wasRecentlyCreated) {
-                $event = new Event();
-                $event::fire('books.videoblog::post.published', [$this->profile, $post]);
-                unset($event);
+                Event::fire('books.videoblog::post.published', [$this->profile, $post]);
             }
 
             /**
