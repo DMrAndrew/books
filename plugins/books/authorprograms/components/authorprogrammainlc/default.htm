@@ -1,0 +1,59 @@
+<div class="personal-area__subtitle">
+    <span class="ui-text-head--3 ui-text--bold">Программы</span>
+</div>
+
+<div class="commerce__block wrapper">
+    <div class="commerce__title ui-text-head--3 ui-text--bold">День рождения читателя</div>
+    <p class="commerce__text ui-text-body--2">В честь дня рождения читателя мы дарим ему возможность покупать книги у
+        авторов, которые подключены к программе «День рождения читателя». Программа даст возможность покупать книги с
+        определенной скидкой (процент скидки автор определяет самостоятельно) книги. Акция действует за день до дня
+        рождения, в день самого дня рождения и в день после дня рождения.</p>
+
+    <div id="reader_birthday_form">
+        <div class="commerce__configuration">
+            {% if author_program['reader_birthday'] is null %}
+                {% partial "AuthorProgramMainLC::program_form"
+                    program=author_program['reader_birthday'] form_type='reader_birthday' program_type='reader_birthday' %}
+            {% else %}
+                {% partial "AuthorProgramMainLC::connected_program" program=author_program['reader_birthday'] %}
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+
+<div class="commerce__block wrapper">
+    <div class="commerce__title ui-text-head--3 ui-text--bold">Новый читатель</div>
+    <p class="commerce__text ui-text-body--2">Программа дает возможность читателю, впервые купившему книгу у автора,
+        иметь скидку в течении 5, 7 или 10 дней (автор выбирает самостоятельно) на все остальные книги у этого
+        автора.
+        Процент скидки автор также выбирает самостоятельно.</p>
+    <div id="new_reader_form">
+        {% if author_program['new_reader'] is null %}
+            {% partial "AuthorProgramMainLC::program_form"
+                program=author_program['new_reader'] form_type='new_reader' program_type='new_reader' %}
+        {% else %}
+            {% partial "AuthorProgramMainLC::connected_program" program=author_program['new_reader'] %}
+        {% endif %}
+    </div>
+</div>
+
+
+<div class="commerce__block wrapper">
+    <div class="commerce__title ui-text-head--3 ui-text--bold">Мой постоянный читатель</div>
+    <p class="commerce__text ui-text-body--2">Программа дает возможность читателю, который купил у автора более 3, 5
+        или
+        7 книг (автор выбирает самостоятельно) иметь скидку при последующих покупок книг у этого автора. Процент
+        скидки
+        автор также определяет самостоятельно.</p>
+    <div id="regular_reader_form">
+        {% if author_program['regular_reader'] is null %}
+            {% partial "AuthorProgramMainLC::program_form"
+                program=author_program['regular_reader'] form_type='regular_reader' program_type='regular_reader' %}
+        {% else %}
+            {% partial "AuthorProgramMainLC::connected_program" program=author_program['regular_reader'] %}
+        {% endif %}
+    </div>
+</div>
+
