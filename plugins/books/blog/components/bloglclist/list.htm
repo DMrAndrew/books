@@ -1,13 +1,17 @@
-<div class="ui-container">
-    <a href="/lc-blog/create" class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Добавить новую запись</a>
+<div id="posts">
+    <div class="ui-container">
+        <a href="/lc-blog/create"
+           class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Добавить новую
+            запись</a>
+    </div>
+
+    <div class="book-card-full-description _indent"></div>
+
+    <div class="author-blog__container">
+        {% for post in posts %}
+            {% partial "BlogLCList::card" post=post %}
+        {% endfor %}
+    </div>
+
+    {% partial 'site/ajax_paginator' paginator=posts function='onBlogPage' customPageName='blog-lc' customTagName='#posts' %}
 </div>
-
-<div class="book-card-full-description _indent"></div>
-
-<div class="author-blog__container">
-    {% for post in posts %}
-        {% partial "BlogLCList::card" post=post %}
-    {% endfor %}
-</div>
-
-{% partial 'site/pagination' records = posts %}

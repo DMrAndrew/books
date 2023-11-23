@@ -1,5 +1,6 @@
 <?php namespace Books\Blog\Components;
 
+use App\classes\CustomPaginator;
 use Books\Profile\Models\Profile;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
@@ -13,6 +14,8 @@ class BlogLCList extends ComponentBase
 {
     protected Profile $profile;
     protected int $postsCount;
+    private int $blogPostsCurrentPage = 1;
+
 
     public function componentDetails()
     {
@@ -53,6 +56,26 @@ class BlogLCList extends ComponentBase
     {
         $this->page['profile'] = $this->profile;
         $this->page['postsCount'] = $this->postsCount;
-        $this->page['posts'] = $this->profile->posts()->orderByDesc('id')->paginate((int) $this->property('recordsPerPage', 16));
+        $this->page['posts'] = $this->getPosts();
+    }
+
+    public function onBlogPage()
+    {
+        return [
+            '#posts' => $this->renderPartial('@list', ['post' => $this->getPosts()]),
+        ];
+    }
+    public function blogPostsCurrentPage(): int
+    {
+        return (int)(post('blog-lc') ?? $this->blogPostsCurrentPage);
+    }
+
+    protected function getPosts(): CustomPaginator
+    {
+        return CustomPaginator::from($this->profile->posts()->orderByDesc('id')->paginate(
+            (int) $this->property('recordsPerPage', 16),
+            $this->blogPostsCurrentPage()
+        )
+        );
     }
 }
