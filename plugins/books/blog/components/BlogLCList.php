@@ -34,7 +34,7 @@ class BlogLCList extends ComponentBase
             'recordsPerPage' => [
                 'title' => 'Публикаций на странице',
                 'comment' => 'Количество публикаций отображаемых на одной странице',
-                'default' => 2,
+                'default' => 16,
             ],
         ];
     }
