@@ -159,7 +159,7 @@ class BlogLC extends ComponentBase
             PostService::replaceBase64ImagesWithFiles($post);
 
             if ($post->wasRecentlyCreated) {
-                Event::fire('books.blog::post.published', [$this->profile, $post]);
+                Event::dispatch('books.blog::post.published', [$this->profile, $post]);
             }
 
             /**
