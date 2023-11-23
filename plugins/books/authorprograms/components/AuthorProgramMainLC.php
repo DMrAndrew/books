@@ -6,6 +6,7 @@ use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 use October\Rain\Exception\ValidationException;
 use RainLab\User\Facades\Auth;
 use Validator;
@@ -55,51 +56,55 @@ class AuthorProgramMainLC extends ComponentBase
         ];
     }
 
-    public function onConnectProgramReaderBirthday(): RedirectResponse|array
+    public function onSaveProgram(): RedirectResponse|array
     {
         try {
-            $data['user'] = $this->user->id;
-            $data['program'] = ProgramsEnums::READER_BIRTHDAY->value;
-            $data['condition'] = json_encode(['percent' => post('percent')]);
-
-            $program = AuthorsPrograms::create($data);
-
-            return [];
+            $program = AuthorsPrograms::find(post('id'));
+            if(!$program) {
+                $program = new AuthorsPrograms();
+            }
+            $program->user_id = $this->user->id;
+            if (post('program_type') === ProgramsEnums::READER_BIRTHDAY->value) {
+                $program->program = ProgramsEnums::READER_BIRTHDAY->value;
+                $program->condition = ['percent' => post('percent')];
+            }
+            if (post('program_type') === ProgramsEnums::NEW_READER->value) {
+                $program->program = ProgramsEnums::NEW_READER->value;
+                $program->condition = ['percent' => (int)post('percent'), 'days' => (int)post('days')];
+            }
+            if (post('program_type') === ProgramsEnums::REGULAR_READER->value) {
+                $program->program = ProgramsEnums::REGULAR_READER->value;
+                $program->condition = ['percent' => (int)post('percent'), 'books' => (int)post('books')];
+            }
+            $program->save();
+            Flash::info('Настройки успешно сохранены');
+            return Redirect::to('/lc-commercial/');
         } catch (Exception $e) {
             Flash::error($e->getMessage());
             return [];
         }
     }
 
-    public function onConnectProgramNewReader(): RedirectResponse|array
+    public function onDeleteProgram(): RedirectResponse|array
     {
         try {
-            $data['user'] = $this->user->id;
-            $data['program'] = ProgramsEnums::NEW_READER->value;
-            $data['condition'] = json_encode(['percent' => post('percent')]);
-
-            $program = AuthorsPrograms::create($data);
-
-            return [];
+            AuthorsPrograms::destroy(post('id'));
+            Flash::warning('Настройки успешно удалены');
+            return Redirect::to('/lc-commercial/');
         } catch (Exception $e) {
             Flash::error($e->getMessage());
             return [];
         }
     }
 
-    public function onConnectProgramRegularReader(): RedirectResponse|array
+    public function onUpdateProgram()
     {
-        try {
-            $data['user'] = $this->user->id;
-            $data['program'] = ProgramsEnums::REGULAR_READER->value;
-            $data['condition'] = json_encode(['percent' => post('percent')]);
-
-            $program = AuthorsPrograms::create($data);
-
-            return [];
-        } catch (Exception $e) {
-            Flash::error($e->getMessage());
-            return [];
-        }
+        return [
+            '#'.post('tag').'_form' => $this->renderPartial('@program_form', [
+                'program' => $this->page['author_program'][post('tag')],
+                'form_type' => post('tag'),
+                'program_type' => post('tag'),
+            ])
+        ];
     }
 }
