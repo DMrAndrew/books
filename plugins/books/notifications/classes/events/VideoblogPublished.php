@@ -2,13 +2,12 @@
 
 namespace Books\Notifications\Classes\Events;
 
-use Books\Notifications\Classes\Events\BaseEvent;
 use Books\Notifications\Classes\NotificationTypeEnum;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
+use RainLab\Notify\Classes\EventBase;
 
-class VideoblogPublished extends BaseEvent
+class VideoblogPublished extends EventBase
 {
     public string $eventName = 'Новая публикация в видеоблоге';
 
