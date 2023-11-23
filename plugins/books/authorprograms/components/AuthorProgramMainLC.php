@@ -66,7 +66,7 @@ class AuthorProgramMainLC extends ComponentBase
             $program->user_id = $this->user->id;
             if (post('program_type') === ProgramsEnums::READER_BIRTHDAY->value) {
                 $program->program = ProgramsEnums::READER_BIRTHDAY->value;
-                $program->condition = ['percent' => post('percent')];
+                $program->condition = ['percent' => (int)post('percent')];
             }
             if (post('program_type') === ProgramsEnums::NEW_READER->value) {
                 $program->program = ProgramsEnums::NEW_READER->value;
