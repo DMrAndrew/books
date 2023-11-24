@@ -6,8 +6,6 @@ use Books\Book\Classes\EditionService;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Services\AudioFileListenTokenService;
-use Books\Book\Models\Chapter;
-use Books\Book\Models\Content;
 use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use Exception;
@@ -81,21 +79,6 @@ class AudioBooker extends ComponentBase
                 'status' => BookStatus::HIDDEN,
                 'book_id' => $this->property('book_id'),
             ]);
-//        $this->page['request_premoderation'] = $this->audiobook?->chapters->some(
-//            function (Chapter $chapter) {
-//                return $chapter->deferred?->some(
-//                    function (Content $d) {
-//                        return $d->infoHelper()->requestAllowed();
-//                    }
-//                );
-//            }
-//        );
-        /**
-         * Запросить премодерацию
-         * Кнопка активна, когда необходимо Отложенное редактирование
-         * и есть глава в статусе Pending
-         */
-        $this->page['request_premoderation'] = true;//$this->audiobook?->chapters->some(fn(Chapter $chapter) => $chapter->deferred?->some(fn(Content $d) => $d->infoHelper()->requestAllowed()));
     }
 
     protected function renderChapters()
@@ -161,18 +144,5 @@ class AudioBooker extends ComponentBase
 
             return $partial();
         }
-    }
-
-    public function onRequestPremoderationModal(): array
-    {
-        $closure = fn($builder) => $this->postChapterId() ? $builder->find([$this->postChapterId()]) : $builder->get();
-        return array_merge(
-            [
-                PartialSpawns::SPAWN_MODAL->value => $this->renderPartial('modals/deferred_chapter_request', [
-                    'chapters' => $closure($this->chaptersQuery())
-                ]),
-            ],
-            $this->renderChapters()
-        );
     }
 }
