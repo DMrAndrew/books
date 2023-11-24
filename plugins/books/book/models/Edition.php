@@ -328,7 +328,7 @@ class Edition extends Model implements ProductInterface
     }
 
     /**
-     * Разрешено редактировать книгу
+     * Разрешено редактировать издание
      */
     public function editAllowed(): bool
     {
@@ -361,9 +361,9 @@ class Edition extends Model implements ProductInterface
     }
 
     /**
-     * Функция определяет подлежит ли книга отложенному редактированию
+     * Подлежит ли издание отложенному редактированию
      */
-    public function shouldDeferredUpdate(): bool
+    public function shouldPremoderateForUpdate(): bool
     {
         return in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && $this->is_has_customers;
     }
@@ -380,7 +380,7 @@ class Edition extends Model implements ProductInterface
 
     public function getIsDeferredAttribute(): bool
     {
-        $this->attributes['is_deferred'] ??= $this->shouldDeferredUpdate();
+        $this->attributes['is_deferred'] ??= $this->shouldPremoderateForUpdate();
 
         return $this->attributes['is_deferred'];
     }

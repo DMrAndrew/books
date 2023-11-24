@@ -39,12 +39,13 @@ class ContentService
             if ($service->merge($this->content->type) && $this->content->markMerged($comment)) {
                 return function () use ($comment): bool {
                     Event::fire('books.book::content.deferred.merged', [$this->content, $comment]);
+
                     return true;
                 };
             }
+
             return fn(): bool => false;
         })();
-
     }
 
     /**
@@ -56,8 +57,8 @@ class ContentService
         if (!$this->content->allowedMarkAs(ContentStatus::Cancelled)) {
             throw new ValidationException(['status' => 'Действие не разрешено']);
         }
-        return $this->content->markCanceled();
 
+        return $this->content->markCanceled();
     }
 
     /**

@@ -77,7 +77,7 @@ class AudioChapterer extends ComponentBase
                 'edition_id' => $this->audiobook->id,
                 'type' => EditionsEnums::Audio,
             ]);
-        $this->chapterManager = ($this->audiobook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->audiobook);
+        $this->chapterManager = ($this->audiobook->shouldPremoderateForUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->audiobook);
         $this->prepareVals();
 
         $component = $this->addComponent(

@@ -70,7 +70,7 @@ class Chapterer extends ComponentBase
         $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
         $this->ebook = $this->book->ebook;
         $this->chapter = $this->ebook->chapters()->find($this->param('chapter_id')) ?? new Chapter();
-        $this->chapterManager = ($this->ebook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->ebook);
+        $this->chapterManager = ($this->ebook->shouldPremoderateForUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->ebook);
         $this->prepareVals();
 
         $this->registerBreadcrumbs();

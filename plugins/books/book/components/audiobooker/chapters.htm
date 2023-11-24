@@ -6,6 +6,13 @@
             Добавить аудиотекст
         </button>
     </a>
+    {% if request_premoderation %}
+    <a href="#" data-request="audiobooker::onRequestPremoderationModal">
+        <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--1">
+            Запросить слияние
+        </button>
+    </a>
+    {% endif %}
 
     <div class="about-book__chapter-container">
         <ul id="audio-sortable">
