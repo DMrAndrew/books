@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace Books\Book\Classes;
 
+use Books\AuthorPrograms\Models\AuthorsPrograms;
 use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Promocode;
 use Carbon\Carbon;
+use October\Rain\Support\Facades\Str;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -70,12 +72,23 @@ class PriceTag
     public function authorProgramDiscount()
     {
         $author = $this->edition->book->profile->user;
-        $authorBirthday = $author->birthday->format('d-m');
-        $reader = Auth::getUser();
-        $readerBithday = $reader->birthday->format('d-m');
+        $authorBirthday = $author?->birthday->format('d-m') ?? null;
         $nowDate = Carbon::now();
-        $programs = $this->edition->book->profile->user->programs();
-//        dd($reader->ownedBooks->count());
+
+        $readerBirthdayProgram = AuthorsPrograms::userProgramReaderBirthday()->where('user_id', $author->id)->first();
+        $newReaderProgram = AuthorsPrograms::userProgramNewReader()->where('user_id', $author->id)->first();
+        $regularReaderProgram = AuthorsPrograms::userProgramRegularReader()->where('user_id', $author->id)->first();
+
+        dd($readerBirthdayProgram, $newReaderProgram, $regularReaderProgram);
+
+        if ($reader = Auth::getUser()) {
+            $readerBirthday = $reader?->birthday->format('d-m') ?? null;
+        }
+
+        if ($authorBirthday === $nowDate->format('d-m')) {
+
+        }
+//        dd($reader);
 
 
     }
