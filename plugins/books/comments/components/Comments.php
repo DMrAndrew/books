@@ -178,7 +178,7 @@ class Comments extends ComponentBase
         if (! $this->validateComment($comment)) {
             return;
         }
-        $comment->restore();
+        $this->model->restoreComment($comment, $this->user->profile);
 
         return $this->renderSpawn();
     }
@@ -193,7 +193,7 @@ class Comments extends ComponentBase
         if (! $this->validateComment($comment)) {
             return;
         }
-        $this->model->deleteComment($comment);
+        $this->model->deleteComment($comment, $this->user->profile);
 
         return $this->renderSpawn();
     }
