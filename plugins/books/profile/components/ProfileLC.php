@@ -78,7 +78,10 @@ class ProfileLC extends ComponentBase
             $profile = $this->user->profile;
             $data = array_diff_assoc(post(), $profile->only($profile->getFillable()));
 
-            $data['about'] = TextCleanerService::cleanContent($data['about']);
+            if ($data['about'] ?? false) {
+
+                $data['about'] = TextCleanerService::cleanContent($data['about']);
+            }
 
             $profile->removeValidationRule('username', 'required');
             $profile->addValidationRule('username', 'prohibited');
@@ -97,6 +100,7 @@ class ProfileLC extends ComponentBase
             $this->user->refresh();
 
             Flash::success('Данные успешно сохранены');
+
             return [
                 '.personal-area__wrapper primary' => $this->renderPartial('@primaryInformation', ['userdata' => $this->user]),
                 '.personal-area__wrapper secondary' => $this->renderPartial('@profileSecondaryInformation', ['userdata' => $this->user]),
@@ -131,7 +135,7 @@ class ProfileLC extends ComponentBase
                 if ($validation->fails()) {
                     throw new ValidationException($validation);
                 }
-                if($profile->isUsernameExists($data['username'])){
+                if ($profile->isUsernameExists($data['username'])) {
                     throw new ValidationException(['username' => 'Псевдоним уже занят.']);
                 }
                 $profile->update([

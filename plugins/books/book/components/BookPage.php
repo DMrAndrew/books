@@ -55,7 +55,7 @@ class BookPage extends ComponentBase
     {
         $this->user = Auth::getUser();
         $this->book_id = is_numeric($this->param('book_id'))
-            ? (int)$this->param('book_id')
+            ? (int) $this->param('book_id')
             : abort(404);
         $this->book = Book::findForPublic($this->book_id, $this->user);
         $this->tryInjectAdultModal();
@@ -63,12 +63,15 @@ class BookPage extends ComponentBase
         $this->book = Book::query()
             ->withChapters()
             ->defaultEager()
-            ->with(['cycle' => fn($cycle) => $cycle->booksEager()])
+            ->with(['cycle' => fn ($cycle) => $cycle->booksEager()])
             ->find($this->book->id);
 
-        $comments = $this->addComponent(Comments::class, 'comments');
-        $comments->bindModel($this->book);
-        $comments->bindModelOwner($this->book->profile);
+        if ($this->book->profile) {
+
+            $comments = $this->addComponent(Comments::class, 'comments');
+            $comments->bindModel($this->book);
+            $comments->bindModelOwner($this->book->profile);
+        }
 
         $otherAuthorBook = $this->addComponent(Widget::class, 'otherAuthorBook');
         $otherAuthorBook->setUpWidget(WidgetEnum::otherAuthorBook, book: $this->book, withHeader: false);
@@ -87,7 +90,6 @@ class BookPage extends ComponentBase
 
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
-
 
         $reposts = $this->addComponent(Reposter::class, 'reposts');
         $reposts->bindSharable($this->book);
@@ -160,16 +162,13 @@ class BookPage extends ComponentBase
     /**
      * Запретить поддерживать автора книги где он сам является автором
      * свои профили поддерживать нельзя
-     *
-     * @return bool
      */
     private function supportBtn(): bool
     {
-        return $this->user && !$this->book->profiles()->user($this->user)->exists();
+        return $this->user && ! $this->book->profiles()->user($this->user)->exists();
     }
 
     /**
-     * @return void
      * @throws DuplicateBreadcrumbException
      */
     private function registerBreadcrumbs(): void
@@ -186,7 +185,7 @@ class BookPage extends ComponentBase
             /** Жанр */
             $genre = $this->book->genres->first();
             if ($genre) {
-                $trail->push($genre->name, url('/listing?genre=' . $genre->id));
+                $trail->push($genre->name, url('/listing?genre='.$genre->id));
             }
 
             /** Название книги */
@@ -194,18 +193,17 @@ class BookPage extends ComponentBase
         });
     }
 
-    /**
-     * @return void
-     */
     private function setSEO(): void
     {
         $this->page->og_type = 'book';
         $this->page->meta_canonical = Request::url();
 
-        if ($this->book->meta_title)
-        $this->page->meta_title = $this->book->meta_title;
+        if ($this->book->meta_title) {
+            $this->page->meta_title = $this->book->meta_title;
+        }
 
-        if ($this->book->meta_desc)
-        $this->page->meta_description = $this->book->meta_desc;
+        if ($this->book->meta_desc) {
+            $this->page->meta_description = $this->book->meta_desc;
+        }
     }
 }

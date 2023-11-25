@@ -22,7 +22,7 @@ use ValidationException;
  *
  * @link https://docs.octobercms.com/3.x/extend/cms-components.html
  */
-class   Comments extends ComponentBase
+class Comments extends ComponentBase
 {
     protected Model $model;
 
@@ -67,11 +67,11 @@ class   Comments extends ComponentBase
             $all = $this->queryComments()->get()->toNested();
             $items = $all->forPage($this->currentPage(), $this->perPage);
             $paginator = new CustomPaginator($items, $all->count(), $this->perPage, $this->currentPage());
-            $paginator->setHandler($this->alias . '::onPage')->setScrollToContainer('.comments');
+            $paginator->setHandler($this->alias.'::onPage')->setScrollToContainer('.comments');
             $this->page['paginator'] = $paginator;
             $this->page['current_page'] = $this->currentPage();
         }
-        $this->page['opened'] = (array)post('opened');
+        $this->page['opened'] = (array) post('opened');
     }
 
     public function vals(): array
@@ -84,31 +84,24 @@ class   Comments extends ComponentBase
 
     public function queryComments()
     {
-        return $this->model->comments()->withTrashed()->with(['profile', 'profile.avatar', 'children','parent.profile']);
+        return $this->model->comments()->withTrashed()->with(['profile', 'profile.avatar', 'children', 'parent.profile']);
     }
 
     /**
      * @throws Exception
      */
-    public function bindModel(Closure|Model $model)
+    public function bindModel(Closure|Model $model): void
     {
-        if (is_callable($model)) {
-            $model = $model();
-        }
+        $this->model = is_callable($model) ? $model() : $model;
 
-        $this->model = $model;
-
-        if (!$this->model->isClassExtendedWith(Commentable::class)) {
-            throw new Exception(get_class($this->model) . ' must be extended with ' . Commentable::class . ' behavior.');
+        if (! $this->model->isClassExtendedWith(Commentable::class)) {
+            throw new Exception(sprintf('%s must be extended with %s behavior', get_class($this->model), Commentable::class));
         }
     }
 
-    public function bindModelOwner(Closure|Profile $model)
+    public function bindModelOwner(Closure|Profile $model): void
     {
-        if (is_callable($model)) {
-            $model = $model();
-        }
-        $this->owner = $model;
+        $this->owner = is_callable($model) ? $model() : $model;
     }
 
     public function onRender()
@@ -127,7 +120,7 @@ class   Comments extends ComponentBase
     public function onComment()
     {
         try {
-            if (!$this->user) {
+            if (! $this->user) {
                 return;
             }
 
@@ -140,11 +133,11 @@ class   Comments extends ComponentBase
                 return [];
             }
 
-            if(!post('content')){
+            if (! post('content')) {
                 throw new ValidationException(['content' => 'Введите текст комментария']);
             }
             $payload = post();
-            if (!$this->queryComments()->find(post('parent_id'))) {
+            if (! $this->queryComments()->find(post('parent_id'))) {
                 unset($payload['parent_id']);
             }
             $this->model->addComment($this->user, $payload);
@@ -155,18 +148,19 @@ class   Comments extends ComponentBase
             if ($exception instanceof ValidationException) {
                 Flash::error($exception->getMessage());
             }
+
             return [];
         }
     }
 
     public function onEdit()
     {
-        if (!$this->user) {
+        if (! $this->user) {
             return;
         }
 
         $comment = $this->queryComments()->find(post('comment_id'));
-        if (!$this->validateComment($comment)) {
+        if (! $this->validateComment($comment)) {
             return;
         }
         $comment->update(['content' => post('content')]);
@@ -176,26 +170,27 @@ class   Comments extends ComponentBase
 
     public function onRestore()
     {
-        if (!$this->user) {
+        if (! $this->user) {
             return;
         }
 
         $comment = $this->queryComments()->find(post('id'));
-        if (!$this->validateComment($comment)) {
+        if (! $this->validateComment($comment)) {
             return;
         }
         $comment->restore();
+
         return $this->renderSpawn();
     }
 
     public function onRemove()
     {
-        if (!$this->user) {
+        if (! $this->user) {
             return;
         }
 
         $comment = $this->queryComments()->find(post('id'));
-        if (!$this->validateComment($comment)) {
+        if (! $this->validateComment($comment)) {
             return;
         }
         $this->model->deleteComment($comment);
@@ -219,6 +214,6 @@ class   Comments extends ComponentBase
 
     public function currentPage(): int
     {
-        return (int)(post('page') ?? $this->currentPage);
+        return (int) (post('page') ?? $this->currentPage);
     }
 }
