@@ -66,9 +66,11 @@ class BookPage extends ComponentBase
             ->with(['cycle' => fn($cycle) => $cycle->booksEager()])
             ->find($this->book->id);
 
-        $comments = $this->addComponent(Comments::class, 'comments');
-        $comments->bindModel($this->book);
-        $comments->bindModelOwner($this->book->profile);
+        if($this->book?->profile){
+            $comments = $this->addComponent(Comments::class, 'comments');
+            $comments->bindModel($this->book);
+            $comments->bindModelOwner($this->book->profile);
+        }
 
         $otherAuthorBook = $this->addComponent(Widget::class, 'otherAuthorBook');
         $otherAuthorBook->setUpWidget(WidgetEnum::otherAuthorBook, book: $this->book, withHeader: false);
