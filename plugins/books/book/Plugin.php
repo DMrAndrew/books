@@ -83,6 +83,7 @@ class Plugin extends PluginBase
         'RainLab.User',
         'Books.Profile',
         'Books.Breadcrumbs',
+        'Books.AuthorPrograms',
     ];
 
     /**

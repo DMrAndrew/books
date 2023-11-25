@@ -4,13 +4,13 @@ declare(strict_types=1);
 namespace Books\Book\Classes;
 
 use Books\AuthorPrograms\Models\AuthorsPrograms;
+use Books\Book\Models\Author;
 use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Promocode;
+use Books\Book\Models\UserBook;
 use Carbon\Carbon;
-use October\Rain\Support\Facades\Str;
 use RainLab\User\Facades\Auth;
-use RainLab\User\Models\User;
 
 class PriceTag
 {
@@ -27,6 +27,7 @@ class PriceTag
             ->code($this->promocode->code)
             ->alive()
             ->first() : null;
+        $this->fillDiscountArray();
     }
 
     public function price(): int
@@ -49,8 +50,7 @@ class PriceTag
         if ($this->promocode) {
             return 100;
         }
-        $this->authorProgramDiscount();
-        return $this->discount?->amount ?? 0;
+        return $this->discountsArr ? max($this->discountsArr) : 0;
     }
 
     /**
@@ -69,27 +69,46 @@ class PriceTag
         return $this->discount;
     }
 
-    public function authorProgramDiscount()
+    public function fillDiscountArray()
     {
-        $author = $this->edition->book->profile->user;
-        $authorBirthday = $author?->birthday->format('d-m') ?? null;
-        $nowDate = Carbon::now();
-
-        $readerBirthdayProgram = AuthorsPrograms::userProgramReaderBirthday()->where('user_id', $author->id)->first();
-        $newReaderProgram = AuthorsPrograms::userProgramNewReader()->where('user_id', $author->id)->first();
-        $regularReaderProgram = AuthorsPrograms::userProgramRegularReader()->where('user_id', $author->id)->first();
-
-        dd($readerBirthdayProgram, $newReaderProgram, $regularReaderProgram);
+        if ($discount = $this->discount?->amount) {
+            $this->discountsArr[] = $discount;
+        }
 
         if ($reader = Auth::getUser()) {
-            $readerBirthday = $reader?->birthday->format('d-m') ?? null;
+            $profile = $this->edition->book->profile;
+            $authorAccount = $profile->user;
+
+            $readerBirthdayProgram = AuthorsPrograms::userProgramReaderBirthday()->where('user_id', $authorAccount->id)->first();
+            $newReaderProgram = AuthorsPrograms::userProgramNewReader()->where('user_id', $authorAccount->id)->first();
+            $regularReaderProgram = AuthorsPrograms::userProgramRegularReader()->where('user_id', $authorAccount->id)->first();
+
+            if ($reader?->birthday->isBirthday() and $readerBirthdayProgram) {
+                $this->discountsArr[] = $readerBirthdayProgram->condition->percent;
+            }
+
+            $authorBooks = Author::where('profile_id', $profile->id)->get()->pluck('book_id');
+            $readerBooksPurchased = UserBook::where('user_id', $reader->getAuthIdentifier())
+                ->whereIn('ownable_id', $authorBooks)
+                ->orderBy('created_at', 'ASC');
+
+            if ($regularReaderProgram && $readerBooksPurchased->count() >= $regularReaderProgram->condition->books) {
+                $this->discountsArr[] = $regularReaderProgram->condition->percent;
+            }
+
+            if ($newReaderProgram
+                && Carbon::now()->between(
+                    $readerBooksPurchased->first()?->created_at,
+                    $readerBooksPurchased->first()?->created_at->addDays($newReaderProgram->condition->days)
+                )) {
+                $this->discountsArr[] = $newReaderProgram->condition->percent;
+            }
         }
 
-        if ($authorBirthday === $nowDate->format('d-m')) {
+    }
 
-        }
-//        dd($reader);
-
-
+    public function discountExists()
+    {
+        return (boolean)$this->discountsArr;
     }
 }
