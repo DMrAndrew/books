@@ -1,0 +1,42 @@
+<div class="book-card-full-description _indent"></div>
+
+<div class="lc-books__listing-container">
+    <ul class="ui-sortable">
+        {% for post in posts %}
+        <li>
+            <div class="book-card">
+                <div class="personal-area-blacklist__container">
+                    <div class="cb-mini-card _avatar">
+
+                        <div class="comments-comment__avatar square-40">
+                            {% if post.profile.avatar %}
+                            <img class="square-40" src="{{post.profile.avatar.getThumb(40,40)}}" alt="avatar">
+                            {% else %}
+                            <span class="ui-text-body--1 ui-text--bold">{{ post.profile.firstLatter }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="cb-mini-card__wrapper">
+                            <div class="">{{ post.profile.username }}</div>
+                            <div class="cb-mini-card__date">{{post.created_at.diffForHumans}}</div>
+
+                            <div class="book-card-full-description _indent"></div>
+
+                            <a data-turbo="false" href="{{ 'videoblog/blog-post'|page({post_id: post.id}) }}" class="book-card__title ui-text-head--3 ui-text--bold">
+                                {{post.title}}
+                            </a>
+
+                            <div class="cb-mini-card__text">
+                                {{post.preview|raw}}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% partial 'site/pagination' records = posts %}
