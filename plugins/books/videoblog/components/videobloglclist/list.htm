@@ -1,0 +1,16 @@
+<div id="videoposts">
+<div class="ui-container">
+    <a href="/lc-videoblog/create" class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2">Добавить новую запись</a>
+</div>
+
+<div class="book-card-full-description _indent"></div>
+
+
+    <div class="ui-grid-container ui-grid-gap">
+        {% for post in posts %}
+        {% partial "VideoBlogLCList::card" post=post %}
+        {% endfor %}
+    </div>
+
+    {% partial 'site/ajax_paginator' paginator=posts function='onVideoBlogPage' customPageName='videoblog-lc' customTagName='#videoposts' %}
+</div>

@@ -1,0 +1,28 @@
+{% if paginator.hasPages %}
+<nav class="posts__pagination ui-pagination" style="margin-top: 25px">
+    <ul class="ui-pagination-list">
+
+        {% for link in paginator.linkCollectionCompact() %}
+        <li>
+            {% if link.disabled %}
+            <a class="ui-pagination-item disabled">
+                {{link.label}}
+            </a>
+
+            {% else %}
+        <li>
+            <a class="ui-pagination-item cursor-pointer {{ link.active ? 'active' : '' }} "
+               data-request="{{__SELF__}}::{{ function }}"
+               data-request-data="{{ customPageName }}:{{ link.url }}"
+               data-request-complete=" $('{{ customTagName}}')[0].scrollIntoView() "
+            >
+                {{link.label}}
+            </a>
+        </li>
+
+        {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</nav>
+{% endif %}
