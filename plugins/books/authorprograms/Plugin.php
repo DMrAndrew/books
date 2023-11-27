@@ -4,6 +4,9 @@ namespace Books\AuthorPrograms;
 use Backend;
 use Books\AuthorPrograms\behaviors\UserBehavior;
 use Books\AuthorPrograms\Components\AuthorProgramMainLC;
+use Books\AuthorPrograms\Console\AuthorBeforeBirthdayNotificationCommand;
+use Books\AuthorPrograms\Console\AuthorBirthdayNotificationCommand;
+use Illuminate\Database\Console\PruneCommand;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
@@ -38,7 +41,14 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-        //
+        $this->registerConsoleCommand('authorprograms:before_birthday_notification', AuthorBeforeBirthdayNotificationCommand::class);
+        $this->registerConsoleCommand('authorprograms:birthday_notification', AuthorBirthdayNotificationCommand::class);
+    }
+
+    public function registerSchedule($schedule)
+    {
+        $schedule->command('authorprograms:before_birthday_notification')->dailyAt('06:00');
+        $schedule->command('authorprograms:birthday_notification')->dailyAt('06:00');
     }
 
     /**
@@ -65,13 +75,6 @@ class Plugin extends PluginBase
     public function registerPermissions()
     {
         return []; // Remove this line to activate
-
-        return [
-            'books.authorprograms.some_permission' => [
-                'tab' => 'AuthorPrograms',
-                'label' => 'Some permission'
-            ],
-        ];
     }
 
     /**
@@ -80,15 +83,5 @@ class Plugin extends PluginBase
     public function registerNavigation()
     {
         return []; // Remove this line to activate
-
-        return [
-            'authorprograms' => [
-                'label' => 'AuthorPrograms',
-                'url' => Backend::url('books/authorprograms/mycontroller'),
-                'icon' => 'icon-leaf',
-                'permissions' => ['books.authorprograms.*'],
-                'order' => 500,
-            ],
-        ];
     }
 }
