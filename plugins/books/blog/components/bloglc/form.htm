@@ -109,11 +109,13 @@
     <!--    </script>-->
     -- скрыть отложенную публикацию до востребования #}
 
-    <div class="wrapper__footer">
-        <a href="/lc-blog">
-            <button type="button" class="ui-button ui-button-size--32 ui-button-view--3">Отмена</button>
+    <div class="wrapper__footer" >
+        <a href="/lc-blog" class="ui-button ui-button-size--32 ui-button-view--3">
+            <span>Отмена</span>
         </a>
-        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2">{{ post.id ? 'Сохранить' : 'Опубликовать' }}</button>
+        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2">
+            <span>{{ post.id ? 'Сохранить' : 'Опубликовать' }}</span>
+        </button>
     </div>
 
 </form>
@@ -121,6 +123,9 @@
 <style>
     .ck-editor__editable {
         min-height: 200px;
+    }
+    .wrapper__footer .ui-button span {
+        margin: auto;
     }
 </style>
 <script>
