@@ -3,6 +3,7 @@
 namespace Books\Book\Components;
 
 use Books\Book\Classes\ChapterService;
+use Books\Book\Classes\DeferredAudioChapterService;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
@@ -153,11 +154,29 @@ class AudioChapterer extends ComponentBase
                 throw new ValidationException($validator);
             }
 
-            $this->chapter
-                ->fill($data->toArray())
-                ->save(sessionKey: $this->getSessionKey());
+            if ($this->audiobook->shouldDeferredUpdate()) {
 
-            $this->chapter->edition->chapters->each->setNeighbours();
+                $chapter = new Chapter([
+                    'edition_id' => $this->audiobook->id,
+                    'type' => EditionsEnums::Audio,
+                ]);
+
+                $chapter
+                    ->fill($data->toArray())
+                    ->save(sessionKey: $this->getSessionKey());
+
+                $chapter->edition->chapters->each->setNeighbours();
+
+                $deferredChapterService = new DeferredAudioChapterService($chapter);
+                $deferredChapterService->saveDeferredChapter($data['status']);
+
+            } else {
+                $this->chapter
+                    ->fill($data->toArray())
+                    ->save(sessionKey: $this->getSessionKey());
+
+                $this->chapter->edition->chapters->each->setNeighbours();
+            }
 
             return Redirect::to('/book-add-audio/' . $this->book->id . '/' . $this->chapter->id);
 
