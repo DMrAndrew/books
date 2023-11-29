@@ -1,9 +1,7 @@
 <?php namespace Books\Moderation;
 
-use Backend;
-use Books\Moderation\Classes\LaravelDrafts;
+use Books\Moderation\Classes\PremoderationDrafts;
 use Books\Moderation\ServiceProviders\DraftsServiceProvider;
-use Config;
 use Illuminate\Foundation\AliasLoader;
 use System\Classes\PluginBase;
 
@@ -33,7 +31,7 @@ class Plugin extends PluginBase
     public function register()
     {
         $alias = AliasLoader::getInstance();
-        $alias->alias('LaravelDrafts', LaravelDrafts::class);
+        $alias->alias('PremoderationDrafts', PremoderationDrafts::class);
 
         $this->app->register(DraftsServiceProvider::class);
     }
@@ -43,7 +41,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-        Config::set('moderation', Config::get('books.moderation::config'));
+        //
     }
 
     /**

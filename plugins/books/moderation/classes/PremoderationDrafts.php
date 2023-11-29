@@ -2,11 +2,11 @@
 
 namespace Books\Moderation\Classes;
 
-use Illuminate\Contracts\Auth\Authenticatable;
 use Auth;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Session;
 
-class LaravelDrafts
+class PremoderationDrafts
 {
     protected bool $withDrafts = false;
 

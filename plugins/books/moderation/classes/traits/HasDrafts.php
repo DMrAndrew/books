@@ -2,6 +2,8 @@
 
 namespace Books\Moderation\Classes\Traits;
 
+use Books\Moderation\Classes\PremoderationDrafts;
+use Books\Moderation\Classes\Scopes\PublishingScopes;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use JetBrains\PhpStorm\ArrayShape;
-use Books\Moderation\Facades\LaravelDrafts;
 
 /**
  * @method static Builder | Model current()
@@ -21,6 +22,7 @@ use Books\Moderation\Facades\LaravelDrafts;
 trait HasDrafts
 {
     use Publishes;
+    use PublishingScopes;
 
     protected bool $shouldCreateRevision = true;
 
@@ -44,7 +46,8 @@ trait HasDrafts
     public static function bootHasDrafts(): void
     {
         static::addGlobalScope('onlyCurrentInPreviewMode', static function (Builder $builder): void {
-            if (LaravelDrafts::isPreviewModeEnabled()) {
+            $moderationDraft = app()->make(PremoderationDrafts::class);
+            if ($moderationDraft->isPreviewModeEnabled()) {
                 $builder->current();
             }
         });
@@ -324,8 +327,9 @@ trait HasDrafts
 
     public function setPublisher(): static
     {
-        if ($this->{$this->getPublisherColumns()['id']} === null && LaravelDrafts::getCurrentUser()) {
-            $this->publisher()->associate(LaravelDrafts::getCurrentUser());
+        $moderationDraft = app()->make(PremoderationDrafts::class);
+        if ($this->{$this->getPublisherColumns()['id']} === null && $moderationDraft->getCurrentUser()) {
+            $this->publisher()->associate($moderationDraft->getCurrentUser());
         }
 
         return $this;

@@ -2,7 +2,6 @@
 
 namespace Books\Moderation\Classes\Traits;
 
-use Books\Moderation\Classes\Scopes\PublishingScope;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -12,16 +11,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 trait Publishes
 {
-    /**
-     * Boot the publishes trait for a model.
-     *
-     * @return void
-     */
-    public static function bootPublishes(): void
-    {
-        static::addGlobalScope(new PublishingScope());
-    }
-
     /**
      * Initialize the publishes trait for an instance.
      *

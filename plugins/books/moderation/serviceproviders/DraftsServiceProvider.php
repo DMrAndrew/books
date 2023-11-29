@@ -2,7 +2,7 @@
 
 namespace Books\Moderation\ServiceProviders;
 
-use Books\Moderation\Facades\LaravelDrafts;
+use Books\Moderation\Classes\PremoderationDrafts;
 use Schema;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Support\ServiceProvider;
@@ -15,8 +15,8 @@ class DraftsServiceProvider extends ServiceProvider
             Schema::useNativeSchemaOperationsIfPossible();
         }
 
-        $this->app->singleton(LaravelDrafts::class, function () {
-            return new LaravelDrafts();
+        $this->app->singleton(PremoderationDrafts::class, function () {
+            return new PremoderationDrafts();
         });
 
         Blueprint::macro('drafts', function (
