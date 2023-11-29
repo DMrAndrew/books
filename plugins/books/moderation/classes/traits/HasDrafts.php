@@ -4,15 +4,15 @@ namespace Books\Moderation\Classes\Traits;
 
 use Books\Moderation\Classes\PremoderationDrafts;
 use Books\Moderation\Classes\Scopes\PublishingScopes;
-use Illuminate\Contracts\Database\Query\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use October\Rain\Database\Builder;
+use October\Rain\Database\Relations\BelongsToMany;
+use October\Rain\Database\Relations\HasMany;
+use October\Rain\Database\Relations\HasOne;
+use October\Rain\Database\Relations\MorphToMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use JetBrains\PhpStorm\ArrayShape;
+use October\Rain\Database\Model;
 
 /**
  * @method static Builder | Model current()
@@ -52,38 +52,41 @@ trait HasDrafts
             }
         });
 
-        static::creating(function (Model $model): void {
-            $model->{$model->getIsCurrentColumn()} = true;
-            $model->setPublisher();
-            $model->generateUuid();
-            if ($model->{$model->getIsPublishedColumn()} !== false) {
-                $model->publish();
+        self::class::extend( function(Model $model) {
+
+            $model->bindEvent('model.beforeCreate', function () use ($model) {
+                $model->{$model->getIsCurrentColumn()} = true;
+                $model->setPublisher();
+                $model->generateUuid();
+                if ($model->{$model->getIsPublishedColumn()} !== false) {
+                    $model->publish();
+                }
+            });
+
+            $model->bindEvent('model.beforeUpdate', function () use ($model) {
+                $model->newRevision();
+            });
+
+            $model->bindEvent('publishing', function () use ($model) {
+                $model->setLive();
+            });
+
+            $model->bindEvent('model.afterDelete', function () use ($model) {
+                $model->revisions()->delete();
+            });
+
+            if (method_exists(static::class, 'beforeRestore')) {
+                $model->bindEvent('model.beforeRestore', function () use ($model) {
+                    $model->revisions()->restore();
+                });
+            }
+
+            if (method_exists(static::class, 'forceDeleted')) {
+                $model->bindEvent('model.forceDeleted', function () use ($model) {
+                    $model->revisions()->forceDelete();
+                });
             }
         });
-
-        static::updating(function (Model $model): void {
-            $model->newRevision();
-        });
-
-        static::publishing(function (Model $model): void {
-            $model->setLive();
-        });
-
-        static::deleted(function (Model $model): void {
-            $model->revisions()->delete();
-        });
-
-        if (method_exists(static::class, 'restored')) {
-            static::restored(function (Model $model): void {
-                $model->revisions()->restore();
-            });
-        }
-
-        if (method_exists(static::class, 'forceDeleted')) {
-            static::forceDeleted(function (Model $model): void {
-                $model->revisions()->forceDelete();
-            });
-        }
     }
 
     protected function newRevision(): void
