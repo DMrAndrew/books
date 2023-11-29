@@ -12,6 +12,7 @@ use Books\Book\Classes\Reader;
 use Books\Book\Classes\ScopeToday;
 use Books\Book\Classes\Services\AudioFileLengthHelper;
 use Books\Book\Jobs\Paginate;
+use Books\Moderation\Classes\Traits\HasDrafts;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Model;
@@ -60,6 +61,7 @@ class Chapter extends Model
     use SoftDelete;
     use Purgeable;
     use HasRelationships;
+    use HasDrafts;
 
     /**
      * @var string table associated with the model
