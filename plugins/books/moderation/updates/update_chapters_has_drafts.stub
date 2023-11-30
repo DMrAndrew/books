@@ -11,6 +11,24 @@ return new class() extends Migration
         Schema::table('table', function (Blueprint $table) {
             $table->drafts();
         });
+
+        /**
+         * Fill moderation data for existing records
+         */
+        YourModel::query()
+            ->withTrashed()
+            ->whereNull('moderation_uuid')
+            ->chunkById(50, function (Collection $models) {
+                $models->each(function ($model) {
+                    $model->generateUuid();
+                    $model->setLive();
+                    $model->saveQuietly();
+
+                    return true;
+                });
+
+            return true;
+        });
     }
 
     public function down()

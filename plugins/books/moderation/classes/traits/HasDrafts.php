@@ -75,17 +75,13 @@ trait HasDrafts
                 $model->revisions()->delete();
             });
 
-            if (method_exists(static::class, 'beforeRestore')) {
-                $model->bindEvent('model.beforeRestore', function () use ($model) {
-                    $model->revisions()->restore();
-                });
-            }
+            $model->bindEvent('model.beforeRestore', function () use ($model) {
+                $model->revisions()->restore();
+            });
 
-            if (method_exists(static::class, 'forceDeleted')) {
-                $model->bindEvent('model.forceDeleted', function () use ($model) {
-                    $model->revisions()->forceDelete();
-                });
-            }
+            $model->bindEvent('model.forceDeleted', function () use ($model) {
+                $model->revisions()->forceDelete();
+            });
         });
     }
 
