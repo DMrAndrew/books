@@ -102,22 +102,24 @@ trait HasDrafts
 
         $revision = $this->fresh()?->replicate();
 
-        static::saved(function (Model $model) use ($revision): void {
-            if ($model->isNot($this)) {
-                return;
-            }
+        self::class::extend( function(Model $model) use ($revision) {
+            $model->bindEvent('model.afterSave', function () use ($model, $revision) {
+                if ($model->isNot($this)) {
+                    return;
+                }
 
-            $revision->created_at = $this->created_at;
-            $revision->updated_at = $this->updated_at;
-            $revision->{$this->getIsCurrentColumn()} = false;
-            $revision->{$this->getIsPublishedColumn()} = false;
+                $revision->created_at = $this->created_at;
+                $revision->updated_at = $this->updated_at;
+                $revision->{$this->getIsCurrentColumn()} = false;
+                $revision->{$this->getIsPublishedColumn()} = false;
 
-            $revision->saveQuietly(['timestamps' => false]); // Preserve the existing updated_at
+                $revision->saveQuietly(['timestamps' => false]); // Preserve the existing updated_at
 
-            $this->setPublisher();
-            $this->pruneRevisions();
+                $this->setPublisher();
+                $this->pruneRevisions();
 
-            $this->fireModelEvent('createdRevision');
+                $this->fireModelEvent('createdRevision');
+            });
         });
     }
 
@@ -150,16 +152,18 @@ trait HasDrafts
     {
         $this->{$this->getIsCurrentColumn()} = true;
 
-        static::saved(function (Model $model): void {
-            if ($model->isNot($this)) {
-                return;
-            }
+        self::class::extend( function(Model $model) {
+            $model->bindEvent('model.afterSave', function () use ($model) {
+                if ($model->isNot($this)) {
+                    return;
+                }
 
-            $this->revisions()
-                ->withDrafts()
-                ->current()
-                ->excludeRevision($this)
-                ->update([$this->getIsCurrentColumn() => false]);
+                $this->revisions()
+                    ->withDrafts()
+                    ->current()
+                    ->excludeRevision($this)
+                    ->update([$this->getIsCurrentColumn() => false]);
+            });
         });
     }
 
