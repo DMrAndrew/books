@@ -76,18 +76,26 @@ class PriceTag
         }
 
         if ($reader = Auth::getUser()) {
-            $profile = $this->edition->book->profile;
-            $authorAccount = $profile->user;
+            $authorProfile = $this->edition->book->profile;
+            $authorAccount = $authorProfile->user;
 
             $readerBirthdayProgram = AuthorsPrograms::userProgramReaderBirthday()->where('user_id', $authorAccount->id)->first();
             $newReaderProgram = AuthorsPrograms::userProgramNewReader()->where('user_id', $authorAccount->id)->first();
             $regularReaderProgram = AuthorsPrograms::userProgramRegularReader()->where('user_id', $authorAccount->id)->first();
 
-            if ($reader?->birthday->isBirthday() and $readerBirthdayProgram) {
-                $this->discountsArr[] = $readerBirthdayProgram->condition->percent;
+            if ($readerBirthdayProgram) {
+                if (Carbon::now() === $reader?->birthday->subDay()
+                    || $reader?->birthday->isBirthday()
+                    || Carbon::now() === $reader?->birthday->addDay()
+                ) {
+                    if (!array_intersect($this->edition->book->bookGenre->pluck('genre_id')->toArray(), $reader->unloved_genres)) {
+                        $this->discountsArr[] = $readerBirthdayProgram->condition->percent;
+                    }
+                }
+
             }
 
-            $authorBooks = Author::where('profile_id', $profile->id)->get()->pluck('book_id');
+            $authorBooks = Author::where('profile_id', $authorProfile->id)->get()->pluck('book_id');
             $readerBooksPurchased = UserBook::where('user_id', $reader->getAuthIdentifier())
                 ->whereIn('ownable_id', $authorBooks)
                 ->orderBy('created_at', 'ASC');

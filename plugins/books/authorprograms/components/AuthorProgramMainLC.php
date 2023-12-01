@@ -2,6 +2,8 @@
 
 use Books\AuthorPrograms\Classes\Enums\ProgramsEnums;
 use Books\AuthorPrograms\Models\AuthorsPrograms;
+use Books\Book\Models\Author;
+use Books\Profile\Models\Profile;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
@@ -49,6 +51,10 @@ class AuthorProgramMainLC extends ComponentBase
 
     protected function prepareVals()
     {
+        $booksCount = Author::whereIn('profile_id',
+            Profile::where('user_id', $this->user->id)->get('id')->toArray()
+        )->count();
+        $this->page['is_show_program'] = (boolean)$booksCount;
         $this->page['author_program'] = [
             'reader_birthday' => $this->user->programs()->userProgramReaderBirthday()->first(),
             'new_reader' => $this->user->programs()->userProgramNewReader()->first(),

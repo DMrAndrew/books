@@ -1,12 +1,13 @@
 <?php
 namespace Books\AuthorPrograms;
 
-use Backend;
 use Books\AuthorPrograms\behaviors\UserBehavior;
+use Books\AuthorPrograms\classes\LoginHandler;
 use Books\AuthorPrograms\Components\AuthorProgramMainLC;
+use Books\AuthorPrograms\Components\ModalNotification;
 use Books\AuthorPrograms\Console\AuthorBeforeBirthdayNotificationCommand;
 use Books\AuthorPrograms\Console\AuthorBirthdayNotificationCommand;
-use Illuminate\Database\Console\PruneCommand;
+use Event;
 use RainLab\User\Models\User;
 use System\Classes\PluginBase;
 
@@ -43,6 +44,7 @@ class Plugin extends PluginBase
     {
         $this->registerConsoleCommand('authorprograms:before_birthday_notification', AuthorBeforeBirthdayNotificationCommand::class);
         $this->registerConsoleCommand('authorprograms:birthday_notification', AuthorBirthdayNotificationCommand::class);
+
     }
 
     public function registerSchedule($schedule)
@@ -57,6 +59,7 @@ class Plugin extends PluginBase
     public function boot()
     {
         User::extend(fn(User $model) => $model->implementClassWith(UserBehavior::class));
+        Event::subscribe(new LoginHandler());
     }
 
     /**
@@ -66,6 +69,7 @@ class Plugin extends PluginBase
     {
         return [
             AuthorProgramMainLC::class => 'AuthorProgramMainLC',
+            ModalNotification::class => 'ModalNotification',
         ];
     }
 
