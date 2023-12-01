@@ -117,9 +117,7 @@ class Chapter extends Model
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
      */
-    protected $appends = [
-
-    ];
+    protected $appends = [];
 
     /**
      * @var array hidden attributes removed from the API representation of the model (ex. toArray())
@@ -159,6 +157,10 @@ class Chapter extends Model
     ];
 
     public $attachMany = [];
+
+    protected array $draftableRelations = [
+        'audio',
+    ];
 
     public function reader(): Reader
     {

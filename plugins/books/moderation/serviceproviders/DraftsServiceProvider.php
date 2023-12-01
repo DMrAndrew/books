@@ -3,6 +3,7 @@
 namespace Books\Moderation\ServiceProviders;
 
 use Books\Moderation\Classes\PremoderationDrafts;
+use Db;
 use Schema;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Support\ServiceProvider;
@@ -33,6 +34,12 @@ class DraftsServiceProvider extends ServiceProvider
             $isCurrent ??= config('books.moderation::column_names.is_current', 'is_current');
             $publisherMorphName ??= config('books.moderation::column_names.publisher_morph_name', 'publisher_morph_name');
 
+            /**
+             * For error:
+             * Row size too large (> 8126). Changing some columns to TEXT or BLOB may help. In current row format, BLOB prefix of 0 bytes is stored inline.
+             */
+            DB::select('SET SESSION innodb_strict_mode=OFF;');
+
             $this->uuid($uuid)->nullable();
             $this->timestamp($publishedAt)->nullable();
             $this->boolean($isPublished)->default(false);
@@ -59,6 +66,12 @@ class DraftsServiceProvider extends ServiceProvider
             $isPublished ??= config('books.moderation::column_names.is_published', 'is_published');
             $isCurrent ??= config('books.moderation::column_names.is_current', 'is_current');
             $publisherMorphName ??= config('books.moderation::column_names.publisher_morph_name', 'publisher_morph_name');
+
+            /**
+             * For error:
+             * Row size too large (> 8126). Changing some columns to TEXT or BLOB may help. In current row format, BLOB prefix of 0 bytes is stored inline.
+             */
+            DB::select('SET SESSION innodb_strict_mode=OFF;');
 
             // short index names
             $indexName = $this->getTable() . '_u_ip_ic';

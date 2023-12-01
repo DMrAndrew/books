@@ -2,6 +2,7 @@
 
 namespace Books\Moderation\Classes\Traits;
 
+use Event;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -37,7 +38,15 @@ trait Publishes
 
         $this->setPublishedAttributes();
 
-        static::saved(function (Model $model): void {
+//        static::saved(function (Model $model): void {
+//            if ($model->isNot($this)) {
+//                return;
+//            }
+//
+//            $this->fireModelEvent('published');
+//        });
+
+        Event::listen('model.AfterSave', function (Model $model): void {
             if ($model->isNot($this)) {
                 return;
             }

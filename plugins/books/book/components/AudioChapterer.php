@@ -73,12 +73,14 @@ class AudioChapterer extends ComponentBase
         $this->user = Auth::getUser();
         $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
         $this->audiobook = $this->getAudioBook();
-        $this->chapter = $this->audiobook->chapters()->find($this->param('chapter_id'))
+        $this->chapter = $this->audiobook->chapters()
+                ->withDrafts()
+                ->find($this->param('chapter_id'))
             ?? new Chapter([
                 'edition_id' => $this->audiobook->id,
                 'type' => EditionsEnums::Audio,
             ]);
-        $this->chapterManager = ($this->audiobook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->audiobook);
+        //$this->chapterManager = ($this->audiobook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->audiobook);
         $this->prepareVals();
 
         $component = $this->addComponent(
@@ -112,6 +114,7 @@ class AudioChapterer extends ComponentBase
             $data = collect(post());
 
             $data['type'] = EditionsEnums::Audio;
+            $data['edition_id'] = $this->audiobook?->id;
 
             if ($status = $data['action'] ?? false) {
                 switch ($status) {
@@ -154,23 +157,41 @@ class AudioChapterer extends ComponentBase
                 throw new ValidationException($validator);
             }
 
+            /**
+             * Если редактирование только через премодерацию
+             */
             if ($this->audiobook->shouldDeferredUpdate()) {
 
-                $chapter = new Chapter([
-                    'edition_id' => $this->audiobook->id,
-                    'type' => EditionsEnums::Audio,
-                ]);
+                if ($this->chapter->exists) {
 
-                $chapter
-                    ->fill($data->toArray())
-                    ->save(sessionKey: $this->getSessionKey());
+                    dump('already created');
 
-                $chapter->edition->chapters->each->setNeighbours();
+                    $this->chapter
+                        ->fill($data->toArray())
+                        ->saveAsDraft($data->toArray(), sessionKey: $this->getSessionKey());
+                } else {
 
-                $deferredChapterService = new DeferredAudioChapterService($chapter);
-                $deferredChapterService->saveDeferredChapter($data['status']);
+                    // working but publishing
+                    // $this->chapter
+                    //  ->fill($data->toArray())
+                    //  ->save(sessionKey: $this->getSessionKey());
 
-            } else {
+                    // working but not current
+                    $this->chapter
+                        ->fill($data->toArray())
+                        ->save(sessionKey: $this->getSessionKey());
+
+                    $this->chapter->setCurrent();
+                    $this->chapter->saveQuietly();
+
+                    $this->chapter->fresh();
+                }
+            }
+
+            /**
+             * Публикация без премодерации
+             */
+            else {
                 $this->chapter
                     ->fill($data->toArray())
                     ->save(sessionKey: $this->getSessionKey());

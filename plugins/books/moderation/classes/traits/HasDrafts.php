@@ -4,10 +4,14 @@ namespace Books\Moderation\Classes\Traits;
 
 use Books\Moderation\Classes\PremoderationDrafts;
 use Books\Moderation\Classes\Scopes\PublishingScopes;
+use Event;
 use October\Rain\Database\Builder;
+use October\Rain\Database\Relations\AttachOne;
+use October\Rain\Database\Relations\BelongsTo;
 use October\Rain\Database\Relations\BelongsToMany;
 use October\Rain\Database\Relations\HasMany;
 use October\Rain\Database\Relations\HasOne;
+use October\Rain\Database\Relations\MorphTo;
 use October\Rain\Database\Relations\MorphToMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -52,37 +56,36 @@ trait HasDrafts
             }
         });
 
-        self::class::extend( function(Model $model) {
+        Event::listen('model.BeforeSave', function (Model $model): void {
+            $model->{$model->getIsCurrentColumn()} = true;
+            $model->setPublisher();
+            $model->generateUuid();
+            if ($model->{$model->getIsPublishedColumn()} !== false) {
+                $model->publish();
+            }
+        });
 
-            $model->bindEvent('model.beforeCreate', function () use ($model) {
-                $model->{$model->getIsCurrentColumn()} = true;
-                $model->setPublisher();
-                $model->generateUuid();
-                if ($model->{$model->getIsPublishedColumn()} !== false) {
-                    $model->publish();
-                }
-            });
+        Event::listen('model.BeforeUpdate', function (Model $model): void {
+            $model->newRevision();
+        });
 
-            $model->bindEvent('model.beforeUpdate', function () use ($model) {
-                $model->newRevision();
-            });
+        Event::listen('publishing', function (Model $model): void {
+            $model->setLive();
+        });
 
-            $model->bindEvent('publishing', function () use ($model) {
-                $model->setLive();
-            });
+        Event::listen('model.AfterDelete', function (Model $model): void {
+            $model->revisions()->delete();
+        });
 
-            $model->bindEvent('model.afterDelete', function () use ($model) {
-                $model->revisions()->delete();
-            });
+        Event::listen('model.AfterRestore', function (Model $model): void {
+            $model->revisions()->restore();
+        });
 
-            $model->bindEvent('model.beforeRestore', function () use ($model) {
-                $model->revisions()->restore();
-            });
-
-            $model->bindEvent('model.forceDeleted', function () use ($model) {
+        if (method_exists(static::class, 'forceDeleted')) {
+            static::forceDeleted(function (Model $model): void {
                 $model->revisions()->forceDelete();
             });
-        });
+        }
     }
 
     protected function newRevision(): void
@@ -102,24 +105,22 @@ trait HasDrafts
 
         $revision = $this->fresh()?->replicate();
 
-        self::class::extend( function(Model $model) use ($revision) {
-            $model->bindEvent('model.afterSave', function () use ($model, $revision) {
-                if ($model->isNot($this)) {
-                    return;
-                }
+        Event::listen('model.AfterSave', function (Model $model) use ($revision): void {
+            if ($model->isNot($this)) {
+                return;
+            }
 
-                $revision->created_at = $this->created_at;
-                $revision->updated_at = $this->updated_at;
-                $revision->{$this->getIsCurrentColumn()} = false;
-                $revision->{$this->getIsPublishedColumn()} = false;
+            $revision->created_at = $this->created_at;
+            $revision->updated_at = $this->updated_at;
+            $revision->{$this->getIsCurrentColumn()} = false;
+            $revision->{$this->getIsPublishedColumn()} = false;
 
-                $revision->saveQuietly(['timestamps' => false]); // Preserve the existing updated_at
+            $revision->saveQuietly(['timestamps' => false]); // Preserve the existing updated_at
 
-                $this->setPublisher();
-                $this->pruneRevisions();
+            $this->setPublisher();
+            $this->pruneRevisions();
 
-                $this->fireModelEvent('createdRevision');
-            });
+            $this->fireModelEvent('createdRevision');
         });
     }
 
@@ -152,18 +153,16 @@ trait HasDrafts
     {
         $this->{$this->getIsCurrentColumn()} = true;
 
-        self::class::extend( function(Model $model) {
-            $model->bindEvent('model.afterSave', function () use ($model) {
-                if ($model->isNot($this)) {
-                    return;
-                }
+        Event::listen('model.AfterSave', function (Model $model): void {
+            if ($model->isNot($this)) {
+                return;
+            }
 
-                $this->revisions()
-                    ->withDrafts()
-                    ->current()
-                    ->excludeRevision($this)
-                    ->update([$this->getIsCurrentColumn() => false]);
-            });
+            $this->revisions()
+                ->withDrafts()
+                ->current()
+                ->excludeRevision($this)
+                ->update([$this->getIsCurrentColumn() => false]);
         });
     }
 
@@ -187,7 +186,7 @@ trait HasDrafts
         $published->forceFill($newAttributes);
         $this->forceFill($oldAttributes);
 
-        static::saved(function (Model $model) use ($published): void {
+        Event::listen('model.AfterSave', function (Model $model) use ($published): void {
             if ($model->isNot($this)) {
                 return;
             }
@@ -200,6 +199,7 @@ trait HasDrafts
             collect($this->getDraftableRelations())->each(function (string $relationName) use ($published) {
                 $relation = $published->{$relationName}();
                 switch (true) {
+                    case $relation instanceof AttachOne:
                     case $relation instanceof HasOne:
                         if ($related = $this->{$relationName}) {
                             $replicated = $related->replicate();
@@ -245,7 +245,7 @@ trait HasDrafts
         return property_exists($this, 'draftableRelations') ? $this->draftableRelations : [];
     }
 
-    public function saveAsDraft(array $options = []): bool
+    public function saveAsDraft(array $options = [], $sessionKey = null): bool
     {
         if ($this->fireModelEvent('savingAsDraft') === false || $this->fireModelEvent('saving') === false) {
             return false;
@@ -257,7 +257,7 @@ trait HasDrafts
         $draft->shouldSaveAsDraft = false;
         $draft->setCurrent();
 
-        if ($saved = $draft->save($options)) {
+        if ($saved = $draft->save($options, $sessionKey)) {
             $this->fireModelEvent('drafted');
             $this->pruneRevisions();
         }
@@ -294,10 +294,10 @@ trait HasDrafts
                 data_get($options, 'draft') || $this->shouldDraft()
             )
         ) {
-            return $this->saveAsDraft($options);
+            return $this->saveAsDraft($options, $sessionKey);
         }
 
-        return parent::save($options);
+        return parent::save($options, $sessionKey);
     }
 
     public static function savingAsDraft(string|\Closure $callback): void
@@ -319,12 +319,13 @@ trait HasDrafts
         return $this->fill($attributes)->saveAsDraft($options);
     }
 
-    public static function createDraft(...$attributes): self
+    public static function createDraft($sessionKey = null, ...$attributes): self
     {
-        return tap(static::make(...$attributes), function ($instance) {
+        /** @var Model $instance */
+        return tap(static::make(...$attributes), function ($instance) use ($sessionKey) {
             $instance->{$instance->getIsPublishedColumn()} = false;
 
-            return $instance->save();
+            return $instance->save(sessionKey: $sessionKey);
         });
     }
 
@@ -420,10 +421,10 @@ trait HasDrafts
         return $this->revisions()->current()->onlyDrafts();
     }
 
-//    public function publisher(): MorphTo
-//    {
-//        return $this->morphTo(config('books.moderation::column_names.publisher_morph_name'));
-//    }
+    public function publisher(): MorphTo
+    {
+        return $this->morphTo(config('books.moderation::column_names.publisher_morph_name'));
+    }
 
     /*
     |--------------------------------------------------------------------------
