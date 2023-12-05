@@ -11,23 +11,6 @@ oc.ajax('onLoadReaderBirthdayModal', {
     },
 })
 
-
-function onCloseReaderBirthdayModal() {
-    oc.ajax('onCloseReaderBirthdayModal', {
-        success: function (data) {
-            $('#reader-birthday-modal .ui-modal').removeClass('active');
-        },
-    })
-}
-
-function neverShowReaderBirthdayModal() {
-    oc.ajax('onNeverShowReaderBirthdayModal', {
-        success: function (data) {
-            $('#reader-birthday-modal .ui-modal').removeClass('active');
-        },
-    })
-}
-
 oc.ajax('onLoadNewReaderModal', {
     success: function (data) {
         this.success(data).done(function() {
@@ -35,27 +18,11 @@ oc.ajax('onLoadNewReaderModal', {
                 if (data.is_open) {
                     $('#new-reader-modal .ui-modal').addClass('active');
                 }
-            },1000)
+            },800)
 
         })
     },
 })
-
-function onCloseNewReaderModal() {
-    oc.ajax('onCloseNewReaderModal', {
-        success: function (data) {
-            $('#new-reader-modal .ui-modal').removeClass('active');
-        },
-    })
-}
-
-function neverShowNewReaderModal() {
-    oc.ajax('onNeverShowNewReaderModal', {
-        success: function (data) {
-            $('#new-reader-modal .ui-modal').removeClass('active');
-        },
-    })
-}
 
 oc.ajax('onLoadRegularReaderModal', {
     success: function (data) {
@@ -64,25 +31,30 @@ oc.ajax('onLoadRegularReaderModal', {
                 if (data.is_open) {
                     $('#regular-reader-modal .ui-modal').addClass('active');
                 }
-            },1000)
+            },500)
 
         })
     },
 })
 
-
-function onCloseRegularReaderModal() {
-    oc.ajax('onCloseRegularReaderModal', {
+function onCloseModal(cookieName, modalId) {
+    oc.ajax('onCloseModal', {
+        data: {'cookieName': cookieName},
         success: function (data) {
-            $('#regular-reader-modal .ui-modal').removeClass('active');
+            $(modalId+' .ui-modal').removeClass('active');
         },
     })
 }
 
-function neverShowRegularReaderModal() {
-    oc.ajax('onNeverShowRegularReaderModal', {
+function onNeverShowModal(cookieName, modalId) {
+    console.log(cookieName, modalId)
+    oc.ajax('onNeverShowModal', {
+        data: {'cookieName': cookieName},
         success: function (data) {
-            $('#regular-reader-modal .ui-modal').removeClass('active');
+            $(modalId+' .ui-modal').removeClass('active');
         },
     })
 }
+
+
+
