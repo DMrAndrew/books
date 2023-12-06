@@ -204,7 +204,7 @@ class AudioUploader extends ComponentBase
             //return Response::json($result, 200);
 
             return [
-                '#audiofile_container' => $this->renderPartial('audioplayer/default', ['audiofile' => $this->model]),
+                '#audiofile_container' => $this->renderPartial('audioplayer/default', ['audioplayer' => $this->model]),
             ];
         }
         catch (Exception $ex) {
