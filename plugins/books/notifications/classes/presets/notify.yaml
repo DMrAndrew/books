@@ -78,8 +78,8 @@ post_published:
     items:
         - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
 
-videoblog_published:
-    name: Новая публикация в видеоблоге
-    event: Books\Notifications\Classes\Events\VideoblogPublished
+birthday:
+    name: Оповещении о скидке на др автора за 3 дня до
+    event: Books\Notifications\Classes\Events\BirthdayMessage
     items:
         - action: Books\Notifications\Classes\Actions\StoreDatabaseAction

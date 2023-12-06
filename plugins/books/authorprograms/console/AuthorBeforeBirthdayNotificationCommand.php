@@ -28,8 +28,6 @@ class AuthorBeforeBirthdayNotificationCommand extends Command
      */
     public function handle()
     {
-        $object = \Books\Book\Models\SystemMessage::where('name', 'День рождения автора')->first();
-
         $users = User::leftJoin('books_profile_profiles as profile', 'users.id', '=', 'profile.id')
             ->leftJoin('books_book_authors as author', 'author.profile_id', '=', 'profile.id')
             ->whereMonth('users.birthday', Carbon::now()->addDays(3)->format('m'))
@@ -37,6 +35,6 @@ class AuthorBeforeBirthdayNotificationCommand extends Command
             ->distinct()
             ->get('users.id');
 
-        Event::fire('system::message', [$object, $users]);
+        Event::fire('system::birthday', [$users]);
     }
 }
