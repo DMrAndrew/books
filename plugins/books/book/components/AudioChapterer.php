@@ -14,6 +14,7 @@ use Books\Book\Models\Edition;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
+use Books\FileUploader\Components\AudioUploader;
 use Books\FileUploader\Components\FileUploader;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -84,7 +85,7 @@ class AudioChapterer extends ComponentBase
         $this->prepareVals();
 
         $component = $this->addComponent(
-            FileUploader::class,
+            AudioUploader::class,
             'audioUploader',
             [
                 'modelClass' => Chapter::class,
@@ -205,39 +206,39 @@ class AudioChapterer extends ComponentBase
         }
     }
 
-    public function onDeleteAudiofile()
-    {
-        try {
-            $chapterId = post('chapter_id');
-            $chapter = Chapter::findOrFail($chapterId);
-
-            if (!in_array(
-                $this->user->profile->id,
-                $chapter->edition->book->authors->pluck('profile_id')->toArray()
-            )) {
-                abort(404);
-            }
-
-            if ($this->audiobook->shouldDeferredUpdate()) {
-                $chapter->saveAsDraft($chapter->toArray(), sessionKey: $this->getSessionKey());
-
-                $chapter->setCurrent();
-                $chapter->saveQuietly();
-                $chapter->fresh();
-
-            } else {
-                $chapter->audio->delete();
-                $chapter->length = null;
-                $chapter->save();
-            }
-
-            return Redirect::refresh();
-
-        } catch (Exception $e) {
-            Flash::error($e->getMessage());
-            return [];
-        }
-    }
+//    public function onDeleteAudiofile()
+//    {
+//        try {
+//            $chapterId = post('chapter_id');
+//            $chapter = Chapter::findOrFail($chapterId);
+//
+//            if (!in_array(
+//                $this->user->profile->id,
+//                $chapter->edition->book->authors->pluck('profile_id')->toArray()
+//            )) {
+//                abort(404);
+//            }
+//
+//            if ($this->audiobook->shouldDeferredUpdate()) {
+//                $chapter->saveAsDraft($chapter->toArray(), sessionKey: $this->getSessionKey());
+//
+//                $chapter->setCurrent();
+//                $chapter->saveQuietly();
+//                $chapter->fresh();
+//
+//            } else {
+//                $chapter->audio->delete();
+//                $chapter->length = null;
+//                $chapter->save();
+//            }
+//
+//            return Redirect::refresh();
+//
+//        } catch (Exception $e) {
+//            Flash::error($e->getMessage());
+//            return [];
+//        }
+//    }
 
     private function getAudioBook(): Edition
     {

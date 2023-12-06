@@ -20,11 +20,13 @@ id:'audioChaptererForm',
         <div class="ui-select-error" data-validate-for="title"></div>
     </div>
 
-    {% if chapter.audio %}
+    {% set audiofile = chapter.audio %}
+    <div id="audiofile_container">
+    {% if audiofile %}
         <div class="personal-area__wrap _indent-large ui-input">
             <div class="personal-area__wrap _indent-medium">
-                {% partial 'audioplayer/audio-data' chapter=chapter audiofile=chapter.audio %}
-                {% partial 'audioplayer/default' audiofile = chapter.audio %}
+                {% partial 'audioplayer/audio-data' chapter=chapter audiofile=audiofile %}
+                {% partial 'audioplayer/default' audiofile = audiofile %}
             </div>
         </div>
 
@@ -47,6 +49,7 @@ id:'audioChaptererForm',
             {% component 'audioUploader' %}
 
         </div>
+    </div>
 
     {% if not chapter.id  or not audiobooker.is_deferred %}
     <div class="personal-area__wrap _indent-large">
