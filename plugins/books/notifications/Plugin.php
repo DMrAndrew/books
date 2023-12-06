@@ -8,6 +8,8 @@ use Books\Notifications\Classes\Behaviors\NotificationOwner;
 use Books\Notifications\Classes\Contracts\NotificationService as NotificationServiceContract;
 use Books\Notifications\Classes\Events\AuthorAccepted;
 use Books\Notifications\Classes\Events\AuthorInvited;
+use Books\Notifications\Classes\Events\BeforeBirthdayMessage;
+use Books\Notifications\Classes\Events\BirthdayMessage;
 use Books\Notifications\Classes\Events\BookCompleted;
 use Books\Notifications\Classes\Events\BookCreated;
 use Books\Notifications\Classes\Events\BookSelling;
@@ -104,6 +106,7 @@ class Plugin extends PluginBase
                 DeferredApplied::class,
                 PostPublished::class,
                 VideoblogPublished::class,
+                BirthdayMessage::class,
             ],
             'groups' => [
                 'user' => [
@@ -152,6 +155,7 @@ class Plugin extends PluginBase
             'books.blog::post.published' => PostPublished::class,
             'books.videoblog::post.published' => VideoblogPublished::class,
             'system::message' => SystemMessage::class,
+            'system::birthday' => BirthdayMessage::class,
         ]);
     }
 
