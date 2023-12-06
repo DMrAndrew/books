@@ -1,0 +1,106 @@
+<form action="">
+    <div class="commerce__configuration">
+        <p class="commerce__text ui-text-body--2">Выберите процент скидки, который вы готовы предоставить читателю</p>
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" name="percent" value="10"
+                {{ program.condition.percent|number_format== 10 ? 'checked="checked"' : '' }}
+                   hidden>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">10%</span>
+        </label>
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" name="percent" value="20"
+                {{ program.condition.percent|number_format== 20 ? 'checked="checked"' : '' }}
+                   hidden>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">20%</span>
+        </label>
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" name="percent" value="30"
+                {{ program.condition.percent|number_format== 30 ? 'checked="checked"' : '' }}
+                   hidden>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">30%</span>
+        </label>
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" name="percent" value="40"
+                {{ program.condition.percent|number_format== 40 ? 'checked="checked"' : '' }}
+                   hidden>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">40%</span>
+        </label>
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" name="percent" value="50"
+                {{ program.condition.percent|number_format== 50 ? 'checked="checked"' : '' }}
+                   hidden>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">50%</span>
+        </label>
+    </div>
+
+    {% if form_type == constant('Books\\AuthorPrograms\\Classes\\Enums\\ProgramsEnums::NEW_READER').value %}
+        <div class="commerce__configuration">
+            <p class="commerce__text ui-text-body--2">Выберите количество дней, в течении которых будет действовать
+                скидка</p>
+
+            <label class="personal-area__wrap _indent-medium ui-radio">
+                <input type="radio" hidden name="days" value="5"
+                    {{ program.condition.days|number_format== 5 ? 'checked="checked"' : '' }}>
+                <div class="ui-radio-checker"></div>
+                <span class="ui-radio-text">5 дней</span>
+            </label>
+            <label class="personal-area__wrap _indent-medium ui-radio">
+                <input type="radio" hidden name="days" value="7"
+                    {{ program.condition.days|number_format== 7 ? 'checked="checked"' : '' }}>
+                <div class="ui-radio-checker"></div>
+                <span class="ui-radio-text">7 дней</span>
+            </label>
+            <label class="personal-area__wrap _indent-medium ui-radio">
+                <input type="radio" hidden name="days" value="10"
+                    {{ program.condition.days|number_format== 10 ? 'checked="checked"' : '' }}>
+                <div class="ui-radio-checker"></div>
+                <span class="ui-radio-text">10 дней</span>
+            </label>
+        </div>
+    {% endif %}
+    {% if form_type == constant('Books\\AuthorPrograms\\Classes\\Enums\\ProgramsEnums::REGULAR_READER').value %}
+        <div class="commerce__configuration">
+            <p class="commerce__text ui-text-body--2">Выберите количество дней, в течении которых будет действовать
+                скидка</p>
+
+            <label class="personal-area__wrap _indent-medium ui-radio">
+                <input type="radio" hidden name="books" value="3"
+                    {{ program.condition.books|number_format== 3 ? 'checked="checked"' : '' }}>
+                <div class="ui-radio-checker"></div>
+                <span class="ui-radio-text">3 книги</span>
+            </label>
+            <label class="personal-area__wrap _indent-medium ui-radio">
+                <input type="radio" hidden name="books" value="5"
+                    {{ program.condition.books|number_format== 5 ? 'checked="checked"' : '' }}>
+                <div class="ui-radio-checker"></div>
+                <span class="ui-radio-text">5 книг</span>
+            </label>
+            <label class="personal-area__wrap _indent-medium ui-radio">
+                <input type="radio" hidden name="books" value="7"
+                    {{ program.condition.books|number_format== 7 ? 'checked="checked"' : '' }}>
+                <div class="ui-radio-checker"></div>
+                <span class="ui-radio-text">7 книг</span>
+            </label>
+        </div>
+    {% endif %}
+
+    <input type="text" value="{{ program_type }}" name="program_type" hidden>
+    <input type="text" value="{{ program.id }}" name="id" hidden>
+
+    <div class="commerce__button-wrapper">
+        <button class="commerce__button ui-button ui-button-view--2 ui-button-size--32"
+                data-request="{{__SELF__}}::onSaveProgram"
+                data-request-complete=" $('{{ customTagName}}')[0].scrollIntoView() "
+        >
+            Подключить
+        </button>
+        {% if program is not null %}
+            <a href="/lc-commercial" class="commerce__button ui-button ui-button-view--3 ui-button-size--32">Отменить</a>
+        {% endif %}
+    </div>
+</form>
