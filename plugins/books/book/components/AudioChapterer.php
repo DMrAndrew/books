@@ -164,8 +164,6 @@ class AudioChapterer extends ComponentBase
 
                 if ($this->chapter->exists) {
 
-                    dump('already created');
-
                     $this->chapter
                         ->fill($data->toArray())
                         ->saveAsDraft($data->toArray(), sessionKey: $this->getSessionKey());
@@ -220,9 +218,18 @@ class AudioChapterer extends ComponentBase
                 abort(404);
             }
 
-            $chapter->audio->delete();
-            $chapter->length = null;
-            $chapter->save();
+            if ($this->audiobook->shouldDeferredUpdate()) {
+                $chapter->saveAsDraft($chapter->toArray(), sessionKey: $this->getSessionKey());
+
+                $chapter->setCurrent();
+                $chapter->saveQuietly();
+                $chapter->fresh();
+
+            } else {
+                $chapter->audio->delete();
+                $chapter->length = null;
+                $chapter->save();
+            }
 
             return Redirect::refresh();
 
