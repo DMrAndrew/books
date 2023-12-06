@@ -1,0 +1,35 @@
+<div class="ui-modal overlay" data-modal="promo-123">
+    <div class="ui-modal-container">
+        <div class="promo-modal__container ui-modal-content">
+            <div class="ui-modal-header">
+                <div class="square-16 "></div>
+                <svg class="square-24" data-modal="close" onclick="onCloseModal('{{ closeCookie }}', '{{ modail_id }}')">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                </svg>
+            </div>
+            <div class="promo-modal__body">
+                <div class="promo-modal__imgs">
+                    {% if avatar %}
+                        <img class="square square-40 circle" src="{{avatar}}" alt="">
+                    {% endif %}
+
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15.4232 2.0339C17.8718 -0.677967 22.1282 -0.677967 24.5768 2.0339C25.8195 3.41027 27.6157 4.15428 29.4677 4.05979C33.1167 3.87363 36.1264 6.88331 35.9402 10.5323C35.8457 12.3843 36.5897 14.1805 37.9661 15.4232C40.678 17.8718 40.678 22.1282 37.9661 24.5768C36.5897 25.8195 35.8457 27.6157 35.9402 29.4677C36.1264 33.1167 33.1167 36.1264 29.4677 35.9402C27.6157 35.8457 25.8195 36.5897 24.5768 37.9661C22.1282 40.678 17.8718 40.678 15.4232 37.9661C14.1805 36.5897 12.3843 35.8457 10.5323 35.9402C6.88331 36.1264 3.87363 33.1167 4.05979 29.4677C4.15428 27.6157 3.41027 25.8195 2.0339 24.5768C-0.677967 22.1282 -0.677967 17.8718 2.0339 15.4232C3.41027 14.1805 4.15428 12.3843 4.05979 10.5323C3.87363 6.88331 6.88331 3.87363 10.5323 4.05979C12.3843 4.15428 14.1805 3.41027 15.4232 2.0339Z" fill="#8652F6"/>
+                        <path d="M12 28L28 12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="14" cy="14" r="2.25" stroke="white" stroke-width="1.5"/>
+                        <circle cx="26" cy="26" r="2.25" stroke="white" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <div class="ui-text-head--2 ui-text--bold">{{ title|raw }}</div>
+                <div class="">{{ subtitle }}</div>
+                <div class="promo-modal__footer">
+                    <button class="ui-button ui-button-size--32 ui-button-view--3"
+                            data-modal="close"
+                            onclick="onNeverShowModal('{{ neverShowCookie }}', '{{ modail_id }}')">Больше не показывать</button>
+
+                    <button class="ui-button ui-button-size--32 ui-button-view--3" onclick="onCloseModal('{{ closeCookie }}', '{{ modail_id }}')">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
