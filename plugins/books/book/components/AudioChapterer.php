@@ -198,7 +198,8 @@ class AudioChapterer extends ComponentBase
                 $this->chapter->edition->chapters->each->setNeighbours();
             }
 
-            return Redirect::to('/book-add-audio/' . $this->book->id . '/' . $this->chapter->id);
+            //return Redirect::to('/book-add-audio/' . $this->book->id . '/' . $this->chapter->id);
+            return Redirect::to('/about-book/' . $this->book->id)->withFragment('#audiobook')->setLastModified(now());
 
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());

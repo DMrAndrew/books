@@ -4,7 +4,8 @@
 {% if audiofile %}
 <div class="personal-area__wrap _indent-large ui-input">
     <div class="personal-area__wrap _indent-medium">
-        {% partial 'audioplayer/default' audiofile = file %}
+        {% partial 'audioplayer/audio-data' chapter=audiofile.model audiofile=audiofile %}
+        {% partial 'audioplayer/default' audiofile = audiofile %}
     </div>
 </div>
 <script>
@@ -12,8 +13,13 @@
 </script>
 {% endif %}
 
+<div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">
+    Загружайте файлы в формате <span class="attention">.MP3 или .AAC</span>
+    и размером <span class="attention">не более 10 МБ</span>.
+</div>
+
 <div
-    class="responsiv-uploader-fileupload style-file-single {{ __SELF__.isPopulated() ? 'is-populated' }}"
+    class="responsiv-uploader-fileupload style-file-single"
     data-control="fileupload"
     data-request-flash="1"
     data-template="#uploaderTemplate{{ __SELF__ }}"
@@ -26,7 +32,7 @@
 
     <!-- Upload button -->
     <button type="button" class="ui button btn btn-default upload-button">
-        <span class="ui-button ui-button-size--32 ui-button-view--2">Загрузить файл</span>
+        <span class="ui-button ui-button-size--32 ui-button-view--2">{{ audiofile ? 'Заменить аудиофайл' : 'Загрузить аудиофайл' }}</span>
     </button>
 
     <div class="upload-files-container">
