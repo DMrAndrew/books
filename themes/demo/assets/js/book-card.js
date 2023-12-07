@@ -37,31 +37,6 @@ function closeAllTextareBlocks (query) {
 	}
 }
 
-// $(function () {
-//     //donation
-//     if (typeof updateDonateTimeout === 'undefined' || updateDonateTimeout == null) {
-//         var updateDonateTimeout;
-//     }
-//     $('body').on('keyup', '#donate', function (e) {
-//         console.log('keyup');
-//         e.preventDefault();
-//         this.value = this.value.replace(/[^\d.]/g, '');
-//
-//         clearTimeout(updateDonateTimeout);
-//         updateDonateTimeout = setTimeout(function () {
-//             clearTimeout(updateDonateTimeout);
-//             oc.request('#orderForm', 'onOrderAddDonation', {})
-//         }, 1000);
-//     });
-//
-//     // promocode
-//     $('body').on('click', '#promocodeSubmit', function (e) {
-//         e.preventDefault();
-//         this.value = this.value.replace(/[^\d.]/g, '');
-//         oc.request('#orderForm', 'onOrderAddPromocode', {})
-//     });
-// });
-
 addEventListener('render', function() {
 	//donation
 	if (typeof updateDonateTimeout === 'undefined' || updateDonateTimeout == null) {
