@@ -51,43 +51,18 @@ class ModalNotification extends ComponentBase
 
         if (!Cookie::has('newer_show_reader_birthday_program')) {
             if ($reader?->birthday->isBirthday() && Cookie::get('show_reader_birthday_program')) {
-                $authors = Profile::query()
-                    ->with(['avatar'])
-                    ->leftJoin('books_authors_programs', 'books_profile_profiles.user_id', '=', 'books_authors_programs.user_id')
-                    ->leftJoin('books_book_authors', 'books_profile_profiles.id', '=', 'books_book_authors.profile_id')
-                    ->leftJoin('books_book_genre', 'books_book_genre.book_id', '=', 'books_book_authors.book_id')
-                    ->where('books_profile_profiles.user_id', '!=', $reader->getAuthIdentifier())
-                    ->whereNotIn('books_book_genre.genre_id', $reader->unloved_genres)
-                    ->where('books_authors_programs.program', ProgramsEnums::READER_BIRTHDAY->value)
-                    ->groupBy('books_profile_profiles.id')
-                    ->select('books_profile_profiles.id', 'books_profile_profiles.username', 'books_authors_programs.program', 'books_authors_programs.condition')
-                    ->withCasts(['condition' => 'object'])
-                    ->get();
+                $authors = collect();
 
-                if ($authors->count() > 1) {
-                    $renderData = [
-                        'authors' => $authors,
-                        'closeCookie' => 'show_reader_birthday_program',
-                        'modail_id' => '#reader-birthday-modal',
-                        'title' => 'Скидка на книги авторов в честь Вашего дня рождения',
-                        'sudtitle' => 'Вы участвуете в программе следующих авторов:',
-                        'neverShowCookie' => 'newer_show_reader_birthday_program',
-                    ];
-                    $template = '@multiple_authors';
-                } else {
-                    $author = $authors->first();
-                    $renderData = [
-                        'avatar' => $author->avatar->path,
-                        'author' => $author,
-                        'title' => 'Скидка на книги автора <a href="/author-page/' . $author->id . '">' . $author->username . ' </a> в честь Вашего дня рождения',
-                        'subtitle' => 'Для вас будет действовать персональная скидка ' . $author->condition->percent . '% на все его книги',
-                        'closeCookie' => 'show_reader_birthday_program',
-                        'modail_id' => $modalId,
-                        'neverShowCookie' => 'newer_show_reader_birthday_program',
-                    ];
-                    $template = '@single_author';
-                }
-
+                $renderData = [
+                    'avatar' => '',
+                    'author' => $authors,
+                    'title' => 'Скидка на книги авторов в честь Вашего дня рождения',
+                    'subtitle' => '',
+                    'closeCookie' => 'show_reader_birthday_program',
+                    'modail_id' => $modalId,
+                    'neverShowCookie' => 'newer_show_reader_birthday_program',
+                ];
+                $template = '@single_author';
                 $data['is_open'] = true;
                 $data[$modalId] = $this->renderPartial($template, $renderData);
             }
