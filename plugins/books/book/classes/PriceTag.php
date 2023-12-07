@@ -88,7 +88,7 @@ class PriceTag
                     || $reader?->birthday->isBirthday()
                     || Carbon::now() === $reader?->birthday->addDay()
                 ) {
-                    if (!array_intersect($this->edition->book->bookGenre->pluck('genre_id')->toArray(), $reader->unloved_genres)) {
+                    if (!array_intersect($this->edition->book->bookGenre->pluck('genre_id')->toArray(), $reader->loved_genres)) {
                         $this->discountsArr[] = $readerBirthdayProgram->condition->percent;
                     }
                 }
