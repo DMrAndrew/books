@@ -34,9 +34,11 @@ function closeModalFn(modal) {
     document.body.style.overflow = 'initial';
 }
 
-$(document).on('click', '.payTypeLabel', function(e) {
-    e.preventDefault();
-    $('.buy-book-modal__pay').removeClass('active');
-    $(this).find('.buy-book-modal__pay').addClass('active');
-    $(this).find('input[type="radio"]').prop('checked', true);
+addEventListener('render', function() {
+    $(document).on('click', '.payTypeLabel', function(e) {
+        e.preventDefault();
+        $('.buy-book-modal__pay').removeClass('active');
+        $(this).find('.buy-book-modal__pay').addClass('active');
+        $(this).find('input[type="radio"]').prop('checked', true);
+    });
 });
