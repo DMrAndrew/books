@@ -181,15 +181,8 @@
         this.$el.trigger('uploadSuccess');
         this.$el.trigger('change');
 
-        //  раз уж аудио успешно загрузилось
-
-        console.log(JSON.stringify([response.path]));
-        console.log(this.$el.find('div.audioplayer'));
-
         // добавляем путь до аудио в плеер
         this.$el.find('div.audioplayer').attr('data-sounds', JSON.stringify([response.path]));
-
-        console.log(this.$el.find('div.audioplayer'));
 
         // инициализируем аудиоплеер
         initAudioPlayer();
