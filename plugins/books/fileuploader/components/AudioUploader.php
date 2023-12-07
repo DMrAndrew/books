@@ -103,10 +103,10 @@ class AudioUploader extends ComponentBase
      */
     public function onRun()
     {
-        $this->addCss(['assets/css/uploader.css']);
+        $this->addCss(['assets/css/uploader-audio.css']);
         $this->addJs([
             'assets/vendor/dropzone/dropzone.js',
-            'assets/js/uploader.js',
+            'assets/js/uploader-audio.js',
         ]);
 
         $this->autoPopulate();
@@ -195,17 +195,12 @@ class AudioUploader extends ComponentBase
 
             $file = $this->decorateFileAttributes($file);
 
-//            $result = [
-//                'id' => $file->id,
-//                'thumb' => $file->thumbUrl,
-//                'path' => $file->pathUrl
-//            ];
-
-            //return Response::json($result, 200);
-
-            return [
-                '#audiofile_container' => $this->renderPartial('audioplayer/default', ['audioplayer' => $this->model]),
+            $result = [
+                'id' => $file->id,
+                'path' => $file->pathUrl
             ];
+
+            return Response::json($result, 200);
         }
         catch (Exception $ex) {
             return Response::json($ex->getMessage(), 400);
