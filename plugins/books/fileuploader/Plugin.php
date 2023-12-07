@@ -28,7 +28,7 @@ class Plugin extends PluginBase
         return [
            FileUploader::class  => 'fileUploader',
            ImageUploader::class => 'imageUploader',
-           AudioUploader::class => 'imageUploader',
+           AudioUploader::class => 'audioUploader',
         ];
     }
 }
