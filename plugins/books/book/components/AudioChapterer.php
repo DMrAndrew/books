@@ -89,7 +89,7 @@ class AudioChapterer extends ComponentBase
             'audioUploader',
             [
                 'modelClass' => Chapter::class,
-                'deferredBinding' => ! (bool) $this->chapter->id,
+                'deferredBinding' => true, // всегда отложенное, чтобы не заменялся/удалялся файл без сохранения формы
                 "maxSize" => 30,
                 "fileTypes" => ".mp3,.aac",
             ]
@@ -197,8 +197,7 @@ class AudioChapterer extends ComponentBase
 
                 $this->chapter->edition->chapters->each->setNeighbours();
             }
-
-            //return Redirect::to('/book-add-audio/' . $this->book->id . '/' . $this->chapter->id);
+            
             return Redirect::to('/about-book/' . $this->book->id)->withFragment('#audiobook')->setLastModified(now());
 
         } catch (Exception $ex) {
