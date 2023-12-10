@@ -1,5 +1,8 @@
 <?php namespace Books\Certificates\Models;
 
+use Books\Certificates\Classes\Enums\CertificateTransactionStatus;
+use Books\Profile\Models\Profile;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Model;
 
 /**
@@ -16,8 +19,31 @@ class CertificateTransactions extends Model
      */
     public $table = 'books_certificates_certificate_transactions';
 
+    protected $fillable = [
+        'sender_id',
+        'recipient_id',
+        'amount',
+        'description',
+        'anonymity',
+        'status',
+    ];
+
+    protected $casts = [
+        'status' => CertificateTransactionStatus::class
+    ];
+
     /**
      * @var array rules for validation
      */
     public $rules = [];
+
+    public function scopeNotAcceptedCertificates(Builder $q)
+    {
+        return $q->where('status', CertificateTransactionStatus::SENT);
+    }
+
+    public $belongsTo = [
+        'receiver' => [Profile::class, 'key' => 'recipient_id', 'otherKey' => 'id'],
+        'sender' => [Profile::class, 'key' => 'sender_id', 'otherKey' => 'id'],
+    ];
 }

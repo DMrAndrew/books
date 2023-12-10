@@ -42,24 +42,35 @@ class OperationHistoryService implements OperationHistoryServiceContract
     }
 
     /**
-     * @param Order $order
+     * @param Profile $profile
      *
      * @return void
      * @throws ApplicationException
      */
-    public function addReceivingCertificateAnonymous(Order $order): void
+    public function addReceivingCertificateAnonymous(User $user, int $amount): void
     {
-        $user = $order->user;
-        $depositAmount = $order->deposits->sum('amount');
-
         $params = [
-            'depositAmount' => $depositAmount,
+            'depositAmount' => $amount,
         ];
 
         OperationHistory::create([
             'user_id' => $user->id,
             'type' => OperationType::TransferOnBalance,
-            'message' => $this->prepareBody(OperationType::TransferOnBalance, $params),
+            'message' => $this->prepareBody(OperationType::CertificateTransferReceived, $params),
+        ]);
+    }
+
+    public function sentCertificate(Profile $user, int $amount, Profile $receiver): void
+    {
+        $params = [
+            'amount' => $amount,
+            'receiver' => $receiver
+        ];
+
+        OperationHistory::create([
+            'user_id' => $user->id,
+            'type' => OperationType::TransferOnBalance,
+            'message' => $this->prepareBody(OperationType::CertificateTransferSent, $params),
         ]);
     }
 
@@ -219,7 +230,15 @@ class OperationHistoryService implements OperationHistoryServiceContract
 
     public function addReceivingCertificatePublic(Order $order): void
     {
-        // TODO: Implement addReceivingCertificatePublic() method.
+        $params = [
+            'depositAmount' => $amount,
+        ];
+
+        OperationHistory::create([
+            'user_id' => $user->id,
+            'type' => OperationType::TransferOnBalance,
+            'message' => $this->prepareBody(OperationType::CertificateTransferReceived, $params),
+        ]);
     }
 
     /**

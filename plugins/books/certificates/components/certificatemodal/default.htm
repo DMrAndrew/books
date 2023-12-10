@@ -1,0 +1,22 @@
+<script>
+    oc.ajax('onShowModal', {
+        success: function (data) {
+            this.success(data).done(function() {
+                setTimeout(() => {
+                    if (data.is_open) {
+                        $('#certificate-modal  .ui-modal').addClass('active');
+                    }
+                },1000)
+
+            })
+        },
+    })
+
+    function closeCertificateModal() {
+        oc.ajax('onCloseModal', {
+            success: function (data) {
+                $('#certificate-modal .ui-modal').removeClass('active');
+            },
+        })
+    }
+</script>
