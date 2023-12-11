@@ -170,11 +170,6 @@ class AudioChapterer extends ComponentBase
                         ->saveAsDraft($data->toArray(), sessionKey: $this->getSessionKey());
                 } else {
 
-                    // working but publishing
-                    // $this->chapter
-                    //  ->fill($data->toArray())
-                    //  ->save(sessionKey: $this->getSessionKey());
-
                     // working but not current
                     $this->chapter
                         ->fill($data->toArray())
@@ -195,6 +190,9 @@ class AudioChapterer extends ComponentBase
                     ->fill($data->toArray())
                     ->save(sessionKey: $this->getSessionKey());
 
+                    $this->chapter->setLive();
+                    $this->chapter->saveQuietly();
+
                 $this->chapter->edition->chapters->each->setNeighbours();
             }
             
@@ -205,40 +203,6 @@ class AudioChapterer extends ComponentBase
             return [];
         }
     }
-
-//    public function onDeleteAudiofile()
-//    {
-//        try {
-//            $chapterId = post('chapter_id');
-//            $chapter = Chapter::findOrFail($chapterId);
-//
-//            if (!in_array(
-//                $this->user->profile->id,
-//                $chapter->edition->book->authors->pluck('profile_id')->toArray()
-//            )) {
-//                abort(404);
-//            }
-//
-//            if ($this->audiobook->shouldDeferredUpdate()) {
-//                $chapter->saveAsDraft($chapter->toArray(), sessionKey: $this->getSessionKey());
-//
-//                $chapter->setCurrent();
-//                $chapter->saveQuietly();
-//                $chapter->fresh();
-//
-//            } else {
-//                $chapter->audio->delete();
-//                $chapter->length = null;
-//                $chapter->save();
-//            }
-//
-//            return Redirect::refresh();
-//
-//        } catch (Exception $e) {
-//            Flash::error($e->getMessage());
-//            return [];
-//        }
-//    }
 
     private function getAudioBook(): Edition
     {
