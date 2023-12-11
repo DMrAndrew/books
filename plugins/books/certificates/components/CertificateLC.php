@@ -105,7 +105,8 @@ class CertificateLC extends ComponentBase
                     'anonymity' => $anonymity,
                     'status' => CertificateTransactionStatus::SENT
                 ]);
-                $this->operationHistoryService->sentCertificate($sender, $amount, $receiver);
+                $this->operationHistoryService->sentCertificate($sender->user, $amount, $receiver);
+
                 Event::fire('system::certificate', [$amount, $receiver, $anonymity, $sender, $sertificate->id]);
 
                 Flash::success('Сертификат успешно оформлен');

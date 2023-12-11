@@ -4,6 +4,7 @@ use Backend;
 use Books\Certificates\Behaviors\CertificateRelations;
 use Books\Certificates\Components\CertificateLC;
 use Books\Certificates\Components\CertificateModal;
+use Books\Certificates\Console\ReturnOfCertificate;
 use Books\Profile\Models\Profile;
 use System\Classes\PluginBase;
 
@@ -40,7 +41,7 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-        //
+        $this->registerConsoleCommand('certificates:return.of.certificate', ReturnOfCertificate::class);
     }
 
     /**
@@ -78,5 +79,10 @@ class Plugin extends PluginBase
     public function registerNavigation()
     {
         return []; // Remove this line to activate
+    }
+
+    public function registerSchedule($schedule): void
+    {
+        $schedule->command('certificates:return.of.certificate')->dailyAt('01:00');
     }
 }

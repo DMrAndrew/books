@@ -13,7 +13,7 @@ interface OperationHistoryService
     /** Пополнение баланса */
     public function addBalanceDeposit(Order $order): void;
 
-    /** Получение сертификата анонимно */
+    /** Зачисление средств получателю */
     public function addReceivingCertificateAnonymous(User $user, int $amount): void;
 
     /** Покупка книги (оплата) */
@@ -39,4 +39,10 @@ interface OperationHistoryService
 
     /** Корректировка баланса */
     public function addBalanceCorrection(User $user, int $correctionAmount): void;
+
+    /** Снятие средств по серфикату у отправителя */
+    public function sentCertificate(User $user, int $amount, Profile $receiver): void;
+
+    /** Возврат средств по серфикату отправителю по истечении 10 дней  */
+    public function returnCertificate(User $user, int $amount, Profile $receiver): void;
 }

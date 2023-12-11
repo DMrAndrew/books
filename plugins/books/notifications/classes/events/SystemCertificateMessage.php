@@ -28,6 +28,7 @@ class SystemCertificateMessage extends BaseEvent
      */
     public static function makeParamsFromEvent(array $args, $eventName = null): array
     {
+
         /**
          * @var \Books\Book\Models\SystemMessage
          */
@@ -51,6 +52,6 @@ class SystemCertificateMessage extends BaseEvent
     public static function getRecipients(array $args): ?Collection
     {
         $recipient = Arr::get($args, 1);
-        return $recipient->user->get();
+        return Profile::where('id', $recipient['id'])->get();
     }
 }

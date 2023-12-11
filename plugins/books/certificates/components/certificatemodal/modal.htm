@@ -8,7 +8,7 @@
                 </svg>
             </div>
             <div class="promo-modal__body">
-                <div style="margin-bottom: 16px">
+
                     {% if certificate.status == 'sent' %}
                         {{ certificate.description|raw }}
                     {% endif %}
@@ -18,7 +18,7 @@
                     {% if certificate.status == 'returned' %}
                         Сертификат возвращен отправителю по истечении 10 дней
                     {% endif %}
-                </div>
+
                 <div class="promo-modal__footer">
                     {% if certificate.status == 'sent' %}
                         <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full"
@@ -34,3 +34,23 @@
         </div>
     </div>
 </div>
+
+
+<style>
+#certificate-modal .promo-modal__body{
+    margin-bottom: 16px;
+    max-width: 300px;
+}
+#certificate-modal .promo-modal__footer{
+    margin-top: 16px;
+}
+#certificate-modal .promo-modal__body .image{
+    margin-bottom: 16px;
+}
+
+#certificate-modal .promo-modal__body .image img{
+    margin: auto;
+    max-width: 300px;
+    height: auto;
+}
+</style>

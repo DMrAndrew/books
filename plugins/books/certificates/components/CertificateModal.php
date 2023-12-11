@@ -32,7 +32,6 @@ class CertificateModal extends ComponentBase
             return $redirect;
         }
         $this->user = Auth::getUser() ?? throw new ApplicationException('User required');
-        $this->operationHistoryService = app(OperationHistoryService::class);
     }
 
     /**
@@ -57,7 +56,10 @@ class CertificateModal extends ComponentBase
         try {
             $certificate = CertificateTransactions::where('id', post('certificate_id'))->first();
             $certificate->receiver->user->proxyWallet()->deposit($certificate->amount);
-            $this->operationHistoryService->addReceivingCertificateAnonymous($certificate->receiver->user, $certificate->amount);
+            $operationHistoryService = app(OperationHistoryService::class);
+            $operationHistoryService->addReceivingCertificateAnonymous($certificate->receiver->user, (int)$certificate->amount);
+            $certificate->status = CertificateTransactionStatus::RECEIVED;
+            $certificate->save();
             Flash::success('Баланс пополнен');
             return Redirect::refresh();
         } catch (Exception $e) {
