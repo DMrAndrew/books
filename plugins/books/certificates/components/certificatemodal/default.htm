@@ -1,22 +1,16 @@
 <script>
-    oc.ajax('onShowModal', {
-        success: function (data) {
-            this.success(data).done(function() {
-                setTimeout(() => {
-                    if (data.is_open) {
-                        $('#certificate-modal  .ui-modal').addClass('active');
-                    }
-                },1000)
-
-            })
-        },
-    })
-
-    function closeCertificateModal() {
-        oc.ajax('onCloseModal', {
+    function onShowCertificateModal(id) {
+        oc.ajax('onShowCertificateModal', {
+            data: {'certificate_id': id},
             success: function (data) {
-                $('#certificate-modal .ui-modal').removeClass('active');
+                this.success(data).done(function() {
+                    $('#certificate-modal  .ui-modal').addClass('active');
+                })
             },
         })
+    }
+
+    function closeCertificateModal() {
+        $('#certificate-modal .ui-modal').removeClass('active');
     }
 </script>

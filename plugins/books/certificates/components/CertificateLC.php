@@ -6,6 +6,7 @@ use Books\Certificates\Models\CertificateTransactions;
 use Books\Profile\Models\Profile;
 use Books\Profile\Services\OperationHistoryService;
 use Cms\Classes\ComponentBase;
+use Event;
 use Exception;
 use Flash;
 use Illuminate\Support\Facades\Cookie;
@@ -92,21 +93,22 @@ class CertificateLC extends ComponentBase
             $sender = Profile::where('id', post('sender_id'))->first();
             $receiver = Profile::where('id', post('recipient_id'))->first();
             $amount = (int)post('amount');
+            $anonymity = (boolean)post('anonymity');
 
             if ($sender->getKey() !== $receiver->getKey() && $sender->user->proxyWallet()->balance > $amount) {
                 $sender->user->proxyWallet()->withdraw($amount);
-                CertificateTransactions::create([
+                $sertificate = CertificateTransactions::create([
                     'sender_id' => post('sender_id'),
                     'recipient_id' => post('recipient_id'),
                     'amount' => $amount,
                     'description' => post('description'),
-                    'anonymity' => (boolean)post('anonymity'),
+                    'anonymity' => $anonymity,
                     'status' => CertificateTransactionStatus::SENT
                 ]);
                 $this->operationHistoryService->sentCertificate($sender, $amount, $receiver);
+                Event::fire('system::certificate', [$amount, $receiver, $anonymity, $sender, $sertificate->id]);
 
                 Flash::success('Сертификат успешно оформлен');
-
                 return Redirect::refresh();
             }
 

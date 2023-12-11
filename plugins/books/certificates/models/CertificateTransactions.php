@@ -28,10 +28,6 @@ class CertificateTransactions extends Model
         'status',
     ];
 
-    protected $casts = [
-        'status' => CertificateTransactionStatus::class
-    ];
-
     /**
      * @var array rules for validation
      */

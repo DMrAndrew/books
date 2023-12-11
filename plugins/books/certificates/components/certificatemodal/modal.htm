@@ -1,19 +1,34 @@
-<div class="ui-modal overlay" data-modal="promo-123"    >
+<div class="ui-modal overlay" data-modal="certificate-modal" id="certificate-modal-content">
     <div class="ui-modal-container">
         <div class="promo-modal__container ui-modal-content">
             <div class="ui-modal-header">
                 <div class="square-16 "></div>
                 <svg class="square-24" data-modal="close" onclick="closeCertificateModal()">
-                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                    <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme }}"></use>
                 </svg>
             </div>
             <div class="promo-modal__body">
                 <div style="margin-bottom: 16px">
-                    {{ text|raw }}
+                    {% if certificate.status == 'sent' %}
+                        {{ certificate.description|raw }}
+                    {% endif %}
+                    {% if certificate.status == 'received' %}
+                        <p>Сертификат уже получен</p>
+                    {% endif %}
+                    {% if certificate.status == 'returned' %}
+                        Сертификат возвращен отправителю по истечении 10 дней
+                    {% endif %}
                 </div>
                 <div class="promo-modal__footer">
-                    <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full"
-                            data-request="{{__SELF__}}::onGetCertificate">Получить сертификат</button>
+                    {% if certificate.status == 'sent' %}
+                        <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full"
+                                type="button"
+                                data-request="CertificateModal::onGetCertificate"
+                                data-request-data="{ 'certificate_id': '{{ certificate.id }}' }"
+                        >
+                            Получить сертификат
+                        </button>
+                    {% endif %}
                 </div>
             </div>
         </div>

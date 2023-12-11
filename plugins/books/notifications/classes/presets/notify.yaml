@@ -83,3 +83,9 @@ videoblog_published:
     event: Books\Notifications\Classes\Events\VideoblogPublished
     items:
         - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+
+system_certificate:
+    name: Сообщение о получении сертификата
+    event: Books\Notifications\Classes\Events\SystemCertificateMessage
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction

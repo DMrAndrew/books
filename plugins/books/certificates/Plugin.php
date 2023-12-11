@@ -2,11 +2,9 @@
 
 use Backend;
 use Books\Certificates\Behaviors\CertificateRelations;
-use Books\Certificates\classes\LoginHandler;
 use Books\Certificates\Components\CertificateLC;
 use Books\Certificates\Components\CertificateModal;
 use Books\Profile\Models\Profile;
-use Event;
 use System\Classes\PluginBase;
 
 /**
@@ -50,7 +48,6 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-        Event::listen('rainlab.user.login', LoginHandler::class);
         Profile::extend(function (Profile $model) {
             $model->implementClassWith(CertificateRelations::class);
         });
