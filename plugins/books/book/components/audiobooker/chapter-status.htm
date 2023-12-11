@@ -24,4 +24,11 @@
 </div>
 {% endif %}
 
-
+{% if chapter.moderation_is_published != true %}
+<div class="chapter-book__status _draft">
+    <svg class="square-16">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>
+    </svg>
+    <span>На модерации </span>
+</div>
+{% endif %}

@@ -20,34 +20,32 @@ id:'audioChaptererForm',
         <div class="ui-select-error" data-validate-for="title"></div>
     </div>
 
-    {% if chapter.audio %}
+    {% set audiofile = chapter.audiod %}
+    <div id="audiofile_container">
+    {% if audiofile %}
         <div class="personal-area__wrap _indent-large ui-input">
             <div class="personal-area__wrap _indent-medium">
-                {% partial 'audioplayer/audio-data' chapter=chapter audiofile=chapter.audio %}
-                {% partial 'audioplayer/default' audiofile = chapter.audio %}
+                {% partial 'audioplayer/audio-data' chapter=chapter audiofile=audiofile %}
+                {% partial 'audioplayer/default' audiofile = audiofile %}
             </div>
         </div>
 
-        <button data-request="AudioChapterer::onDeleteAudiofile"
-                data-request-data="chapter_id:{{ chapter.id }}"
-                data-request-flash="1"
-                data-request-confirm="Вы действительно хотите удалить аудиофайл?"
-                type="button"
-                class="personal-area__wrap _indent-large ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">
-            Удалить аудиофайл
-        </button>
+<!--        <button data-request="AudioChapterer::onDeleteAudiofile"-->
+<!--                data-request-data="chapter_id:{{ chapter.id }}"-->
+<!--                data-request-flash="1"-->
+<!--                data-request-confirm="Вы действительно хотите удалить аудиофайл?"-->
+<!--                type="button"-->
+<!--                class="personal-area__wrap _indent-large ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full-mobile">-->
+<!--            Заменить аудиофайл-->
+<!--        </button>-->
+    {% endif %}
 
-    {% else %}
         <div class="personal-area__wrap _indent-large ui-input">
-            <div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">
-                Загружайте файлы в формате <span class="attention">.MP3 или .AAC</span>
-                и размером <span class="attention">не более 10 МБ</span>.
-            </div>
 
             {% component 'audioUploader' %}
 
         </div>
-    {% endif %}
+    </div>
 
     {% if not chapter.id  or not audiobooker.is_deferred %}
     <div class="personal-area__wrap _indent-large">

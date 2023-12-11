@@ -107,3 +107,6 @@
 1.0.33:
     - 'Прогресс прослушивания аудиокниги'
     - create_audio_read_progresses_table.php
+1.0.34:
+    - 'Премодерация Глав'
+    - update_chapters_has_drafts.php

@@ -2,7 +2,7 @@
 <div class="ui-tabs-content" data-tab-content="2">
     <div class="book-card-full-type">
         <div class="book-card-full-type__description _indent-bottom">
-            {% partial 'site/book-status' status=book.audiobook.status %}
+            {% partial 'site/book-status' edition=book.audiobook %}
             <span class="book-card-full-type__description-dot"></span>
             {% if historyAudiobook.items.first %}
                 <span itemprop="bookEdition">{{ historyAudiobook.items.first.date.format('d.m.y') }}</span>

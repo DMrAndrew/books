@@ -12,6 +12,7 @@ use Books\Book\Classes\Reader;
 use Books\Book\Classes\ScopeToday;
 use Books\Book\Classes\Services\AudioFileLengthHelper;
 use Books\Book\Jobs\Paginate;
+use Books\Moderation\Classes\Traits\HasDrafts;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Model;
@@ -60,6 +61,7 @@ class Chapter extends Model
     use SoftDelete;
     use Purgeable;
     use HasRelationships;
+    use HasDrafts;
 
     /**
      * @var string table associated with the model
@@ -115,9 +117,7 @@ class Chapter extends Model
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
      */
-    protected $appends = [
-
-    ];
+    protected $appends = [];
 
     /**
      * @var array hidden attributes removed from the API representation of the model (ex. toArray())
@@ -158,6 +158,10 @@ class Chapter extends Model
 
     public $attachMany = [];
 
+    protected array $draftableRelations = [
+        'audio',
+    ];
+
     public function reader(): Reader
     {
         return new Reader($this->edition->book, $this);
@@ -165,7 +169,10 @@ class Chapter extends Model
 
     public function service(): iChapterService
     {
-        return $this->edition?->is_deferred ? $this->deferredService(...func_get_args()) : $this->chapterService(...func_get_args());
+        return match ($this->edition->type) {
+            EditionsEnums::Audio => $this->edition?->is_deferred ? $this->deferredService(...func_get_args()) : $this->chapterService(...func_get_args()),
+            default => $this->edition?->is_deferred ? $this->deferredService(...func_get_args()) : $this->chapterService(...func_get_args()),
+        };
     }
 
     public function chapterService(): iChapterService

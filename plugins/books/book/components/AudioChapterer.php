@@ -3,6 +3,7 @@
 namespace Books\Book\Components;
 
 use Books\Book\Classes\ChapterService;
+use Books\Book\Classes\DeferredAudioChapterService;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
@@ -13,6 +14,7 @@ use Books\Book\Models\Edition;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
+use Books\FileUploader\Components\AudioUploader;
 use Books\FileUploader\Components\FileUploader;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -72,20 +74,22 @@ class AudioChapterer extends ComponentBase
         $this->user = Auth::getUser();
         $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
         $this->audiobook = $this->getAudioBook();
-        $this->chapter = $this->audiobook->chapters()->find($this->param('chapter_id'))
+        $this->chapter = $this->audiobook->chapters()
+                ->withDrafts()
+                ->find($this->param('chapter_id'))
             ?? new Chapter([
                 'edition_id' => $this->audiobook->id,
                 'type' => EditionsEnums::Audio,
             ]);
-        $this->chapterManager = ($this->audiobook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->audiobook);
+        //$this->chapterManager = ($this->audiobook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->audiobook);
         $this->prepareVals();
 
         $component = $this->addComponent(
-            FileUploader::class,
+            AudioUploader::class,
             'audioUploader',
             [
                 'modelClass' => Chapter::class,
-                'deferredBinding' => ! (bool) $this->chapter->id,
+                'deferredBinding' => true, // всегда отложенное, чтобы не заменялся/удалялся файл без сохранения формы
                 "maxSize" => 30,
                 "fileTypes" => ".mp3,.aac",
             ]
@@ -111,6 +115,7 @@ class AudioChapterer extends ComponentBase
             $data = collect(post());
 
             $data['type'] = EditionsEnums::Audio;
+            $data['edition_id'] = $this->audiobook?->id;
 
             if ($status = $data['action'] ?? false) {
                 switch ($status) {
@@ -153,41 +158,48 @@ class AudioChapterer extends ComponentBase
                 throw new ValidationException($validator);
             }
 
-            $this->chapter
-                ->fill($data->toArray())
-                ->save(sessionKey: $this->getSessionKey());
+            /**
+             * Если редактирование только через премодерацию
+             */
+            if ($this->audiobook->shouldDeferredUpdate()) {
 
-            $this->chapter->edition->chapters->each->setNeighbours();
+                if ($this->chapter->exists) {
 
-            return Redirect::to('/book-add-audio/' . $this->book->id . '/' . $this->chapter->id);
+                    $this->chapter
+                        ->fill($data->toArray())
+                        ->saveAsDraft($data->toArray(), sessionKey: $this->getSessionKey());
+                } else {
+
+                    // working but not current
+                    $this->chapter
+                        ->fill($data->toArray())
+                        ->save(sessionKey: $this->getSessionKey());
+
+                    $this->chapter->setCurrent();
+                    $this->chapter->saveQuietly();
+
+                    $this->chapter->fresh();
+                }
+            }
+
+            /**
+             * Публикация без премодерации
+             */
+            else {
+                $this->chapter
+                    ->fill($data->toArray())
+                    ->save(sessionKey: $this->getSessionKey());
+
+                    $this->chapter->setLive();
+                    $this->chapter->saveQuietly();
+
+                $this->chapter->edition->chapters->each->setNeighbours();
+            }
+            
+            return Redirect::to('/about-book/' . $this->book->id)->withFragment('#audiobook')->setLastModified(now());
 
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
-            return [];
-        }
-    }
-
-    public function onDeleteAudiofile()
-    {
-        try {
-            $chapterId = post('chapter_id');
-            $chapter = Chapter::findOrFail($chapterId);
-
-            if (!in_array(
-                $this->user->profile->id,
-                $chapter->edition->book->authors->pluck('profile_id')->toArray()
-            )) {
-                abort(404);
-            }
-
-            $chapter->audio->delete();
-            $chapter->length = null;
-            $chapter->save();
-
-            return Redirect::refresh();
-
-        } catch (Exception $e) {
-            Flash::error($e->getMessage());
             return [];
         }
     }

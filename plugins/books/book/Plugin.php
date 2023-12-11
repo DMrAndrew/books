@@ -87,6 +87,7 @@ class Plugin extends PluginBase
         'Books.Profile',
         'Books.Breadcrumbs',
         'Books.AuthorPrograms',
+        'Books.Moderation',
     ];
 
     /**
@@ -318,7 +319,7 @@ class Plugin extends PluginBase
             ChapterService::audit();
         })->everyMinute();
 
-        $times = app()->isProduction() ? 'everyTenMinutes' :'everyTenMinutes';
+        $times = app()->isProduction() ? 'everyTenMinutes' :'everyMinute';
         $schedule->call(function () {
             GenreRaterExec::dispatch();
         })->{$times}();

@@ -365,7 +365,12 @@ class Edition extends Model implements ProductInterface
      */
     public function shouldDeferredUpdate(): bool
     {
-        return in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && $this->is_has_customers;
+        return
+            // в статусе
+            in_array(
+            $this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE])
+            // и есть продажи
+            && $this->is_has_customers;
     }
 
     public function hasCompleted(): bool
