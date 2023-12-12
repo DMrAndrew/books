@@ -54,7 +54,7 @@ class CertificateLC extends ComponentBase
 
     public function onRun()
     {
-        $this->page['sender_id'] = $this->user->getKey();
+        $this->page['sender_id'] = $this->user->profile->id;
         $this->page['user_amount'] = $this->user->proxyWallet()->balance;
     }
 
