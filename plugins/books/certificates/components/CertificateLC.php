@@ -95,7 +95,7 @@ class CertificateLC extends ComponentBase
             $amount = (int)post('amount');
             $anonymity = (boolean)post('anonymity');
 
-            if ($sender->getKey() !== $receiver->getKey() && $sender->user->proxyWallet()->balance > $amount) {
+            if ($sender->getKey() !== $receiver->getKey() && (int)$sender->user->proxyWallet()->balance > $amount) {
                 $sender->user->proxyWallet()->withdraw($amount);
                 $sertificate = CertificateTransactions::create([
                     'sender_id' => post('sender_id'),

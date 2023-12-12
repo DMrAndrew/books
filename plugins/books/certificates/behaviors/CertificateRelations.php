@@ -12,9 +12,9 @@ class CertificateRelations extends ExtensionBase
 {
     use HasRelationships;
 
-    public function __construct(protected Profile $user)
+    public function __construct(protected Profile $profile)
     {
-        $this->user->hasMany['certificate_sender'] = [CertificateTransactions::class, 'key' => 'sender_id', 'otherKey' => 'id'];
-        $this->user->hasMany['certificate_receiver'] = [CertificateTransactions::class, 'key' => 'recipient_id', 'otherKey' => 'id'];
+        $this->profile->hasMany['sender'] = [CertificateTransactions::class, 'key' => 'sender_id', 'otherKey' => 'id'];
+        $this->profile->hasMany['receiver'] = [CertificateTransactions::class, 'key' => 'recipient_id', 'otherKey' => 'id'];
     }
 }
