@@ -4,7 +4,7 @@
 </noscript>
 {% endif %}
 <input type="hidden" name="paginator_id" value="{{reader.paginator.id}}"/>
-<div class="reader__body">
+<div>
 
     {% if reader.chapter.audio %}
         <div class="personal-area__wrap _indent-large ui-input">
@@ -14,15 +14,18 @@
         </div>
 
         {% if audioProgress %}
-            <button id="playFromButton"
-                    class="book-card-full__author ui-link _violet"
-                    onclick="playFromPosition({{audioProgress}});">
-                Продолжить прослушивание с {{ humanTime(audioProgress) }}
-            </button>
+            <div class="personal-area__wrap _indent-large ui-input">
+                <button id="playFromButton"
+                        class="book-card-full__author ui-link _violet"
+                        onclick="playFromPosition({{audioProgress}});">
+                    Продолжить прослушивание с {{ humanTime(audioProgress) }}
+                </button>
+            </div>
         {% endif %}
     {% endif %}
 
 </div>
+
 {% partial '@pagination' %}
 
 {% if reader.chapter.audio %}
