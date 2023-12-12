@@ -90,6 +90,8 @@ class AudioPlayer {
     }
 
     playPause(flag) {
+        this.pauseOtherPlayers();
+
         this.played = typeof(flag) !== 'undefined' ? flag : !this.played;
         if(this.played){
             this.howlPlayer[this.songIndex].play()
@@ -97,6 +99,23 @@ class AudioPlayer {
             this.howlPlayer[this.songIndex].pause()
         }
         this.togglePlayBtn()
+    }
+
+    pauseOtherPlayers(){
+        if(window.audioPlayer){
+            let currentPlayer = this;
+
+            Object.keys(window.audioPlayer).forEach(function(index) {
+                if (currentPlayer !== window.audioPlayer[index]) {
+                    let player = window.audioPlayer[index];
+
+                    if (player && player.container.classList.contains(player.playClass)) {
+                        player.playPause(false);
+                        player.container.classList.remove(currentPlayer.playClass);
+                    }
+                }
+            });
+        }
     }
 
     stop(){
@@ -258,13 +277,20 @@ class AudioPlayer {
 }
 
 function initAudioPlayer(options = {}) {
+    Howler.stop();
+
     if(!window.audioPlayer){
         window.audioPlayer = [];
     }
     const containers = document.querySelectorAll('.audioplayer');
     containers.forEach((el) => {
         if(el.dataset.sounds){
-            window.audioPlayer[(new Date()).getTime()] = new AudioPlayer(el, options);
+            const id = (new Date()).getTime() + getRandomInt(999);
+            window.audioPlayer[id] = new AudioPlayer(el, options);
         }
     });
+}
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
 }
