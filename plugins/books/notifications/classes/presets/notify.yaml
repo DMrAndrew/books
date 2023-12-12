@@ -89,3 +89,9 @@ birthday:
     event: Books\Notifications\Classes\Events\BirthdayMessage
     items:
         - action: Books\Notifications\Classes\Actions\StoreDatabaseAction
+
+system_certificate:
+    name: Сообщение о получении сертификата
+    event: Books\Notifications\Classes\Events\SystemCertificateMessage
+    items:
+        - action: Books\Notifications\Classes\Actions\StoreDatabaseAction

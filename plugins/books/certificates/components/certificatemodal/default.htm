@@ -1,0 +1,16 @@
+<script>
+    function onShowCertificateModal(id) {
+        oc.ajax('onShowCertificateModal', {
+            data: {'certificate_id': id},
+            success: function (data) {
+                this.success(data).done(function() {
+                    $('#certificate-modal  .ui-modal').addClass('active');
+                })
+            },
+        })
+    }
+
+    function closeCertificateModal() {
+        $('#certificate-modal .ui-modal').removeClass('active');
+    }
+</script>
