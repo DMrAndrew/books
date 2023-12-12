@@ -13,10 +13,10 @@
                         {{ certificate.description|raw }}
                     {% endif %}
                     {% if certificate.status == 'received' %}
-                        <p>Сертификат уже получен</p>
+                        <p style="text-align: center;">Сертификат уже получен</p>
                     {% endif %}
                     {% if certificate.status == 'returned' %}
-                        Сертификат возвращен отправителю по истечении 10 дней
+                        <p style="text-align: center;">Сертификат возвращен отправителю по истечении 10 дней</p>
                     {% endif %}
 
                 <div class="promo-modal__footer">
