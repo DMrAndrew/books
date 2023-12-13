@@ -6,15 +6,15 @@
 
 <form class="lc-book-text ui-container-fluid wrapper"
       data-request-flash
-      data-request="{{__SELF__}}::onSave"
+      data-request="{{ __SELF__ }}::onSave"
       data-request-validate>
 
-    <input type="hidden" name="sender_id" value="{{sender_id}}">
+    <input type="hidden" name="sender_id" value="{{ sender_id }}">
 
     <div id="input-authors" style="margin-bottom: 16px">
         <div class="ui-input" style="position: relative">
             <label class="ui-input-label">Имя получателя</label>
-            <input class="ui-input-item _size-32 books-autocomplete {{ autofocus ? 'should-focus' : ''}}"
+            <input class="ui-input-item _size-32 books-autocomplete {{ autofocus ? 'should-focus' : '' }}"
                    type="text"
                    name="recipient_name"
                    placeholder="Поиск"/>
@@ -31,7 +31,8 @@
             <div class="title-counter__top">
                 <label class="">Сумма перевода</label>
             </div>
-            <input class="title-counter__input ui-input-item _size-32" type="number" name="amount" max="{{ user_amount }}">
+            <input class="title-counter__input ui-input-item _size-32" type="number" name="amount"
+                   max="{{ user_amount }}">
             <div class="ui-select-hitn"></div>
             <div class="ui-select-error" data-validate-for="title"></div>
         </div>
@@ -39,7 +40,14 @@
 
     <div class="personal-area__wrap _indent-large typographical-block">
         <div class="title-counter__top">
-            <label class="">Текс</label>
+            <label class="">Изображение</label>
+        </div>
+        {% component 'certificateUploader' %}
+    </div>
+
+    <div class="personal-area__wrap _indent-large typographical-block">
+        <div class="title-counter__top">
+            <label class="">Текст</label>
         </div>
         <script src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
         <textarea id="description" name="description"></textarea>
@@ -81,9 +89,8 @@
     }
 </style>
 <script>
-    initEditor('description', {
-        toolbarItems: ['uploadImage']
-    });
+    initEditor('description');
+
 
     initAutocomplete({
         container: '#input-authors',

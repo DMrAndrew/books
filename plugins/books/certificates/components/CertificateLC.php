@@ -3,6 +3,8 @@
 use ApplicationException;
 use Books\Certificates\Classes\Enums\CertificateTransactionStatus;
 use Books\Certificates\Models\CertificateTransactions;
+use Books\FileUploader\Components\FileUploader;
+use Books\FileUploader\Components\ImageUploader;
 use Books\Profile\Models\Profile;
 use Books\Profile\Services\OperationHistoryService;
 use Cms\Classes\ComponentBase;
@@ -48,8 +50,22 @@ class CertificateLC extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
+        $this->certificate = new CertificateTransactions();
         $this->user = Auth::getUser() ?? throw new ApplicationException('User required');
         $this->operationHistoryService = app(OperationHistoryService::class);
+        $component = $this->addComponent(
+            ImageUploader::class,
+            'certificateUploader',
+            [
+                'modelClass' => CertificateTransactions::class,
+                'modelKeyColumn' => 'image',
+                'deferredBinding' => true,
+                'imageWidth' => 100,
+                'imageHeight' => 100,
+
+            ]
+        );
+        $component->bindModel('image', $this->certificate);
     }
 
     public function onRun()
@@ -72,7 +88,7 @@ class CertificateLC extends ComponentBase
                 return [
                     'id' => $item->id,
                     'label' => $item->username,
-                    'htm' => $this->renderPartial('select/option', ['label' => $item->username]),
+                    'htm' => $this->renderPartial('select/option', ['label' => $item->username." (id: $item->id)"]),
                     'handler' => $this->alias . '::onSaveRecipient',
 
                 ];
@@ -87,6 +103,11 @@ class CertificateLC extends ComponentBase
         return [];
     }
 
+    public function getSessionKey()
+    {
+        return post('_session_key');
+    }
+
     public function onSave()
     {
         try {
@@ -97,20 +118,21 @@ class CertificateLC extends ComponentBase
 
             if ($sender->getKey() !== $receiver->getKey() && (int)$sender->user->proxyWallet()->balance > $amount) {
                 $sender->user->proxyWallet()->withdraw($amount);
-                $sertificate = CertificateTransactions::create([
+                $data = [
                     'sender_id' => post('sender_id'),
                     'recipient_id' => post('recipient_id'),
                     'amount' => $amount,
                     'description' => post('description'),
                     'anonymity' => $anonymity,
                     'status' => CertificateTransactionStatus::SENT
-                ]);
+                ];
+                $this->certificate->fill($data)->saveAsDraft($data, $this->getSessionKey());
                 $this->operationHistoryService->sentCertificate($sender->user, $amount, $receiver);
 
-                Event::fire('system::certificate', [$amount, $receiver, $anonymity, $sender, $sertificate->id]);
+                Event::fire('system::certificate', [$amount, $receiver, $anonymity, $sender, $this->certificate->id]);
 
                 Flash::success('Сертификат успешно оформлен');
-                return Redirect::refresh();
+                return Redirect::to('/');
             }
 
         } catch (Exception $e) {

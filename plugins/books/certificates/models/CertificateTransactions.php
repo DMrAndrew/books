@@ -4,6 +4,7 @@ use Books\Certificates\Classes\Enums\CertificateTransactionStatus;
 use Books\Profile\Models\Profile;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Model;
+use System\Models\File;
 
 /**
  * CertificateTransactions Model
@@ -26,6 +27,7 @@ class CertificateTransactions extends Model
         'description',
         'anonymity',
         'status',
+        'image',
     ];
 
     /**
@@ -41,5 +43,9 @@ class CertificateTransactions extends Model
     public $belongsTo = [
         'receiver' => [Profile::class, 'key' => 'recipient_id', 'otherKey' => 'id'],
         'sender' => [Profile::class, 'key' => 'sender_id', 'otherKey' => 'id'],
+    ];
+
+    public $attachOne = [
+        'image' => File::class,
     ];
 }
