@@ -78,15 +78,15 @@
                                         {% endif %}
                                     {% endif %}
                                 </div>
-
-                                <!--                                <div class="book-card-full-type__description _indent-top">-->
-                                <!--                                    <span class="_indent">Скачать: </span>-->
-                                <!--                                    <a href="#" class="ui-link _violet">epub</a>,-->
-                                <!--                                    <a href="#" class="ui-link _violet">mobi</a>,-->
-                                <!--                                    <a href="#" class="ui-link _violet">fb2</a>-->
-                                <!--                                    <span class="book-card-full-type__description-dot"></span>-->
-                                <!--                                    <span>1 448 993 загрузок</span>-->
-                                <!--                                </div>-->
+                                {% if download_btn %}
+                                                                <div class="book-card-full-type__description _indent-top">
+                                                                    <span class="_indent">Скачать: </span>
+<!--                                                                    <a href="#" onclick="oc.ajax('onDownload',{data:{format:'mobi'}, download:true, flash:true});return false" class="ui-link _violet">mobi</a>,-->
+                                                                    <a href="#" onclick="oc.ajax('onDownload',{data:{format:'fb2'},download:true, flash:true}); return false"  class="ui-link _violet">fb2</a>
+                                                                    <span class="book-card-full-type__description-dot"></span>
+                                                                    <span>{{book.ebook.downloadsCount}}</span>
+                                                                </div>
+                                {% endif %}
                             </div>
                         </div>
                         <!--                        <div class="ui-tabs-content" data-tab-content="2">-->

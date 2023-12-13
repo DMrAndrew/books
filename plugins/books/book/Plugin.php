@@ -9,6 +9,7 @@ use Books\Book\Behaviors\Trackable;
 use Books\Book\Classes\BookService;
 use Books\Book\Classes\BookUtilities;
 use Books\Book\Classes\ChapterService;
+use Books\Book\Classes\Converters\FB2;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Classes\FB2Manager;
@@ -123,6 +124,7 @@ class Plugin extends PluginBase
     {
         Config::set('book', Config::get('books.book::config'));
 
+        AliasLoader::getInstance()->alias('FB2', FB2::class);
         AliasLoader::getInstance()->alias('Book', Book::class);
         AliasLoader::getInstance()->alias('Chapter', Chapter::class);
         AliasLoader::getInstance()->alias('Cycle', Cycle::class);
