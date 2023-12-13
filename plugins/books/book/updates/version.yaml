@@ -104,3 +104,6 @@
 1.0.31:
     - 'Внешние ключи'
     - update_foreign_keys.php
+1.0.35:
+    - 'Кол-во загрузок'
+    - create_downloads_table.php
