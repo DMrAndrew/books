@@ -127,7 +127,7 @@ class Edition extends Model implements ProductInterface
         'free_parts' => 'filled|integer',
         'download_allowed' => 'boolean',
         'comment_allowed' => 'boolean',
-        'fb2' => ['nullable', 'file', 'mimes:xml', 'max:30720'],
+        'fb2' => ['nullable', 'file', 'max:30720'],
     ];
 
     public $hasMany = [
@@ -217,7 +217,7 @@ class Edition extends Model implements ProductInterface
 
     public function isDownloadAllowed(User $user = null): bool
     {
-        return $this->download_allowed && ($this->isFree() || $this->isSold($user));
+        return $this->download_allowed && ($this->isFree() || $this->isSold($user)) || ($user && $this->book->isAuthor($user->profile));
     }
 
     public function getLastUpdatedAtAttribute(): ?Carbon

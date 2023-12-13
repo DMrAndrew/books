@@ -11,7 +11,7 @@ class DownloadService
 {
     protected Edition $edition;
 
-    public function __construct(public Book $book, public ElectronicFormats $format)
+    public function __construct(public Book $book, public ElectronicFormats $format = ElectronicFormats::FB2)
     {
         $this->edition = $this->book->ebook;
     }

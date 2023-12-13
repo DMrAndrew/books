@@ -30,26 +30,32 @@ class FB2 extends BaseConverter
         $this->has_cover = (bool) $book->cover->exists;
     }
 
+    public function save(){
+        file_put_contents('book.fb2',$this->generate());
+    }
     public function generate(): string
     {
 
         $pattern = collect([
             '<?xml version="1.0" encoding="UTF-8"?>',
+            PHP_EOL,
             '<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:l="http://www.w3.org/1999/xlink">',
-            '%s', //css
-            '%s', //description
-            '<body><title><p>%s</p></title>%s</body>',
-            '%s', //cover
+            $this->css(), //css
+            $this->discription(), //description
+            '<body>',
+            '<title>',
+            '<p>',
+            $this->book->title,
+            '</p>',
+            '</title>',
+            $this->body(),
+            '</body>',
+            $this->has_cover ? $this->create_binary($this->book->cover->getLocalPath()) : '', //cover
             '</FictionBook>',
+            PHP_EOL
         ]);
 
-        $this->content = sprintf($pattern->join(PHP_EOL),
-            $this->css(),
-            $this->discription(),
-            $this->book->title,
-            $this->body(),
-            $this->has_cover ? $this->create_binary($this->book->cover->getLocalPath()) : ''
-        );
+        $this->content = $pattern->join('');
 
         return $this->content;
     }
@@ -87,7 +93,7 @@ class FB2 extends BaseConverter
 
         ]);
 
-        return sprintf($pattern->join(PHP_EOL),
+        return sprintf($pattern->join(''),
             $this->genres($this->book->genres()->pluck('name')->toArray()),
             $this->authors($this->book->profile()->pluck('username')->toArray()),
             $this->book->title,
@@ -326,6 +332,7 @@ class FB2 extends BaseConverter
             $content = $this->replaceEntities($chapter->content->body, collect($this->ENTITIES)->join(''));
             $content = str_replace(PHP_EOL, '', $content);
             $content = $this->section($content);
+            $content = $this->replaceSpaces($content);
 
             $content = preg_replace('/<title>\s*<\/title>/is', '', $content);
             $content = preg_replace('/<section>\s*<\/section>/is', '', $content);
@@ -336,7 +343,18 @@ class FB2 extends BaseConverter
         })->join('');
 
     }
+    public function replaceSpaces ($content) {
 
+        // Заменяем &nbsp; на пробел
+        $content = str_replace('&nbsp;', ' ', $content);
+        // Удаляем двойные пробелы
+        $content = preg_replace('/\s+/s', " ", $content);
+        $content = str_replace('  ', ' ', $content);
+        // Удаляем пробелы из начала и конца строки
+        $content = trim($content);
+
+        return $content;
+    }
     public function replaceEntities($content, $str)
     {
         $allow_entities = [];
