@@ -102,7 +102,6 @@ class Booker extends ComponentBase
 
     public function onSaveBook()
     {
-        dd(post());
         try {
             $data = post();
             $data['annotation'] = TextCleanerService::cleanContent($data['annotation']);

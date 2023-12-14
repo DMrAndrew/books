@@ -50,7 +50,6 @@ class CertificateLC extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
-        $this->certificate = new CertificateTransactions();
         $this->user = Auth::getUser() ?? throw new ApplicationException('User required');
         $this->operationHistoryService = app(OperationHistoryService::class);
         $component = $this->addComponent(
@@ -65,7 +64,7 @@ class CertificateLC extends ComponentBase
 
             ]
         );
-        $component->bindModel('image', $this->certificate);
+        $component->bindModel('certificate_image', new CertificateTransactions());
     }
 
     public function onRun()
@@ -110,6 +109,7 @@ class CertificateLC extends ComponentBase
 
     public function onSave()
     {
+//        dd(post());
         try {
             $sender = Profile::where('id', post('sender_id'))->first();
             $receiver = Profile::where('id', post('recipient_id'))->first();
@@ -126,10 +126,12 @@ class CertificateLC extends ComponentBase
                     'anonymity' => $anonymity,
                     'status' => CertificateTransactionStatus::SENT
                 ];
-                $this->certificate->fill($data)->saveAsDraft($data, $this->getSessionKey());
+                $certificate = new CertificateTransactions();
+                $certificate->fill($data)->save();
+                $certificate->save(null, $this->getSessionKey());
                 $this->operationHistoryService->sentCertificate($sender->user, $amount, $receiver);
 
-                Event::fire('system::certificate', [$amount, $receiver, $anonymity, $sender, $this->certificate->id]);
+                Event::fire('system::certificate', [$amount, $receiver, $anonymity, $sender, $certificate->id]);
 
                 Flash::success('Сертификат успешно оформлен');
                 return Redirect::to('/');

@@ -46,6 +46,6 @@ class CertificateTransactions extends Model
     ];
 
     public $attachOne = [
-        'image' => File::class,
+        'certificate_image' => File::class,
     ];
 }
