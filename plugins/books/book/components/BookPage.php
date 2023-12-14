@@ -118,11 +118,19 @@ class BookPage extends ComponentBase
             'buyBtn_audiobook' => $this->buyButtonForAudiobook(),
             'readBtn_audiobook' => $this->readButtonForAudiobook(),
             'supportBtn' => $this->supportBtn(),
+
             'book' => $this->book,
+            'ebook_visible' => $this->ebookVisible(),
+            'audiobook_visible' => $this->audioVisible(),
+
+
             'cycle' => $this->book->cycle,
         ];
     }
 
+    /**
+     * @return bool
+     */
     public function buyButtonForEbook(): bool
     {
         /**
@@ -154,6 +162,9 @@ class BookPage extends ComponentBase
         return true;
     }
 
+    /**
+     * @return bool
+     */
     public function readButtonForEbook(): bool
     {
         return $this->book->ebook->isFree()
@@ -214,6 +225,22 @@ class BookPage extends ComponentBase
     private function supportBtn(): bool
     {
         return $this->user && !$this->book->profiles()->user($this->user)->exists();
+    }
+
+    /**
+     * @return bool
+     */
+    private function ebookVisible(): bool
+    {
+        return $this->book->ebook?->isVisible() || $this->book->profiles()->user($this->user)->exists();
+    }
+
+    /**
+     * @return bool
+     */
+    private function audioVisible(): bool
+    {
+        return $this->book->audiobook?->isVisible() || $this->book->profiles()->user($this->user)->exists();
     }
 
     /**
