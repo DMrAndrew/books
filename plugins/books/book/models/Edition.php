@@ -317,6 +317,14 @@ class Edition extends Model implements ProductInterface
         return (bool) $this->getOriginal('sales_at');
     }
 
+    public function isVisible(): bool
+    {
+        return in_array($this->getOriginal('status'), [
+            BookStatus::WORKING,
+            BookStatus::COMPLETE
+        ]);
+    }
+
     public function setPublishAt(): void
     {
         $this->attributes['sales_at'] = Carbon::now();

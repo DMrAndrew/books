@@ -17,11 +17,13 @@
                     <div class="reader-header__dropdown">
                         <select  class="book-select" name="chapter_id" data-request="readeraudio::onChapter" id="reader-chapter-select" style="display: none">
                             {% for chapter in chapters %}
-                            <option  value="{{chapter.id}}"
-                                     {{ reader.chapter.id == chapter.id ? 'selected' : ''  }}
-                            >{{chapter.title|md}}</option>
+                                {% if chapter.isPublished %}
+                                <option
+                                    value="{{chapter.id}}" {{ reader.chapter.id == chapter.id ? 'selected' : ''  }}>
+                                    {{chapter.title|md}}
+                                </option>
+                                {% endif %}
                             {% endfor %}
-
                         </select>
                     </div>
                     <div class="reader-header__action _full">

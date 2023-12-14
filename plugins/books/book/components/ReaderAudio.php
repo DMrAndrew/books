@@ -91,7 +91,12 @@ class ReaderAudio extends ComponentBase
             }
 
             // otherwise first chapter
-            if ($firstChapter = $this->book->audiobook?->chapters()->first()) {
+            if ($firstChapter = $this->book->audiobook
+                ?->chapters()
+                ->published()
+                ->moderationPublished()
+                ->whereHas('audio')
+                ->first()) {
                 return Redirect::to(sprintf('/readeraudio/%s/%s', $this->book->id, $firstChapter->id));
             }
         }
@@ -241,6 +246,8 @@ class ReaderAudio extends ComponentBase
 
         return $this->book->audiobook
             ?->chapters()
+            ->published()
+            ->moderationPublished()
             ->whereIn('id', $readedChapters->pluck('chapter_id')->toArray())
             ->orderByDesc('sort_order')
             ->get()
