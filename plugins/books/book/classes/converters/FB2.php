@@ -30,9 +30,11 @@ class FB2 extends BaseConverter
         $this->has_cover = (bool) $book->cover->exists;
     }
 
-    public function save(){
-        file_put_contents('book.fb2',$this->generate());
+    public function save()
+    {
+        file_put_contents('book.fb2', $this->generate());
     }
+
     public function generate(): string
     {
 
@@ -52,7 +54,7 @@ class FB2 extends BaseConverter
             '</body>',
             $this->has_cover ? $this->create_binary($this->book->cover->getLocalPath()) : '', //cover
             '</FictionBook>',
-            PHP_EOL
+            PHP_EOL,
         ]);
 
         $this->content = $pattern->join('');
@@ -60,10 +62,13 @@ class FB2 extends BaseConverter
         return $this->content;
     }
 
-    public function css(){
+    public function css()
+    {
         return '';
+
         return '<stylesheet type="text/css"> %s </stylesheet>';
     }
+
     public function discription()
     {
         $date = ($this->book->ebook->published_at ?? $this->book->ebook->created_at)->format('Y-m-d');
@@ -343,18 +348,21 @@ class FB2 extends BaseConverter
         })->join('');
 
     }
-    public function replaceSpaces ($content) {
+
+    public function replaceSpaces($content)
+    {
 
         // Заменяем &nbsp; на пробел
         $content = str_replace('&nbsp;', ' ', $content);
         // Удаляем двойные пробелы
-        $content = preg_replace('/\s+/s', " ", $content);
+        $content = preg_replace('/\s+/s', ' ', $content);
         $content = str_replace('  ', ' ', $content);
         // Удаляем пробелы из начала и конца строки
         $content = trim($content);
 
         return $content;
     }
+
     public function replaceEntities($content, $str)
     {
         $allow_entities = [];
@@ -392,5 +400,21 @@ class FB2 extends BaseConverter
             }, $content);
 
         return $content;
+    }
+
+    public function checkentity($mt, $allow_entities)
+    {
+        foreach ($allow_entities as $entity => $symbols) {
+            if ($entity == $mt) {
+                if ($symbols == '') {
+                    return $entity;
+                }        // Если не задана замена, оставляем HTML-сущность
+                else {
+                    return $symbols;
+                }                    // иначе, замещаем на символы
+            }
+        }
+
+        return '';                                        // Остальные HTML-сущности удаляем
     }
 }
