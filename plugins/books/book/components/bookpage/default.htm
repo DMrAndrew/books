@@ -35,22 +35,22 @@
                     <div class="ui-tabs-header">
                         <div class="ui-tabs-line"></div>
                         <div class="ui-tabs-header-wrapper" data-tabs="1" itemprop="bookFormat" itemscope itemtype="http://schema.org/BookFormatType">
-                            {% if book.ebook and ebook_visible %}
+                            {% if book.ebook and ebookVisible %}
                             <div class="ui-tabs-link active" data-tab="1">Электронная</div>
                             {% endif %}
 
-                            {% if book.audiobook and audiobook_visible %}
+                            {% if book.audiobook and audiobookVisible %}
                             <div class="ui-tabs-link" data-tab="2" itemprop="AudiobookFormat">Аудиокнига</div>
                             {% endif %}
                             <!-- <div class="ui-tabs-link" data-tab="3">Бумажная</div>-->
                         </div>
                     </div>
                     <div class="ui-tabs-body _field" data-tabs="1">
-                        {% if book.ebook and ebook_visible %}
+                        {% if book.ebook and ebookVisible %}
                             {% partial __SELF__ ~ '::tab-ebook' %}
                         {% endif %}
 
-                        {% if book.audiobook and audiobook_visible %}
+                        {% if book.audiobook and audiobookVisible %}
                             {% partial __SELF__ ~ '::tab-audiobook' %}
                         {% endif %}
 

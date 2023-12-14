@@ -120,9 +120,8 @@ class BookPage extends ComponentBase
             'supportBtn' => $this->supportBtn(),
 
             'book' => $this->book,
-            'ebook_visible' => $this->ebookVisible(),
-            'audiobook_visible' => $this->audioVisible(),
-
+            'ebookVisible' => $this->ebookVisible(),
+            'audiobookVisible' => $this->audioVisible(),
 
             'cycle' => $this->book->cycle,
         ];
