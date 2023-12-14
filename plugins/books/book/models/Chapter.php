@@ -195,6 +195,17 @@ class Chapter extends Model
         return $this->sales_type === ChapterSalesType::FREE;
     }
 
+    public function isPublished(): bool
+    {
+        $published =  match($this->type) {
+            EditionsEnums::Audio => $this->audio
+                                    && in_array($this->getOriginal('status'), [ChapterStatus::PUBLISHED]),
+            EditionsEnums::Ebook => in_array($this->getOriginal('status'), [ChapterStatus::PUBLISHED]),
+        };
+
+        return $published && $this->moderation_is_published;
+    }
+
     public function paginationTrackers()
     {
         return $this->hasManyDeepFromRelationsWithConstraints(
