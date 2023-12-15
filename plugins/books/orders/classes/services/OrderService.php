@@ -72,8 +72,6 @@ class OrderService implements OrderServiceContract
      */
     public function calculateAmount(Order $order): int
     {
-        //TODO что здесь происходит?
-
         // products
         $initialOrderAmount = $order->products->sum('amount');
 

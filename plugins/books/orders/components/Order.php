@@ -69,6 +69,7 @@ class Order extends ComponentBase
     public function onCreateOrder(): array
     {
         $edition = Edition::findOrFail(post('edition_id'));
+
         try {
             $order = $this->getOrder($this->getUser(), $edition);
 
