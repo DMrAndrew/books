@@ -3,6 +3,8 @@
 use ApplicationException;
 use Books\Certificates\Classes\Enums\CertificateTransactionStatus;
 use Books\Certificates\Models\CertificateTransactions;
+use Books\FileUploader\Components\FileUploader;
+use Books\FileUploader\Components\ImageUploader;
 use Books\Profile\Models\Profile;
 use Books\Profile\Services\OperationHistoryService;
 use Cms\Classes\ComponentBase;
@@ -13,6 +15,8 @@ use Illuminate\Support\Facades\Cookie;
 use RainLab\User\Facades\Auth;
 use Redirect;
 use Request;
+use ValidationException;
+use Validator;
 
 /**
  * CertificateLC Component
@@ -50,6 +54,19 @@ class CertificateLC extends ComponentBase
         }
         $this->user = Auth::getUser() ?? throw new ApplicationException('User required');
         $this->operationHistoryService = app(OperationHistoryService::class);
+        $component = $this->addComponent(
+            ImageUploader::class,
+            'certificateUploader',
+            [
+                'modelClass' => CertificateTransactions::class,
+                'modelKeyColumn' => 'image',
+                'deferredBinding' => true,
+                'imageWidth' => 150,
+                'imageHeight' => 150,
+
+            ]
+        );
+        $component->bindModel('certificate_image', new CertificateTransactions());
     }
 
     public function onRun()
@@ -71,8 +88,8 @@ class CertificateLC extends ComponentBase
             return $array->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'label' => $item->username,
-                    'htm' => $this->renderPartial('select/option', ['label' => $item->username]),
+                    'label' => $item->username . " (id: $item->id)",
+                    'htm' => $this->renderPartial('select/option', ['label' => $item->username . " (id: $item->id)"]),
                     'handler' => $this->alias . '::onSaveRecipient',
 
                 ];
@@ -87,30 +104,55 @@ class CertificateLC extends ComponentBase
         return [];
     }
 
+    public function getSessionKey()
+    {
+        return post('_session_key');
+    }
+
     public function onSave()
     {
         try {
-            $sender = Profile::where('id', post('sender_id'))->first();
-            $receiver = Profile::where('id', post('recipient_id'))->first();
-            $amount = (int)post('amount');
-            $anonymity = (boolean)post('anonymity');
+            $postData = collect(post());
+
+            $validator = Validator::make(
+                $postData->toArray(),
+                collect((new CertificateTransactions())->rules)->only([
+                    'recipient_id', 'amount', 'description'
+                ])->toArray(),
+                collect((new CertificateTransactions())->customMessages)->only([
+                    'recipient_id', 'amount', 'description'
+                ])->toArray(),
+                collect((new CertificateTransactions())->attributeNames)->only([
+                    'recipient_id', 'amount', 'description'
+                ])->toArray()
+            );
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+            $sender = Profile::where('id', $postData['sender_id'])->first();
+            $receiver = Profile::where('id', $postData['recipient_id'])->first();
+            $amount = (int)$postData['amount'];
+            $anonymity = (boolean)$postData['anonymity'];
 
             if ($sender->getKey() !== $receiver->getKey() && (int)$sender->user->proxyWallet()->balance > $amount) {
                 $sender->user->proxyWallet()->withdraw($amount);
-                $sertificate = CertificateTransactions::create([
-                    'sender_id' => post('sender_id'),
-                    'recipient_id' => post('recipient_id'),
+                $data = [
+                    'sender_id' => $postData['sender_id'],
+                    'recipient_id' => $postData['recipient_id'],
                     'amount' => $amount,
-                    'description' => post('description'),
+                    'description' => $postData['description'],
                     'anonymity' => $anonymity,
                     'status' => CertificateTransactionStatus::SENT
-                ]);
+                ];
+                $certificate = new CertificateTransactions();
+                $certificate->fill($data)->save();
+                $certificate->save(null, $this->getSessionKey());
                 $this->operationHistoryService->sentCertificate($sender->user, $amount, $receiver);
 
-                Event::fire('system::certificate', [$amount, $receiver, $anonymity, $sender, $sertificate->id]);
+                Event::fire('system::certificate', [$amount, $receiver, $anonymity, $sender, $certificate->id]);
 
                 Flash::success('Сертификат успешно оформлен');
-                return Redirect::refresh();
+                return Redirect::to('/');
             }
 
         } catch (Exception $e) {

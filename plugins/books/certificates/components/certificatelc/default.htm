@@ -4,72 +4,93 @@
     </div>
 </div>
 
-<form class="lc-book-text ui-container-fluid wrapper"
-      data-request-flash
-      data-request="{{__SELF__}}::onSave"
-      data-request-validate>
 
-    <input type="hidden" name="sender_id" value="{{sender_id}}">
+{{
+form_ajax('onSave', {
+class:'lc-book-text ui-container-fluid wrapper',
+'data-request-validate':'true',
+'data-request-flash':'true',
+})
+}}
 
-    <div id="input-authors" style="margin-bottom: 16px">
-        <div class="ui-input" style="position: relative">
-            <label class="ui-input-label">Имя получателя</label>
-            <input class="ui-input-item _size-32 books-autocomplete {{ autofocus ? 'should-focus' : ''}}"
-                   type="text"
-                   name="recipient_name"
-                   placeholder="Поиск"/>
-            <div class="ui-select-hitn"></div>
-            <div class="ui-select-error" data-validate-for="authors"></div>
+<input type="hidden" name="sender_id" value="{{ sender_id }}">
 
-        </div>
-    </div>
-
-    <div id="recipient_value"></div>
-
-    <div class="wrapper__header _indent-large ui-input">
-        <div class="title-counter__container" data-title-counter="">
+<div class="create-book__container ui-container-fluid wrapper">
+    <div class="create-book__column-left">
+        <div class="personal-area__wrap _indent-large typographical-block">
             <div class="title-counter__top">
-                <label class="">Сумма перевода</label>
+                <label class="">Изображение <sup>150 x 150</sup></label>
             </div>
-            <input class="title-counter__input ui-input-item _size-32" type="number" name="amount" max="{{ user_amount }}">
-            <div class="ui-select-hitn"></div>
-            <div class="ui-select-error" data-validate-for="title"></div>
+            {% component 'certificateUploader' %}
+        </div>
+        <div class="ui-select-error" data-validate-for="certificateUploader"></div>
+    </div>
+    <div class="create-book__column-right">
+        <div id="input-authors" style="margin-bottom: 16px">
+            <div class="ui-input" style="position: relative">
+                <label class="ui-input-label">Имя получателя</label>
+                <input class="ui-input-item _size-32 books-autocomplete {{ autofocus ? 'should-focus' : '' }}"
+                       type="text"
+                       name="recipient_name"
+                       placeholder="Поиск"/>
+                <div class="ui-select-hitn"></div>
+                <div class="ui-select-error" data-validate-for="recipient_name"></div>
+
+            </div>
+        </div>
+
+        <div id="recipient_value"></div>
+
+        <div class="wrapper__header _indent-large ui-input">
+            <div class="title-counter__container" data-title-counter="">
+                <div class="title-counter__top">
+                    <label class="">Сумма перевода</label>
+                </div>
+                <input class="title-counter__input ui-input-item _size-32" type="number" name="amount"
+                       max="{{ user_amount }}">
+                <div class="ui-select-hitn"></div>
+                <div class="ui-select-error" data-validate-for="amount"></div>
+            </div>
         </div>
     </div>
+</div>
 
-    <div class="personal-area__wrap _indent-large typographical-block">
-        <div class="title-counter__top">
-            <label class="">Текс</label>
-        </div>
-        <script src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
-        <textarea id="description" name="description"></textarea>
-        <div class="ui-select-hitn"></div>
-        <div class="ui-select-error" data-validate-for="description"></div>
+
+
+
+<div class="personal-area__wrap _indent-large typographical-block">
+    <div class="title-counter__top">
+        <label class="">Текст</label>
     </div>
+    <script src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
+    <textarea id="description" name="description"></textarea>
+    <div class="ui-select-hitn"></div>
+    <div class="ui-select-error" data-validate-for="description"></div>
+</div>
 
-    <div class="wrapper__header _indent-large ui-input">
-        <label class="personal-area__wrap _indent-medium ui-radio">
-            <input type="radio" name="anonymity" value="1" checked hidden>
-            <div class="ui-radio-checker"></div>
-            <span class="ui-radio-text">Не анонимно</span>
-        </label>
-    </div>
+<div class="wrapper__header _indent-large ui-input">
+    <label class="personal-area__wrap _indent-medium ui-radio">
+        <input type="radio" name="anonymity" value="1" checked hidden>
+        <div class="ui-radio-checker"></div>
+        <span class="ui-radio-text">Не анонимно</span>
+    </label>
+</div>
 
-    <div class="wrapper__header _indent-large ui-input">
-        <label class="personal-area__wrap _indent-medium ui-radio">
-            <input type="radio" name="anonymity" value="0" hidden>
-            <div class="ui-radio-checker"></div>
-            <span class="ui-radio-text">Анонимно</span>
-        </label>
-    </div>
+<div class="wrapper__header _indent-large ui-input">
+    <label class="personal-area__wrap _indent-medium ui-radio">
+        <input type="radio" name="anonymity" value="0" hidden>
+        <div class="ui-radio-checker"></div>
+        <span class="ui-radio-text">Анонимно</span>
+    </label>
+</div>
 
-    <div class="wrapper__footer">
-        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2">
-            <span>Отправить</span>
-        </button>
-    </div>
+<div class="wrapper__footer">
+    <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2">
+        <span>Отправить</span>
+    </button>
+</div>
 
-</form>
+{{ form_close() }}
 
 <style>
     .ck-editor__editable {
@@ -81,9 +102,8 @@
     }
 </style>
 <script>
-    initEditor('description', {
-        toolbarItems: ['uploadImage']
-    });
+    initEditor('description');
+
 
     initAutocomplete({
         container: '#input-authors',
