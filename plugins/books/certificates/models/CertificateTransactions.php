@@ -31,9 +31,27 @@ class CertificateTransactions extends Model
     ];
 
     /**
-     * @var array rules for validation
+     * @var array
      */
-    public $rules = [];
+    public $rules = [
+        'recipient_id' => 'required',
+        'amount' => 'required',
+        'description' => 'required',
+        ];
+
+    public $customMessages = [
+        'recipient_id.required' => 'Выберите получателя',
+        'amount.required' => 'Введите сумму',
+        'description.required' =>  'Напишите сообщение',
+
+
+    ];
+
+    public $attributeNames = [
+        'recipient_id' => 'Имя получателя',
+        'amount' => 'Сумма перевода',
+        'description' => 'Текст',
+    ];
 
     public function scopeNotAcceptedCertificates(Builder $q)
     {

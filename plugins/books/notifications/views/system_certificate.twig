@@ -1,7 +1,8 @@
-“{{ recipient.username }}”, Вам пришел сертификат на сумму {{ amount }} Р
+{{ recipient.username }}, Вам пришел сертификат на сумму {{ amount }} Р
 {% if anonymity %}
-    от “<a href="/author-page/{{ sender.id }}" class="ui-link _violet">{{ sender.username }}</a>”
+    от <a href="/author-page/{{ sender.id }}" class="ui-link _violet">{{ sender.username }}</a>
 {% endif %}
+<br>
 <button class="notification-menu__content-wrapper ui-button ui-button-size--32 ui-button-view--2"
         type="button"
         onclick="onShowCertificateModal({{ certificate_id }})">

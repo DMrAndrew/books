@@ -8,8 +8,14 @@
                 </svg>
             </div>
             <div class="promo-modal__body">
-
                 {% if certificate.status == 'sent' %}
+
+                    {% if certificate.certificate_image %}
+                        <div class="certificate_image">
+                            <img src="{{ certificate.certificate_image.thumbUrl(150, 150) }}" alt="certificate_image"/>
+                        </div>
+                    {% endif %}
+
                     {{ certificate.description|raw }}
                 {% endif %}
                 {% if certificate.status == 'received' %}
@@ -46,13 +52,11 @@
         margin-top: 16px;
     }
 
-    #certificate-modal .promo-modal__body .image {
+    #certificate-modal .certificate_image {
         margin-bottom: 16px;
     }
 
-    #certificate-modal .promo-modal__body .image img {
+    #certificate-modal .certificate_image img {
         margin: auto;
-        max-width: 300px;
-        height: auto;
     }
 </style>
