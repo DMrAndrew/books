@@ -1,0 +1,62 @@
+<div class="ui-modal overlay" data-modal="certificate-modal" id="certificate-modal-content">
+    <div class="ui-modal-container">
+        <div class="promo-modal__container ui-modal-content">
+            <div class="ui-modal-header">
+                <div class="square-16 "></div>
+                <svg class="square-24" data-modal="close" onclick="closeCertificateModal()">
+                    <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme }}"></use>
+                </svg>
+            </div>
+            <div class="promo-modal__body">
+                {% if certificate.status == 'sent' %}
+
+                    {% if certificate.certificate_image %}
+                        <div class="certificate_image">
+                            <img src="{{ certificate.certificate_image.thumbUrl(150, 150) }}" alt="certificate_image"/>
+                        </div>
+                    {% endif %}
+
+                    {{ certificate.description|raw }}
+                {% endif %}
+                {% if certificate.status == 'received' %}
+                    <p style="text-align: center;">Сертификат уже получен</p>
+                {% endif %}
+                {% if certificate.status == 'returned' %}
+                    <p style="text-align: center;">Сертификат возвращен отправителю по истечении 10 дней</p>
+                {% endif %}
+            </div>
+            <div class="promo-modal__footer">
+                {% if certificate.status == 'sent' %}
+                    <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full"
+                            type="button"
+                            data-request="CertificateModal::onGetCertificate"
+                            data-request-data="{ 'certificate_id': '{{ certificate.id }}' }"
+                    >
+                        Получить сертификат
+                    </button>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<style>
+    #certificate-modal .promo-modal__body {
+        margin-bottom: 16px;
+        max-width: 300px;
+    }
+
+    #certificate-modal .promo-modal__footer {
+        margin-top: 16px;
+    }
+
+    #certificate-modal .certificate_image {
+        margin-bottom: 16px;
+    }
+
+    #certificate-modal .certificate_image img {
+        margin: auto;
+    }
+</style>
