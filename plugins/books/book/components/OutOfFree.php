@@ -4,6 +4,7 @@ namespace Books\Book\Components;
 
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
+use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Models\User;
 
@@ -15,6 +16,7 @@ use RainLab\User\Models\User;
 class OutOfFree extends ComponentBase
 {
     protected Book $book;
+    protected Edition $edition;
 
     protected ?Chapter $chapter;
 
@@ -38,13 +40,15 @@ class OutOfFree extends ComponentBase
 
     public function init()
     {
-        $this->book = Book::query()
-            ->public()->with([
-                'ebook' => fn($ebook) => $ebook->withActiveDiscountExist()->with('discount'),
-            ])
-            ->find($this->param('book_id')) ?? abort(404);
+        $this->edition = Edition::query()
+            ->whereHas('book', function ($query) {
+                return $query->public();
+            })
+            ->findOrFail($this->param('edition_id')) ?? abort(404);
+
         $this->chapter = Chapter::find($this->param('chapter_id'));
-        $this->page['book'] = $this->book;
+
+        $this->page['edition'] = $this->edition;
         $this->page['chapter'] = $this->chapter;
     }
 }

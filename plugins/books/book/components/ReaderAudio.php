@@ -102,7 +102,7 @@ class ReaderAudio extends ComponentBase
         }
 
         if (! $this->service()->isPageAllowed()) {
-            return Redirect::to(sprintf('/out-of-free/%s/%s', $this->book->id, $this->chapter?->id));
+            return Redirect::to(sprintf('/out-of-free/%s/%s', $this->book->audiobook->id, $this->chapter?->id));
         }
     }
 

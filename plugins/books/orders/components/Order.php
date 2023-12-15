@@ -76,7 +76,7 @@ class Order extends ComponentBase
             return [
                 '#order_form' => $this->renderPartial('@order_create', [
                     'order' => $order,
-                    'book' => $this->book,
+                    'book' => $this->book ?? $edition->book,
                     'edition' => $edition,
                     'availableAwards' => $this->getAvailableAwards(),
                 ]),

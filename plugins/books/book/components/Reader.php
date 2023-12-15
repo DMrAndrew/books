@@ -82,7 +82,7 @@ class Reader extends ComponentBase
         }
 
         if (! $this->service()->isPageAllowed()) {
-            return Redirect::to(sprintf('/out-of-free/%s/%s', $this->book->id, $this->chapter?->id));
+            return Redirect::to(sprintf('/out-of-free/%s/%s', $this->book->ebook->id, $this->chapter?->id));
         }
     }
 

@@ -1,38 +1,64 @@
 title = "Конец ознакомительной части"
 layout = "default"
-url = "/out-of-free/:book_id/:chapter_id?"
+url = "/out-of-free/:edition_id/:chapter_id?"
 meta_title = "Конец ознакомительной части"
 [OutOfFree]
 [Order]
 ==
 {% component 'Order' %}
+
+{% set typeEbook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Ebook') %}
+{% set typeAudiobook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Audio') %}
+
 <!-- Тело страницы -->
 <div class="ui-container-fluid common-pages__container">
     <div class="wrapper">
         <div class="common-pages__content">
             <div class="stop-free__container">
-                <div class="">Вы закончили читать бесплатный ознакомительный фрагмент. Купите доступ ко всем главам
-                    книги, выполнив единоразовый платеж.
-                </div>
-                <div class="stop-free__buttons">
-                    <a  class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer" {{user ? 'data-request="Order::onCreateOrder"' : 'onclick="loginPopup()"'}}>
-              <span>
-                  {% if book.ebook.discount_exists %}
-                                        <span >
-                        <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span
-                            class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
-                        <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
-                      </span>
-                                        {% else %}
-                                       <span> Купить {{book.ebook.price}} ₽</span>
-                                        {% endif %}
 
-              </span>
-                    </a>
-                    <a href="/book-card/{{book.id}}"
-                       class="ui-button ui-button-size--32 ui-button-view--3 ui-button--full ui-button--column">
-                        <span class="ui-text--medium">Вернуться к карточке книги</span>
-                    </a>
+                <div class="">
+                {% if edition.type == typeEbook %}
+                    Вы закончили читать бесплатный ознакомительный фрагмент. Купите доступ ко всем главам
+                    книги, выполнив единоразовый платеж.
+                {% endif %}
+
+                {% if edition.type == typeAudiobook %}
+                    Вы закончили прослушивание бесплатных ознакомительных глав. Купите доступ ко всем главам
+                    аудиокниги, выполнив единоразовый платеж.
+                {% endif %}
+                </div>
+
+                <div class="stop-free__buttons">
+
+                    {% if user %}
+                        <a href="javascript:;"
+                           data-request="Order::onCreateOrder"
+                           data-request-flash="1"
+                           data-request-validate="1"
+                           data-request-data="edition_id: {{ edition.id }}"
+                           class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
+                    {% else %}
+                        <a  class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer" onclick="loginPopup()">
+                    {% endif %}
+
+                    <span>
+                    {% if edition.discount_exists %}
+                        <span>
+                            <span class="ui-text--medium">Купить {{edition.priceTag.price}} ₽
+                                <span class="ui-button-text-initial ui-text--lt">{{edition.priceTag.initialPrice}} ₽</span>
+                            </span>
+                            <span class="ui-text-body--3 ui-text--regular">Скидка {{edition.discount.amount}}%</span>
+                        </span>
+                    {% else %}
+                        <span> Купить {{edition.price}} ₽</span>
+                    {% endif %}
+                    </span>
+                </a>
+
+                <a href="/book-card/{{book.id}}"
+                   class="ui-button ui-button-size--32 ui-button-view--3 ui-button--full ui-button--column">
+                    <span class="ui-text--medium">Вернуться к карточке книги</span>
+                </a>
                 </div>
             </div>
         </div>
