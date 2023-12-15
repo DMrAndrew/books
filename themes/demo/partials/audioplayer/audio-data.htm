@@ -1,0 +1,14 @@
+<div class="chapter-book__info-container">
+    <div class="chapter-book__status">
+        <span>{{ audiofile.file_name }}</span>
+    </div>
+    <div class="chapter-book__status">
+        <span>загружен {{ audiofile.updated_at.format('d.m.y H:i') }} </span>
+    </div>
+    <div class="chapter-book__status">
+        <span>{{ humanFileSize(audiofile.file_size) }}</span>
+    </div>
+    <div class="chapter-book__status">
+        <span>{{ chapter.audio_length }}</span>
+    </div>
+</div>

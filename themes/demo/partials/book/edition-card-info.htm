@@ -1,0 +1,31 @@
+<div class="book-card__info">
+    {% if book.ebook %}
+    <div class="book-card__info-wrapper">
+        {% partial 'book/edition-info' edition=book.ebook %}
+        {% partial 'site/book-status' edition=book.ebook %}
+        {% if book.ebook.sales_at %}
+            <div class="book-card__info-dot"></div>
+            <div class="book-card__info-wrap _text">{{ carbon(book.ebook.sales_at).format('d.m.y') }}</div>
+        {% endif %}
+        <div class="book-card__info-dot"></div>
+        {% if book.ebook.length %}
+            <div class="book-card__info-wrap _text">{{book.ebook.length}}&thinsp;зн.</div>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% if book.audiobook %}
+    <div class="book-card__info-wrapper">
+
+        {% partial 'book/edition-info' edition=book.audiobook %}
+        {% partial 'site/book-status' edition=book.audiobook %}
+        {% if book.audiobook.sales_at %}
+        <div class="book-card__info-dot"></div>
+        <div class="book-card__info-wrap _text">{{ carbon(book.audiobook.sales_at).format('d.m.y') }}</div>
+        {% endif %}
+        <div class="book-card__info-dot"></div>
+        {% if book.audiobook.length %}
+        <div class="book-card__info-wrap _text">{{ book.audiobook.audio_length }}&thinsp;</div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>

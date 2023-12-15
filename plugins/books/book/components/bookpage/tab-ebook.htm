@@ -1,0 +1,74 @@
+{% if book.ebook %}
+<div class="ui-tabs-content active" data-tab-content="1">
+    <div class="book-card-full-type">
+        <div class="book-card-full-type__description _indent-bottom">
+            {% partial 'site/book-status' edition=book.ebook %}
+            <span class="book-card-full-type__description-dot"></span>
+            {% if historyEbook.items.first %}
+            <span itemprop="bookEdition">{{ historyEbook.items.first.date.format('d.m.y') }}</span>
+            {% else %}
+            <span>{{carbon(book.ebook.sales_at).format('d.m.y')}}</span>
+            {% endif %}
+            <span class="book-card-full-type__description-dot"></span>
+            <span>{{book.ebook.length}} зн.</span>
+            {% if historyEbook.items.first %}
+            <span class="book-card-full-type__description-dot"></span>
+            <a class="ui-link _violet cursor-pointer" data-modal="open-history-ebook">История</a>
+            {% endif %}
+        </div>
+
+        <div class="book-card-full-type__link-wrapper {{buyBtn_ebook and readBtn_ebook ? '_double' : ''}}">
+            {% if readBtn_ebook %}
+            <a href="/reader/{{book.ebook.id}}"
+               class="ui-button ui-button-size--56 ui-button-view--2 ui-button--full">Читать</a>
+            {% endif %}
+
+            {% if buyBtn_ebook %}
+            {% if not book.ebook.isBought %}
+
+            {% if user %}
+            <a href="javascript:;"
+               data-request="Order::onCreateOrder"
+               data-request-flash="1"
+               data-request-validate="1"
+               data-request-data="edition_id: {{ book.ebook.id }}"
+               class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
+                {% if book.ebook.discount_exists %}
+                <span>
+                    <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
+                    <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
+                </span>
+                {% else %}
+                <span> Купить {{book.ebook.price}} ₽</span>
+                {% endif %}
+            </a>
+
+            {% else %}
+            <a onclick="loginPopup()" class="ui-button ui-button-size--56
+                                            ui-button-view--1 ui-button--full cursor-pointer">
+                {% if book.ebook.discount_exists %}
+                <span>
+                    <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
+                    <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
+                </span>
+                {% else %}
+                <span> Купить {{book.ebook.price}} ₽</span>
+                {% endif %}
+            </a>
+            {% endif %}
+
+            {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- <div class="book-card-full-type__description _indent-top">-->
+        <!-- <span class="_indent">Скачать: </span>-->
+        <!-- <a href="#" class="ui-link _violet">epub</a>,-->
+        <!-- <a href="#" class="ui-link _violet">mobi</a>,-->
+        <!-- <a href="#" class="ui-link _violet">fb2</a>-->
+        <!-- <span class="book-card-full-type__description-dot"></span>-->
+        <!-- <span>1 448 993 загрузок</span>-->
+        <!-- </div>-->
+    </div>
+</div>
+{% endif %}

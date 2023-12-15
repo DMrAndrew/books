@@ -1,0 +1,7 @@
+v1.0.1: First version of Certificates
+v1.0.2:
+    - 'Создание таблицы трансфера баланса по подарочному сертификату'
+    - create_certificate_transactions_table.php
+v1.0.3:
+    - 'Добаление поля image'
+    - add_image_column.php

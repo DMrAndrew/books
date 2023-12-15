@@ -1,0 +1,12 @@
+url = "/videoblog/:post_slug"
+layout = "default"
+title = "Блог"
+meta_title = "Блог"
+breadcrumbs = "videoblogpost"
+[session]
+security = "all"
+[VideoBlogPost]
+slug = "{{ :post_slug }}"
+==
+{% component 'Breadcrumbs' %}
+{% component 'VideoBlogPost' %}

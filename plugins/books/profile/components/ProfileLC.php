@@ -77,8 +77,9 @@ class ProfileLC extends ComponentBase
         try {
             $profile = $this->user->profile;
             $data = array_diff_assoc(post(), $profile->only($profile->getFillable()));
-
-            $data['about'] = TextCleanerService::cleanContent($data['about']);
+            if($data['about'] ?? false){
+                $data['about'] = TextCleanerService::cleanContent($data['about']);
+            }
 
             $profile->removeValidationRule('username', 'required');
             $profile->addValidationRule('username', 'prohibited');

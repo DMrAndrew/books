@@ -1,0 +1,82 @@
+{% set titleMaxLength = constant('Books\\Videoblog\\Models\\Videoblog::TITLE_MAX_LENGTH') %}
+
+<div class="ui-container">
+    <div class="create-book__title ui-text-head--2 ui-text--bold">
+        {% if post %}
+        Редактирование публикации "{{ post.title }}"
+        {% else %}
+        Новая запись в видеоблоге
+        {% endif %}
+    </div>
+</div>
+
+<form class="lc-book-text ui-container-fluid wrapper"
+      data-request-flash
+      data-request="{{__SELF__}}::onSavePost"
+      data-request-validate>
+
+    <input type="hidden" name="post_id" value="{{post.id}}">
+
+    <div class="wrapper__header _indent-large ui-input">
+        <div class="title-counter__container" data-title-counter="">
+            <div class="title-counter__top">
+                <label class="">Заголовок</label>
+                <label class="title-counter__numbers"><span data-counter-number="title">{{ post.title ? (titleMaxLength - post.title|length) : '0' }}</span>/{{titleMaxLength}}</label><!-- sync with input maxlength -->
+            </div>
+            <input class="title-counter__input ui-input-item _size-32" type="text" maxlength="{{titleMaxLength}}" value="{{ post.title }}" name="title" onkeyup="updateLengthCounter(this);">
+            <div class="ui-select-hitn"></div>
+            <div class="ui-select-error" data-validate-for="title"></div>
+        </div>
+    </div>
+
+    <div class="personal-area__wrap _indent-large typographical-block">
+        <script src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
+        <textarea id="content" name="content">{{ post.content|raw }}</textarea>
+        <div class="ui-select-hitn"></div>
+        <div class="ui-select-error" data-validate-for="content"></div>
+    </div>
+
+    <div class="wrapper__header _indent-large ui-input">
+        <div class="title-counter__container" data-title-counter="">
+            <div class="title-counter__top">
+                <label class="">Вставьте ссылку на видео</label>
+            </div>
+            <input class="title-counter__input ui-input-item _size-32" type="text" value="{{ post.link }}" name="link">
+            <div class="ui-select-hitn"></div>
+            <div class="ui-select-error" data-validate-for="title"></div>
+        </div>
+    </div>
+
+    <div class="wrapper__footer">
+        <a href="/lc-videoblog" class="ui-button ui-button-size--32 ui-button-view--3 text-center">
+            <span>Отмена</span>
+        </a>
+        <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2">
+            <span>{{ post.id ? 'Сохранить' : 'Опубликовать' }}</span>
+        </button>
+    </div>
+
+</form>
+
+<style>
+    .ck-editor__editable {
+        min-height: 200px;
+    }
+    .wrapper__footer .ui-button span {
+        margin: auto;
+    }
+</style>
+<script>
+    initEditor('content',{
+        toolbarItems:['uploadImage']
+    });
+
+    function updateLengthCounter(field)
+    {
+        let maxLimit = {{titleMaxLength}};
+        if ( field.value.length > maxLimit ) {
+            field.value = field.value.substring( 0, maxLimit );
+        }
+        $('[data-counter-number="title"]').text(maxLimit - field.value.length);
+    }
+</script>

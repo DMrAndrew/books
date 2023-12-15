@@ -1,4 +1,9 @@
-{% set history = book.ebook.updateHistoryView %}
+{% if book.ebook %}
+    {% set historyEbook = book.ebook.updateHistoryView %}
+{% endif %}
+{% if book.audiobook %}
+    {% set historyAudiobook = book.audiobook.updateHistoryView %}
+{% endif %}
 <div itemscope itemtype="http://schema.org/Book">
 <div class="ui-container-fluid">
     <div class="book-card-full _indent">
@@ -30,102 +35,30 @@
                     <div class="ui-tabs-header">
                         <div class="ui-tabs-line"></div>
                         <div class="ui-tabs-header-wrapper" data-tabs="1" itemprop="bookFormat" itemscope itemtype="http://schema.org/BookFormatType">
+                            {% if book.ebook and ebookVisible %}
                             <div class="ui-tabs-link active" data-tab="1">Электронная</div>
-                            <!--                            <div class="ui-tabs-link" data-tab="2" itemprop="AudiobookFormat">Аудиокнига</div>-->
-                            <!--                            <div class="ui-tabs-link" data-tab="3">Бумажная</div>-->
-                            <!--                            <div class="ui-tabs-link" data-tab="4">Бумажная</div>-->
-                            <!--                            <div class="ui-tabs-link" data-tab="5">Бумажная</div>-->
+                            {% endif %}
+
+                            {% if book.audiobook and audiobookVisible %}
+                            <div class="ui-tabs-link" data-tab="2" itemprop="AudiobookFormat">Аудиокнига</div>
+                            {% endif %}
+                            <!-- <div class="ui-tabs-link" data-tab="3">Бумажная</div>-->
                         </div>
                     </div>
                     <div class="ui-tabs-body _field" data-tabs="1">
-                        <div class="ui-tabs-content active" data-tab-content="1">
-                            <div class="book-card-full-type">
-                                <div class="book-card-full-type__description _indent-bottom">
-                                    {% partial 'site/book-status' status=book.ebook.status %}
-                                    <span class="book-card-full-type__description-dot"></span>
-                                    {% if history.items.first %}
-                                    <span itemprop="bookEdition">{{ history.items.first.date.format('d.m.y') }}</span>
-                                    {% else %}
-                                    <span>{{carbon(book.ebook.sales_at).format('d.m.y')}}</span>
-                                    {% endif %}
-                                    <span class="book-card-full-type__description-dot"></span>
-                                    <span>{{book.ebook.length}} зн.</span>
-                                    {% if history.items.first %}
-                                    <span class="book-card-full-type__description-dot"></span>
-                                    <a class="ui-link _violet cursor-pointer" data-modal="open-history">История</a>
-                                    {% endif %}
-                                </div>
+                        {% if book.ebook and ebookVisible %}
+                            {% partial __SELF__ ~ '::tab-ebook' %}
+                        {% endif %}
 
-                                <div class="book-card-full-type__link-wrapper {{buyBtn and readBtn ? '_double' : ''}}">
-                                    {% if readBtn %}
-                                    <a href="/reader/{{book.ebook.id}}"
-                                       class="ui-button ui-button-size--56 ui-button-view--2 ui-button--full">Читать</a>
-                                    {% endif %}
+                        {% if book.audiobook and audiobookVisible %}
+                            {% partial __SELF__ ~ '::tab-audiobook' %}
+                        {% endif %}
 
-                                    {% if buyBtn %}
-                                        {% if not book.ebook.isBought %}
-                                        <a {{user ? 'data-request="Order::onCreateOrder"' : 'onclick="loginPopup()"'}}
-                                           class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
-                                            {% if book.ebook.priceTag.discountExists %}
-                                            <span>
-                                                <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
-                                                <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.priceTag.discountAmount}}%</span>
-                                              </span>
-                                            {% else %}
-                                           <span> Купить {{book.ebook.price}} ₽</span>
-                                            {% endif %}
-                                        </a>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
-
-                                <!--                                <div class="book-card-full-type__description _indent-top">-->
-                                <!--                                    <span class="_indent">Скачать: </span>-->
-                                <!--                                    <a href="#" class="ui-link _violet">epub</a>,-->
-                                <!--                                    <a href="#" class="ui-link _violet">mobi</a>,-->
-                                <!--                                    <a href="#" class="ui-link _violet">fb2</a>-->
-                                <!--                                    <span class="book-card-full-type__description-dot"></span>-->
-                                <!--                                    <span>1 448 993 загрузок</span>-->
-                                <!--                                </div>-->
-                            </div>
-                        </div>
-                        <!--                        <div class="ui-tabs-content" data-tab-content="2">-->
-                        <!--                            <div class="book-card-full-type">-->
-                        <!--                                <div class="book-card-full-type__description _indent-bottom">-->
-                        <!--                                    <svg class="square-16">-->
-                        <!--                                        <use-->
-                        <!--                                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>-->
-                        <!--                                    </svg>-->
-                        <!--                                    <span>В работе</span>-->
-                        <!--                                    <span class="book-card-full-type__description-dot"></span>-->
-                        <!--                                    <span>18.01.21</span>-->
-                        <!--                                    <span class="book-card-full-type__description-dot"></span>-->
-                        <!--                                    <span>03 ч 31 мин</span>-->
-                        <!--                                    <span class="book-card-full-type__description-dot"></span>-->
-                        <!--                                    <a href="#" class="ui-link _violet">История</a>-->
-                        <!--                                </div>-->
-
-                        <!--                                <div class="book-card-full-type__link-wrapper _double">-->
-                        <!--                                    <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full">Слушать</a>-->
-                        <!--                                    <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
-                        <!--                                </div>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
-                        <!--                        <div class="ui-tabs-content" data-tab-content="3">-->
-                        <!--                            <div class="book-card-full-type__link-wrapper">-->
-                        <!--                                <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
-                        <!--                        <div class="ui-tabs-content" data-tab-content="4">-->
-                        <!--                            <div class="book-card-full-type__link-wrapper">-->
-                        <!--                                <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
-                        <!--                        <div class="ui-tabs-content" data-tab-content="5">-->
-                        <!--                            <div class="book-card-full-type__link-wrapper">-->
-                        <!--                                <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
+<!--                        <div class="ui-tabs-content" data-tab-content="3">-->
+<!--                            <div class="book-card-full-type__link-wrapper">-->
+<!--                                <a href="#" class="ui-button ui-button-size&#45;&#45;56 ui-button-view&#45;&#45;1 ui-button&#45;&#45;full">Купить 139 ₽</a>-->
+<!--                            </div>-->
+<!--                        </div>-->
                     </div>
                 </div>
             </div>
@@ -239,49 +172,8 @@
 
         </div>
     </div>
-    <div class="ui-modal personal-area-discount-modal overlay" data-modal="history">
-        <div class="ui-modal-container book-card-history-modal__container">
-            <div class="ui-modal-content book-card-history-modal">
-                <div class="ui-modal-header book-card-history-modal__header">
-                    <div class="square-16 "></div>
-                    <div class="ui-text-head--2 ui-text--bold">История обновлений произведения</div>
-                    <svg class="square-24" data-modal="close">
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
-                    </svg>
-                </div>
-                <div class="book-card-history-modal__body">
-                    <div class="book-card-history-modal__data">
-                        <dl class="book-card-history-modal__data-list">
-                            <dt class="book-card-history-modal__data-title">Частота обновлений:</dt>
-                            <dd>{{history.freq_string}}</dd>
-                        </dl>
-                        <dl class="book-card-history-modal__data-list">
-                            <dt class="book-card-history-modal__data-title">Начало публикации:</dt>
-                            <dd>{{ history.items.last.date.format('d.m.y') }}</dd>
-                        </dl>
-                    </div>
-                    <div class="book-card-history-modal__table-container">
-                        <table class="book-card-history-modal__table">
-                            <thead>
-                            <td>Дата</td>
-                            <td>Добавлено знаков</td>
-                            <td>Всего знаков</td>
-                            </thead>
-                            <tbody>
-                            {% for item in history.items %}
-                            <tr>
-                                <td>{{item.date.format('d.m.y')}}</td>
-                                <td>{{item.value}}</td>
-                                <td>{{item.new_value}}</td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% partial __SELF__ ~ '::modal-history-ebook' %}
+    {% partial __SELF__ ~ '::modal-history-audiobook' %}
 {% if ask_adult %}
     {% partial 'auth/adult-modal' active=1 %}
 {% endif %}
@@ -291,7 +183,8 @@
         initTabs('[data-tabs="3"]');
     </script>
     <script>
-        openModal('[data-modal="history"]', '[data-modal="open-history"]');
+        openModal('[data-modal="history-ebook"]', '[data-modal="open-history-ebook"]');
+        openModal('[data-modal="history-audiobook"]', '[data-modal="open-history-audiobook"]');
         openModal('[data-modal="category_rating"]', '[data-modal="open_category_rating"]');
         (() => {
             new Swiper('.swiper', {
