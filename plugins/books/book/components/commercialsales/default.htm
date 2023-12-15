@@ -34,7 +34,7 @@
                 <tbody>
                 {% for edition in editions %}
                 <tr>
-                    <td class="_half"><div class="ellipsis"><a href="{{ 'book-card'|page({ book_id: edition.book.id }) }}" class="ui-link _violet">{{ edition.book.title }}</a></div></td>
+                    <td class="_half"><div class="ellipsis"><a href="{{ 'book-card'|page({ book_id: edition.book.id }) }}" class="ui-link _violet">{{ edition.title }}</a></div></td>
                     <td>{{ edition.status.value == 'complete' ? 'Продажа' : 'Подписка'}}</td>
                     <td class="_right">{{ edition.priceTag.price }} ₽</td>
                 </tr>

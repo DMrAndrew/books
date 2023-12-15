@@ -77,5 +77,9 @@ return [
             // extra HTML classes added to the DOM of the diff container
             'wrapperClasses' => ['diff-wrapper'],
         ]
-    ]
+    ],
+    'audio' => [
+        'check_token_to_allow_user_download_audio' => env('AUDIOBOOK_CHECK_TOKEN_TO_ALLOW_USER_DOWNLOAD_AUDIO', true),
+    ],
+
 ];

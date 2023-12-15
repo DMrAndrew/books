@@ -1,0 +1,34 @@
+<div class="reader__pagination">
+    {% if pagination.prev %}
+    <a
+        data-request="readeraudio::onPrev"
+        class="reader__pagination-button ui-button ui-button-view--3 ui-button-size--32 cursor-pointer {{pagination.prev ? '' : 'disabled'}}">
+        <svg class="ui-button-icon--left square-16">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-left-24' | theme}}"></use>
+        </svg>
+        <span>Назад</span>
+    </a>
+    {% endif %}
+
+    <nav class="ui-pagination">
+    </nav>
+
+    {% if pagination.next %}
+    <a id="audioNext"
+        data-request="readeraudio::onNext"
+        class="reader__pagination-button
+         ui-button
+           ui-button-size--32
+            cursor-pointer
+             {{pagination.read ? 'ui-button-view--2' : 'ui-button-view--3'}}
+             {{pagination.next or pagination.read ? '' : 'disabled'}}">
+        <span>{{pagination.next ? 'Вперёд' : 'Прочитано'}}</span>
+        {% if pagination.next %}
+        <svg class="ui-button-icon--right square-16">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
+        </svg>
+        {% endif %}
+    </a>
+    {% endif %}
+</div>
+

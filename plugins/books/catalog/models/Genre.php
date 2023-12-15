@@ -18,6 +18,7 @@ use October\Rain\Database\TreeCollection;
  * @method HasMany children
  *
  * @property  TreeCollection children
+ * @property  string slug
  */
 class Genre extends Model
 {

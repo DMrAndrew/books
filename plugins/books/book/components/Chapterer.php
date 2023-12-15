@@ -4,6 +4,7 @@ namespace Books\Book\Components;
 
 use Books\Book\Classes\ChapterService;
 use Books\Book\Classes\Enums\ChapterStatus;
+use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Services\TextCleanerService;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
@@ -90,6 +91,8 @@ class Chapterer extends ComponentBase
             if ($data->has('chapter_content')) {
                 $data['content'] = $data['chapter_content'] = TextCleanerService::cleanContent($data['chapter_content']);
             }
+
+            $data['type'] = EditionsEnums::Ebook;
 
             if ($status = $data['action'] ?? false) {
                 switch ($status) {

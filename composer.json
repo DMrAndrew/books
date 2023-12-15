@@ -47,7 +47,9 @@
         "spatie/laravel-sitemap": "6.3",
         "laravel-notification-channels/telegram": "^3.0",
         "ext-simplexml": "*",
-        "ext-libxml": "*"
+        "ext-libxml": "*",
+        "books/moderation-plugin": "*",
+        "books/certificates-plugin": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -174,6 +176,10 @@
         "books/sitemap-plugin": {
             "type": "path",
             "url": "./plugins/books/sitemap"
+        },
+        "books/moderation-plugin": {
+            "type": "path",
+            "url": "./plugins/books/moderation"
         },
         "vdlp/oc-telescope-plugin": {
             "type": "path",

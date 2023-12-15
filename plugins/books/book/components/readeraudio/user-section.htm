@@ -1,0 +1,32 @@
+<div class="reader__user reader-user">
+    {% for profile in book.profiles %}
+    <div class="reader-user__user">
+        <div class="author-card__avatar">
+            {% if profile.avatar %}
+            <img src="{{profile.avatar.getThumb(40,40)}}" alt="">
+            {% else %}
+            {{profile.firstLatter}}
+            {% endif %}
+        </div>
+        <a class="ui-link _violet"
+           href="/author-page/{{profile.id}}"> <span class="ui-text--bold">{{profile.username}}</span></a>
+    </div>
+    {% endfor %}
+
+    <!--    <a href="" class="reader-user__support ui-link _violet disabled">-->
+    <!--        <svg class="square-16">-->
+    <!--            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#coins-stroked-16' | theme}}"></use>-->
+    <!--        </svg>-->
+    <!--        <span>Поддержать автора</span>-->
+    <!--    </a>-->
+    {% if user %}
+    {% ajaxPartial "bookCard::reader-card" book=book %}
+    {% endif %}
+    <div class="reader-user__books tags-list">
+        {% partial 'controls/genres-link-list' genres=book.genres linkClass='book-card-full-info__link _desktop' %}
+    </div>
+    {% set last_updated_at = book.ebook.last_updated_at %}
+    {% if last_updated_at %}
+    <div>Отредактировано: {{last_updated_at.format('d.m.y')}}</div>
+    {% endif %}
+</div>
