@@ -59,6 +59,7 @@ class EditionService
 
         $this->fireEvents($data);
         $this->edition->save();
+        $this->edition->lengthRecount();
         $this->edition->setFreeParts();
         Event::fire('books.edition.updated', [$this->edition]);
     }

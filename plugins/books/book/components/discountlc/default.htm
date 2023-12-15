@@ -4,8 +4,6 @@
         data-modal-button="create_discount">Создать скидку
     </a>
 
-
-
     <div class="table __container-shift">
         <table class="table-static">
             <thead>
@@ -22,7 +20,9 @@
             {% for discount in discounts %}
             <tr>
                 <td class="_half">
-                    <div class="ellipsis">{{discount.edition.book.title}}</div>
+                    <div class="ellipsis">{{discount.edition.book.title}} {{discount.edition.type.value != 1
+                        ? '(' ~ discount.edition.type.label ~ ')'
+                        : ''}}</div>
                 </td>
                 <td ><span class="{{discount.isActive ? 'personal-area__wrap  _color-green' : ''}}">{{discount.active_at.format('d.m.y')}}</span></td>
                 <td>{{discount.amount}}%</td>
@@ -61,13 +61,15 @@
                         <div class="ui-select-container">
                             <div class="ui-select-item _size-32">
 
-                                <select class="book-select" id="book_id" name="book_id" style="display: none"
+                                <select class="book-select" id="edition_id" name="edition_id" style="display: none"
                                         data-request="onChangeEdition"
                                 >
                                     <option value="">Выберите произведение</option>
-                                    {% for book in books %}
-                                    <option value="{{book.id}}" {{bookItem.id== book.id ?
-                                    'selected' : ''}}>{{book.title}}</option>
+                                    {% for edition in editions %}
+                                    <option value="{{edition.id}}" {{editionItem.id == edition.id ?
+                                    'selected' : ''}}>
+                                    {{edition.title}}
+                                    </option>
                                     {% endfor %}
 
                                 </select>

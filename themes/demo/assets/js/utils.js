@@ -58,7 +58,7 @@ let initSortable = (container, handler) => {
             dropOnEmpty: false,
             handle: ".handle",
             update: function () {
-                let arr = $(container).find('input').map(function () {
+                let arr = $(container).find('input[data-sortable="true"]').map(function () {
                     return $(this).val();
                 }).get()
                 oc.ajax(handler, {flash: true, data: {sequence: arr, is_owner: $(`input[name=is_owner]`).val()}})

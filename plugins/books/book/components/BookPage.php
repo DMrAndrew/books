@@ -66,9 +66,11 @@ class BookPage extends ComponentBase
             ->with(['cycle' => fn($cycle) => $cycle->booksEager()])
             ->find($this->book->id);
 
-        $comments = $this->addComponent(Comments::class, 'comments');
-        $comments->bindModel($this->book);
-        $comments->bindModelOwner($this->book->profile);
+        if($this->book?->profile){
+            $comments = $this->addComponent(Comments::class, 'comments');
+            $comments->bindModel($this->book);
+            $comments->bindModelOwner($this->book->profile);
+        }
 
         $otherAuthorBook = $this->addComponent(Widget::class, 'otherAuthorBook');
         $otherAuthorBook->setUpWidget(WidgetEnum::otherAuthorBook, book: $this->book, withHeader: false);
@@ -111,15 +113,24 @@ class BookPage extends ComponentBase
     public function vals()
     {
         return [
-            'buyBtn' => $this->buyBtn(),
-            'readBtn' => $this->readBtn(),
+            'buyBtn_ebook' => $this->buyButtonForEbook(),
+            'readBtn_ebook' => $this->readButtonForEbook(),
+            'buyBtn_audiobook' => $this->buyButtonForAudiobook(),
+            'readBtn_audiobook' => $this->readButtonForAudiobook(),
             'supportBtn' => $this->supportBtn(),
+
             'book' => $this->book,
+            'ebookVisible' => $this->ebookVisible(),
+            'audiobookVisible' => $this->audioVisible(),
+
             'cycle' => $this->book->cycle,
         ];
     }
 
-    public function buyBtn(): bool
+    /**
+     * @return bool
+     */
+    public function buyButtonForEbook(): bool
     {
         /**
          * Авторизованным пользователям
@@ -150,11 +161,58 @@ class BookPage extends ComponentBase
         return true;
     }
 
-    public function readBtn(): bool
+    /**
+     * @return bool
+     */
+    public function readButtonForEbook(): bool
     {
         return $this->book->ebook->isFree()
             || ($this->user && $this->book->ebook->isSold($this->user))
             || $this->book->ebook->chapters->some->isFree();
+    }
+
+    /**
+     * @return bool
+     */
+    private function buyButtonForAudiobook(): bool
+    {
+        /**
+         * Авторизованным пользователям
+         */
+        if ($this->user) {
+            /**
+             * Автор не может купить
+             */
+            if ($this->book->profiles()->user($this->user)->exists()) {
+                return false;
+            }
+
+            /**
+             * Уже куплена
+             */
+            if ($this->book->audiobook?->isSold($this->user)) {
+                return false;
+            }
+        }
+
+        /**
+         * Книга бесплатная
+         */
+        if ($this->book->audiobook?->isFree()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    private function readButtonForAudiobook(): bool
+    {
+        return $this->book->audiobook?->isFree()
+            || ($this->user && $this->book->audiobook?->isSold($this->user))
+            || $this->book->audiobook?->chapters->some->isFree();
     }
 
     /**
@@ -166,6 +224,22 @@ class BookPage extends ComponentBase
     private function supportBtn(): bool
     {
         return $this->user && !$this->book->profiles()->user($this->user)->exists();
+    }
+
+    /**
+     * @return bool
+     */
+    private function ebookVisible(): bool
+    {
+        return $this->book->ebook?->isVisible() || $this->book->profiles()->user($this->user)->exists();
+    }
+
+    /**
+     * @return bool
+     */
+    private function audioVisible(): bool
+    {
+        return $this->book->audiobook?->isVisible() || $this->book->profiles()->user($this->user)->exists();
     }
 
     /**
@@ -203,9 +277,9 @@ class BookPage extends ComponentBase
         $this->page->meta_canonical = Request::url();
 
         if ($this->book->meta_title)
-        $this->page->meta_title = $this->book->meta_title;
+            $this->page->meta_title = $this->book->meta_title;
 
         if ($this->book->meta_desc)
-        $this->page->meta_description = $this->book->meta_desc;
+            $this->page->meta_description = $this->book->meta_desc;
     }
 }

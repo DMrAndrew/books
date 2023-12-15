@@ -20,7 +20,9 @@ use Books\Notifications\Classes\Events\CommentReplied;
 use Books\Notifications\Classes\Events\DeferredApplied;
 use Books\Notifications\Classes\Events\DiscountCreated;
 use Books\Notifications\Classes\Events\PostPublished;
+use Books\Notifications\Classes\Events\SystemCertificateMessage;
 use Books\Notifications\Classes\Events\SystemMessage;
+use Books\Notifications\Classes\Events\VideoblogPublished;
 use Books\Notifications\Classes\Services\NotificationService;
 use Books\Notifications\Components\Notifications;
 use Books\Notifications\Components\NotificationsInHeader;
@@ -104,6 +106,8 @@ class Plugin extends PluginBase
                 SystemMessage::class,
                 DeferredApplied::class,
                 PostPublished::class,
+                VideoblogPublished::class,
+                SystemCertificateMessage::class,
                 BirthdayMessage::class,
             ],
             'groups' => [
@@ -151,8 +155,10 @@ class Plugin extends PluginBase
             'books.book::content.deferred.merged' => DeferredApplied::class,
             'books.book::content.deferred.rejected' => DeferredApplied::class,
             'books.blog::post.published' => PostPublished::class,
+            'books.videoblog::post.published' => VideoblogPublished::class,
             'system::message' => SystemMessage::class,
             'system::birthday' => BirthdayMessage::class,
+            'system::certificate' => SystemCertificateMessage::class,
         ]);
     }
 

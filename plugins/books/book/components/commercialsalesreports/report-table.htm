@@ -16,18 +16,18 @@
             <tr>
                 <td>{{ record.id }}</td>
                 <td class="table__col _wide"><div class="_name">{{ record.title }}</div></td>
-                <td class="table__col">{{ record.sells_sum_amount }}</td>
-                <td class="table__col">{{ record.tax_sum_amount }}</td>
-                <td class="table__col _left">{{ record.reward_sum_amount }}</td>
+                <td class="table__col">{{ formatMoneyAmount(record.sells_sum_amount) }}</td>
+                <td class="table__col">{{ formatMoneyAmount(record.tax_sum_amount) }}</td>
+                <td class="table__col _left">{{ formatMoneyAmount(record.reward_sum_amount) }}</td>
             </tr>
             {% endfor %}
 
             <tr>
                 <td></td>
                 <td class="table__col _wide"><div class="table__col _right _wide _bold">Итого:</div></td>
-                <td class="table__col _bold">{{ summary.sells_sum_amount }}</td>
-                <td class="table__col _bold">{{ summary.tax_sum_amount }}</td>
-                <td class="table__col _bold _left">{{ summary.reward_sum_amount }}</td>
+                <td class="table__col _bold">{{ formatMoneyAmount(summary.sells_sum_amount) }}</td>
+                <td class="table__col _bold">{{ formatMoneyAmount(summary.tax_sum_amount) }}</td>
+                <td class="table__col _bold _left">{{ formatMoneyAmount(summary.reward_sum_amount) }}</td>
             </tr>
 
             </tbody>

@@ -6,10 +6,8 @@ use Books\Book\Models\Book;
 use Books\Book\Models\SellStatistics;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
-use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
-use Books\Book\Traits\FormatNumberTrait;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 
@@ -20,8 +18,7 @@ use RainLab\User\Models\User;
  */
 class CommercialSalesStatisticsDetail extends ComponentBase
 {
-    use FormatNumberTrait,
-        AccoutBooksTrait;
+    use AccoutBooksTrait;
 
     protected ?User $user;
     private int $book_id;
@@ -109,11 +106,11 @@ class CommercialSalesStatisticsDetail extends ComponentBase
                     'id' => $sell->id,
                     'type' => $type,
                     'count' => 1,
-                    'price' => $this->formatNumber($sell->price),
-                    'amount' => $this->formatNumber($sell->price),
+                    'price' => $sell->price,
+                    'amount' => $sell->price,
                     'tax_rate' => $sell->tax_rate . '%',
-                    'tax_value' => $this->formatNumber($sell->tax_value),
-                    'reward' => $this->formatNumber($sell->reward_value),
+                    'tax_value' => $sell->tax_value,
+                    'reward' => $sell->reward_value,
                 ];
             });
 
@@ -128,9 +125,9 @@ class CommercialSalesStatisticsDetail extends ComponentBase
                         && $itemI['price'] === $itemJ['price']
                         && $itemI['tax_rate'] === $itemJ['tax_rate']
                     ) {
-                        $itemJ['amount'] = $this->formatNumber((int)$itemJ['amount'] + (int)$itemI['amount']);
-                        $itemJ['tax_value'] = $this->formatNumber((int)$itemJ['tax_value'] + (int)$itemI['tax_value']);
-                        $itemJ['reward'] = $this->formatNumber((int)$itemJ['reward'] + (int)$itemI['reward']);
+                        $itemJ['amount'] = (int)$itemJ['amount'] + (int)$itemI['amount'];
+                        $itemJ['tax_value'] = (int)$itemJ['tax_value'] + (int)$itemI['tax_value'];
+                        $itemJ['reward'] = (int)$itemJ['reward'] + (int)$itemI['reward'];
                         $itemJ['count'] ++;
 
                         unset($statisticsData[$type][$keyI]);
@@ -145,9 +142,9 @@ class CommercialSalesStatisticsDetail extends ComponentBase
          */
         $summary = [
             'sells_count' => $sellStatistics->count(),
-            'sells_amount_total' => $this->formatNumber($sellStatistics->sum('price')),
-            'sells_tax_total' => $this->formatNumber($sellStatistics->sum('tax_value')),
-            'sells_reward_total' => $this->formatNumber($sellStatistics->sum('reward_value')),
+            'sells_amount_total' => $sellStatistics->sum('price'),
+            'sells_tax_total' => $sellStatistics->sum('tax_value'),
+            'sells_reward_total' => $sellStatistics->sum('reward_value'),
         ];
         $this->page['summary'] = $summary;
     }

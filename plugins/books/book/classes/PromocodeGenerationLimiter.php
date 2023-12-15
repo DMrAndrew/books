@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Books\Book\Classes;
 
-use Books\Book\Models\Book;
+use Books\Book\Models\Edition;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
@@ -24,7 +24,7 @@ class PromocodeGenerationLimiter
      * PromocodeGenerationLimiter constructor.
      *
      * @param Profile $profile Профиль пользователя
-     * @param Book $book Книга
+     * @param Edition $edition Издание
      * @param CarbonInterface|null $now Текущая дата и время
      * @param string|null $reason
      * @param CarbonInterface|null $expireIn
@@ -32,7 +32,7 @@ class PromocodeGenerationLimiter
 
     public function __construct(
         private Profile          $profile,
-        private Book             $book,
+        private Edition          $edition,
         private ?CarbonInterface  $now = null,
         private ?string          $reason = '',
         private ?CarbonInterface $expireIn = null
@@ -87,7 +87,7 @@ class PromocodeGenerationLimiter
 
     private function allowGenerateByBookLimits(): bool
     {
-        $exists = $this->book->ebook->promocodes()->currentMonthCreated()->count();
+        $exists = $this->edition->promocodes()->currentMonthCreated()->count();
 
         if ($exists >= self::PROMOCODES_COUNT_LIMIT_FOR_BOOK_PER_MONTH) {
             $this->reason = sprintf(self::BOOK_LIMIT_EXPIRED_REASON, self::PROMOCODES_COUNT_LIMIT_FOR_BOOK_PER_MONTH);
