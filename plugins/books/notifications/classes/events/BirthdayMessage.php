@@ -18,7 +18,7 @@ class BirthdayMessage extends BaseEvent
     {
         return [
             'type' => NotificationTypeEnum::SYSTEM->value,
-            'icon' => 'info-stroked-24',
+            'icon' => 'calendar',
             'template' => 'birthday_message',
         ];
     }
@@ -30,9 +30,6 @@ class BirthdayMessage extends BaseEvent
      */
     public static function makeParamsFromEvent(array $args, $eventName = null): array
     {
-        /**
-         * @var \Books\Book\Models\SystemMessage
-         */
         $recipients = Arr::get($args, 0);
 
         return array_merge(
