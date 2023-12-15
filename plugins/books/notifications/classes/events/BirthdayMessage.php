@@ -18,7 +18,7 @@ class BirthdayMessage extends BaseEvent
     {
         return [
             'type' => NotificationTypeEnum::SYSTEM->value,
-            'icon' => 'info-stroked-24',
+            'icon' => 'calendar',
             'template' => 'birthday_message',
         ];
     }
