@@ -21,7 +21,7 @@ class Plugin extends PluginBase
         'Books.Blacklists',
         'Books.Breadcrumbs',
         'Books.Profile',
-        'Book.Fileuploader',
+        'Books.Fileuploader',
     ];
 
     /**
