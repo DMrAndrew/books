@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ecdbb4c1d7765d35e9490cae08e20fab",
+    "content-hash": "00e2a5369655ed052f074b00a4ba47a3",
     "packages": [
         {
             "name": "abordage/laravel-last-modified",
@@ -224,6 +224,23 @@
                 "type": "path",
                 "url": "./plugins/books/breadcrumbs",
                 "reference": "b5255b26641302b1ed31ba9b60b014fef43cc4fd"
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "october-plugin",
+            "description": "No description provided yet...",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "books/certificates-plugin",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./plugins/books/certificates",
+                "reference": "6e981516c4f65f2dcfa9baf0f44a17fdd29d9aed"
             },
             "require": {
                 "composer/installers": "~1.0"
@@ -14672,7 +14689,6 @@
     "stability-flags": {
         "books/breadcrumbs-plugin": 20,
         "books/sitemap-plugin": 20,
-        "books/moderation-plugin": 20,
         "lemax10/asail": 20
     },
     "prefer-stable": true,

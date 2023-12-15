@@ -48,7 +48,8 @@
         "laravel-notification-channels/telegram": "^3.0",
         "ext-simplexml": "*",
         "ext-libxml": "*",
-        "books/moderation-plugin": "*"
+        "books/moderation-plugin": "*",
+        "books/certificates-plugin": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
