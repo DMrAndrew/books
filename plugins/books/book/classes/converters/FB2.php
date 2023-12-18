@@ -40,7 +40,6 @@ class FB2 extends BaseConverter
 
         $pattern = collect([
             '<?xml version="1.0" encoding="UTF-8"?>',
-            PHP_EOL,
             '<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:l="http://www.w3.org/1999/xlink">',
             $this->css(), //css
             $this->discription(), //description

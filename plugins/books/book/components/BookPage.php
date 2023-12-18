@@ -72,7 +72,7 @@ class BookPage extends ComponentBase
             ->with(['cycle' => fn ($cycle) => $cycle->booksEager()])
             ->find($this->book->id);
 
-        if($this->book?->profile){
+        if ($this->book?->profile) {
             $comments = $this->addComponent(Comments::class, 'comments');
             $comments->bindModel($this->book);
             $comments->bindModelOwner($this->book->profile);
@@ -221,7 +221,11 @@ class BookPage extends ComponentBase
                 throw new DownloadNotAllowed();
             }
 
-            return (new DownloadService($this->book, $format))->getFile()->download();
+            $h = ['Content-Type' => 'application/xml', 'Content-Description' => 'File Transfer'];
+            $file = (new DownloadService($this->book, $format))->getFile();
+
+            ob_get_clean();
+            return \Response::download($file->getLocalPath(), $file->getFilename(), $h);
         } catch (Exception $exception) {
             Flash::error($exception->getMessage());
             Log::error($exception->getMessage());
