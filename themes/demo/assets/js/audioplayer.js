@@ -79,10 +79,13 @@ class AudioPlayer {
             this.handleInputChange(ev.target);
         };
         this.handleInputChange(this.volumeInput);
-        this.seekInput.onchange = (ev) => this.playPause(true);
+        //this.seekInput.onchange = (ev) => this.playPause(true);
         this.seekInput.oninput = (ev) => {
+            let beforeChangeState = this.played;
+            this.playPause(false);
             this.changeSeek(ev);
             this.handleInputChange(ev.target);
+            this.playPause(beforeChangeState);
         };
         this.handleInputChange(this.seekInput);
         this.togglePrevBtn();
@@ -217,7 +220,6 @@ class AudioPlayer {
     changeSeek(ev){
         const delta = this.howlPlayer[this.songIndex].duration() / 100;
         this.howlPlayer[this.songIndex].seek(ev.target.value * delta);
-        this.playPause(false);
     }
     keyEvents(ev){
         if(ev.target && ev.target == this.container || ev.target.closest('.audioplayer')){
