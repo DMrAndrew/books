@@ -1,0 +1,13 @@
+title = "Личный кабинет - Сертификат"
+layout = "default"
+url = "/lc-certificate/create"
+meta_title = "Личный кабинет - Сертификат"
+breadcrumbs = "/"
+[session]
+security = "user"
+redirect = "/"
+[CertificateLC]
+==
+{% component 'Breadcrumbs' %}
+<!-- Тело страницы -->
+{% component 'CertificateLC' %}

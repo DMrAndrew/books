@@ -105,11 +105,9 @@ function getFreqString(int $count, int $days): string
     if (!$count) {
         return '';
     }
-    $text = "%s %s за %s";
-    $forHumans = CarbonInterval::days($days)->cascade()
-        ->forHumans(['parts' => 2]);
+    $forHumans = CarbonInterval::days($days)->cascade()->forHumans(['parts' => 2]);
 
-    return sprintf($text,
+    return sprintf("%s %s за %s",
         $count,
         word_form(['раз', 'раза', 'раз'], $count),
         str_replace('неделя', 'неделю', $forHumans)

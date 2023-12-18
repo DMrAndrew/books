@@ -42,6 +42,7 @@ use Books\Book\Components\ReadStatistic;
 use Books\Book\Components\Widget;
 use Books\Book\Console\CleanHTMLContent;
 use Books\Book\FormWidgets\ContentDiff;
+use Books\Book\FormWidgets\DeferredComments;
 use Books\Book\Jobs\GenreRaterExec;
 use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
@@ -85,6 +86,7 @@ class Plugin extends PluginBase
         'RainLab.User',
         'Books.Profile',
         'Books.Breadcrumbs',
+        'Books.AuthorPrograms',
         'Books.Moderation',
     ];
 

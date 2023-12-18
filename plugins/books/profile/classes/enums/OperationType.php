@@ -19,6 +19,9 @@ enum OperationType: int
     case SupportReceive = 10;
 
     case BalanceCorrection = 11;
+    case CertificateTransferSent = 12;
+    case CertificateTransferReceived = 13;
+    case CertificateTransferReturned = 14;
 
     public function label(): string
     {
@@ -36,6 +39,9 @@ enum OperationType: int
 
             self::SupportMake => 'Поддержка', // Вы поддержали автора на сумму 300 руб
             self::SupportReceive => 'Получение поддержки', // Вы получили 300 руб от Виктора
+            self::CertificateTransferSent => 'Отправка средств по сертификату', // Вы получили 300 руб от Виктора
+            self::CertificateTransferReceived => 'Получение средств по сертификату', // Вы получили 300 руб от Виктора
+            self::CertificateTransferReturned => 'Возврат средств по сертификату', // Вы получили 300 руб от Виктора
         };
     }
 
@@ -55,6 +61,9 @@ enum OperationType: int
 
             self::SupportMake => 'support_make',
             self::SupportReceive => 'support_receive',
+            self::CertificateTransferSent => 'certificate_sent',
+            self::CertificateTransferReceived => 'certificate_receive',
+            self::CertificateTransferReturned => 'certificate_returned',
         };
     }
 }

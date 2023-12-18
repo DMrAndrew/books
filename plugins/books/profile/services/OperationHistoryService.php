@@ -42,24 +42,49 @@ class OperationHistoryService implements OperationHistoryServiceContract
     }
 
     /**
-     * @param Order $order
+     * @param Profile $profile
      *
      * @return void
      * @throws ApplicationException
      */
-    public function addReceivingCertificateAnonymous(Order $order): void
+    public function addReceivingCertificateAnonymous(User $user, int $amount): void
     {
-        $user = $order->user;
-        $depositAmount = $order->deposits->sum('amount');
-
         $params = [
-            'depositAmount' => $depositAmount,
+            'amount' => $amount,
         ];
 
         OperationHistory::create([
             'user_id' => $user->id,
             'type' => OperationType::TransferOnBalance,
-            'message' => $this->prepareBody(OperationType::TransferOnBalance, $params),
+            'message' => $this->prepareBody(OperationType::CertificateTransferReceived, $params),
+        ]);
+    }
+
+    public function sentCertificate(User $user, int $amount, Profile $receiver): void
+    {
+        $params = [
+            'amount' => $amount,
+            'receiver' => $receiver
+        ];
+
+        OperationHistory::create([
+            'user_id' => $user->id,
+            'type' => OperationType::TransferOnBalance,
+            'message' => $this->prepareBody(OperationType::CertificateTransferSent, $params),
+        ]);
+    }
+
+    public function returnCertificate(User $user, int $amount, Profile $receiver): void
+    {
+        $params = [
+            'amount' => $amount,
+            'receiver' => $receiver
+        ];
+
+        OperationHistory::create([
+            'user_id' => $user->id,
+            'type' => OperationType::TransferOnBalance,
+            'message' => $this->prepareBody(OperationType::CertificateTransferReturned, $params),
         ]);
     }
 
@@ -219,7 +244,7 @@ class OperationHistoryService implements OperationHistoryServiceContract
 
     public function addReceivingCertificatePublic(Order $order): void
     {
-        // TODO: Implement addReceivingCertificatePublic() method.
+
     }
 
     /**
