@@ -37,6 +37,17 @@
         onPauseCallback: (player) => stopTrackingProgress(player),
         onEndCallback: (player) => nextChapter(player),
     };
+
+    var playPrevChapterBtn = document.getElementById("audioPrev");
+    if (playPrevChapterBtn) {
+        options.onPrevChapterBtnCallback = (player) => prevChapter(player);
+    }
+
+    var playNextChapterBtn = document.getElementById("audioNext");
+    if (playNextChapterBtn) {
+        options.onNextChapterBtnCallback = (player) => nextChapter(player);
+    }
+
     window.audioPlayer = null;
     initAudioPlayer(options);
 
@@ -70,8 +81,15 @@
         clearTimeout(progressT);
     }
 
+    function prevChapter(player) {
+        var playPrevChapterBtn = document.getElementById("audioPrev");
+        if (playPrevChapterBtn) {
+            playPrevChapterBtn.click();
+        }
+    }
+
     function nextChapter(player) {
-        let playNextChapterBtn = document.getElementById("audioNext")
+        var playNextChapterBtn = document.getElementById("audioNext");
         if (playNextChapterBtn) {
             playNextChapterBtn.click();
         }

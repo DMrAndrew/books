@@ -41,6 +41,8 @@ class AudioPlayer {
         this.onPlayCallback = options.onPlayCallback;
         this.onPauseCallback = options.onPauseCallback;
         this.onEndCallback = options.onEndCallback;
+        this.onNextChapterBtnCallback = options.onNextChapterBtnCallback;
+        this.onPrevChapterBtnCallback = options.onPrevChapterBtnCallback;
 
         this.howlPlayer = this.playlist.map((el, index) => {
             return new Howl({
@@ -166,22 +168,16 @@ class AudioPlayer {
     }
 
     prevSong () {
-        if(this.songIndex > 0){
+        if (typeof this.onPrevChapterBtnCallback === 'function') {
             this.stop();
-            this.songIndex = this.songIndex <= 0 ? 0 : this.songIndex - 1;
-            this.togglePrevBtn();
-            this.toggleNextBtn();
-            this.playPause(true);
+            this.onPrevChapterBtnCallback(self);
         }
     }
 
     nextSong () {
-        if(this.songIndex < this.songsLength-1){
+        if (typeof this.onNextChapterBtnCallback === 'function') {
             this.stop();
-            this.songIndex = this.songIndex >= this.songsLength-1 ? this.songsLength-1 : this.songIndex + 1;
-            this.togglePrevBtn();
-            this.toggleNextBtn();
-            this.playPause(true);
+            this.onNextChapterBtnCallback(self);
         }
     }
 
@@ -237,10 +233,12 @@ class AudioPlayer {
     }
 
     togglePrevBtn() {
-        this.prevBtn.classList.toggle('disabled', this.songIndex <= 0)
+        let force = typeof this.onPrevChapterBtnCallback != 'function';
+        this.prevBtn.classList.toggle('disabled', force);
     }
     toggleNextBtn() {
-        this.nextBtn.classList.toggle('disabled', this.songIndex >= this.songsLength-1)
+        let force = typeof this.onNextChapterBtnCallback != 'function';
+        this.nextBtn.classList.toggle('disabled', force);
     }
     handleSongEnd() {
         if(this.songIndex < this.songsLength-1){
