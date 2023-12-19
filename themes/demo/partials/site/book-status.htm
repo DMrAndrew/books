@@ -1,12 +1,12 @@
 {% set status = edition.status %}
-{% set editionTypeName = edition.type.label %}
+{% set editionTypeName = edition.type.labelShort %}
 
 {% if status.value == 'complete' %}
 <div class="book-card__info-wrap">
     <svg class="book-card__favorit-active">
         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme}}"></use>
     </svg>
-    <span>{{ editionTypeName }} завершена</span>
+    <span>Завершена</span>
 </div>
 {% endif %}
 
@@ -15,7 +15,7 @@
     <svg class="book-card__favorit-active">
         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>
     </svg>
-    <span>{{ editionTypeName }} в работе</span>
+    <span>В работе</span>
 </div>
 {% endif %}
 {% if status.value == 'hidden' or status.value == 'parsing' or status.value == 'parsing_failed' %}
@@ -23,7 +23,7 @@
     <svg class="book-card__favorit-active">
         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#eye-off-stroked-16' | theme}}"></use>
     </svg>
-    <span>{{ editionTypeName }} {{status.getLabel}}</span>
+    <span>{{status.getLabel}}</span>
 </div>
 {% endif %}
 {% if status.value == 'frozen' %}
@@ -31,6 +31,6 @@
     <svg class="book-card__favorit-active">
         <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#snowflake-stroked-16' | theme}}"></use>
     </svg>
-    <span>{{ editionTypeName }} заморожена</span>
+    <span>Заморожена</span>
 </div>
 {% endif %}
