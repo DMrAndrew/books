@@ -86,7 +86,8 @@
     "autoload": {
         "psr-4": {
             "System\\Console\\": "modules/system/console",
-            "Tizis\\FB2\\": "plugins/books/book/classes/FB2-Parser"
+            "Tizis\\FB2\\": "plugins/books/book/classes/FB2-Parser",
+            "PHPePub\\": "plugins/books/book/classes/PHPePub"
         },
         "files": [
             "helpers.php"
@@ -158,6 +159,10 @@
         "books/blog-plugin": {
             "type": "path",
             "url": "./plugins/books/blog"
+        },
+        "books/videoblog-plugin": {
+            "type": "path",
+            "url": "./plugins/books/videoblog"
         },
         "books/breadcrumbs-plugin": {
             "type": "path",

@@ -2,8 +2,6 @@
 
 namespace Books\Book\Classes\Converters;
 
-use Books\Book\Models\Book;
-
 /*****************************************************************************************
  *  Класс, преобразует @link \Books\Book\Models\Book в формат FictionBook (fb2)
  ******************************************************************************************/
@@ -19,21 +17,7 @@ class FB2 extends BaseConverter
 
     protected array $block_end = ['section', 'title', 'subtitle', 'cite', 'table'];
 
-    protected string $content;
-
-    protected bool $has_cover = true;
-
-    public function __construct(Book $book)
-    {
-        parent::__construct($book);
-        $this->content = '';
-        $this->has_cover = (bool) $book->cover->exists;
-    }
-
-    public function save()
-    {
-        file_put_contents('book.fb2', $this->generate());
-    }
+    protected string $content = '';
 
     public function generate(): string
     {
@@ -51,7 +35,7 @@ class FB2 extends BaseConverter
             '</title>',
             $this->body(),
             '</body>',
-            $this->has_cover ? $this->create_binary($this->book->cover->getLocalPath()) : '', //cover
+            $this->has_cover() ? $this->create_binary($this->book->cover->getLocalPath()) : '', //cover
             '</FictionBook>',
             PHP_EOL,
         ]);
@@ -70,7 +54,7 @@ class FB2 extends BaseConverter
 
     public function discription()
     {
-        $date = ($this->book->ebook->published_at ?? $this->book->ebook->created_at)->format('Y-m-d');
+        $date = $this->printDate()->format('Y-m-d');
         $pattern = collect([
             '<description>',
             '<title-info>',
@@ -80,7 +64,7 @@ class FB2 extends BaseConverter
             '<annotation>%s</annotation>',
             '<keywords>%s</keywords>',
             '<lang>%s</lang>',
-            $this->has_cover ? '<coverpage><image l:href="#%s"/></coverpage>' : '',
+            $this->has_cover() ? '<coverpage><image l:href="#%s"/></coverpage>' : '',
             sprintf('<date value="%s">%s</date>', $date, $date),
             '</title-info>',
             '<document-info>',
@@ -329,7 +313,7 @@ class FB2 extends BaseConverter
     public function body()
     {
 
-        $chapters = $this->book->ebook->chapters()->get();
+        $chapters = $this->chapters();
 
         return $chapters->map(function ($chapter) {
             // $content = $this->cleaner->prepare($chapter->content->body, $this->cleaner->strtoarray(collect($this->tags)->join('')));

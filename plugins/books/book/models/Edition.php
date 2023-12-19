@@ -159,7 +159,6 @@ class Edition extends Model implements ProductInterface
     ];
 
     public $hasOne = [
-
         'downloads' => [Downloads::class, 'key' => 'edition_id', 'otherKey' => 'id'],
     ];
 
@@ -215,9 +214,9 @@ class Edition extends Model implements ProductInterface
         return sprintf('%s %s', $count, word_form(['загрузка', 'загрузок', 'загрузок'], $count));
     }
 
-    public function isDownloadAllowed(User $user = null): bool
+    public function isDownloadAllowed(): bool
     {
-        return $this->download_allowed && ($this->isFree() || $this->isSold($user)) || ($user && $this->book->isAuthor($user->profile));
+        return $this->download_allowed;
     }
 
     public function getLastUpdatedAtAttribute(): ?Carbon
