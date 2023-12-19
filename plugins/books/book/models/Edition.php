@@ -202,7 +202,8 @@ class Edition extends Model implements ProductInterface
     {
         $this->attributes[self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN] ??= $this->revision_history()
             ->where('field', '=', self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN)
-            ->latest('id')->first()?->created_at;
+            ->latest('id')
+            ->first()?->created_at;
 
         return $this->attributes[self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN];
     }
@@ -211,7 +212,7 @@ class Edition extends Model implements ProductInterface
     {
         $count = $this->downloads?->count ?? 0;
 
-        return sprintf('%s %s', $count, word_form(['загрузка', 'загрузок', 'загрузок'], $count));
+        return sprintf('%s %s', $count, word_form(['загрузка', 'загрузки', 'загрузок'], $count));
     }
 
     public function isDownloadAllowed(): bool

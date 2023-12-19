@@ -87,7 +87,7 @@
         "psr-4": {
             "System\\Console\\": "modules/system/console",
             "Tizis\\FB2\\": "plugins/books/book/classes/FB2-Parser",
-            "PHPePub\\": "plugins/books/book/classes/PHPePub"
+            "MOBIClass\\": "plugins/books/book/classes/MOBIClass"
         },
         "files": [
             "helpers.php"
