@@ -15,7 +15,6 @@
     {% endif %}
     {% if book.audiobook and book.audiobook.isVisible %}
     <div class="book-card__info-wrapper">
-
         {% partial 'book/edition-info' edition=book.audiobook %}
         {% partial 'site/book-status' edition=book.audiobook %}
         {% if book.audiobook.sales_at %}

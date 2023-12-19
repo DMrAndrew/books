@@ -27,6 +27,7 @@ use October\Rain\Database\Traits\Purgeable;
 use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
 use Staudenmeir\EloquentHasManyDeep\HasRelationships;
@@ -322,7 +323,8 @@ class Edition extends Model implements ProductInterface
         return in_array($this->getOriginal('status'), [
             BookStatus::WORKING,
             BookStatus::COMPLETE
-        ]);
+        ])
+        || $this->book->profiles()->user(Auth::getUser())->exists();
     }
 
     public function setPublishAt(): void
