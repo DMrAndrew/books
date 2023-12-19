@@ -16,6 +16,10 @@ meta_title = "Конец ознакомительной части"
         <div class="common-pages__content">
             <div class="stop-free__container">
 
+                <h1 class="book-card-full__title ui-text-head--2 ui-text--bold" itemprop="name">
+                    {{ edition.type.label }} {{ edition.book.title }}
+                </h1>
+
                 <div class="">
                 {% if edition.type == typeEbook %}
                     Вы закончили читать бесплатный ознакомительный фрагмент. Купите доступ ко всем главам
@@ -55,7 +59,7 @@ meta_title = "Конец ознакомительной части"
                     </span>
                 </a>
 
-                <a href="/book-card/{{book.id}}"
+                <a href="/book-card/{{ edition.book.id }}"
                    class="ui-button ui-button-size--32 ui-button-view--3 ui-button--full ui-button--column">
                     <span class="ui-text--medium">Вернуться к карточке книги</span>
                 </a>

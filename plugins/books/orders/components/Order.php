@@ -21,8 +21,8 @@ use RainLab\User\Models\User;
  */
 class Order extends ComponentBase
 {
-    protected ?Book $book;
-    protected ?Edition $edition;
+    protected ?Book $book = null;
+    protected ?Edition $edition = null;
     private OrderService $orderService;
 
     public function componentDetails()
@@ -151,7 +151,7 @@ class Order extends ComponentBase
         if ($this->orderService->calculateAmount($order) === 0) {
             $this->orderService->approveOrder($order);
 
-            return Redirect::to($this->currentPageUrl());
+            return Redirect::to($this->orderService->getOrderSuccessRedirectPage($order));
         }
 
         /**
@@ -168,7 +168,7 @@ class Order extends ComponentBase
             try {
                 $this->orderService->payFromDeposit($order);
 
-                return Redirect::to($this->currentPageUrl());
+                return Redirect::to($this->orderService->getOrderSuccessRedirectPage($order));
 
             } catch (Exception $e) {
                 Log::error($e->getMessage());

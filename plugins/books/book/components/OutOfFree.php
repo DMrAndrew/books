@@ -6,7 +6,9 @@ use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
+use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Redirect;
 
 /**
  * OutOfFree Component
@@ -50,5 +52,16 @@ class OutOfFree extends ComponentBase
 
         $this->page['edition'] = $this->edition;
         $this->page['chapter'] = $this->chapter;
+    }
+
+    public function onRun()
+    {
+        $currentUserAlreadyOwnEdition = $this->edition->customers()->whereHas('user', function ($q) {
+            $q->where('user_id', Auth::getUser()?->id);
+        })->exists();
+
+        if ($currentUserAlreadyOwnEdition) {
+            return Redirect::to(sprintf('/book-card/%s', $this->edition->book->id));
+        }
     }
 }

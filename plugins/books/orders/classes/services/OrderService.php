@@ -318,7 +318,13 @@ class OrderService implements OrderServiceContract
      */
     public function getOrderSuccessRedirectPage(Order $order): string
     {
-        // get book page
+        // book from awards, donations
+        $bookId = $order->book_id;
+        if ($bookId) {
+            return url('book-card', ['book_id' => $bookId]);
+        }
+
+        // from edition
         $book = $order->editions()
             ->first()
             ?->orderable
