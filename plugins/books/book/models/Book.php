@@ -542,7 +542,6 @@ class Book extends Model
                 'author.profile',
                 'authors.profile',
             ])
-            ->whereHas('editions', fn ($e) => $e->visible())
             ->inLibExists()
             ->likeExists();
     }

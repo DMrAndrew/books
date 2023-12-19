@@ -3,6 +3,7 @@
 namespace Books\Book\Components;
 
 use Books\Book\Classes\ChapterService;
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Services\TextCleanerService;
@@ -68,8 +69,14 @@ class Chapterer extends ComponentBase
         }
         $this->user = Auth::getUser();
         $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
-        $this->ebook = $this->book->ebook;
-        $this->chapter = $this->ebook->chapters()->find($this->param('chapter_id')) ?? new Chapter();
+        $this->ebook = $this->getEbook();
+        $this->chapter = $this->ebook->chapters()
+                ->withDrafts()
+                ->find($this->param('chapter_id'))
+            ?? new Chapter([
+                'edition_id' => $this->ebook->id,
+                'type' => EditionsEnums::Audio,
+            ]);
         $this->chapterManager = ($this->ebook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->ebook);
         $this->prepareVals();
 
@@ -169,5 +176,14 @@ class Chapterer extends ComponentBase
             $trail->push($this->book->title, '/about-book/' . $this->book->id);
             $trail->push('Добавление текста');
         });
+    }
+
+    private function getEbook(): Edition
+    {
+        return $this->book->ebook
+            ?? $this->book->ebook->create([
+                'type' => EditionsEnums::Ebook,
+                'status' => BookStatus::HIDDEN
+            ]);
     }
 }

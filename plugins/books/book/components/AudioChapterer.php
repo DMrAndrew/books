@@ -81,7 +81,7 @@ class AudioChapterer extends ComponentBase
                 'edition_id' => $this->audiobook->id,
                 'type' => EditionsEnums::Audio,
             ]);
-        //$this->chapterManager = ($this->audiobook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->audiobook);
+
         $this->prepareVals();
 
         $component = $this->addComponent(
@@ -207,7 +207,7 @@ class AudioChapterer extends ComponentBase
     private function getAudioBook(): Edition
     {
         return $this->book->audiobook
-            ?? $this->book->audiobook()->create([
+            ?? $this->book->audiobook->create([
                 'type' => EditionsEnums::Audio,
                 'status' => BookStatus::HIDDEN
             ]);
