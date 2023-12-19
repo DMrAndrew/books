@@ -248,11 +248,14 @@ class Listing extends ComponentBase
      */
     public function books(): CustomPaginator
     {
+        $listingService = new ListingService($this->filter);
+
         return CustomPaginator::from(
-            (new ListingService($this->filter))
-                ->applyScopes()
-                ->getBuilder()
-                ->paginate($this->perPage))
+                $listingService
+                    ->applyScopes()
+                    ->getBuilder()
+                    ->paginate($this->perPage)
+            )
             ->setHandler($this->alias.'::onSearch')
             ->setScrollToContainer('.book-card');
     }

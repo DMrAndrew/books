@@ -7,7 +7,6 @@ use Books\Book\Classes\Enums\SortEnum;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Models\Tag;
 use Books\Catalog\Models\Genre;
-use Books\Catalog\Models\Type;
 use Cache;
 use Illuminate\Support\Collection;
 use Model;
@@ -33,6 +32,7 @@ class ListingFilter
     public function __construct(protected ?string $session_key = null)
     {
         $this->filters = collect();
+
         if (!$this->getSessionKey()) {
             $this->fromQuery();
         } else {
@@ -194,6 +194,7 @@ class ListingFilter
 
     public function query(string $class)
     {
+        /** @var Model $class */
         return $class::query()->public()->asOption();
     }
 

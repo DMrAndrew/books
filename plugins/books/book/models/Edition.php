@@ -457,6 +457,14 @@ class Edition extends Model implements ProductInterface
         return $builder->where($this->getQualifiedPriceColumn(), '<=', $price);
     }
 
+    public function scopeVisible(Builder $builder): Builder
+    {
+        return $builder->whereIn($this->getQualifiedStatusColumn(), [
+                BookStatus::WORKING,
+                BookStatus::COMPLETE
+            ]);
+    }
+
     public function scopeFree(Builder $builder, bool $free = true): Builder
     {
         return $builder->when($free,

@@ -531,17 +531,18 @@ class Book extends Model
     public function scopeDefaultEager(Builder $q): Builder
     {
         return $q->with([
-            'cover',
-            'tags',
-            'genres' => fn ($q) => $q->withPivot(['rate_number']),
-            'stats',
-            'ebook' => fn ($ebook) => $ebook->withActiveDiscountExist(),
-            'ebook.discount',
-            'audiobook' => fn ($audiobook) => $audiobook->withActiveDiscountExist(),
-            'audiobook.discount',
-            'author.profile',
-            'authors.profile',
-        ])
+                'cover',
+                'tags',
+                'genres' => fn ($q) => $q->withPivot(['rate_number']),
+                'stats',
+                'ebook' => fn ($ebook) => $ebook->withActiveDiscountExist(),
+                'ebook.discount',
+                'audiobook' => fn ($audiobook) => $audiobook->withActiveDiscountExist(),
+                'audiobook.discount',
+                'author.profile',
+                'authors.profile',
+            ])
+            ->whereHas('editions', fn ($e) => $e->visible())
             ->inLibExists()
             ->likeExists();
     }
