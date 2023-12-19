@@ -76,7 +76,7 @@ id:'bookerForm',
                 <input type="hidden" value="0"  name="download_allowed">
                 <input type="checkbox" value="1" hidden name="download_allowed"
 
-                       {{not book.ebook or  book.ebook.download_allowed ? 'checked' : ''  }}
+                       {{book.ebook.download_allowed ? 'checked' : ''  }}
                        >
                 <div class="ui-checkbox-checker">
                     <svg>
