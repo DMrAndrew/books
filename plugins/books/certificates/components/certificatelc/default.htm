@@ -4,10 +4,10 @@
     </div>
 </div>
 
-
+<div class="lc-book-text ui-container-fluid wrapper">
 {{
 form_ajax('onSave', {
-class:'lc-book-text ui-container-fluid wrapper',
+class:'',
 'data-request-validate':'true',
 'data-request-flash':'true',
 })
@@ -15,13 +15,14 @@ class:'lc-book-text ui-container-fluid wrapper',
 
 <input type="hidden" name="sender_id" value="{{ sender_id }}">
 
-<div class="create-book__container ui-container-fluid wrapper">
+<div class="create-book__container">
     <div class="create-book__column-left">
         <div class="personal-area__wrap _indent-large typographical-block">
             <div class="title-counter__top">
-                <label class="">Изображение <sup>150 x 150</sup></label>
+                <label class="">Изображение </label>
             </div>
             {% component 'certificateUploader' %}
+            <p class="title-counter__numbers">соотношение сторон изображения должно быть 4x3 </p>
         </div>
         <div class="ui-select-error" data-validate-for="certificateUploader"></div>
     </div>
@@ -31,8 +32,7 @@ class:'lc-book-text ui-container-fluid wrapper',
                 <label class="ui-input-label">Имя получателя</label>
                 <input class="ui-input-item _size-32 books-autocomplete {{ autofocus ? 'should-focus' : '' }}"
                        type="text"
-                       name="recipient_name"
-                       placeholder="Поиск"/>
+                       name="recipient_name"/>
                 <div class="ui-select-hitn"></div>
                 <div class="ui-select-error" data-validate-for="recipient_name"></div>
 
@@ -58,37 +58,42 @@ class:'lc-book-text ui-container-fluid wrapper',
 
 
 
-<div class="personal-area__wrap _indent-large typographical-block">
-    <div class="title-counter__top">
-        <label class="">Текст</label>
+    <div class="personal-area__wrap _indent-large typographical-block">
+        <div class="title-counter__top">
+            <label class="">Текст</label>
+            <label class="title-counter__numbers">
+                <span data-counter-number="title">0</span>/{{ maxLengthChars }}
+            </label>
+        </div>
+
+        <textarea id="description" name="description" maxlength="25"></textarea>
+        <div class="ui-select-hitn"></div>
+        <div class="ui-select-error" data-validate-for="description"></div>
     </div>
-    <script src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
-    <textarea id="description" name="description"></textarea>
-    <div class="ui-select-hitn"></div>
-    <div class="ui-select-error" data-validate-for="description"></div>
+
+    <div class="wrapper__header _indent-large ui-input">
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" name="anonymity" value="1" checked hidden>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">Не анонимно</span>
+        </label>
+    </div>
+
+    <div class="wrapper__header _indent-large ui-input">
+        <label class="personal-area__wrap _indent-medium ui-radio">
+            <input type="radio" name="anonymity" value="0" hidden>
+            <div class="ui-radio-checker"></div>
+            <span class="ui-radio-text">Анонимно</span>
+        </label>
+    </div>
+
+    <div class="wrapper__footer">
+        <button id="crt_btn" type="submit" class="ui-button ui-button-size--32 ui-button-view--2">
+            <span>Отправить</span>
+        </button>
+    </div>
 </div>
 
-<div class="wrapper__header _indent-large ui-input">
-    <label class="personal-area__wrap _indent-medium ui-radio">
-        <input type="radio" name="anonymity" value="1" checked hidden>
-        <div class="ui-radio-checker"></div>
-        <span class="ui-radio-text">Не анонимно</span>
-    </label>
-</div>
-
-<div class="wrapper__header _indent-large ui-input">
-    <label class="personal-area__wrap _indent-medium ui-radio">
-        <input type="radio" name="anonymity" value="0" hidden>
-        <div class="ui-radio-checker"></div>
-        <span class="ui-radio-text">Анонимно</span>
-    </label>
-</div>
-
-<div class="wrapper__footer">
-    <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2">
-        <span>Отправить</span>
-    </button>
-</div>
 
 {{ form_close() }}
 
@@ -102,8 +107,22 @@ class:'lc-book-text ui-container-fluid wrapper',
     }
 </style>
 <script>
-    initEditor('description');
-
+    let titleMaxLength = 0
+    let maxLengthCounter = {{ maxLengthChars }}
+    initEditor('description', {
+        thenFn: (editor) =>{
+            editor.plugins.get( 'WordCount' ).on( 'update', ( evt, stats ) => {
+                $('[data-counter-number="title"]').text(stats.characters);
+                if (stats.characters > maxLengthCounter) {
+                    document.getElementById('crt_btn').setAttribute("disabled","disabled")
+                    $('[data-counter-number="title"]').css('color', 'red')
+                } else {
+                    document.getElementById('crt_btn').removeAttribute("disabled","")
+                    $('[data-counter-number="title"]').css('color', '')
+                }
+            } );
+        }
+    });
 
     initAutocomplete({
         container: '#input-authors',
