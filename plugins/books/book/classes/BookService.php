@@ -121,6 +121,7 @@ class BookService
             'title' => strip_tags($info->getTitle()) ?: 'Без названия',
             'annotation' => $info->getAnnotation(),
             'status' => BookStatus::PARSING,
+            'download_allowed' => false
         ];
 
         $this->book->removeValidationRule('cover', 'max:3072');
