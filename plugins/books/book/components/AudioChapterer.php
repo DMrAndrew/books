@@ -164,13 +164,11 @@ class AudioChapterer extends ComponentBase
             if ($this->audiobook->shouldDeferredUpdate()) {
 
                 if ($this->chapter->exists) {
-
                     $this->chapter
                         ->fill($data->toArray())
                         ->saveAsDraft($data->toArray(), sessionKey: $this->getSessionKey());
                 } else {
 
-                    // working but not current
                     $this->chapter
                         ->fill($data->toArray())
                         ->save(sessionKey: $this->getSessionKey());
@@ -207,7 +205,7 @@ class AudioChapterer extends ComponentBase
     private function getAudioBook(): Edition
     {
         $audiobook = $this->book->audiobook
-            ?? $this->book->audiobook()->create([
+            ?? $this->book->audiobook()->make([
                 'type' => EditionsEnums::Audio,
                 'status' => BookStatus::HIDDEN
             ]);

@@ -197,7 +197,7 @@ class Chapter extends Model
 
     public function isPublished(): bool
     {
-        $published =  match($this->type) {
+        $published = match($this->type) {
             EditionsEnums::Audio => $this->audio
                                     && in_array($this->getOriginal('status'), [ChapterStatus::PUBLISHED]),
             EditionsEnums::Ebook => in_array($this->getOriginal('status'), [ChapterStatus::PUBLISHED]),
@@ -247,9 +247,14 @@ class Chapter extends Model
     public function scopePublic(Builder $builder, bool $withPlanned = false)
     {
         return $builder
-            ->where($this->qualifyColumn('length'), '>', 0)
+            //->where($this->qualifyColumn('length'), '>', 0) // подсчет текстов отложенный, подсчет длины аудиоглав - по запросу
             ->when($withPlanned, fn ($q) => $q->where(fn ($where) => $where->published()->orWhere(fn ($or) => $or->planned())), fn ($q) => $q->published())
             ->whereDoesntHave('deferred', fn ($deferred) => $deferred->deferred()->deferredCreate());
+    }
+
+    public function scopeWithLength(Builder $builder)
+    {
+        return $builder->where($this->qualifyColumn('length'), '>', 0);
     }
 
     public function scopeType(Builder $builder, ChapterStatus ...$status): Builder

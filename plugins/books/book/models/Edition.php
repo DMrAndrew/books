@@ -541,7 +541,6 @@ class Edition extends Model implements ProductInterface
             $builder()->update(['sales_type' => ChapterSalesType::FREE]);
         } else {
             $builder()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
-            //            $this->chapters()->offset($this->free_parts); ошибка
             $builder()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
         }
         $this->chapters()->public()->get()->each->setNeighbours();
