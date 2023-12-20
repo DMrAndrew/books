@@ -5,11 +5,16 @@ namespace Books\Book\Classes\Converters;
 use Books\Book\Classes\Enums\ElectronicFormats;
 use Books\Book\Models\Book;
 use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 use System\Models\File;
 
 class BaseConverter
 {
     public File $file;
+
+    public ?User $user;
+
+    public ?bool $isFullAccess = null;
 
     public ElectronicFormats $format = ElectronicFormats::FB2;
 
@@ -27,6 +32,13 @@ class BaseConverter
         return $this->file;
     }
 
+    public function user()
+    {
+        $this->user ??= Auth::getUser();
+
+        return $this->user;
+    }
+
     public function generate(): string
     {
         return '';
@@ -34,7 +46,7 @@ class BaseConverter
 
     public function filename(): string
     {
-        return sprintf('%s.%s', $this->book->title, $this->format->value);
+        return $this->book->title.'.'.$this->format->value;
     }
 
     public function save(): void
@@ -52,14 +64,36 @@ class BaseConverter
         return $this->book->ebook->published_at ?? $this->book->ebook->created_at;
     }
 
+    public function isFullAccess(): bool
+    {
+        $this->isFullAccess ??= $this->book->ebook->isFree() || ($this->user() && ($this->book->ebook->isSold($this->user()) || $this->book->isAuthor($this->user()->profile)));
+
+        return $this->isFullAccess;
+    }
+
     public function chapters()
     {
-        $user = Auth::getUser();
+        return $this->book->ebook->chapters
+            ->when(! $this->isFullAccess(), fn ($collection) => $collection->filter->isFree());
+    }
 
-        if ($this->book->ebook->isFree() || ($user && ($this->book->ebook->isSold($user) || $this->book->isAuthor($user->profile)))) {
-            return $this->book->ebook->chapters;
-        }
+    public function mark(): string
+    {
+        return sprintf('<i>Данный %s загружен на портале %s.</i>', $this->isFullAccess() ? 'текст' : 'ознакомительный фрагмент', $this->makeDomainLink());
+    }
 
-        return $this->book->ebook->chapters->filter->isFree();
+    public function endMark(): string
+    {
+        return $this->isFullAccess() ? '' : sprintf('<i>Конец ознакомительного фрагмента. Полный текст Вы можете приобрести на портале %s</i>', $this->makeBookLink());
+    }
+
+    public function makeDomainLink(): string
+    {
+        return sprintf('<a target="_blank" href="%s">Время книг</a>', request()->url());
+    }
+
+    public function makeBookLink(): string
+    {
+        return sprintf('<a target="_blank" href="%s">Время книг</a>', sprintf('%s/book-card/%s', request()->url(), $this->book->id));
     }
 }

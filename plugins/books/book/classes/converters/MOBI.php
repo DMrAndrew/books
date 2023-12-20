@@ -25,10 +25,7 @@ class MOBI extends BaseConverter
             '<strong>'.$this->book->profiles()->pluck('username')->join(', ').'</strong>'
         );
         $content->appendParagraph($this->printDate()->format('d.m.Y'));
-        $url = env('APP_URL', '');
-        $content->appendParagraph(
-            sprintf('<i>Данный текст был загружен на портале <a href="%s" target="_blank">Время книг</a>.</i>', $url)
-        );
+        $content->appendParagraph($this->mark());
         $content->appendParagraph('***');
         $content->appendPageBreak();
         foreach ($this->chapters() as $chapter) {
@@ -36,6 +33,8 @@ class MOBI extends BaseConverter
             $content->appendParagraph($chapter->content->body);
             $content->appendPageBreak();
         }
+        $content->appendParagraph($this->endMark());
+        $content->appendParagraph('***');
         $mobi->setContentProvider($content);
 
         return $mobi->toString();
