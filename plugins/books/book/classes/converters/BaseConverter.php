@@ -79,21 +79,16 @@ class BaseConverter
 
     public function mark(): string
     {
-        return sprintf('<i>Данный %s загружен на портале %s.</i>', $this->isFullAccess() ? 'текст' : 'ознакомительный фрагмент', $this->makeDomainLink());
+        return sprintf('<i>Данный %s загружен на портале %s.</i>', $this->isFullAccess() ? 'текст' : 'ознакомительный фрагмент', $this->makeLink());
     }
 
     public function endMark(): string
     {
-        return $this->isFullAccess() ? '' : sprintf('<i>Конец ознакомительного фрагмента. Полный текст Вы можете приобрести на портале %s</i>', $this->makeBookLink());
+        return $this->isFullAccess() ? '' : sprintf('<i>Конец ознакомительного фрагмента. Полный текст Вы можете приобрести на портале %s</i>', $this->makeLink());
     }
 
-    public function makeDomainLink(): string
+    public function makeLink(): string
     {
         return sprintf('<a target="_blank" href="%s">Время книг</a>', request()->url());
-    }
-
-    public function makeBookLink(): string
-    {
-        return sprintf('<a target="_blank" href="%s">Время книг</a>', sprintf('%s/book-card/%s', request()->url(), $this->book->id));
     }
 }
