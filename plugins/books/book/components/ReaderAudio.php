@@ -62,7 +62,7 @@ class ReaderAudio extends ComponentBase
     public function init()
     {
         $this->user = Auth::getUser();
-        $this->audiobook_id = (int) $this->param('audiobook_id') ?? abort(404);
+        $this->audiobook_id = (int) $this->param('book_id') ?? abort(404);
         $this->book = Book::findForPublic($this->audiobook_id, $this->user);
 
         if (!$this->book?->audiobook) {
