@@ -62,6 +62,7 @@ use WordForm;
  * @property  Profile profile
  *
  * @method HasOne ebook
+ * @method HasOne audiobook
  *
  * @property  Edition ebook
  * @property  Edition audiobook

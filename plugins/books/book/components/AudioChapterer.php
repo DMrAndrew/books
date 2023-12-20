@@ -206,11 +206,13 @@ class AudioChapterer extends ComponentBase
 
     private function getAudioBook(): Edition
     {
-        return $this->book->audiobook
-            ?? $this->book->audiobook->create([
+        $audiobook = $this->book->audiobook
+            ?? $this->book->audiobook()->create([
                 'type' => EditionsEnums::Audio,
                 'status' => BookStatus::HIDDEN
             ]);
+
+        return $audiobook;
     }
 
     public function getSessionKey()
