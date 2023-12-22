@@ -46,7 +46,7 @@ meta_title = "Конец ознакомительной части"
                     {% endif %}
 
                     <span>
-                    {% if edition.discount_exists %}
+                    {% if edition.priceTag.discountExists %}
                         <span>
                             <span class="ui-text--medium">Купить {{edition.priceTag.price}} ₽
                                 <span class="ui-button-text-initial ui-text--lt">{{edition.priceTag.initialPrice}} ₽</span>

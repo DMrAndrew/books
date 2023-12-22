@@ -11,7 +11,7 @@
                     {{book.title}}
                 </div>
             </a>
-            {% if book.ebook.discount_exists %}
+            {% if book.ebook.priceTag.discountExists %}
             <div class="book-mini-card__price ui-tooltip" data-tooltip="Электронная книга">
                 <svg>
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>
@@ -19,7 +19,7 @@
                 {% partial 'book/book-price' edition=book.ebook %}
             </div>
             {% endif %}
-            {% if book.audiobook.discount_exists %}
+            {% if book.audiobook.priceTag.discountExists %}
             <div class="book-mini-card__price ui-tooltip" data-tooltip="Аудиокнига">
                 <svg>
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-16' | theme}}"></use>

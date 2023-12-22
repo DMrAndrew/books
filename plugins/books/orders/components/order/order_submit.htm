@@ -28,16 +28,16 @@
 
                     <!-- книга -->
                     <div class="buy-book-modal__wrapper-item">
-                        <span class="buy-book-modal__text">{{book.title}} ({{edition.type.labelShort}})</span>
-                        <div class="buy-book-modal__price">{{edition.priceTag.price}} ₽</div>
+                        <span class="buy-book-modal__text">{{ book.title }} ({{ edition.type.labelShort }})</span>
+                        <div class="buy-book-modal__price">{{ edition.priceTag.price }} ₽</div>
                     </div>
 
                     <!-- награды -->
                     {% for award in availableAwards %}
                         {% if award.id in order.awards.pluck('orderable_id').toArray %}
                             <div class="buy-book-modal__wrapper-item">
-                                <span class="buy-book-modal__text">{{award.name}}</span>
-                                <div class="buy-book-modal__price">{{award.price}} ₽</div>
+                                <span class="buy-book-modal__text">{{ award.name }}</span>
+                                <div class="buy-book-modal__price">{{ award.price }} ₽</div>
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -46,7 +46,7 @@
                     <div class="buy-book-modal__wrapper-item">
                         <span class="buy-book-modal__text">Поддержка автора</span>
                         <div class="buy-book-modal__price" id="orderDonationAmountSpawn">
-                            {{order.donations.sum('amount')}} ₽
+                            {{ order.donations.sum('amount') }} ₽
                         </div>
                     </div>
 
