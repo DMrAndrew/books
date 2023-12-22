@@ -30,6 +30,7 @@ class CertificateLC extends ComponentBase
      * @var OperationHistoryService|\Illuminate\Contracts\Foundation\Application|mixed
      */
     private mixed $operationHistoryService;
+    private int $maxLengthChars;
 
     public function componentDetails()
     {
@@ -52,6 +53,7 @@ class CertificateLC extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
+        $this->maxLengthChars = 250;
         $this->user = Auth::getUser() ?? throw new ApplicationException('User required');
         $this->operationHistoryService = app(OperationHistoryService::class);
         $component = $this->addComponent(
@@ -73,6 +75,7 @@ class CertificateLC extends ComponentBase
     {
         $this->page['sender_id'] = $this->user->profile->id;
         $this->page['user_amount'] = $this->user->proxyWallet()->balance;
+        $this->page['maxLengthChars'] = $this->maxLengthChars;
     }
 
     public function onSearchAuthor()

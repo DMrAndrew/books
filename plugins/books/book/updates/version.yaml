@@ -104,9 +104,6 @@
 1.0.31:
     - 'Внешние ключи'
     - update_foreign_keys.php
-1.0.33:
-    - 'Прогресс прослушивания аудиокниги'
-    - create_audio_read_progresses_table.php
-1.0.34:
-    - 'Премодерация Глав'
-    - update_chapters_has_drafts.php
+1.0.35:
+    - 'Кол-во загрузок'
+    - create_downloads_table.php

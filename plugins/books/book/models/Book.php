@@ -2,6 +2,7 @@
 
 namespace Books\Book\Models;
 
+use Books\Book\Classes\DownloadService;
 use Books\Book\Classes\Enums\AgeRestrictionsEnum;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
@@ -242,6 +243,10 @@ class Book extends Model
         return new Reader($this, ...func_get_args());
     }
 
+    public function downloadService(): DownloadService
+    {
+        return new DownloadService($this);
+    }
     public static function findForPublic(int $book_id, User $user = null)
     {
         return Book::query()->public()->find($book_id) // открыта в публичной зоне

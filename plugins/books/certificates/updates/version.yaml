@@ -1,4 +1,4 @@
-1.0.1: First version of Certificates
-1.0.2:
+v1.0.1: First version of Certificates
+v1.0.2:
     - 'Создание таблицы трансфера баланса по подарочному сертификату'
     - create_certificate_transactions_table.php
