@@ -15,6 +15,7 @@ recordsPerView = 11
 [session]
 [socialconnect]
 [Breadcrumbs]
+[CertificateModal]
 ==
 <!DOCTYPE html>
 <html lang="ru">
@@ -41,6 +42,8 @@ recordsPerView = 11
 <div class="footer-space"></div>
 <footer id="layout-footer">
     {% partial 'site/footer' %}
+    {% component 'CertificateModal' %}
+    <div id="certificate-modal"></div>
 </footer>
 {% ajaxPartial 'controls/flash' %}
 {% partial 'modals/confirm' %}
