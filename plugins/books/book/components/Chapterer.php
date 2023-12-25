@@ -181,7 +181,7 @@ class Chapterer extends ComponentBase
     private function getEbook(): Edition
     {
         $ebook = $this->book->ebook
-            ?? $this->book->ebook()->make([
+            ?? $this->book->ebook()->create([
                 'type' => EditionsEnums::Ebook,
                 'status' => BookStatus::HIDDEN
             ]);

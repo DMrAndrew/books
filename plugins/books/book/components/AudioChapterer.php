@@ -74,13 +74,7 @@ class AudioChapterer extends ComponentBase
         $this->user = Auth::getUser();
         $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
         $this->audiobook = $this->getAudioBook();
-        $this->chapter = $this->audiobook->chapters()
-                ->withDrafts()
-                ->find($this->param('chapter_id'))
-            ?? new Chapter([
-                'edition_id' => $this->audiobook->id,
-                'type' => EditionsEnums::Audio,
-            ]);
+        $this->chapter = $this->getChapter();
 
         $this->prepareVals();
 
@@ -205,12 +199,28 @@ class AudioChapterer extends ComponentBase
     private function getAudioBook(): Edition
     {
         $audiobook = $this->book->audiobook
-            ?? $this->book->audiobook()->make([
+            ?? $this->book->audiobook()->create([
                 'type' => EditionsEnums::Audio,
                 'status' => BookStatus::HIDDEN
             ]);
 
         return $audiobook;
+    }
+
+    private function getChapter()
+    {
+        $chapter = $this->audiobook->chapters()
+            ->withDrafts()
+            ->find($this->param('chapter_id'));
+
+        if ( !$chapter) {
+            $chapter = $this->audiobook->chapters()->make([
+                'edition_id' => $this->audiobook->id,
+                'type' => EditionsEnums::Audio,
+            ]);
+        }
+
+        return $chapter;
     }
 
     public function getSessionKey()
