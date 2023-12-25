@@ -185,11 +185,53 @@ class AudioPlayer {
     }
 
     prev30sec () {
+        let beforeChangeState = false;
+        if (this.played) {
+            beforeChangeState = true;
+        }
+
+        if (beforeChangeState) {
+            this.playPause(!beforeChangeState);
+            this.togglePlayBtn(!beforeChangeState)
+        } else {
+            this.playPause(beforeChangeState);
+            this.togglePlayBtn(beforeChangeState)
+        }
+
         this.howlPlayer[this.songIndex].seek(this.howlPlayer[this.songIndex].seek() - 30)
+
+        if (beforeChangeState) {
+            this.playPause(beforeChangeState);
+            this.togglePlayBtn(beforeChangeState)
+        } else {
+            this.playPause(!beforeChangeState);
+            this.togglePlayBtn(!beforeChangeState);
+        }
     }
 
     next30sec () {
+        let beforeChangeState = false;
+        if (this.played) {
+            beforeChangeState = true;
+        }
+
+        if (beforeChangeState) {
+            this.playPause(!beforeChangeState);
+            this.togglePlayBtn(!beforeChangeState)
+        } else {
+            this.playPause(beforeChangeState);
+            this.togglePlayBtn(beforeChangeState)
+        }
+
         this.howlPlayer[this.songIndex].seek(this.howlPlayer[this.songIndex].seek() + 30)
+
+        if (beforeChangeState) {
+            this.playPause(beforeChangeState);
+            this.togglePlayBtn(beforeChangeState)
+        } else {
+            this.playPause(!beforeChangeState);
+            this.togglePlayBtn(!beforeChangeState);
+        }
     }
 
     changeRate() {
