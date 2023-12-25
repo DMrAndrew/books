@@ -42,7 +42,7 @@ redirect = "/"
 
         payments.pay("charge", {
                 publicId: "{{ paymentData.publicId }}",
-                SuccessRedirectUrl: "{{ successRedirectUrl }}",
+                SuccessRedirectUrl: "{{ successUrl ?? successRedirectUrl | app }}",
                 description: "{{ paymentData.description }}",
                 amount: amount,
                 currency: "RUB",
@@ -61,8 +61,8 @@ redirect = "/"
                 },
                 configuration: {
                     common: {
-                        successRedirectUrl: "{{ successRedirectUrl }}",
-                        failRedirectUrl: "{{ failRedirectUrl }}"
+                        successRedirectUrl: "{{ successUrl ?? successRedirectUrl | app }}",
+                        failRedirectUrl: "{{ successUrl ?? failRedirectUrl | app }}"
                     }
                 },
             },
