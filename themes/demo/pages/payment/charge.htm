@@ -37,8 +37,8 @@ redirect = "/"
         });
 
         {% set bookPageId = order.products.first.book_id ?? order.editions.first.orderable.book_id %}
-        {% set successRedirectUrl = config('app.url') ~ "/book-card/" ~ bookPageId %}
-        {% set failRedirectUrl = config('app.url') ~"/book-card/" ~ bookPageId %}
+        {% set successRedirectUrl = "/book-card/" ~ bookPageId %}
+        {% set failRedirectUrl = "/book-card/" ~ bookPageId %}
 
         payments.pay("charge", {
                 publicId: "{{ paymentData.publicId }}",
