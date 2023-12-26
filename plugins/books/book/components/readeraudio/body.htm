@@ -40,11 +40,13 @@
 
     var playPrevChapterBtn = document.getElementById("audioPrev");
     if (playPrevChapterBtn) {
+        Howler.stop();
         options.onPrevChapterBtnCallback = (player) => prevChapter(player);
     }
 
     var playNextChapterBtn = document.getElementById("audioNext");
     if (playNextChapterBtn) {
+        Howler.stop();
         options.onNextChapterBtnCallback = (player) => nextChapter(player);
     }
 

@@ -321,6 +321,10 @@ class AudioPlayer {
 function initAudioPlayer(options = {}) {
     Howler.stop();
 
+    addEventListener('render', function() {
+        Howler.stop();
+    });
+
     if(!window.audioPlayer){
         window.audioPlayer = [];
     }
