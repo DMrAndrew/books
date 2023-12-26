@@ -276,7 +276,7 @@ class ReaderAudio extends ComponentBase
             }
 
             /** Название книги */
-            $trail->push($this->book->title);
+            $trail->push($this->book->title, url('/book-card/' . $this->book->id));
         });
     }
 

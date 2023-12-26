@@ -564,7 +564,7 @@ class Book extends Model
 
     public function scopeWithChapters(Builder $builder): Builder
     {
-        return $builder->with(['ebook.chapters' => fn ($i) => $i->public()]);
+        return $builder->with(['ebook.chapters' => fn ($i) => $i->public()->withLength()]);
     }
 
     public function scopeAfterPublishedAtDate(Builder $builder, Carbon|int $date): Builder

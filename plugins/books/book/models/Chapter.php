@@ -247,11 +247,11 @@ class Chapter extends Model
     public function scopePublic(Builder $builder, bool $withPlanned = false)
     {
         return $builder
-            //->where($this->qualifyColumn('length'), '>', 0) // подсчет текстов отложенный, подсчет длины аудиоглав - по запросу
             ->when($withPlanned, fn ($q) => $q->where(fn ($where) => $where->published()->orWhere(fn ($or) => $or->planned())), fn ($q) => $q->published())
             ->whereDoesntHave('deferred', fn ($deferred) => $deferred->deferred()->deferredCreate());
     }
 
+    // подсчет текстов отложенный, подсчет длины аудиоглав - по запросу
     public function scopeWithLength(Builder $builder)
     {
         return $builder->where($this->qualifyColumn('length'), '>', 0);
@@ -271,7 +271,7 @@ class Chapter extends Model
 
     public function setNeighbours(): void
     {
-        $builder = fn () => $this->edition()->first()->chapters()->public();
+        $builder = fn () => $this->edition()->first()->chapters()->public()->withLength();
         $sort_order = $this->{$this->getSortOrderColumn()};
         $this->update([
             'prev_id' => $builder()->maxSortOrder($sort_order)->latest($this->getSortOrderColumn())->first()?->id,
