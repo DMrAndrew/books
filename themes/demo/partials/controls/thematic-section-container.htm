@@ -2,13 +2,11 @@
     <div class="thematic-section__card-container swiper-wrapper">
         {% for book in books %}
             <div class="book-mini-card _mobile-size swiper-slide">
-
+                <a class="book-mini-card" href="/book-card/{{ book.id }}">
                 <div class="book-mini-card__image">
-                    <a href="/book-card/{{ book.id }}">
                         <img src="{{ book.cover.getThumb(190,300) }}"
                              alt="Обложка для книги {{ book.title }}"
                              loading="lazy"/>
-                    </a>
                     {% if book.ebook.priceTag.discountExists %}
                         {% partial 'SaleTagBlock::default' discountInfo = book.ebook.priceTag.getDiscountInfo %}
                     {% endif %}
@@ -16,7 +14,7 @@
                 <div class="book-mini-card__title">
                     {{ book.title }}
                 </div>
-
+                </a>
                 {% if book.ebook.discount_exists %}
                     <div class="book-mini-card__price ui-tooltip" data-tooltip="Электронная книга">
                         <svg>

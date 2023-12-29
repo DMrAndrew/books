@@ -1,17 +1,15 @@
 <div class="book-card">
     <div class="book-card__body">
         <div class="book-card__column-left">
-
+            <a class="book-mini-card" href="/book-card/{{ book.id }}">
             <div class="book-mini-card__image">
-                <a href="/book-card/{{ book.id }}">
                     <img src="{{ book.cover.getThumb(210,300) }}"
                          alt="Обложка для книги {{ book.title }}" loading="lazy">
-                </a>
                 {% if book.ebook.priceTag.discountExists %}
                     {% partial 'SaleTagBlock::default' discountInfo = book.ebook.priceTag.getDiscountInfo %}
                 {% endif %}
             </div>
-
+            </a>
 
             {% if user and not is_not_public_view %}
                 <button class="book-card__bookmark"
