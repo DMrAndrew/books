@@ -44,6 +44,12 @@ class NotificationsInHeader extends ComponentBase
     public function init(): void
     {
         $this->service = app(NotificationService::class);
+
+        if (! Auth::getUser()) {
+            return;
+        }
+
+        $this->page['unreadNotifications'] = $this->service->getCountUnreadNotifications(Auth::getUser()->profile);
     }
 
     public function onRun(): void
@@ -51,8 +57,6 @@ class NotificationsInHeader extends ComponentBase
         if (! Auth::getUser()) {
             return;
         }
-
-        $this->page['unreadNotifications'] = $this->service->getCountUnreadNotifications(Auth::getUser()->profile);
     }
 
     /**
