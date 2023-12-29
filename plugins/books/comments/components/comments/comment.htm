@@ -142,3 +142,11 @@
 {% if comment.parent_id %}
 {% partial '@list' comments=comment.children %}
 {% endif %}
+
+<style>
+    .comments-comment__text {
+        overflow-wrap: normal;  /* не поддерживает IE, Firefox; является копией word-wrap */
+        word-wrap: break-word;
+        word-break: break-all; /* более приоритетно */
+    }
+</style>
