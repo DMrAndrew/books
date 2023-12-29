@@ -39,23 +39,6 @@ class OperationHistoryInHeader extends ComponentBase
         }
     }
 
-    public function onRun(): void
-    {
-        //$this->page['operations'] = $this->getOperations();
-    }
-
-//    private function getOperations()
-//    {
-//        if (!Auth::getUser()) {
-//            return null;
-//        }
-//
-//        return Auth::getUser()
-//            ->operations()
-//            ->limit((int) $this->property('operationsPerView', 10))
-//            ->get();
-//    }
-
     /**
      * @return array
      */
@@ -72,6 +55,7 @@ class OperationHistoryInHeader extends ComponentBase
 
         return [
             '#operations-in-header-list' => $this->renderPartial('@list'),
+            '#operations-in-header-list-mobile' => $this->renderPartial('@list-mobile'),
         ];
     }
 }
