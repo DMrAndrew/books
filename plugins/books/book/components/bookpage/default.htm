@@ -2,8 +2,11 @@
 <div itemscope itemtype="http://schema.org/Book">
 <div class="ui-container-fluid">
     <div class="book-card-full _indent">
-        <div itemprop="image" itemscope itemtype="http://schema.org/ImageObject">
+        <div class="book-card-full__image" itemprop="image" itemscope itemtype="http://schema.org/ImageObject">
             <img itemprop="contentUrl" class="book-card-full__image" src="{{book.cover.getThumb(334,488)}}" alt="Обложка для книги {{book.title}}" style="object-fit: fill" >
+            {% if book.ebook.priceTag.discountExists %}
+                {% partial 'SaleTagBlock::default' discountInfo = book.ebook.priceTag.getDiscountInfo %}
+            {% endif %}
         </div>
         <div class="book-card-full__description">
             <h1 class="book-card-full__title ui-text-head--2 ui-text--bold" itemprop="name">{{book.h1 ?? book.title}}</h1>

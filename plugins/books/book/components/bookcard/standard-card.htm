@@ -1,61 +1,72 @@
 <div class="book-card">
     <div class="book-card__body">
         <div class="book-card__column-left">
-            <a href="/book-card/{{book.id}}">
-                <img class="book-card__image" src="{{book.cover.getThumb(210,300)}}" alt="Обложка для книги {{book.title}}" loading="lazy">
-            </a>
+
+            <div class="book-mini-card__image">
+                <a href="/book-card/{{ book.id }}">
+                    <img src="{{ book.cover.getThumb(210,300) }}"
+                         alt="Обложка для книги {{ book.title }}" loading="lazy">
+                </a>
+                {% if book.ebook.priceTag.discountExists %}
+                    {% partial 'SaleTagBlock::default' discountInfo = book.ebook.priceTag.getDiscountInfo %}
+                {% endif %}
+            </div>
+
 
             {% if user and not is_not_public_view %}
-            <button class="book-card__bookmark"
-                    data-request="onAddLib"
-                    data-request-update="{ _self: true }"
-                    data-request-data="book_id:{{book.id}}"
-            >
-                <svg class="book-card__bookmark-icon _color-violet {{book.in_user_lib ? 'active' : ''}}">
-                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-filled-check-16' | theme}}"></use>
-                </svg>
-                <svg class="book-card__bookmark-icon _color-black {{book.in_user_lib ? '' : 'active'}}">
-                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme}}"></use>
-                </svg>
-            </button>
+                <button class="book-card__bookmark"
+                        data-request="onAddLib"
+                        data-request-update="{ _self: true }"
+                        data-request-data="book_id:{{ book.id }}"
+                >
+                    <svg class="book-card__bookmark-icon _color-violet {{ book.in_user_lib ? 'active' : '' }}">
+                        <use
+                            xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#bookmark-filled-check-16' | theme }}"></use>
+                    </svg>
+                    <svg class="book-card__bookmark-icon _color-black {{ book.in_user_lib ? '' : 'active' }}">
+                        <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme }}"></use>
+                    </svg>
+                </button>
             {% endif %}
         </div>
         <div class="book-card__column-right">
             {% if is_not_public_view %}
-            <div class="book-card__action">
-                <a data-turbo="false" href="/about-book/{{book.id}}"
-                   class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">
-                    <svg class="square-16">
-                        <use
-                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme}}"></use>
-                    </svg>
-                    <span class="ui-button--text-hidden">Редактировать</span>
-                </a>
-                <div class="">
-                    <svg class="chapter-book__drag square-24 handle hide-mobile">
-                        <use
-                            xlink:href="{{'assets/icon-sprite/svg-sprite.svg#move-vertical-24' | theme}}"></use>
-                    </svg>
+                <div class="book-card__action">
+                    <a data-turbo="false" href="/about-book/{{ book.id }}"
+                       class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">
+                        <svg class="square-16">
+                            <use
+                                xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#pencil-stroked-16' | theme }}"></use>
+                        </svg>
+                        <span class="ui-button--text-hidden">Редактировать</span>
+                    </a>
+                    <div class="">
+                        <svg class="chapter-book__drag square-24 handle hide-mobile">
+                            <use
+                                xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#move-vertical-24' | theme }}"></use>
+                        </svg>
+                    </div>
                 </div>
-            </div>
             {% endif %}
-            <a data-turbo="false" href="/book-card/{{book.id}}" class="book-card__title ui-text-head--3 ui-text--bold">
+            <a data-turbo="false" href="/book-card/{{ book.id }}"
+               class="book-card__title ui-text-head--3 ui-text--bold">
                 {% if index_number %}
-                <span class="book-card__number ui-text-body--2">{{index_number}}</span>
+                    <span class="book-card__number ui-text-body--2">{{ index_number }}</span>
                 {% endif %}
-                {{book.title}}
+                {{ book.title }}
             </a>
 
             <div class="book-card__genres tags-list">
                 {% for author in book.orderedAuthors %}
-                <a href="/author-page/{{author.profile.id}}" class="book-card-full__author ui-link _violet">{{author.profile.username}}</a>
+                    <a href="/author-page/{{ author.profile.id }}"
+                       class="book-card-full__author ui-link _violet">{{ author.profile.username }}</a>
                 {% endfor %}
             </div>
 
 
             {% partial 'book/ebook-card-info' book=book %}
             <div class="book-card__description typographical-block">
-                {{book.annotation|raw}}
+                {{ book.annotation|raw }}
             </div>
             <div class="book-card__genres tags-list">
                 {% partial 'controls/tags-link-list' tags=book.tags %}
@@ -63,9 +74,9 @@
             <div class="book-card__body-footer">
                 <div class="book-card__raiting">
                     <svg>
-                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme}}"></use>
+                        <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#star-filled-16' | theme }}"></use>
                     </svg>
-                    <span>{{book.stats.rate|default('0')}}</span>
+                    <span>{{ book.stats.rate|default('0') }}</span>
                 </div>
                 <div class="book-card__book-list tags-list">
                     {% partial 'controls/genres-link-list' genres=book.genres %}
@@ -73,5 +84,5 @@
             </div>
         </div>
     </div>
-    {% partial '@book-card-footer' %}
+    {% partial 'bookCard::book-card-footer' %}
 </div>

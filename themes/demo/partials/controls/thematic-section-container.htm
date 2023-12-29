@@ -1,35 +1,41 @@
 <div class="thematic-section__container swiper">
     <div class="thematic-section__card-container swiper-wrapper">
         {% for book in books %}
-        <div class="book-mini-card _mobile-size swiper-slide">
-            <a href="/book-card/{{book.id}}">
-                <img src="{{book.cover.getThumb(190,300)}}"
-                     class="book-mini-card__image"
-                     alt="Обложка для книги {{book.title}}"
-                     loading="lazy"/>
-                <div class="book-mini-card__title">
-                    {{book.title}}
+            <div class="book-mini-card _mobile-size swiper-slide">
+
+                <div class="book-mini-card__image">
+                    <a href="/book-card/{{ book.id }}">
+                        <img src="{{ book.cover.getThumb(190,300) }}"
+                             alt="Обложка для книги {{ book.title }}"
+                             loading="lazy"/>
+                    </a>
+                    {% if book.ebook.priceTag.discountExists %}
+                        {% partial 'SaleTagBlock::default' discountInfo = book.ebook.priceTag.getDiscountInfo %}
+                    {% endif %}
                 </div>
-            </a>
-            {% if book.ebook.discount_exists %}
-            <div class="book-mini-card__price ui-tooltip" data-tooltip="Электронная книга">
-                <svg>
-                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>
-                </svg>
-                {% partial 'book/book-price' edition=book.ebook %}
+                <div class="book-mini-card__title">
+                    {{ book.title }}
+                </div>
+
+                {% if book.ebook.discount_exists %}
+                    <div class="book-mini-card__price ui-tooltip" data-tooltip="Электронная книга">
+                        <svg>
+                            <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#book-16' | theme }}"></use>
+                        </svg>
+                        {% partial 'book/book-price' edition=book.ebook %}
+                    </div>
+                {% endif %}
             </div>
-            {% endif %}
-        </div>
         {% endfor %}
     </div>
     <div class="thematic-section__nav _left">
         <svg>
-            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
+            <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme }}"></use>
         </svg>
     </div>
     <div class="thematic-section__nav _right">
         <svg>
-            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme}}"></use>
+            <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#arrow-stroked-right-24' | theme }}"></use>
         </svg>
     </div>
 </div>
