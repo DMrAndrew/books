@@ -1,31 +1,36 @@
-{% if operations | length > 0 %}
-<div class="notifications-page">
-    <div class="ui-container-fluid">
+<div class="header__actions-wrapper">
 
-        {% for operation in operations %}
-        <div class="notification-menu__wrapper">
-            <div class="notification-menu__content">
-                <div class="notification-menu__text notification-menu__content-wrapper">
-                    {{ operation.message | raw }}
+    <div class="header__actions-item" data-header-action="wallet"
+         onclick="oc.ajax(`OperationHistoryInHeader::onViewHeaderOperations`)">
+        <svg class="square-24">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme}}"></use>
+        </svg>
+        <div class="ui-text--medium">800₽</div>
+    </div>
+
+    <div class="popup-menu _notifications" data-header-content="menu">
+        <div class="popup-menu__content">
+            <div class="popup-menu__header popup-menu__wrapper">
+                <div class="ui-text-head--3 ui-text--bold">История операций</div>
+            </div>
+            <div id="operations-in-header-list" class="popup-menu__body popup-menu__wrapper">
+                <div class="commerce__loading-wrap">
+                    <div class="commerce__loading-icon">
+                        <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                    </div>
                 </div>
-                <div class="notification-menu__date">{{ operation.created_at.diffForHumans() }}</div>
             </div>
-        </div>
-        {% endfor %}
-
-    </div>
-</div>
-{% else %}
-<div class="notifications-page">
-    <div class="ui-container-fluid">
-        <div class="library__content _wrapper">
-            <div class="popup-menu__placeholder">
-                <svg class="square-32">
-                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme}}"></use>
-                </svg>
-                <span>Здесь пока ничего нет</span>
+            <div class="popup-menu__footer popup-menu__wrapper">
+                <a href="#" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full"
+                   data-request="BalanceDeposit::onCreateDeposit">Пополнить баланс</a>
+                <div class="wrapper__footer">
+                    <a href="/lc-certificate/create"
+                       class="ui-button ui-button-size--32 ui-button-view--3 ui-button--full">
+                        Подарить сертификат
+                    </a>
+                </div>
+                <a href="/all-operations" class="popup-menu__link ui-link _violet">Вся история операций</a>
             </div>
         </div>
     </div>
 </div>
-{% endif %}

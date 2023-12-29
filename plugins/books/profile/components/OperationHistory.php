@@ -38,6 +38,7 @@ class OperationHistory extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
+
         $this->page['operations'] = $this->getOperations();
     }
 

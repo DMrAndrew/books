@@ -1,7 +1,6 @@
 <?php namespace Books\Profile\Components;
 
 use Cms\Classes\ComponentBase;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use RainLab\User\Facades\Auth;
 
 /**
@@ -26,9 +25,9 @@ class OperationHistoryInHeader extends ComponentBase
     {
         return [
             'operationsPerView' => [
-                'title' => 'Операций в модальном окне',
+                'title' => 'История операций в модальном окне',
                 'comment' => 'Количество отображаемых последних операций',
-                'default' => 2,
+                'default' => 10,
             ],
         ];
     }
@@ -42,18 +41,37 @@ class OperationHistoryInHeader extends ComponentBase
 
     public function onRun(): void
     {
-        $this->page['operations'] = $this->getOperations();
+        //$this->page['operations'] = $this->getOperations();
     }
 
-    private function getOperations()
+//    private function getOperations()
+//    {
+//        if (!Auth::getUser()) {
+//            return null;
+//        }
+//
+//        return Auth::getUser()
+//            ->operations()
+//            ->limit((int) $this->property('operationsPerView', 10))
+//            ->get();
+//    }
+
+    /**
+     * @return array
+     */
+    public function onViewHeaderOperations(): array
     {
-        if (!Auth::getUser()) {
-            return null;
+        if (! Auth::getUser()) {
+            return [];
         }
 
-        return Auth::getUser()
+        $this->page['operations'] = Auth::getUser()
             ->operations()
-            ->limit((int) $this->property('operationsPerView', 2))
+            ->limit((int) $this->property('operationsPerView', 10))
             ->get();
+
+        return [
+            '#operations-in-header-list' => $this->renderPartial('@list'),
+        ];
     }
 }

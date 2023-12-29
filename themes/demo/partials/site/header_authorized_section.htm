@@ -4,7 +4,7 @@ redirect = "/"
 [NotificationsInHeader]
 recordsPerView = 11
 [OperationHistoryInHeader]
-operationsPerView = 7
+operationsPerView = 11
 ==
 <div class="header__actions">
     <!--    <div class="header__actions-wrapper">-->
@@ -69,43 +69,8 @@ operationsPerView = 7
     <!--    </div>-->
 
     {% component 'NotificationsInHeader' %}
+    {% component 'OperationHistoryInHeader' %}
 
-<!--    <div class="header__actions-wrapper">-->
-<!--        <div class="header__actions-item">-->
-<!--            <svg class="square-24">-->
-<!--                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bag-stroked-24' | theme}}"></use>-->
-<!--            </svg>-->
-<!--        </div>-->
-<!--    </div>-->
-    <div class="header__actions-wrapper">
-        <div class="header__actions-item" data-header-action="wallet">
-            <svg class="square-24">
-                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#wallet-stroked-24' | theme}}"></use>
-            </svg>
-            <div class="ui-text--medium">{{user.proxyWallet.balance}}₽</div>
-        </div>
-        <div class="popup-menu _notifications" data-header-content="menu">
-            <div class="popup-menu__content">
-                <div class="popup-menu__header popup-menu__wrapper">
-                    <div class="ui-text-head--3 ui-text--bold">История операций</div>
-                </div>
-                <div class="popup-menu__body popup-menu__wrapper">
-                    {% component 'OperationHistoryInHeader' %}
-                </div>
-                <div class="popup-menu__footer popup-menu__wrapper">
-                    <a href="#" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full"
-                       data-request="BalanceDeposit::onCreateDeposit">Пополнить баланс</a>
-                    <div class="wrapper__footer">
-                        <a href="/lc-certificate/create"
-                           class="ui-button ui-button-size--32 ui-button-view--3 ui-button--full">
-                            Подарить сертификат
-                        </a>
-                    </div>
-                    <a href="/all-operations" class="popup-menu__link ui-link _violet">Вся история операций</a>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="header__actions-wrapper">
         <div class="header__actions-item-logo" data-header-action="profile">
             <svg class="square-24">
