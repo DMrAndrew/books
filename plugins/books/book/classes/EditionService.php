@@ -68,9 +68,9 @@ class EditionService
      */
     public function changeChaptersOrder(array $sequence)
     {
-        if (! $this->edition->editAllowed()) {
-            throw new ValidationException(['chapters' => 'Для книги запрещено изменение порядка глав']);
-        }
+//        if (! $this->edition->editAllowed()) {
+//            throw new ValidationException(['chapters' => 'Для книги запрещено изменение порядка глав']);
+//        }
         $this->edition->changeChaptersOrder($sequence);
         Event::fire('books.edition.chapters.order.updated', [$this->edition]);
     }
