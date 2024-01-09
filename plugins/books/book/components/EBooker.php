@@ -142,6 +142,11 @@ class EBooker extends ComponentBase
             Flash::error('Добавьте книге хотя бы один жанр.');
             return [];
         }
+        
+        if (!($this->ebook->chapters()->count() > 0 && $this->ebook->length > 0)) {
+            Flash::error('Проверьте наличие опубликованных глав и контента в них или повторите попытку позже.');
+            return [];
+        }
         try {
             $this->service->update(post());
             $this->vals();

@@ -45,6 +45,7 @@ class EditionService
 
         if (! $this->edition->isPublished()
             && in_array($this->edition->status, [BookStatus::COMPLETE, BookStatus::WORKING])
+            && $this->edition->price > 0
         ) {
             $this->edition->setPublishAt();
         }
@@ -68,9 +69,9 @@ class EditionService
      */
     public function changeChaptersOrder(array $sequence)
     {
-        if (! $this->edition->editAllowed()) {
-            throw new ValidationException(['chapters' => 'Для книги запрещено изменение порядка глав']);
-        }
+//        if (! $this->edition->editAllowed()) {
+//            throw new ValidationException(['chapters' => 'Для книги запрещено изменение порядка глав']);
+//        }
         $this->edition->changeChaptersOrder($sequence);
         Event::fire('books.edition.chapters.order.updated', [$this->edition]);
     }

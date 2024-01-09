@@ -221,7 +221,7 @@ class BookPage extends ComponentBase
                 throw new DownloadNotAllowed();
             }
 
-            $h = ['Content-Type' => 'application/xml', 'Content-Description' => 'File Transfer'];
+            $h = ['Content-Description' => 'File Transfer'];
             $file = (new DownloadService($this->book, $format))->getFile();
 
             ob_get_clean();
