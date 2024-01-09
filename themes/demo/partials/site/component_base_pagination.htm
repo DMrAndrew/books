@@ -13,6 +13,7 @@
             <a class="ui-pagination-item cursor-pointer {{ link.active ? 'active' : '' }} {{ link.disabled ? 'disabled' : '' }}"
                data-request="{{paginator.handler}}"
                data-request-data="page:{{ link.url }}"
+               data-request-query="{ page: {{ link.url }} }"
                data-request-complete="{{ paginator.scrollToContainer ?  '$(`'~paginator.scrollToContainer~'`)[0].scrollIntoView()' : '() => {}'}}"
             >
                 {{link.label}}
