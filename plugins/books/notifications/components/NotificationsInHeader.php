@@ -43,36 +43,34 @@ class NotificationsInHeader extends ComponentBase
      */
     public function init(): void
     {
-        $this->service = app(NotificationService::class);
-    }
-
-    public function onRun(): void
-    {
         if (! Auth::getUser()) {
             return;
         }
 
+        $this->service = app(NotificationService::class);
+
         $this->page['unreadNotifications'] = $this->service->getCountUnreadNotifications(Auth::getUser()->profile);
+    }
+
+    /**
+     * @return array
+     */
+    public function onViewHeaderNotifications(): array
+    {
+        if (! Auth::getUser()) {
+            return [];
+        }
+
         $this->page['headerNotifications'] = $this->service->getSomeNotifications(
             Auth::getUser()->profile,
             (int) $this->property('recordsPerView', 11)
         );
-    }
 
-    /**
-     * @return void
-     */
-    public function onMarkHeaderNotificationsAsRead(): void
-    {
-        if (! Auth::getUser()) {
-            return;
-        }
+        $this->service->markNotificationsAsRead(Auth::getUser()->profile, $this->page['headerNotifications']);
 
-        $headerNotifications = $this->service->getUnreadNotifications(
-            Auth::getUser()->profile,
-            (int) $this->property('recordsPerView', 11)
-        );
-
-        $this->service->markNotificationsAsRead(Auth::getUser()->profile, $headerNotifications);
+        return [
+            '#notifications-in-header-list' => $this->renderPartial('@list'),
+            '#notifications-in-header-list-mobile' => $this->renderPartial('@list-mobile'),
+        ];
     }
 }
