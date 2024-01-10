@@ -26,6 +26,9 @@ class MOBI extends BaseConverter
         );
         $content->appendParagraph($this->printDate()->format('d.m.Y'));
         $content->appendParagraph($this->mark());
+        if ($this->isSold()) {
+            $content->appendParagraph($this->order());
+        }
         $content->appendParagraph('***');
         $content->appendPageBreak();
         foreach ($this->chapters() as $chapter) {

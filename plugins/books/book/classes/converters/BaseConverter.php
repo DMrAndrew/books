@@ -4,6 +4,7 @@ namespace Books\Book\Classes\Converters;
 
 use Books\Book\Classes\Enums\ElectronicFormats;
 use Books\Book\Models\Book;
+use Books\Book\Models\Edition;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use System\Models\File;
@@ -16,13 +17,14 @@ class BaseConverter
 
     public ?bool $isFullAccess = null;
 
+    public ?bool $isSold = null;
+
     public ElectronicFormats $format = ElectronicFormats::FB2;
 
     public function __construct(public Book $book)
     {
         $this->file = new File();
-        $this->book->load(['cover', 'genres', 'tags', 'profile']);
-        $this->book->ebook->load(['chapters.content']);
+        $this->book->load(['cover', 'genres', 'tags', 'profile', 'ebook', 'ebook.chapters.content']);
     }
 
     public function make(): File
@@ -66,7 +68,7 @@ class BaseConverter
 
     public function isFullAccess(): bool
     {
-        $this->isFullAccess ??= $this->book->ebook->isFree() || ($this->user() && ($this->book->ebook->isSold($this->user()) || $this->book->isAuthor($this->user()->profile)));
+        $this->isFullAccess ??= $this->book->ebook->isFree() || ($this->user() && ($this->isSold() || $this->book->isAuthor($this->user()->profile)));
 
         return $this->isFullAccess;
     }
@@ -75,6 +77,31 @@ class BaseConverter
     {
         return $this->book->ebook->chapters
             ->when(! $this->isFullAccess(), fn ($collection) => $collection->filter->isFree());
+    }
+
+    public function isSold(): bool
+    {
+        $this->isSold ??= $this->book->ebook->isSold($this->user());
+
+        return $this->isSold;
+    }
+
+    public function order(): string
+    {
+        if (! $this->user() || ! $this->isSold()) {
+            return '';
+        }
+        $order = $this->user()->orders()->whereHas('products', function ($query) {
+            $query->whereHasMorph('orderable', [Edition::class], function ($q) {
+                $q->where('id', $this->book->ebook->id);
+            });
+        })->first();
+
+        if (! $order) {
+            return '';
+        }
+
+        return sprintf('<i>Заказ №%s</i>', $order->id);
     }
 
     public function mark(): string
