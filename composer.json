@@ -159,6 +159,14 @@
             "type": "path",
             "url": "./plugins/books/blog"
         },
+        "books/videoblog-plugin": {
+            "type": "path",
+            "url": "./plugins/books/videoblog"
+        },
+        "books/certificates-plugin": {
+            "type": "path",
+            "url": "./plugins/books/certificates"
+        },
         "books/breadcrumbs-plugin": {
             "type": "path",
             "url": "./plugins/books/breadcrumbs"

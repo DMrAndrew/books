@@ -8,7 +8,7 @@ use System\Models\File;
 
 class FileExtension extends ExtensionBase
 {
-    public function __construct(protected File $file)
+    public function __construct(public File $file)
     {
     }
 

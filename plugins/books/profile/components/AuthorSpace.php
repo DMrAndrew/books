@@ -31,7 +31,11 @@ class AuthorSpace extends ComponentBase
 
     protected $blogPostsCurrentPage = 1;
 
+    protected $videoBlogPostsCurrentPage = 1;
+
     protected int $perPage = 15;
+
+    protected int $perVideoblogPage = 6;
 
     /**
      * componentDetails
@@ -103,7 +107,8 @@ class AuthorSpace extends ComponentBase
             'left_awards_count' => $this->profile?->left_awards_count,
         ],
             $this->getAuthorComments(),
-            $this->getAuthorBlogPosts()
+            $this->getAuthorBlogPosts(),
+            $this->getAuthorVideoBlogPosts(),
         );
     }
 
@@ -141,6 +146,21 @@ class AuthorSpace extends ComponentBase
         ];
     }
 
+    public function getAuthorVideoBlogPosts(): array
+    {
+        $can_see_videoblog_posts  = $this->profile->canSeeVideoBlogPosts($this->authUser?->profile);
+
+        return [
+            'can_see_videoblog_posts' => $can_see_videoblog_posts,
+            'videoblog_posts_paginator' => $can_see_videoblog_posts ? CustomPaginator::from(
+                $this->profile->videoblog_posts()->published()->orderByDesc('id')->paginate(
+                    $this->perVideoblogPage,
+                    $this->videoBlogPostsCurrentPage()
+                )
+            ) : collect(),
+        ];
+    }
+
     public function onCommentsPage()
     {
         return [
@@ -152,6 +172,13 @@ class AuthorSpace extends ComponentBase
     {
         return [
             '#author-posts' => $this->renderPartial('@author-blog-tab', $this->getAuthorBlogPosts()),
+        ];
+    }
+
+    public function onVideoBlogPage()
+    {
+        return [
+            '#author-videoposts' => $this->renderPartial('@author-videoblog-tab', $this->getAuthorVideoBlogPosts()),
         ];
     }
 
@@ -170,5 +197,10 @@ class AuthorSpace extends ComponentBase
     public function blogPostsCurrentPage(): int
     {
         return (int)(post('blog-page') ?? $this->blogPostsCurrentPage);
+    }
+
+    public function videoBlogPostsCurrentPage(): int
+    {
+        return (int)(post('videoblog-page') ?? $this->videoBlogPostsCurrentPage);
     }
 }

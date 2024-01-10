@@ -1,9 +1,6 @@
-[NotificationsInHeader]
-recordsPerView = 11
-==
 {% if button %}
     <div class="menu-mobile__link _indent-small" data-menu-link="5"
-         onclick="oc.ajax(`onMarkHeaderNotificationsAsRead`)">
+         onclick="oc.ajax(`NotificationsInHeader::onViewHeaderNotifications`)">
         <div class="menu-mobile__link-icon square-32">
             <svg class="square-24">
                 <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme }}"></use>
@@ -26,34 +23,12 @@ recordsPerView = 11
             <span class="ui-text--bold">Уведомления</span>
             <div class="square-16"></div>
         </div>
-        <div class="menu-mobile__body">
-            {% if headerNotifications | length > 0 %}
-            {% for notification in headerNotifications %}
-                    <div class="notification-menu__wrapper">
-                        {% if not notification.read_at %}
-                            <div class="notification-menu__detector active"></div>
-                        {% endif %}
-                        <div class="notification-menu__icon-wrapper">
-                            <svg class="square-24">
-                                {% set icon = 'assets/icon-sprite/svg-sprite.svg#' ~ notification.icon %}
-
-                                <use xlink:href="{{ icon | theme }}"></use>
-                            </svg>
-                        </div>
-                        <div class="notification-menu__content">
-                            {{ notification.render({header:1}) | raw }}
-                            <div class="notification-menu__date">{{ notification.created_at.diffForHumans() }}</div>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="popup-menu__placeholder">
-                    <svg class="square-32">
-                        <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme }}"></use>
-                    </svg>
-                    <span>Здесь пока ничего нет</span>
+        <div id="notifications-in-header-list-mobile" class="menu-mobile__body">
+            <div class="commerce__loading-wrap">
+                <div class="commerce__loading-icon">
+                    <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
                 </div>
-            {% endif %}
+            </div>
         </div>
         <div class="popup-menu__footer popup-menu__wrapper">
             <a href="{{ 'notifications' | page }}" class="popup-menu__link ui-link _violet">Все уведомления</a>

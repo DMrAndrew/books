@@ -35,6 +35,7 @@ use System\Models\Revision;
 /**
  * Edition Model
  *
+ * * @method HasOne downloads
  * * @method HasMany chapters
  * * @method HasMany discounts
  * * @method HasMany sells Записи из статистики коммерческого кабинета, т.е. только те, где книга куплена за деньги
@@ -126,7 +127,7 @@ class Edition extends Model implements ProductInterface
         'free_parts' => 'filled|integer',
         'download_allowed' => 'boolean',
         'comment_allowed' => 'boolean',
-        'fb2' => ['nullable', 'file', 'mimes:xml', 'max:30720'],
+        'fb2' => ['nullable', 'file', 'max:30720'],
     ];
 
     public $hasMany = [
@@ -155,6 +156,11 @@ class Edition extends Model implements ProductInterface
             UserBook::class,
             'name' => 'ownable',
         ],
+    ];
+
+    public $hasOne = [
+
+        'downloads' => [Downloads::class, 'key' => 'edition_id', 'otherKey' => 'id'],
     ];
 
     public function pagination(): HasManyDeep
@@ -202,11 +208,16 @@ class Edition extends Model implements ProductInterface
         return $this->attributes[self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN];
     }
 
-    public function allowedDownload(ElectronicFormats $format = ElectronicFormats::FB2): bool
+    public function downloadsCount(): string
     {
-        return $this->download_allowed
-            && $this->hasRelation($format->value)
-            && $this->{$format->value};
+        $count = $this->downloads?->count ?? 0;
+
+        return sprintf('%s %s', $count, word_form(['загрузка', 'загрузок', 'загрузок'], $count));
+    }
+
+    public function isDownloadAllowed(User $user = null): bool
+    {
+        return $this->download_allowed && ($this->isFree() || $this->isSold($user)) || ($user && $this->book->isAuthor($user->profile));
     }
 
     public function getLastUpdatedAtAttribute(): ?Carbon

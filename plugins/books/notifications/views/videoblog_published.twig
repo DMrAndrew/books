@@ -1,0 +1,6 @@
+<div class="notification-menu__text notification-menu__content-wrapper">
+    <a href="{{ 'author_page' | page({profile_id: profile.id}) }}" class="ui-link _violet">{{ profile.username }}</a>
+    опубликовал(а) новую запись в видеоблоге
+    "<a href="videoblog/blog-post{{ post.slug }}" class="ui-link _violet">{{ post.title }}</a>"
+</div>
+

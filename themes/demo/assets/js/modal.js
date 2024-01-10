@@ -5,9 +5,9 @@ function openModal(container, buttonOpenModal) {
 
   if (!buttonOpen || !buttonOpen || !buttonClose) return
 
-  buttonOpen.addEventListener('click', e => { 
+  buttonOpen.addEventListener('click', e => {
     e.preventDefault();
-    
+
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
   })
@@ -38,3 +38,11 @@ function setCookie(name, value, expirationInDays) {
 function cookieExists(name, value) {
   return (document.cookie.split('; ').indexOf(name + '=' + value) !== -1);
 }
+addEventListener('render', function() {
+    $(document).on('click', '.payTypeLabel', function(e) {
+        e.preventDefault();
+        $('.buy-book-modal__pay').removeClass('active');
+        $(this).find('.buy-book-modal__pay').addClass('active');
+        $(this).find('input[type="radio"]').prop('checked', true);
+    });
+});

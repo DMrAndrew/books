@@ -65,6 +65,7 @@ tabs:
             label: Дата рождения
             span: left
             type: datepicker
+            mode: date
             tab: Данные
 
         passport_number:

@@ -36,8 +36,13 @@ redirect = "/"
             tinkoffInstallmentSupport: true,
         });
 
+        {% set bookPageId = order.products.first.book_id ?? order.editions.first.orderable.book_id %}
+        {% set successRedirectUrl = "/book-card/" ~ bookPageId %}
+        {% set failRedirectUrl = "/book-card/" ~ bookPageId %}
+
         payments.pay("charge", {
                 publicId: "{{ paymentData.publicId }}",
+                SuccessRedirectUrl: "{{ successUrl ?? successRedirectUrl | app }}",
                 description: "{{ paymentData.description }}",
                 amount: amount,
                 currency: "RUB",
@@ -52,6 +57,12 @@ redirect = "/"
                     userName: "{{ paymentData.data.userName}}",
                     "CloudPayments": {
                         "CustomerReceipt": receipt,
+                    }
+                },
+                configuration: {
+                    common: {
+                        successRedirectUrl: "{{ successUrl ?? successRedirectUrl | app }}",
+                        failRedirectUrl: "{{ successUrl ?? failRedirectUrl | app }}"
                     }
                 },
             },
