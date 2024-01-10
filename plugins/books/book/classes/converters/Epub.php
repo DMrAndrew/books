@@ -19,6 +19,7 @@ class Epub extends BaseConverter
         $epub->title = $this->title();
         $epub->creator = $domain;
         $epub->publisher = $domain;
+        $epub->temp_folder = storage_path();
         $epub->epub_file = $this->file->getLocalPath();
 
         if ($this->has_cover()) {
