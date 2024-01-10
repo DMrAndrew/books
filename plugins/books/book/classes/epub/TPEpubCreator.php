@@ -618,7 +618,7 @@ class TPEpubCreator
         }
 
         // Creates the main temp folder
-        mkdir( $this->temp_folder, 0755 );
+        mkdir( $this->temp_folder  );
 
         // Check the folder
         if ( ! is_dir( $this->temp_folder ) ) {
@@ -627,9 +627,9 @@ class TPEpubCreator
         }
 
         // Creates the other needed folders
-        mkdir( $this->temp_folder . '/META-INF', 0755 );
-        mkdir( $this->temp_folder . '/OEBPS', 0755 );
-        mkdir( $this->temp_folder . '/OEBPS/images', 0755 );
+        mkdir( $this->temp_folder . '/META-INF' );
+        mkdir( $this->temp_folder . '/OEBPS');
+        mkdir( $this->temp_folder . '/OEBPS/images');
 
         // Open the CSS
         $this->OpenCSS();
