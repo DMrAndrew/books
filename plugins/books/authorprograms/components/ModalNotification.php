@@ -132,7 +132,7 @@ class ModalNotification extends ComponentBase
                     } else {
                         $author = $authors->first();
                         $renderData = [
-                            'avatar' => $author->avatar->path,
+                            'avatar' => $author->avatar->path ?? '',
                             'author' => $author,
                             'title' => 'Вы участвуете в программе "Новый читатель" автора <a href="/author-page/' . $author->id . '">' . $author->username . ' </a>',
                             'subtitle' => 'Для вас будет действовать персональная скидка ' . $author->condition->percent . '% в течении ' . $author->condition->days . ' дней',

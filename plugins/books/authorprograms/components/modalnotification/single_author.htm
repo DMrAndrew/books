@@ -11,6 +11,10 @@
                 <div class="promo-modal__imgs">
                     {% if avatar %}
                         <img class="square square-40 circle" src="{{avatar}}" alt="">
+                    {% else %}
+                        <svg class="square-24">
+                            <use xlink:href=" {{'assets/icon-sprite/svg-sprite.svg#user-stroked-24' | theme}}"></use>
+                        </svg>
                     {% endif %}
 
                     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
