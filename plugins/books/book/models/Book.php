@@ -256,6 +256,10 @@ class Book extends Model
     {
         return $this->converter(ElectronicFormats::MOBI);
     }
+    public function epubConverter()
+    {
+        return $this->converter(ElectronicFormats::EPUB);
+    }
 
     public static function findForPublic(int $book_id, User $user = null)
     {

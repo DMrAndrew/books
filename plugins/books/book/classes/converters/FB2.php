@@ -82,28 +82,14 @@ class FB2 extends BaseConverter
         ]);
 
         return sprintf($pattern->join(''),
-            $this->genres($this->book->genres()->pluck('name')->toArray()),
-            $this->authors($this->book->profile()->pluck('username')->toArray()),
+            $this->genres($this->book->genres->pluck('name')->toArray()),
+            $this->authors($this->book->profiles->pluck('username')->toArray()),
             $this->book->title,
-            $this->annotation(),
-            $this->book->tags()->pluck('name')->join(', '),
+            $this->annotation($this->section($this->book->annotation)),
+            $this->book->tags->pluck('name')->join(', '),
             'ru',
             basename($this->book->cover->path));
 
-    }
-
-    public function annotation(): string
-    {
-        return sprintf(collect([
-            '%s', // аннотация
-            '<p>%s</p>', // подпись 1
-            '<p>%s</p>', // Дата
-            '<p>%s</p>', // номер заказа
-        ])->join(''),
-            $this->section($this->book->annotation),
-            $this->mark(),
-            $this->printDate()->format('d.m.Y'),
-            $this->order());
     }
 
     public function section($content, $options = [])
