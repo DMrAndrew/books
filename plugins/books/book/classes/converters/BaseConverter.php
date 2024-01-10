@@ -24,12 +24,25 @@ class BaseConverter
     public function __construct(public Book $book)
     {
         $this->file = new File();
-        $this->book->load(['cover', 'genres', 'tags', 'profile', 'ebook', 'ebook.chapters.content']);
+        $this->book->load(['cover', 'genres', 'tags', 'profile', 'ebook', 'ebook.chapters.content', 'profiles']);
     }
 
     public function make(): File
     {
-        $this->file->fromData($this->generate(), $this->filename());
+
+        switch ($this->format) {
+            case ElectronicFormats::MOBI:
+            case ElectronicFormats::FB2:
+
+                $this->file->fromData($this->generate(), $this->filename());
+                break;
+
+            case ElectronicFormats::EPUB:
+
+                $this->generate();
+                break;
+
+        }
 
         return $this->file;
     }
@@ -48,7 +61,12 @@ class BaseConverter
 
     public function filename(): string
     {
-        return $this->book->title.'.'.$this->format->value;
+        return $this->title().'.'.$this->format->value;
+    }
+
+    public function title(): string
+    {
+        return str_replace(' ', '_', translit($this->book->title));
     }
 
     public function save(): void
@@ -77,6 +95,27 @@ class BaseConverter
     {
         return $this->book->ebook->chapters
             ->when(! $this->isFullAccess(), fn ($collection) => $collection->filter->isFree());
+    }
+
+    public function annotation(string $annotation = ''): string
+    {
+        return sprintf(collect([
+            '<p><i>%s</i></p>', // аннотация
+            '<p><strong>Автор: </strong>%s</p>', // авторы
+            '<p><strong>Жанр: </strong><i>%s</i></p>',
+            '<p><strong>Теги: </strong><i>%s</i></p>',
+            '<p>%s</p>', // подпись 1
+            '<p>%s</p>', // номер заказа
+            '<p>%s</p>', // Дата
+            '<p>***</p>',
+        ])->join(''),
+            $annotation ?: $this->book->annotation,
+            $this->book->profiles->pluck('username')->join(', '),
+            $this->book->genres->pluck('name')->join(', ') ?: '-',
+            $this->book->tags->pluck('name')->join(', ') ?: '-',
+            $this->printDate()->format('d.m.Y'),
+            $this->mark(),
+            $this->order());
     }
 
     public function isSold(): bool
@@ -111,7 +150,7 @@ class BaseConverter
 
     public function endMark(): string
     {
-        return $this->isFullAccess() ? '' : sprintf('<i>Конец ознакомительного фрагмента. Полный текст Вы можете приобрести на портале %s</i>', $this->makeLink());
+        return $this->isFullAccess() ? '' : sprintf('<p>***</p><p><i>Конец ознакомительного фрагмента. Полный текст Вы можете приобрести на портале %s</i></p>', $this->makeLink());
     }
 
     public function makeLink(): string
