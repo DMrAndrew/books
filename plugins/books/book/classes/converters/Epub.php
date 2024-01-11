@@ -23,13 +23,11 @@ class Epub extends BaseConverter
         $epub->epub_file = $this->file->getLocalPath();
 
         if ($this->has_cover()) {
-            $epub->AddImage($this->book->cover->getLocalPath(), true, true);
+            $epub->AddImage($this->book->cover->getLocalPath(), true, 1);
         }
         $epub->AddPage($this->annotation(), null, 'Аннотация', true);
-        $chapters = $this->chapters()->values();
-        $count = count($chapters);
-        foreach ($chapters as $index => $chapter) {
-            $epub->AddPage($chapter->content->body.($count === ($index - 1) ? $this->endMark() : ''), null, $chapter->title, true);
+        foreach ($this->chapters() as $chapter) {
+            $epub->AddPage($chapter->content->body, null, $chapter->title, true);
         }
         $epub->CreateEPUB();
         return 'success';
