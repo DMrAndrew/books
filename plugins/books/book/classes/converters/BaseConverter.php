@@ -31,16 +31,15 @@ class BaseConverter
     {
 
         switch ($this->format) {
-            case ElectronicFormats::MOBI:
-            case ElectronicFormats::FB2:
-
-                $this->file->fromData($this->generate(), $this->filename());
-                break;
-
             case ElectronicFormats::EPUB:
 
                 $this->generate();
                 break;
+            default:
+
+                $this->file->fromData($this->generate(), $this->filename());
+                break;
+
 
         }
 
