@@ -1,0 +1,46 @@
+{% if not subscribers.authors and not subscribers.readers %}
+<div class="author__placeholder _indent">
+    <svg class="square-32">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#users-stroked-32' | theme}}"></use>
+    </svg>
+    <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
+        одного подписчика
+    </div>
+    <span>Когда они появятся, вы увидите их здесь</span>
+</div>
+{% else %}
+<div class="ui-tabs">
+    <div class="ui-tabs-header">
+        <div class="ui-tabs-line"></div>
+        <div class="ui-tabs-header-wrapper" data-tabs="2">
+            <div class="ui-tabs-link active" data-tab="1">Авторы <span>{{collect(subscribers.authors).count}}</span>
+            </div>
+            <div class="ui-tabs-link " data-tab="2">Читатели <span>{{collect(subscribers.readers).count}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="ui-tabs-body" data-tabs="2">
+        <div class="ui-tabs-content active" data-tab-content="1">
+            {% if subscribers.authors %}
+            <div class="ui-grid-container ui-grid-gap">
+                {% for authors in subscribers.authors %}
+                {% partial 'controls/subscribe-card' item=authors footer=true %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="ui-tabs-content" data-tab-content="2">
+            {% if subscribers.readers %}
+            <div class="ui-grid-container ui-grid-gap">
+                {% for reader in subscribers.readers %}
+                {% partial 'controls/subscribe-card' item=reader %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+    initTabs('[data-tabs="2"]');
+</script>
+{% endif %}

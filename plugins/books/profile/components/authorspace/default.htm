@@ -77,16 +77,11 @@
                         </div>
                         <div class="ui-tabs-link" data-tab="7" onclick="oc.ajax(`author_space::onShowTabSubscribtions`)">
                             Подписки
-                            {% if subscriptions_count %}
-                            <span>{{subscriptions_count?:''}}</span>
-                            {% endif %}
+                            {% if subscriptions_count %}<span>{{subscriptions_count?:''}}</span>{% endif %}
                         </div>
-                        <div class="ui-tabs-link " data-tab="8">Подписчики
-                            {% set subscribers_count = collect(subscribers.authors).count +
-                            collect(subscribers.readers).count %}
-                            {% if subscribers_count %}
-                            <span>{{subscribers_count}}</span>
-                            {% endif %}
+                        <div class="ui-tabs-link" data-tab="8" onclick="oc.ajax(`author_space::onShowTabSubscribers`)">
+                            Подписчики
+                            {% if subscribers_count %}<span>{{subscribers_count?:''}}</span>{% endif %}
                         </div>
 
                         <div class="ui-tabs-link " data-tab="9">Награды
@@ -136,9 +131,10 @@
                 Подписки <span class="ui-text-body--2">{{subscriptions_count?:''}}</span>
             </div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="8">
-            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписчики <span
-                class="ui-text-body--2">{{subscribers_count}}</span></div>
+        <div class="ui-tabs-content" data-tab-content="8" onclick="oc.ajax(`author_space::onShowTabSubscribers`)">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">
+                Подписчики <span class="ui-text-body--2">{{subscribers_count}}</span>
+            </div>
         </div>
         <div class="ui-tabs-content" data-tab-content="9">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Награды <span
@@ -196,6 +192,7 @@
                             </div>
                         </div>
                         {% endif %}
+                        {#
                         <!--                        <div class="author-profile-description__wrapper">-->
                         <!--                            <div class="author-profile-description__label">Любимы жанры</div>-->
                         <!--                            <div class="author-profile-description__info">-->
@@ -203,6 +200,7 @@
                         <!--                                <a class="ui-link _violet" href="#">РеалРПГ</a>-->
                         <!--                            </div>-->
                         <!--                        </div>-->
+                        #}
                         <div class="author-profile-description__wrapper">
                             <div class="author-profile-description__label">Регистрация</div>
                             <div class="author-profile-description__info">
@@ -210,6 +208,7 @@
                             </div>
                         </div>
                     </div>
+                    {#
                     <!--                    <div class="author-profile__comments comments">-->
                     <!--                        <form class="comments-form _indent">-->
                     <!--                            <h3 class="comments-form__title ui-text&#45;&#45;bold"><span class="ui-text-head&#45;&#45;3">Комментарии</span></h3>-->
@@ -219,7 +218,7 @@
                     <!--                                <button class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3 ui-text&#45;&#45;medium">Войти</button>-->
                     <!--                            </div>-->
                     <!--                        </form>-->
-
+                    #}
 
                     <!--                    </div>-->
                     {% component 'comments' %}
@@ -270,51 +269,18 @@
                 </div>
 
                 <!-- Подписчики -->
-                <div class="author-subscribers ui-tabs-content" data-tab-content="8">
-                    {% if not subscribers.authors and not subscribers.readers %}
+                <div id="author-tab-subscribers" class="author-subscribers ui-tabs-content" data-tab-content="8">
+                    {% if subscribers_count %}
                     <div class="author__placeholder _indent">
-                        <svg class="square-32">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#users-stroked-32' | theme}}"></use>
-                        </svg>
-                        <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
-                            одного подписчика
-                        </div>
-                        <span>Когда они появятся, вы увидите их здесь</span>
-                    </div>
-                    {% else %}
-                    <div class="ui-tabs">
-                        <div class="ui-tabs-header">
-                            <div class="ui-tabs-line"></div>
-                            <div class="ui-tabs-header-wrapper" data-tabs="2">
-                                <div class="ui-tabs-link active" data-tab="1">Авторы <span>{{collect(subscribers.authors).count}}</span>
-                                </div>
-                                <div class="ui-tabs-link " data-tab="2">Читатели <span>{{collect(subscribers.readers).count}}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ui-tabs-body" data-tabs="2">
-                            <div class="ui-tabs-content active" data-tab-content="1">
-                                {% if subscribers.authors %}
-                                <div class="ui-grid-container ui-grid-gap">
-                                    {% for authors in subscribers.authors %}
-                                    {% partial 'controls/subscribe-card' item=authors footer=true %}
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
-                            </div>
-                            <div class="ui-tabs-content" data-tab-content="2">
-                                {% if subscribers.readers %}
-                                <div class="ui-grid-container ui-grid-gap">
-                                    {% for reader in subscribers.readers %}
-                                    {% partial 'controls/subscribe-card' item=reader %}
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
+                        <div class="commerce__loading-wrap">
+                            <div class="commerce__loading-icon">
+                                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
                             </div>
                         </div>
                     </div>
                     {% endif %}
                 </div>
+
                 <div class="author-awards ui-tabs-content" data-tab-content="9">
                     <div class="author-awards__container">
                         {% component 'awardsLC' %}
