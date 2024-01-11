@@ -76,10 +76,10 @@ class AuthorSpace extends ComponentBase
         $this->profile = Profile::query()
             ->hasSubscriber($this->authUser?->profile)
             ->with([
-                'banner', 'avatar',
-                'reposts' => fn($reposts) => $reposts->with('shareable'),
+                'banner',
+                'avatar',
                 'books' => fn($books) => $books->public()->defaultEager()->orderByPivot('sort_order', 'desc')])
-            ->withCount(['leftAwards', 'receivedAwards', 'subscriptions', 'subscribers'])
+            ->withCount(['leftAwards', 'receivedAwards', 'subscriptions', 'subscribers', 'reposts'])
             ->find($this->profile->id);
 
         return array_merge([
@@ -95,12 +95,12 @@ class AuthorSpace extends ComponentBase
                 ->booksEager()
                 ->get(),
             //'posts' => $this->profile->posts()->published()->get(),
-            'reposts' => $this->profile?->user?->reposts,
 
             'received_awards_count' => $this->profile?->received_awards_count,
             'left_awards_count' => $this->profile?->left_awards_count,
             'subscriptions_count' => $this->profile?->subscriptions_count,
             'subscribers_count' => $this->profile?->subscribers_count,
+            'reposts_count' => $this->profile?->reposts_count,
         ],
             $this->getAuthorComments(),
             $this->getAuthorBlogPosts(),
@@ -221,6 +221,19 @@ class AuthorSpace extends ComponentBase
 
         return [
             '#author-tab-awards' => $this->renderPartial('@author-awards-tab'),
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function onShowTabReposts(): array
+    {
+        $this->page['profile'] = $this->profile;
+        $this->page['reposts'] = $this->profile?->user?->reposts;
+
+        return [
+            '#author-tab-reposts' => $this->renderPartial('@author-reposts-tab'),
         ];
     }
 
