@@ -123,8 +123,8 @@ class PriceTag
 
             if ($newReaderProgram
                 && Carbon::now()->between(
-                    $newReaderProgram->first()?->created_at,
-                    $newReaderProgram->first()?->created_at->addDays($newReaderProgram->condition->days)
+                    $readerBooksPurchased->first()?->created_at,
+                    $readerBooksPurchased->first()?->created_at->addDays($newReaderProgram->condition->days)
                 )) {
                 if ($newReaderProgram->condition->percent >= $this->discountAmount()) {
                     $this->discountsArr['values'][] = $newReaderProgram->condition->percent;
