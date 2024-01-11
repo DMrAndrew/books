@@ -83,11 +83,10 @@
                             Подписчики
                             {% if subscribers_count %}<span>{{subscribers_count?:''}}</span>{% endif %}
                         </div>
-
-                        <div class="ui-tabs-link " data-tab="9">Награды
-                            {% if received_awards_count+left_awards_count %}
-                            <span>{{received_awards_count+left_awards_count?:''}}</span>
-                            {% endif %}
+                        <div class="ui-tabs-link " data-tab="9" onclick="oc.ajax(`author_space::onShowTabAwards`)">
+                            Награды
+                            {% set awardsCount = received_awards_count + left_awards_count %}
+                            {% if awardsCount %}<span>{{awardsCount?:''}}</span>{% endif %}
                         </div>
                         <div class="ui-tabs-link " data-tab="10">Комментарии
                             {% if comments_paginator.total %}
@@ -136,7 +135,7 @@
                 Подписчики <span class="ui-text-body--2">{{subscribers_count}}</span>
             </div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="9">
+        <div class="ui-tabs-content" data-tab-content="9" onclick="oc.ajax(`author_space::onShowTabAwards`)">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Награды <span
                 class="ui-text-body--2">{{received_awards_count+left_awards_count?:''}}</span>
             </div>
@@ -281,10 +280,16 @@
                     {% endif %}
                 </div>
 
-                <div class="author-awards ui-tabs-content" data-tab-content="9">
-                    <div class="author-awards__container">
-                        {% component 'awardsLC' %}
+                <div id="author-tab-awards" class="author-awards ui-tabs-content" data-tab-content="9">
+                    {% if received_awards_count + left_awards_count > 0 %}
+                    <div class="author__placeholder _indent">
+                        <div class="commerce__loading-wrap">
+                            <div class="commerce__loading-icon">
+                                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                            </div>
+                        </div>
                     </div>
+                    {% endif %}
                 </div>
                 <!-- Комментарии -->
                 <div class="ui-tabs-content" id="author-comments" data-tab-content="10">
@@ -297,7 +302,11 @@
                         {% for repost in reposts %}
                         <div class="cb-mini-card _avatar">
                             <div class="cb-mini-card__image-wrapper">
-                                <img src="{{profile.avatar.getThumb(50,50)}}" alt="">
+                                {% if profile.avatar %}
+                                <img src="{{profile.avatar.getThumb(50,50)}}">
+                                {% else %}
+                                <span>{{ profile.firstLatter }}</span>
+                                {% endif %}
                             </div>
                             <div class="cb-mini-card__wrapper">
                                 <div class="">Поделился <a class="ui-link _violet" href="{{repost.getLink}}">{{repost.getLabel}}</a>

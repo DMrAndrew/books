@@ -8,6 +8,7 @@ use Books\Book\Components\AwardsLC;
 use Books\Book\Components\Widget;
 use Books\Comments\Components\Comments;
 use Books\Profile\Models\Profile;
+use Cms\Classes\CmsException;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -58,8 +59,6 @@ class AuthorSpace extends ComponentBase
         $comments->bindModelOwner($this->profile);
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
-        $awards = $this->addComponent(AwardsLC::class, 'awardsLC');
-        $awards->bindProfile($this->profile);
     }
 
     public function onRender()
@@ -208,6 +207,20 @@ class AuthorSpace extends ComponentBase
 
         return [
             '#author-tab-subscribers' => $this->renderPartial('@author-subscribers-tab'),
+        ];
+    }
+
+    /**
+     * @return array
+     * @throws CmsException
+     */
+    public function onShowTabAwards(): array
+    {
+        $awards = $this->addComponent(AwardsLC::class, 'awardsLC');
+        $awards->bindProfile($this->profile);
+
+        return [
+            '#author-tab-awards' => $this->renderPartial('@author-awards-tab'),
         ];
     }
 
