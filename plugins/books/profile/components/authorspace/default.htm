@@ -75,7 +75,7 @@
                             <span>{{videoblog_posts_paginator.total?:''}}</span>
                             {% endif %}
                         </div>
-                        <div class="ui-tabs-link" data-tab="7" onclick="oc.ajax(`author_space::onShowTabSubscribers`)">
+                        <div class="ui-tabs-link" data-tab="7" onclick="oc.ajax(`author_space::onShowTabSubscribtions`)">
                             Подписки
                             {% if subscriptions_count %}
                             <span>{{subscriptions_count?:''}}</span>
@@ -131,7 +131,7 @@
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Видеоблог <span
                 class="ui-text-body--2">{{videoblog_posts_paginator.total?:''}}</span></div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="7" onclick="oc.ajax(`author_space::onShowTabSubscribers`)">
+        <div class="ui-tabs-content" data-tab-content="7" onclick="oc.ajax(`author_space::onShowTabSubscribtions`)">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">
                 Подписки <span class="ui-text-body--2">{{subscriptions_count?:''}}</span>
             </div>
@@ -257,7 +257,8 @@
                     {% partial 'author_space::author-videoblog-tab' videoblog_posts_paginator=videoblog_posts_paginator %}
                 </div>
                 <!-- Подписки -->
-                <div id="author-tab-subscription" class="author-blog ui-tabs-content" data-tab-content="7">
+                <div id="author-tab-subscriptions" class="author-blog ui-tabs-content" data-tab-content="7">
+                    {% if subscriptions_count %}
                     <div class="author__placeholder _indent">
                         <div class="commerce__loading-wrap">
                             <div class="commerce__loading-icon">
@@ -265,6 +266,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
 
                 <!-- Подписчики -->

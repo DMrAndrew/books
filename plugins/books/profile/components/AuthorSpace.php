@@ -182,7 +182,7 @@ class AuthorSpace extends ComponentBase
     /**
      * @return array
      */
-    public function onShowTabSubscribers(): array
+    public function onShowTabSubscribtions(): array
     {
         $isOwner = $this->authUser && $this->profile->is($this->authUser?->profile);
 
@@ -190,7 +190,7 @@ class AuthorSpace extends ComponentBase
         $this->page['subscriptions'] = $this->profile->subscriptions;
 
         return [
-            '#author-tab-subscription' => $this->renderPartial('@author-subscribtions-tab'),
+            '#author-tab-subscriptions' => $this->renderPartial('@author-subscribtions-tab'),
         ];
     }
 
