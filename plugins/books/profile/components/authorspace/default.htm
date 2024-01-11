@@ -75,9 +75,10 @@
                             <span>{{videoblog_posts_paginator.total?:''}}</span>
                             {% endif %}
                         </div>
-                        <div class="ui-tabs-link " data-tab="7">Подписки
-                            {% if subscriptions.count %}
-                            <span>{{subscriptions.count?:''}}</span>
+                        <div class="ui-tabs-link" data-tab="7" onclick="oc.ajax(`author_space::onShowTabSubscribers`)">
+                            Подписки
+                            {% if subscriptions_count %}
+                            <span>{{subscriptions_count?:''}}</span>
                             {% endif %}
                         </div>
                         <div class="ui-tabs-link " data-tab="8">Подписчики
@@ -130,9 +131,10 @@
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Видеоблог <span
                 class="ui-text-body--2">{{videoblog_posts_paginator.total?:''}}</span></div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="7">
-            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписки <span
-                class="ui-text-body--2">{{subscriptions.count?:''}}</span></div>
+        <div class="ui-tabs-content" data-tab-content="7" onclick="oc.ajax(`author_space::onShowTabSubscribers`)">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">
+                Подписки <span class="ui-text-body--2">{{subscriptions_count?:''}}</span>
+            </div>
         </div>
         <div class="ui-tabs-content" data-tab-content="8">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписчики <span
@@ -255,24 +257,14 @@
                     {% partial 'author_space::author-videoblog-tab' videoblog_posts_paginator=videoblog_posts_paginator %}
                 </div>
                 <!-- Подписки -->
-                <div class="author-blog ui-tabs-content" data-tab-content="7">
-                    {% if not subscriptions[0] %}
+                <div id="author-tab-subscription" class="author-blog ui-tabs-content" data-tab-content="7">
                     <div class="author__placeholder _indent">
-                        <svg class="square-32">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#users-stroked-32' | theme}}"></use>
-                        </svg>
-                        <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
-                            одной подписки
+                        <div class="commerce__loading-wrap">
+                            <div class="commerce__loading-icon">
+                                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                            </div>
                         </div>
-                        <span>Когда они появятся, вы увидите их здесь</span>
                     </div>
-                    {% else %}
-                    <div class="ui-grid-container ui-grid-gap">
-                        {% for subscription in subscriptions %}
-                        {% partial 'controls/subscribe-card' item=subscription footer=true %}
-                        {% endfor %}
-                    </div>
-                    {% endif %}
                 </div>
 
                 <!-- Подписчики -->

@@ -79,10 +79,9 @@ class AuthorSpace extends ComponentBase
             ->with([
                 'banner', 'avatar',
                 'subscribers' => fn($subscribers) => $subscribers->shortPublicEager(),
-                'subscriptions' => fn($subscribers) => $subscribers->shortPublicEager(),
                 'reposts' => fn($reposts) => $reposts->with('shareable'),
                 'books' => fn($books) => $books->public()->defaultEager()->orderByPivot('sort_order', 'desc')])
-            ->withCount(['leftAwards', 'receivedAwards'])
+            ->withCount(['leftAwards', 'receivedAwards', 'subscriptions'])
             ->find($this->profile->id);
 
         return array_merge([
@@ -99,10 +98,10 @@ class AuthorSpace extends ComponentBase
                 ->get(),
             //'posts' => $this->profile->posts()->published()->get(),
             'subscribers' => $this->profile->subscribers->groupBy(fn($i) => $i->books_count ? 'authors' : 'readers'),
-            'subscriptions' => $this->profile->subscriptions,
             'reposts' => $this->profile?->user?->reposts,
             'received_awards_count' => $this->profile?->received_awards_count,
             'left_awards_count' => $this->profile?->left_awards_count,
+            'subscriptions_count' => $this->profile?->subscriptions_count,
         ],
             $this->getAuthorComments(),
             $this->getAuthorBlogPosts(),
@@ -177,6 +176,21 @@ class AuthorSpace extends ComponentBase
     {
         return [
             '#author-videoposts' => $this->renderPartial('@author-videoblog-tab', $this->getAuthorVideoBlogPosts()),
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function onShowTabSubscribers(): array
+    {
+        $isOwner = $this->authUser && $this->profile->is($this->authUser?->profile);
+
+        $this->page['isOwner'] = $isOwner;
+        $this->page['subscriptions'] = $this->profile->subscriptions;
+
+        return [
+            '#author-tab-subscription' => $this->renderPartial('@author-subscribtions-tab'),
         ];
     }
 
