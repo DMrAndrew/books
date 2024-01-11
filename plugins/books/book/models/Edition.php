@@ -140,6 +140,8 @@ class Edition extends Model implements ProductInterface
         'fb2' => File::class,
         'epub' => File::class,
         'mobi' => File::class,
+        'txt' => File::class,
+        'pdf' => File::class,
     ];
 
     public $belongsTo = [

@@ -6,6 +6,7 @@ use Books\Book\Classes\Converters\BaseConverter;
 use Books\Book\Classes\Converters\Epub;
 use Books\Book\Classes\Converters\FB2;
 use Books\Book\Classes\Converters\MOBI;
+use Books\Book\Classes\Converters\TXT;
 use Books\Book\Models\Book;
 
 enum ElectronicFormats: string
@@ -34,7 +35,7 @@ enum ElectronicFormats: string
             self::EPUB => Epub::class,
             self::MOBI => MOBI::class,
             self::PDF => throw new \Exception('To be implemented'),
-            self::TXT => throw new \Exception('To be implemented'),
+            self::TXT => TXT::class,
         })($book);
     }
 
