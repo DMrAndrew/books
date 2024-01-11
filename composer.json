@@ -86,7 +86,8 @@
     "autoload": {
         "psr-4": {
             "System\\Console\\": "modules/system/console",
-            "Tizis\\FB2\\": "plugins/books/book/classes/FB2-Parser"
+            "Tizis\\FB2\\": "plugins/books/book/classes/FB2-Parser",
+            "MOBIClass\\": "plugins/books/book/classes/MOBIClass"
         },
         "files": [
             "helpers.php"

@@ -2,10 +2,12 @@
 
 namespace Books\Book\Models;
 
+use Books\Book\Classes\Converters\BaseConverter;
 use Books\Book\Classes\DownloadService;
 use Books\Book\Classes\Enums\AgeRestrictionsEnum;
 use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Enums\ElectronicFormats;
 use Books\Book\Classes\Enums\StatsEnum;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Classes\Rater;
@@ -242,8 +244,23 @@ class Book extends Model
 
     public function downloadService(): DownloadService
     {
-        return new DownloadService($this);
+        return new DownloadService($this, ...func_get_args());
     }
+
+    public function converter(ElectronicFormats $format = ElectronicFormats::FB2): BaseConverter
+    {
+        return $format->converter($this);
+    }
+
+    public function mobiConverter()
+    {
+        return $this->converter(ElectronicFormats::MOBI);
+    }
+    public function epubConverter()
+    {
+        return $this->converter(ElectronicFormats::EPUB);
+    }
+
     public static function findForPublic(int $book_id, User $user = null)
     {
         return Book::query()->public()->find($book_id) // открыта в публичной зоне
@@ -639,7 +656,6 @@ class Book extends Model
     {
         return $builder->orderByPowerJoins('stats.'.$stat->mapStatAttribute(), $asc ? 'asc' : 'desc');
     }
-
 
     public function refreshAllowedVisits(): int
     {
