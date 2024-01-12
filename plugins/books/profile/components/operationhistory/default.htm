@@ -16,7 +16,7 @@
 
         </div>
 
-        {% partial 'site/pagination' records = operations %}
+        {{ pager(operations, { partial: 'site/standart_pagination'}) }}
 
     </div>
 </div>
