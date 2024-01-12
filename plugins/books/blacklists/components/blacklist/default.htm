@@ -48,7 +48,7 @@
                     </div>
                     {% endfor %}
 
-                    {% partial 'site/pagination' records = comments_blacklisted_profiles %}
+                        {{ pager(comments_blacklisted_profiles, { partial: 'site/standart_pagination'}) }}
 
                     {% elseif not comments_blacklisted_profiles.count %}
                     <div class="author__placeholder _indent">

@@ -1,0 +1,75 @@
+{% if paginator.hasPages %}
+{% set handler = handler|default('onAjax') %}
+<nav class="posts__pagination ui-pagination" style="margin-top: 25px">
+    <ul class="ui-pagination-list">
+        {#- - Previous Page Link - -#}
+        {% if paginator.onFirstPage %}
+        <li>
+            <a class="ui-pagination-item disabled" href="{{ records.previousPageUrl }}" rel="prev">
+                {{ 'system::lang.pagination.previous'|trans }}
+            </a>
+        </li>
+        {% else %}
+        <li>
+            <a
+                class="ui-pagination-item"
+                href="javascript:;"
+                data-request="{{ handler }}"
+                data-request-query="{ page: {{ paginator.currentPage - 1 }} }"
+                data-request-update="{'{{ customePartial }}': '{{ customeSection }}' }"
+                rel="prev">
+                {{ 'system::lang.pagination.previous'|trans }}
+            </a>
+        </li>
+        {% endif %}
+
+        {#- - Pagination Elements - -#}
+        {% for element in elements %}
+        {% if element is iterable %}
+        {#- - Array Of Links - -#}
+        {% for page, url in element %}
+        {% if page == paginator.currentPage %}
+        <li>
+            <a class="ui-pagination-item cursor-pointer active">{{ page }}</a>
+        </li>
+        {% else %}
+        <li>
+            <a
+                class="ui-pagination-item cursor-pointer"
+                href="javascript:;"
+                data-request="{{ handler }}"
+                data-request-query="{ page: {{ page }} }"
+                data-request-update="{ '{{ customePartial }}': '{{ customeSection }}' }">{{ page }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        {% else %}
+        {#- - "Three Dots" Separator - -#}
+        <li><a class="ui-pagination-item cursor-pointer">{{ element }}</a></li>
+        {% endif %}
+        {% endfor %}
+
+        {#- - Next Page Link - -#}
+        {% if paginator.hasMorePages %}
+        <li>
+            <a
+                class="ui-pagination-item"
+                href="javascript:;"
+                data-request="{{ handler }}"
+                data-request-query="{ page: {{ paginator.currentPage + 1|default(1) }} }"
+                data-request-update="{ '{{ customePartial }}': '{{ customeSection }}' }"
+                rel="next">
+                {{ 'system::lang.pagination.next'|trans }}
+            </a>
+        </li>
+        {% else %}
+        <li>
+            <a class="ui-pagination-item disabled" href="{{ records.previousPageUrl }}" rel="prev">
+                {{ 'system::lang.pagination.next'|trans }}
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
