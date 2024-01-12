@@ -1,30 +1,31 @@
 {% if notifications | length > 0 %}
     {% for notification in notifications %}
-        <div class="notification-menu__wrapper">
-            {% if not notification.read_at %}
-                <div class="notification-menu__detector active"></div>
-            {% endif %}
-            <div class="notification-menu__icon-wrapper">
-                <svg class="square-24">
-                    {% set icon = 'assets/icon-sprite/svg-sprite.svg#' ~ notification.icon %}
+    <div class="notification-menu__wrapper">
+        {% if not notification.read_at %}
+        <div class="notification-menu__detector active"></div>
+        {% endif %}
+        <div class="notification-menu__icon-wrapper">
+            <svg class="square-24">
+                {% set icon = 'assets/icon-sprite/svg-sprite.svg#' ~ notification.icon %}
 
-                    <use xlink:href="{{ icon | theme }}"></use>
-                </svg>
-            </div>
-            <div class="notification-menu__content">
-                {{ notification.render() | raw }}
-                <div class="notification-menu__date">{{ notification.created_at.diffForHumans() }}</div>
-            </div>
+                <use xlink:href="{{ icon | theme }}"></use>
+            </svg>
         </div>
+        <div class="notification-menu__content">
+            {{ notification.render() | raw }}
+            <div class="notification-menu__date">{{ notification.created_at.diffForHumans() }}</div>
+        </div>
+    </div>
     {% endfor %}
 
-    {% partial 'site/pagination' records = notifications %}
+    {{ pager(notifications, { partial: 'site/standart_pagination'}) }}
 
 {% else %}
-    <div class="popup-menu__placeholder">
-        <svg class="square-32">
-            <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme }}"></use>
-        </svg>
-        <span>Здесь пока ничего нет</span>
-    </div>
+<div class="popup-menu__placeholder">
+    <svg class="square-32">
+        <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme }}"></use>
+    </svg>
+    <span>Здесь пока ничего нет</span>
+</div>
 {% endif %}
+

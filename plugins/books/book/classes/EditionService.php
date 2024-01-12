@@ -45,6 +45,7 @@ class EditionService
 
         if (! $this->edition->isPublished()
             && in_array($this->edition->status, [BookStatus::COMPLETE, BookStatus::WORKING])
+            && $this->edition->price > 0
         ) {
             $this->edition->setPublishAt();
         }

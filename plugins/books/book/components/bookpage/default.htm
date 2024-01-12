@@ -2,8 +2,11 @@
 <div itemscope itemtype="http://schema.org/Book">
 <div class="ui-container-fluid">
     <div class="book-card-full _indent">
-        <div itemprop="image" itemscope itemtype="http://schema.org/ImageObject">
+        <div class="book-card-full__image" itemprop="image" itemscope itemtype="http://schema.org/ImageObject">
             <img itemprop="contentUrl" class="book-card-full__image" src="{{book.cover.getThumb(334,488)}}" alt="Обложка для книги {{book.title}}" style="object-fit: fill" >
+            {% if book.ebook.priceTag.discountExists %}
+                {% partial 'SaleTagBlock::default' discountInfo = book.ebook.priceTag.getDiscountInfo %}
+            {% endif %}
         </div>
         <div class="book-card-full__description">
             <h1 class="book-card-full__title ui-text-head--2 ui-text--bold" itemprop="name">{{book.h1 ?? book.title}}</h1>
@@ -66,10 +69,10 @@
                                         {% if not book.ebook.isBought %}
                                         <a {{user ? 'data-request="Order::onCreateOrder"' : 'onclick="loginPopup()"'}}
                                            class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
-                                            {% if book.ebook.discount_exists %}
+                                            {% if book.ebook.priceTag.discountExists %}
                                             <span>
                                                 <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
-                                                <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
+                                                <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.priceTag.discountAmount}}%</span>
                                               </span>
                                             {% else %}
                                            <span> Купить {{book.ebook.price}} ₽</span>

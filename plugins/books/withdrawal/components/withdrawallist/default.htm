@@ -40,7 +40,7 @@
             </table>
         </div>
 
-        {% partial 'site/pagination' records = withdrawals %}
+        {{ pager(withdrawals, { partial: 'site/standart_pagination'}) }}
 
     </div>
 </div>

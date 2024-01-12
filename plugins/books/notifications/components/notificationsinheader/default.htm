@@ -1,7 +1,7 @@
 <div class="header__actions-wrapper">
     <button
         class="header__actions-item" data-header-action="notifications"
-        data-request="{{ __SELF__ }}::onMarkHeaderNotificationsAsRead"
+        data-request="{{ __SELF__ }}::onViewHeaderNotifications"
     >
         <svg class="square-24">
             <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme }}"></use>
@@ -20,36 +20,12 @@
                     </svg>
                 </a>
             </div>
-            <div class="popup-menu__body popup-menu__wrapper">
-                {% if headerNotifications | length > 0 %}
-                    <div class="notification-menu">
-                        {% for notification in headerNotifications %}
-                            <div class="notification-menu__wrapper">
-                                {% if not notification.read_at %}
-                                    <div class="notification-menu__detector active"></div>
-                                {% endif %}
-                                <div class="notification-menu__icon-wrapper">
-                                    <svg class="square-24">
-                                        {% set icon = 'assets/icon-sprite/svg-sprite.svg#' ~ notification.icon %}
-
-                                        <use xlink:href="{{ icon | theme }}"></use>
-                                    </svg>
-                                </div>
-                                <div class="notification-menu__content">
-                                    {{ notification.render({header:1}) | raw }}
-                                    <div class="notification-menu__date">{{ notification.created_at.diffForHumans() }}</div>
-                                </div>
-                            </div>
-                        {% endfor %}
+            <div id="notifications-in-header-list" class="popup-menu__body popup-menu__wrapper">
+                <div class="commerce__loading-wrap">
+                    <div class="commerce__loading-icon">
+                        <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
                     </div>
-                {% else %}
-                    <div class="popup-menu__placeholder">
-                        <svg class="square-32">
-                            <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#notifications-stroked-24' | theme }}"></use>
-                        </svg>
-                        <span>Здесь пока ничего нет</span>
-                    </div>
-                {% endif %}
+                </div>
             </div>
             <div class="popup-menu__footer popup-menu__wrapper">
                 <a href="{{ 'notifications' | page }}" class="popup-menu__link ui-link _violet">Все уведомления</a>

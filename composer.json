@@ -184,6 +184,10 @@
         "vdlp/oc-horizon-plugin": {
             "type": "git",
             "url": "https://github.com/vdlp/oc-horizon-plugin/"
+        },
+        "books/authorprograms-plugin": {
+            "type": "path",
+            "url": "./plugins/books/authorprograms"
         }
     },
     "extra": {

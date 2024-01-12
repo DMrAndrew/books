@@ -32,6 +32,12 @@ class BookCard extends ComponentBase
         return [];
     }
 
+    public function init()
+    {
+        parent::init();
+        $this->addComponent(SaleTagBlock::class, 'SaleTagBlock');
+    }
+
     public function acceptable(): bool
     {
         $this->user = Auth::getUser();
