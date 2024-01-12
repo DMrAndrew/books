@@ -1,0 +1,8 @@
+<div class="notification-menu__message notification-menu__content-wrapper">
+    <p id="{{ notification.id }}" class="notification-menu__content-wrapper" {{  not header ? 'style="line-clamp: inherit;-webkit-line-clamp: inherit"' : '' }}>
+        “{{ recipient.username }}”, в честь Вашего дня рождения мы дарим 100% от продажи книг (всего на 1 день). Разрекламируйте свои книги, чтобы получить как можно больше выгоды!
+    </p>
+    {% if header %}
+    <a href="/notifications/system/{{ notification.id }}" class="ui-link _violet">Подробнее</a>
+    {% endif %}
+</div>

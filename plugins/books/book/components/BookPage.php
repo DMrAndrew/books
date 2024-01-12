@@ -78,6 +78,8 @@ class BookPage extends ComponentBase
             $comments->bindModelOwner($this->book->profile);
         }
 
+        $this->addComponent(SaleTagBlock::class, 'SaleTagBlock');
+
         $otherAuthorBook = $this->addComponent(Widget::class, 'otherAuthorBook');
         $otherAuthorBook->setUpWidget(WidgetEnum::otherAuthorBook, book: $this->book, withHeader: false);
 

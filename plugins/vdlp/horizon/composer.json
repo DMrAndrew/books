@@ -25,8 +25,8 @@
         "ext-posix": "*",
         "ext-redis": "*",
         "composer/installers": "^1.0 || ^2.0",
-        "laravel/horizon": "^5.17",
-        "october/rain": "^3.2"
+        "laravel/horizon": "^5.0",
+        "october/rain": "^3.0"
     },
     "repositories": [
         {
