@@ -432,7 +432,7 @@ class OrderService implements OrderServiceContract
             throw new Exception("Unable to resolve Author(s) for order #{$order->id}");
         }
 
-        $rewardTaxedCoefficient = $this->getAuthorRewardCoefficient();
+
 
         /**
          * Разделить гонорар с продажи книги с учетом процентов
@@ -443,7 +443,8 @@ class OrderService implements OrderServiceContract
                 ?->orderable
                 ?->book;
 
-            $book->profiles->each(function ($profile) use ($byEdition, $book, $order, $rewardTaxedCoefficient) {
+            $book->profiles->each(function ($profile) use ($byEdition, $book, $order) {
+                $rewardTaxedCoefficient = $this->getAuthorRewardCoefficient($profile->user->birthday->isBirthday());
                 $authorRewardPartRounded = intdiv(($byEdition * $profile->pivot->percent), 100);
                 $authorRewardPartTaxed = intval($rewardTaxedCoefficient * $authorRewardPartRounded);
                 $profile->user->proxyWallet()->deposit($authorRewardPartTaxed);
@@ -462,8 +463,8 @@ class OrderService implements OrderServiceContract
         if ($bySupport) {
             $authorsRewardPartRounded = $this->getRewardPartRounded($bySupport, $profiles->count());
 
-            $profiles->each(function ($profile) use ($order, $authorsRewardPartRounded, $rewardTaxedCoefficient) {
-
+            $profiles->each(function ($profile) use ($order, $authorsRewardPartRounded) {
+                $rewardTaxedCoefficient = $this->getAuthorRewardCoefficient($profile->user->birthday->isBirthday());
                 $authorRewardPartTaxed = intval($rewardTaxedCoefficient * $authorsRewardPartRounded);
                 $profile->user->proxyWallet()->deposit($authorRewardPartTaxed);
 
@@ -557,9 +558,9 @@ class OrderService implements OrderServiceContract
     /**
      * @return float
      */
-    public function getAuthorRewardCoefficient(): float
+    public function getAuthorRewardCoefficient($isAuthorBirthday): float
     {
-        return (int)config('orders.author_reward_percentage') / 100;
+        return $isAuthorBirthday ? 1 : ((int)config('orders.author_reward_percentage') / 100);
     }
 
     /**

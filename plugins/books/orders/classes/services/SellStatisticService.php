@@ -10,6 +10,7 @@ use Books\Orders\Classes\Contracts\OrderService as OrderServiceContract;
 use Books\Orders\Classes\Contracts\SellStatisticService as SellStatisticServiceContract;
 use Books\Orders\Models\Order;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SellStatisticService implements SellStatisticServiceContract
 {
@@ -37,7 +38,9 @@ class SellStatisticService implements SellStatisticServiceContract
             ?->orderable
             ?->book;
 
-        $rewardTaxedCoefficient = $this->orderService->getAuthorRewardCoefficient();
+        $rewardTaxedCoefficient = $this->orderService->getAuthorRewardCoefficient(
+            $book->authors->first()->profile->user->birthday->isBirthday()
+        );
 
         $book->authors->each(function ($author) use ($editionsAmount, $book, $order, $rewardTaxedCoefficient) {
             $profile = $author->profile;

@@ -7,6 +7,7 @@ exclude_comments="true"
 exclude_bookcard="true"
 exclude_listing_filter="true"
 [IndexWidgets]
+[ModalNotification]
 ==
 <div>
     {% if not user %}
@@ -34,4 +35,10 @@ exclude_listing_filter="true"
     </div>
     {% endif %}
     {% component 'IndexWidgets' %}
+    {% component 'ModalNotification' %}
+
+    <div id="reader-birthday-modal"></div>
+    <div id="new-reader-modal"></div>
+    <div id="regular-reader-modal"></div>
+
 </div>
