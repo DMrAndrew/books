@@ -111,7 +111,7 @@ class PriceTag
                 ->whereIn('ownable_id', $authorBooks)
                 ->orderBy('created_at', 'ASC');
 
-            if ($regularReaderProgram && $readerBooksPurchased->count() >= $regularReaderProgram->condition->books) {
+            if ($regularReaderProgram && $readerBooksPurchased->count() > $regularReaderProgram->condition->books) {
                 $this->discountsArr['values'][] = $regularReaderProgram->condition->percent;
                 if ($regularReaderProgram->condition->percent >= $this->discountAmount()) {
                 $this->discountsArr['discount'] = [
