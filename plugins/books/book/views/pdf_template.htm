@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Книга</title>
+    <style type="text/css">
+        *,
+        ::before,
+        ::after {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #e5e7eb;
+        }
+
+        html {
+            font-size: 16px;
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            -moz-tab-size: 4;
+            -o-tab-size: 4;
+            tab-size: 4;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+        }
+
+        body {
+            margin: 0;
+            line-height: inherit;
+        }
+
+        .clr {
+            clear: both;
+        }
+
+        .no-wrap {
+            white-space: nowrap;
+        }
+
+        .title-1 {
+            font-weight: 600;
+            margin: 0.5em 0;
+            font-size: 1.75rem;
+            line-height: 1em;
+            text-align: center;
+        }
+
+        .title-2 {
+            font-weight: bold;
+            margin: 0.5em 0;
+            font-size: 1.5rem;
+            line-height: 1.1em;
+        }
+
+        .title-3 {
+            margin: 0.5em 0;
+            font-size: 1.05rem;
+            line-height: 1.2em;
+        }
+
+        .title-small {
+            font-weight: 600;
+            margin: 0.5em 0;
+            font-size: 0.8rem;
+            line-height: 1.4em;
+        }
+        ul,
+        ol {
+            margin-left: 1.2em;
+            margin-top: 1em;
+        }
+        ul li,
+        ol li {
+            margin-top: 0.75em;
+        }
+        ul {
+            list-style: disc;
+        }
+        ol {
+            list-style: decimal;
+        }
+        p {
+            margin-top: 1.6em;
+        }
+
+        .content-block {
+            margin: 1em 0;
+            width: 100%;
+            -moz-column-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .table {
+            margin: 1em 0;
+            width: 100%;
+            border-collapse: collapse;
+            -moz-column-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .table td {
+            padding: 0.25rem 0.5em;
+            text-align: right;
+            font-size: 0.8em;
+            line-height: 1.2em;
+        }
+
+        .table thead td {
+            font-size: 12px;
+            line-height: 1em;
+            white-space: nowrap;
+            color: #aaa;
+        }
+
+        .table tbody tr:last-child td {
+            padding-bottom: 1rem;
+        }
+
+        .table td:first-child {
+            padding-left: 0;
+            text-align: left;
+        }
+
+        .table td:last-child {
+            padding-right: 0;
+        }
+
+        .table .title-3 {
+            margin: 0;
+        }
+
+        .table-total {
+            border-top: 1px solid #999;
+            width: 50%;
+            padding-top: 0.5em;
+            font-size: 1.2em;
+            margin-left: auto;
+            text-align: right;
+        }
+
+    </style>
+</head>
+
+<body>
+<header class="header">
+    <div class="clr"></div>
+</header>
+
+<main>
+    <div class="title-1">{{authors}}</div>
+    <div style="text-align: center">
+
+        <img height="800px"  style="width:auto;margin: 0px auto 0px auto; display: block" src="{{img_src}}">
+    </div>
+    <div class="content-block">
+        <div class="title-1" style="text-align: center">{{title}}</div>
+
+    </div>
+    <pagebreak></pagebreak>
+    <div class="content-block">
+        <div class="title-3">{{annotation|raw}}</div>
+    </div>
+    <pagebreak></pagebreak>
+    {% for chapter in chapters %}
+    <div class="content-block">
+        <div class="title-3" style="font-weight: bold">{{chapter.title|raw}}</div>
+        <div>{{chapter.content.body|raw}}</div>
+    </div>
+    {% endfor %}
+    {{endmark|raw}}
+</main>
+</body>
+
+</html>
