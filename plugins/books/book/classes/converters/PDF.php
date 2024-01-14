@@ -21,7 +21,7 @@ class PDF extends BaseConverter
             'chapters' => $this->chapters(),
             'endmark' => $this->endMark(),
         ]);
-        $pdf = new Mpdf();
+        $pdf = new Mpdf(['tempDir' => storage_path('/temp/electronic_books_generate')]);
         $pdf->SetTitle($this->title());
         $pdf->SetAuthor($this->book->profile->username);
         $pdf->SetKeywords($this->book->tags->pluck('name')->join(', '));
