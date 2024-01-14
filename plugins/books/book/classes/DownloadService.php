@@ -26,13 +26,18 @@ class DownloadService
 
     public function getElectronicFile()
     {
-        $this->edition->{$this->format->value}?->delete();
+        if ($this->format !== ElectronicFormats::PDF) {
+            $this->edition->{$this->format->value}?->delete();
+        }
 
         return $this->generateElectronicFile();
     }
 
     public function generateElectronicFile(): File
     {
+        if ($this->format === ElectronicFormats::PDF && $this->edition->pdf) {
+            return $this->edition->{$this->format->value};
+        }
         $this->edition->{$this->format->value}()->add($this->format->converter($this->book)->make());
 
         return $this->edition->{$this->format->value};
