@@ -5,6 +5,7 @@ namespace Books\Profile\Components;
 use App\classes\CustomPaginator;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Components\AwardsLC;
+use Books\Book\Components\SaleTagBlock;
 use Books\Book\Components\Widget;
 use Books\Comments\Components\Comments;
 use Books\Profile\Models\Profile;
@@ -59,6 +60,9 @@ class AuthorSpace extends ComponentBase
         $comments->bindModelOwner($this->profile);
         $recommend = $this->addComponent(Widget::class, 'recommend');
         $recommend->setUpWidget(WidgetEnum::recommend, short: true);
+        $awards = $this->addComponent(AwardsLC::class, 'awardsLC');
+        $awards->bindProfile($this->profile);
+        $this->addComponent(SaleTagBlock::class, 'SaleTagBlock');
     }
 
     public function onRender()

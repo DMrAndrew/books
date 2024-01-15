@@ -1,258 +1,294 @@
 <div class="library">
-<!--    {% if user and library_has_items %}-->
-<!--    <div class="ui-container">-->
-<!--        <a href="/contacts" class="library-banner">-->
-<!--            <img src="{{'assets/images/main/banner-library.jpg' | theme}}" alt="">-->
-<!--        </a>-->
-<!--    </div>-->
-<!--    {% endif %}-->
+    <!--    {% if user and library_has_items %}-->
+    <!--    <div class="ui-container">-->
+    <!--        <a href="/contacts" class="library-banner">-->
+    <!--            <img src="{{ 'assets/images/main/banner-library.jpg' | theme }}" alt="">-->
+    <!--        </a>-->
+    <!--    </div>-->
+    <!--    {% endif %}-->
 
     <div class="ui-container-fluid">
         {% if user and library_has_items %}
-        <div class="library__content">
-            <div class="ui-tabs">
-                <div class="ui-tabs-header">
-                    <div class="ui-tabs-line"></div>
-                    <div class="ui-tabs-header-wrapper" data-tabs="1">
+            <div class="library__content">
+                <div class="ui-tabs">
+                    <div class="ui-tabs-header">
+                        <div class="ui-tabs-line"></div>
+                        <div class="ui-tabs-header-wrapper" data-tabs="1">
+                            {% for index,item in library %}
+                                <div class="ui-tabs-link {{ active.value == item.type.value ? 'active': '' }}"
+                                     data-tab="{{ item.type.value }}">{{ item.label }}
+                                    {% if item.count %}
+                                        <span>{{ item.count }}</span>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="ui-tabs-body _field" data-tabs="1">
                         {% for index,item in library %}
-                        <div class="ui-tabs-link {{active.value == item.type.value ? 'active': '' }}"
-                             data-tab="{{item.type.value}}">{{item.label}}
-                            {% if item.count %}
-                            <span>{{item.count}}</span>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="ui-tabs-body _field" data-tabs="1">
-                    {% for index,item in library %}
-                    <div class="ui-tabs-content {{active.value == item.type.value ? 'active': '' }}"
-                         data-tab-content="{{item.type.value}}">
+                            <div class="ui-tabs-content {{ active.value == item.type.value ? 'active': '' }}"
+                                 data-tab-content="{{ item.type.value }}">
 
-                        {% if item.count %}
-                        <div class="ui-grid-container ui-grid-gap">
-                            {% for lib in item.items %}
+                                {% if item.count %}
+                                    <div class="ui-grid-container ui-grid-gap">
+                                        {% for lib in item.items %}
 
 
-                            <div class="ui-col-md-2 ui-col-sm-3 ui-col-xs-4 ui-col-xxs-4 book-mini-card">
-                                <div data-tippy-continer>
-                                    <a href="/reader/{{lib.book.id}}" data-tippy-init><img
-                                        src="{{lib.book.cover.getThumb(208,300)}}" class="book-mini-card__image" alt=""
-                                        loading="lazy"></a>
-                                    <div data-tippy-block>
-                                        <div class="tippymodal">
-                                            <div class="tippymodal-block tags-list"><span class="tippymodal-title">Автор:</span>
-                                                {% for author in lib.book.orderedAuthors %}
-                                                <a href="/author-page/{{author.profile.id}}" class="ui-link _violet">{{author.profile.username}}</a>
-                                                {% endfor %}
-                                            </div>
-                                            <div class="tippymodal-block tags-list"><span class="tippymodal-title">Жанры:</span>
-                                                {% partial 'controls/genres-link-list' genres=lib.book.genres %}
-                                            </div>
-                                            <div class="tippymodal-block">Аннотация:
-                                                <div class="typographical-block truncate">
-                                                    {{ lib.book.annotation_short|raw }}
+                                            <div
+                                                class="ui-col-md-2 ui-col-sm-3 ui-col-xs-4 ui-col-xxs-4 book-mini-card">
+                                                <div data-tippy-continer>
+                                                    <div class="book-mini-card__image">
+                                                        <a href="/reader/{{ lib.book.id }}" data-tippy-init><img
+                                                                src="{{ lib.book.cover.getThumb(208,300) }}"
+                                                                class="book-mini-card__image" alt=""
+                                                                loading="lazy">
+                                                            {% if lib.book.ebook.priceTag.discountExists %}
+                                                                {% partial 'SaleTagBlock::default' discountInfo = lib.book.ebook.priceTag.getDiscountInfo %}
+                                                            {% endif %}
+                                                    </div>
+                                                    </a>
+                                                    <div data-tippy-block>
+                                                        <div class="tippymodal">
+                                                            <div class="tippymodal-block tags-list"><span
+                                                                    class="tippymodal-title">Автор:</span>
+                                                                {% for author in lib.book.orderedAuthors %}
+                                                                    <a href="/author-page/{{ author.profile.id }}"
+                                                                       class="ui-link _violet">{{ author.profile.username }}</a>
+                                                                {% endfor %}
+                                                            </div>
+                                                            <div class="tippymodal-block tags-list"><span
+                                                                    class="tippymodal-title">Жанры:</span>
+                                                                {% partial 'controls/genres-link-list' genres=lib.book.genres %}
+                                                            </div>
+                                                            <div class="tippymodal-block">Аннотация:
+                                                                <div class="typographical-block truncate">
+                                                                    {{ lib.book.annotation_short|raw }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="tippymodal-block tags-list">
+                                                                {% partial 'controls/tags-link-list' tags=lib.book.tags %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                                {% if  item.type.value != 6 %}
+                                                    <div data-tippy-continer data-tippy-offset="[0, 0]">
+                                                        <div class="book-mini-card__action" data-tippy-init>
+                                                            <svg class="square-16">
+                                                                <use
+                                                                    xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#more-16' | theme }}"></use>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="ui-dropdown" data-tippy-block>
+
+                                                            <div class="ui-dropdown-container">
+
+
+                                                                {% if lib.loved or  item.type.value == 5 %}
+                                                                    <div class="ui-dropdown-item active"
+                                                                         onclick="switchLib({
+                                                                             id:'{{ lib.book.id }}',
+                                                                             action:'unloved'
+                                                                             })">
+                                                                        <span>Удалить из любимых</span>
+                                                                    </div>
+                                                                {% endif %}
+
+
+                                                                <div class="ui-dropdown-item active">
+                                                                    <span>Добавить в</span>
+                                                                    <svg>
+                                                                        <use
+                                                                            xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme }}"></use>
+                                                                    </svg>
+                                                                    <div class="ui-dropdown-container">
+
+                                                                        {% if item.type.value in [1,3,4,5] %}
+                                                                            <div class="ui-dropdown-item active"
+                                                                                 onclick="switchLib({
+                                                                                     id:'{{ lib.book.id }}',
+                                                                                     action:'interested'
+                                                                                     })">
+                                                                                <span>Хочу прочесть</span>
+                                                                            </div>
+                                                                        {% endif %}
+
+                                                                        {% if item.type.value in [1,2,4,5] %}
+                                                                            <div class="ui-dropdown-item active"
+                                                                                 onclick="switchLib({
+                                                                                     id:'{{ lib.book.id }}',
+                                                                                     action:'reading'
+                                                                                     })">
+                                                                                <span>Читаю сейчас</span>
+                                                                            </div>
+                                                                        {% endif %}
+
+                                                                        {% if item.type.value in [1,2,3] %}
+                                                                            <div class="ui-dropdown-item active"
+                                                                                 onclick="switchLib({
+                                                                                     id:'{{ lib.book.id }}',
+                                                                                     action:'read'
+                                                                                     })">
+                                                                                <span>Прочитано</span>
+                                                                            </div>
+                                                                        {% endif %}
+
+                                                                        {% if not lib.loved and  item.type.value in [1,2,3,4] %}
+                                                                            <div class="ui-dropdown-item active"
+                                                                                 onclick="switchLib({
+                                                                                     id:'{{ lib.book.id }}',
+                                                                                     action:'loved'
+                                                                                     })">
+                                                                                <span>Любимые</span>
+                                                                            </div>
+                                                                        {% endif %}
+
+                                                                    </div>
+                                                                </div>
+                                                                <div class="ui-dropdown-separate"></div>
+                                                                <div class="ui-dropdown-item active"
+                                                                     onclick="switchLib({
+                                                                         id:'{{ lib.book.id }}',
+                                                                         action:'remove'
+                                                                         })">
+                                                                    <span>Удалить</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                                {% set last_length_update = lib.book.editions.first.updateHistory.items.first.value %}
+                                                {% if last_length_update %}
+                                                    <div class="book-mini-card__addition">+{{ last_length_update }}
+                                                         зн.
+                                                    </div>
+                                                {% endif %}
+                                                <a href="/book-card/{{ lib.book.id }}" class="book-mini-card__title">
+                                                    {{ lib.book.title }}
+                                                </a>
+                                                {% if item.type.value == 3 %}
+                                                    <div class="book-mini-card__progress book-mini-card-progress">
+                                                        <div class="book-mini-card-progress__item-wrapper">
+                                                            <div class="book-mini-card-progress__line"
+                                                                 style="width:{{ lib.book.ebook.readPercent }}% ">
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            class="book-mini-card-progress__text">{{ lib.book.ebook.readPercent }}
+                                                            %
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
                                             </div>
-                                            <div class="tippymodal-block tags-list">
-                                                {% partial 'controls/tags-link-list' tags=lib.book.tags %}
-                                            </div>
-                                        </div>
+                                        {% endfor %}
+
                                     </div>
-                                </div>
-                                {% if  item.type.value != 6 %}
-                                <div data-tippy-continer data-tippy-offset="[0, 0]">
-                                    <div class="book-mini-card__action" data-tippy-init>
-                                        <svg class="square-16">
+                                {% else %}
+                                    <div class="library-placeholder wrapper">
+                                        <svg class="square-32">
                                             <use
-                                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
+                                                xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme }}"></use>
                                         </svg>
+                                        <div class="ui-text-head--3 ui-text--bold">У вас нет книг в этом списке</div>
+                                        <span>Перейдите в список книг, чтобы выбрать понравившуюся книгу и добавить ее в библиотеку</span>
+                                        <a href="/listing">
+                                            <button
+                                                class="ui-button ui-button-view--2 ui-button-size--32 ui-button--full-mobile">
+                                                Выбрать
+                                                книгу
+                                            </button>
+                                        </a>
                                     </div>
-                                    <div class="ui-dropdown" data-tippy-block>
 
-                                        <div class="ui-dropdown-container">
-
-
-                                            {% if lib.loved or  item.type.value == 5 %}
-                                            <div class="ui-dropdown-item active" onclick="switchLib({
-                                            id:'{{lib.book.id}}',
-                                            action:'unloved'
-                                        })">
-                                                <span>Удалить из любимых</span>
-                                            </div>
-                                            {% endif %}
-
-
-                                            <div class="ui-dropdown-item active">
-                                                <span>Добавить в</span>
-                                                <svg>
-                                                    <use
-                                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-right-16' | theme}}"></use>
-                                                </svg>
-                                                <div class="ui-dropdown-container">
-
-                                                    {% if item.type.value in [1,3,4,5] %}
-                                                    <div class="ui-dropdown-item active" onclick="switchLib({
-                                            id:'{{lib.book.id}}',
-                                            action:'interested'
-                                        })">
-                                                        <span>Хочу прочесть</span>
-                                                    </div>
-                                                    {% endif %}
-
-                                                    {% if item.type.value in [1,2,4,5] %}
-                                                    <div class="ui-dropdown-item active" onclick="switchLib({
-                                            id:'{{lib.book.id}}',
-                                            action:'reading'
-                                        })">
-                                                        <span>Читаю сейчас</span>
-                                                    </div>
-                                                    {% endif %}
-
-                                                    {% if item.type.value in [1,2,3] %}
-                                                    <div class="ui-dropdown-item active" onclick="switchLib({
-                                            id:'{{lib.book.id}}',
-                                            action:'read'
-                                        })">
-                                                        <span>Прочитано</span>
-                                                    </div>
-                                                    {% endif %}
-
-                                                    {% if not lib.loved and  item.type.value in [1,2,3,4] %}
-                                                    <div class="ui-dropdown-item active" onclick="switchLib({
-                                            id:'{{lib.book.id}}',
-                                            action:'loved'
-                                        })">
-                                                        <span>Любимые</span>
-                                                    </div>
-                                                    {% endif %}
-
-                                                </div>
-                                            </div>
-                                            <div class="ui-dropdown-separate"></div>
-                                            <div class="ui-dropdown-item active" onclick="switchLib({
-                                            id:'{{lib.book.id}}',
-                                            action:'remove'
-                                        })">
-                                                <span>Удалить</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 {% endif %}
-                                {% set last_length_update = lib.book.editions.first.updateHistory.items.first.value %}
-                                {% if last_length_update %}
-                                <div class="book-mini-card__addition">+{{last_length_update}} зн.</div>
-                                {% endif %}
-                                <a href="/book-card/{{lib.book.id}}" class="book-mini-card__title">
-                                    {{lib.book.title}}
-                                </a>
-                                {% if item.type.value == 3  %}
-                                <div class="book-mini-card__progress book-mini-card-progress">
-                                    <div class="book-mini-card-progress__item-wrapper">
-                                        <div class="book-mini-card-progress__line" style="width:{{lib.book.ebook.readPercent}}% "  >
-                                    </div>
-                                </div>
-                                <div class="book-mini-card-progress__text">{{lib.book.ebook.readPercent}} %</div>
                             </div>
-                            {% endif %}
-                        </div>
                         {% endfor %}
-
                     </div>
-                    {% else %}
-                    <div class="library-placeholder wrapper">
-                        <svg class="square-32">
-                            <use
-                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme }}"></use>
-                        </svg>
-                        <div class="ui-text-head--3 ui-text--bold">У вас нет книг в этом списке</div>
-                        <span>Перейдите в список книг, чтобы выбрать понравившуюся книгу и добавить ее в библиотеку</span>
-                        <a href="/listing">
-                        <button class="ui-button ui-button-view--2 ui-button-size--32 ui-button--full-mobile">Выбрать
-                            книгу
-                        </button>
-                        </a>
-                    </div>
-
-                    {% endif %}
                 </div>
-                {% endfor %}
             </div>
-        </div>
+        {% endif %}
+
+        {% if not user %}
+            <div class="library-auth">
+                <div class="library-auth__header">
+                    <div class="library-auth__wrap _indent-medium">Библиотека доступна зарегистрированным пользователям.
+                        Пожалуйста, зарегистрируйтесь или авторизуйтесь на портале.
+                    </div>
+                    <div class="library-auth__action">
+                        <button onclick="loginPopup()"
+                                class="ui-button ui-button-view--3 ui-button-size--32 ui-button--full-mobile">Войти
+                        </button>
+                        <button onclick="registerPopup()"
+                                class="ui-button ui-button-view--2 ui-button-size--32 ui-button--full-mobile">
+                            Зарегистрироваться
+                        </button>
+                    </div>
+                </div>
+
+                <div class="library-auth__wrap _indent-large">
+                    <div class="library-auth__wrap _indent-small ui-text-head--3 ui-text--bold">Для чего мне Библиотека?
+                    </div>
+                    <div>Библиотека нужна, чтобы сохранить выбранные вами книги на портале для быстрого доступа к ним с
+                        любого устройства, где вы зарегистрированы.
+                    </div>
+                </div>
+                <div class="library-auth__wrap _indent-large">
+                    <div class="library-auth__wrap _indent-small ui-text-head--3 ui-text--bold">Как добавить книгу в мою
+                        библиотеку
+                    </div>
+                    <div>Чтобы добавить книгу в библиотеку достаточно нажать на флажок на странице чтения или странице
+                        книги.
+                    </div>
+                </div>
+                <div class="library-auth__wrap _indent-large">
+                    <div class="library-auth__wrap _indent-small ui-text-head--3 ui-text--bold">Чем еще полезна
+                        библиотека?
+                    </div>
+                    <div>Здесь вы сможете наблюдать за обновлениями книг в вашей библиотеке, следить за прогрессом
+                        прочтения и никогда не терять то, что вас заинтересовало, даже если вы забыли автора и название.
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if user and not library_has_items %}
+            <div class="library-placeholder wrapper">
+                <svg class="square-32">
+                    <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme }}"></use>
+                </svg>
+                <div class="ui-text-head--3 ui-text--bold">У вас нет книг в библиотеке</div>
+                <span>Перейдите в список книг, чтобы выбрать понравившуюся книгу и добавить ее в библиотеку</span>
+                <a href="/listing">
+                    <button class="ui-button ui-button-view--2 ui-button-size--32 ui-button--full-mobile">Выбрать
+                        книгу
+                    </button>
+                </a>
+            </div>
+        {% endif %}
+
     </div>
-    {% endif %}
+    <script>
+        initTabs('[data-tabs="1"]');
+        initTippy()
 
-    {% if not user %}
-    <div class="library-auth">
-        <div class="library-auth__header">
-            <div class="library-auth__wrap _indent-medium">Библиотека доступна зарегистрированным пользователям.
-                Пожалуйста, зарегистрируйтесь или авторизуйтесь на портале.
-            </div>
-                            <div class="library-auth__action">
-                                <button onclick="loginPopup()" class="ui-button ui-button-view--3 ui-button-size--32 ui-button--full-mobile">Войти</button>
-                                <button onclick="registerPopup()" class="ui-button ui-button-view--2 ui-button-size--32 ui-button--full-mobile">
-                                    Зарегистрироваться
-                                </button>
-                            </div>
-        </div>
-
-        <div class="library-auth__wrap _indent-large">
-            <div class="library-auth__wrap _indent-small ui-text-head--3 ui-text--bold">Для чего мне Библиотека?
-            </div>
-            <div>Библиотека нужна, чтобы сохранить выбранные вами книги на портале для быстрого доступа к ним с любого устройства, где вы зарегистрированы.</div>
-        </div>
-        <div class="library-auth__wrap _indent-large">
-            <div class="library-auth__wrap _indent-small ui-text-head--3 ui-text--bold">Как добавить книгу в мою
-                библиотеку
-            </div>
-            <div>Чтобы добавить книгу в библиотеку достаточно нажать на флажок на странице чтения или странице книги.</div>
-        </div>
-        <div class="library-auth__wrap _indent-large">
-            <div class="library-auth__wrap _indent-small ui-text-head--3 ui-text--bold">Чем еще полезна
-                библиотека?
-            </div>
-            <div>Здесь вы сможете наблюдать за обновлениями книг в вашей библиотеке, следить за прогрессом прочтения и никогда не терять то, что вас заинтересовало, даже если вы забыли автора и название.</div>
-        </div>
-    </div>
-    {% endif %}
-
-    {% if user and not library_has_items %}
-    <div class="library-placeholder wrapper">
-        <svg class="square-32">
-            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#bookmark-stroked-16' | theme}}"></use>
-        </svg>
-        <div class="ui-text-head--3 ui-text--bold">У вас нет книг в библиотеке</div>
-        <span>Перейдите в список книг, чтобы выбрать понравившуюся книгу и добавить ее в библиотеку</span>
-        <a href="/listing">
-        <button class="ui-button ui-button-view--2 ui-button-size--32 ui-button--full-mobile">Выбрать книгу</button>
-        </a>
-    </div>
-    {% endif %}
-
-</div>
-<script>
-    initTabs('[data-tabs="1"]');
-    initTippy()
-
-    function activeTabValue() {
-        return $('.library .ui-tabs-content.active').data('tab-content');
-    }
-
-    function switchLib(options) {
-        let {id = null, action = null} = options
-        if (!id || !action) {
-            return;
+        function activeTabValue() {
+            return $('.library .ui-tabs-content.active').data('tab-content');
         }
-        if (['remove'].includes(action) && !confirm('Подтвердите действие')) {
-            return;
-        }
-        oc.ajax('onSwitch', {
-            data: {
-                book_id: id,
-                active_tab: activeTabValue(),
-                action: action
+
+        function switchLib(options) {
+            let {id = null, action = null} = options
+            if (!id || !action) {
+                return;
             }
-        })
-    }
-</script>
+            if (['remove'].includes(action) && !confirm('Подтвердите действие')) {
+                return;
+            }
+            oc.ajax('onSwitch', {
+                data: {
+                    book_id: id,
+                    active_tab: activeTabValue(),
+                    action: action
+                }
+            })
+        }
+    </script>

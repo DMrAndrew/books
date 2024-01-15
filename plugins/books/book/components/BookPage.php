@@ -78,6 +78,8 @@ class BookPage extends ComponentBase
             $comments->bindModelOwner($this->book->profile);
         }
 
+        $this->addComponent(SaleTagBlock::class, 'SaleTagBlock');
+
         $otherAuthorBook = $this->addComponent(Widget::class, 'otherAuthorBook');
         $otherAuthorBook->setUpWidget(WidgetEnum::otherAuthorBook, book: $this->book, withHeader: false);
 
@@ -123,7 +125,7 @@ class BookPage extends ComponentBase
             'supportBtn' => $this->supportBtn(),
             'book' => $this->book,
             'cycle' => $this->book->cycle,
-            'download_btn' => $this->book->ebook->isDownloadAllowed($this->user),
+            'download_btn' => $this->book->ebook->isDownloadAllowed(),
         ];
     }
 
@@ -217,7 +219,7 @@ class BookPage extends ComponentBase
     {
         try {
             $format = ElectronicFormats::tryFrom(post('format')) ?? ElectronicFormats::default();
-            if (! $this->book->ebook->isDownloadAllowed($this->user)) {
+            if (! $this->book->ebook->isDownloadAllowed()) {
                 throw new DownloadNotAllowed();
             }
 

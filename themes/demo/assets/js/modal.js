@@ -1,39 +1,43 @@
 function openModal(container, buttonOpenModal) {
-    const modal = document.querySelector(container);
-    const buttonOpen = document.querySelector(buttonOpenModal);
-    const buttonClose = document.querySelector(container + ' ' + '[data-modal="close"]');
-    document.body.style.overflow = 'initial';
-    if (!modal  || !buttonClose) return
+  const modal = document.querySelector(container);
+  const buttonOpen = document.querySelector(buttonOpenModal);
+  const buttonClose = document.querySelectorAll(container + ' ' + '[data-modal="close"]');
 
-    buttonOpen?.addEventListener('click', e => {
-        openModalFn(e, modal)
-    })
+  if (!buttonOpen || !buttonOpen || !buttonClose) return
 
-    modal.addEventListener('click', e => {
-        let t = e.target;
-        if (t.classList.contains('overlay')) {
-            modal.classList.remove('active');
-            document.body.style.overflow = 'initial';
-        }
-    })
-
-    buttonClose.addEventListener('click', () => {
-        closeModalFn(modal)
-    })
-}
-
-function openModalFn(e, modal) {
+  buttonOpen.addEventListener('click', e => {
     e.preventDefault();
 
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+  })
+
+  modal.addEventListener('click', e => {
+    let t = e.target;
+    if (t.classList.contains('overlay')) {
+      modal.classList.remove('active');
+      document.body.style.overflow = 'initial';
+    }
+  })
+
+  for (const btn of buttonClose) {
+    btn.addEventListener('click', () => {
+      modal.classList.remove('active');
+      document.body.style.overflow = 'initial';
+    })
+  }
 }
 
-function closeModalFn(modal) {
-    modal.classList.remove('active');
-    document.body.style.overflow = 'initial';
+function setCookie(name, value, expirationInDays) {
+  const date = new Date();
+  date.setTime(date.getTime() + (expirationInDays * 24 * 60 * 60 * 1000));
+  document.cookie = name + '=' + value
+    + ';expires=' + date.toUTCString()
+    + ';path=/';
 }
-
+function cookieExists(name, value) {
+  return (document.cookie.split('; ').indexOf(name + '=' + value) !== -1);
+}
 addEventListener('render', function() {
     $(document).on('click', '.payTypeLabel', function(e) {
         e.preventDefault();

@@ -201,7 +201,7 @@ class BookUtilities
     public static function stringToDiDom(?string $content): Document
     {
         $diDom = new Document();
-        $content = $content ? "<p>{$content}</p>" : '<p></p>';
+        $content = $content ?: '<p></p>';
         $content = trim(Str::squish($content));
         $diDom->loadHtml($content, LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
 

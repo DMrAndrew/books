@@ -140,6 +140,8 @@ class Edition extends Model implements ProductInterface
         'fb2' => File::class,
         'epub' => File::class,
         'mobi' => File::class,
+        'txt' => File::class,
+        'pdf' => File::class,
     ];
 
     public $belongsTo = [
@@ -159,7 +161,6 @@ class Edition extends Model implements ProductInterface
     ];
 
     public $hasOne = [
-
         'downloads' => [Downloads::class, 'key' => 'edition_id', 'otherKey' => 'id'],
     ];
 
@@ -203,7 +204,8 @@ class Edition extends Model implements ProductInterface
     {
         $this->attributes[self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN] ??= $this->revision_history()
             ->where('field', '=', self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN)
-            ->latest('id')->first()?->created_at;
+            ->latest('id')
+            ->first()?->created_at;
 
         return $this->attributes[self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN];
     }
@@ -212,12 +214,12 @@ class Edition extends Model implements ProductInterface
     {
         $count = $this->downloads?->count ?? 0;
 
-        return sprintf('%s %s', $count, word_form(['загрузка', 'загрузок', 'загрузок'], $count));
+        return sprintf('%s %s', $count, word_form(['загрузка', 'загрузки', 'загрузок'], $count));
     }
 
-    public function isDownloadAllowed(User $user = null): bool
+    public function isDownloadAllowed(): bool
     {
-        return $this->download_allowed && ($this->isFree() || $this->isSold($user)) || ($user && $this->book->isAuthor($user->profile));
+        return $this->download_allowed;
     }
 
     public function getLastUpdatedAtAttribute(): ?Carbon
