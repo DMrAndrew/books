@@ -2,6 +2,7 @@
 
 namespace Books\Book\Updates;
 
+use Books\Book\Models\Downloads;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
 use Schema;
@@ -18,12 +19,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('books_book_downloads', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedBigInteger('edition_id');
-            $table->unsignedBigInteger('count');
-            $table->timestamps();
-        });
+        if (! Schema::hasTable($this->table())) {
+
+            Schema::create($this->table(), function (Blueprint $table) {
+                $table->bigIncrements('id');
+                $table->unsignedBigInteger('edition_id');
+                $table->unsignedBigInteger('count');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
@@ -31,6 +35,11 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('books_book_downloads');
+        Schema::dropIfExists($this->table());
+    }
+
+    public function table()
+    {
+        return Downloads::make()->getTable();
     }
 };
