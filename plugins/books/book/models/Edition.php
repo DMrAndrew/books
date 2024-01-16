@@ -509,15 +509,17 @@ class Edition extends Model implements ProductInterface
 
     public function setFreeParts()
     {
-        $builder = fn () => $this->chapters()->public(withPlanned: true);
-        if ($this->isFree() || $this->status === BookStatus::FROZEN) {
-            $builder()->update(['sales_type' => ChapterSalesType::FREE]);
-        } else {
-            $builder()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
-            //            $this->chapters()->offset($this->free_parts); ошибка
-            $builder()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
-        }
-        $this->chapters()->public()->get()->each->setNeighbours();
+        Db::transaction(function () {
+            $builder = fn () => $this->chapters()->public(withPlanned: true);
+
+            if ($this->isFree() || $this->status === BookStatus::FROZEN) {
+                $builder()->update(['sales_type' => ChapterSalesType::FREE]);
+            } else {
+                $builder()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
+                $builder()->get()->skip($this->free_parts)->toQuery()->update(['sales_type' => ChapterSalesType::PAY]);
+            }
+            $this->chapters()->public()->get()->each->setNeighbours();
+        }, 3);
     }
 
     public function paginateContent()
