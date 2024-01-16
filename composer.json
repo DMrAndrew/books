@@ -37,19 +37,20 @@
         "books/referral-plugin": "*",
         "books/blacklists-plugin": "*",
         "books/blog-plugin": "*",
-        "books/breadcrumbs-plugin": "dev-main",
+        "books/breadcrumbs-plugin": "*",
         "laracraft-tech/laravel-date-scopes": "^1.1",
         "vdlp/oc-telescope-plugin": "^2.0",
         "vdlp/oc-horizon-plugin": "*",
         "abordage/laravel-last-modified": "^0.2.0",
         "jfcherng/php-diff": "^6.15",
-        "books/sitemap-plugin": "dev-main",
+        "books/sitemap-plugin": "*",
         "spatie/laravel-sitemap": "6.3",
         "laravel-notification-channels/telegram": "^3.0",
         "ext-simplexml": "*",
         "ext-libxml": "*",
         "books/moderation-plugin": "*",
-        "books/certificates-plugin": "*"
+        "books/certificates-plugin": "*",
+        "soundasleep/html2text": "^2.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
@@ -88,7 +89,8 @@
     "autoload": {
         "psr-4": {
             "System\\Console\\": "modules/system/console",
-            "Tizis\\FB2\\": "plugins/books/book/classes/FB2-Parser"
+            "Tizis\\FB2\\": "plugins/books/book/classes/FB2-Parser",
+            "MOBIClass\\": "plugins/books/book/classes/MOBIClass"
         },
         "files": [
             "helpers.php"
@@ -188,6 +190,10 @@
         "vdlp/oc-horizon-plugin": {
             "type": "git",
             "url": "https://github.com/vdlp/oc-horizon-plugin/"
+        },
+        "books/authorprograms-plugin": {
+            "type": "path",
+            "url": "./plugins/books/authorprograms"
         }
     },
     "extra": {

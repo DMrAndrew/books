@@ -49,7 +49,7 @@ class ModalNotification extends ComponentBase
         $reader = Auth::user();
         $modalId = '#reader-birthday-modal';
 
-        if (!Cookie::has('newer_show_reader_birthday_program')) {
+        if (!Cookie::has('never_show_reader_birthday_program')) {
             if ($reader?->birthday->isBirthday() && Cookie::get('show_reader_birthday_program')) {
                 $authors = collect();
 
@@ -60,7 +60,7 @@ class ModalNotification extends ComponentBase
                     'subtitle' => '',
                     'closeCookie' => 'show_reader_birthday_program',
                     'modail_id' => $modalId,
-                    'neverShowCookie' => 'newer_show_reader_birthday_program',
+                    'neverShowCookie' => 'never_show_reader_birthday_program',
                 ];
                 $template = '@single_author';
                 $data['is_open'] = true;
@@ -97,8 +97,8 @@ class ModalNotification extends ComponentBase
                     ->select(DB::raw('count(*) as counter'), 'books_book_authors.profile_id')
                     ->where('books_user_books.user_id', $reader->getAuthIdentifier())
                     ->where('books_book_authors.profile_id', $programsAuthor->profile_id)
-                    ->whereBetween('books_user_books.created_at', [Carbon::now()->subDays($programsAuthor->condition->days), Carbon::now()])
-                    ->having('counter', '=', 1)
+                    ->whereBetween('books_user_books.created_at', [Carbon::now()->subDays($programsAuthor->condition->days)->startOfDay(), Carbon::now()->endOfDay()])
+                    ->having('counter', '>', 1)
                     ->groupBy('books_book_authors.profile_id')
                     ->get();
 
@@ -117,7 +117,7 @@ class ModalNotification extends ComponentBase
                 ->withCasts(['condition' => 'object'])
                 ->get();
 
-            if (!Cookie::has('newer_show_new_reader_program')) {
+            if (!Cookie::has('never_show_new_reader_program')) {
                 if ($authors->count() && Cookie::get('show_new_reader_program')) {
                     if ($authors->count() > 1) {
                         $renderData = [
@@ -132,13 +132,13 @@ class ModalNotification extends ComponentBase
                     } else {
                         $author = $authors->first();
                         $renderData = [
-                            'avatar' => $author->avatar->path,
+                            'avatar' => $author->avatar->path ?? '',
                             'author' => $author,
                             'title' => 'Вы участвуете в программе "Новый читатель" автора <a href="/author-page/' . $author->id . '">' . $author->username . ' </a>',
                             'subtitle' => 'Для вас будет действовать персональная скидка ' . $author->condition->percent . '% в течении ' . $author->condition->days . ' дней',
                             'closeCookie' => 'show_new_reader_program',
                             'modail_id' => $modalId,
-                            'neverShowCookie' => 'newer_show_reader_birthday_program',
+                            'neverShowCookie' => 'never_show_new_reader_program',
                         ];
                         $template = '@single_author';
                     }
@@ -198,7 +198,7 @@ class ModalNotification extends ComponentBase
                 ->withCasts(['condition' => 'object'])
                 ->get();
 
-            if (!Cookie::has('newer_show_regular_reader_program')) {
+            if (!Cookie::has('never_show_regular_reader_program')) {
                 if ($authors->count() && Cookie::get('show_regular_reader_program')) {
                     if ($authors->count() > 1) {
                         $renderData = [
@@ -213,13 +213,13 @@ class ModalNotification extends ComponentBase
                     } else {
                         $author = $authors->first();
                         $renderData = [
-                            'avatar' => $author->avatar->path,
+                            'avatar' => $author->avatar->path ?? '',
                             'author' => $author,
                             'title' => 'Вы участвуете в программе "Мой постоянный читатель" автора <a href="/author-page/' . $author->id . '">' . $author->username . ' </a>',
                             'subtitle' => 'Для вас будет действовать персональная скидка ' . $author->condition->percent . '% на все книги автора.',
                             'closeCookie' => 'show_regular_reader_program',
                             'modail_id' => $modalId,
-                            'neverShowCookie' => 'newer_show_regular_birthday_program',
+                            'neverShowCookie' => 'never_show_regular_reader_program',
                         ];
                         $template = '@single_author';
                     }

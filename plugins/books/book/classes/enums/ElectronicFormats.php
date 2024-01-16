@@ -3,7 +3,11 @@
 namespace Books\Book\Classes\Enums;
 
 use Books\Book\Classes\Converters\BaseConverter;
+use Books\Book\Classes\Converters\Epub;
 use Books\Book\Classes\Converters\FB2;
+use Books\Book\Classes\Converters\MOBI;
+use Books\Book\Classes\Converters\PDF;
+use Books\Book\Classes\Converters\TXT;
 use Books\Book\Models\Book;
 
 enum ElectronicFormats: string
@@ -29,10 +33,10 @@ enum ElectronicFormats: string
     {
         return new (match ($this) {
             self::FB2 => FB2::class,
-            self::EPUB => throw new \Exception('To be implemented'),
-            self::MOBI => throw new \Exception('To be implemented'),
-            self::PDF => throw new \Exception('To be implemented'),
-            self::TXT => throw new \Exception('To be implemented'),
+            self::EPUB => Epub::class,
+            self::MOBI => MOBI::class,
+            self::PDF => PDF::class,
+            self::TXT => TXT::class,
         })($book);
     }
 

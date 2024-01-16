@@ -4,6 +4,7 @@
                 class="ui-tabs-link{% if tab.active %} active{% endif %}"
                 data-request="{{ __SELF__ }}::onAjaxLoad"
                 data-request-data="type: '{{ code }}', page: 1"
+                data-request-query="{ page: 1 }"
                 data-attach-loading
         >{{ tab.label }}
             {% if tab.count > 0 %}

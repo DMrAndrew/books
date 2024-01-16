@@ -40,6 +40,7 @@ use Books\Book\Components\Promocode;
 use Books\Book\Components\Reader;
 use Books\Book\Components\ReaderAudio;
 use Books\Book\Components\ReadStatistic;
+use Books\Book\Components\SaleTagBlock;
 use Books\Book\Components\Widget;
 use Books\Book\Console\CleanHTMLContent;
 use Books\Book\FormWidgets\ContentDiff;
@@ -238,6 +239,7 @@ class Plugin extends PluginBase
             CommercialSalesStatistics::class => 'CommercialSalesStatistics',
             CommercialSalesStatisticsDetail::class => 'CommercialSalesStatisticsDetail',
             IndexWidgets::class => 'IndexWidgets',
+            SaleTagBlock::class => 'SaleTagBlock',
         ];
     }
 

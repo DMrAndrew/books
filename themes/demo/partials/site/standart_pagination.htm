@@ -1,0 +1,50 @@
+{% if paginator.hasPages %}
+<nav class="posts__pagination ui-pagination" style="margin-top: 25px">
+    <ul class="ui-pagination-list">
+        {#-- Previous Page Link --#}
+        {% if paginator.onFirstPage %}
+            <li aria-disabled="true" aria-label="{{ 'system::lang.pagination.previous'|trans }}">
+                <a class="ui-pagination-item disabled" aria-hidden="true">{{ 'system::lang.pagination.previous'|trans }}</a>
+            </li>
+        {% else %}
+            <li>
+                <a class="ui-pagination-item" href="{{ paginator.previousPageUrl }}" rel="prev" aria-label="{{ 'system::lang.pagination.previous'|trans }}">
+                    {{ 'system::lang.pagination.previous'|trans }}
+                </a>
+            </li>
+        {% endif %}
+
+        {#-- Pagination Elements --#}
+        {% for element in elements %}
+            {% if element is iterable %}
+                {#-- Array Of Links --#}
+                {% for page, url in element %}
+                    {% if page == paginator.currentPage %}
+                        <li aria-current="page">
+                            <a class="ui-pagination-item active">{{ page }}</a>
+                        </li>
+                    {% else %}
+                        <li><a class="ui-pagination-item" href="{{ url }}">{{ page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {#-- "Three Dots" Separator --#}
+                <li><a class="ui-pagination-item cursor-pointer">{{ element }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {#-- Next Page Link --#}
+        {% if paginator.hasMorePages %}
+            <li>
+                <a class="ui-pagination-item " href="{{ paginator.nextPageUrl }}" rel="next" aria-label="{{ 'system::lang.pagination.next'|trans }}">
+                    {{ 'system::lang.pagination.next'|trans }}
+                </a>
+            </li>
+        {% else %}
+            <li aria-disabled="true" aria-label="{{ 'system::lang.pagination.next'|trans }}">
+                <a class="ui-pagination-item disabled" aria-hidden="true">{{ 'system::lang.pagination.next'|trans }}</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}

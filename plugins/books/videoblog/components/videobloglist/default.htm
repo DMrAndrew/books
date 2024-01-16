@@ -39,4 +39,4 @@
     </ul>
 </div>
 
-{% partial 'site/pagination' records = posts %}
+{{ pager(posts, { partial: 'site/standart_pagination'}) }}

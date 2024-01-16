@@ -5,9 +5,9 @@ function openModal(container, buttonOpenModal) {
 
   if (!buttonOpen || !buttonOpen || !buttonClose) return
 
-  buttonOpen.addEventListener('click', e => { 
+  buttonOpen.addEventListener('click', e => {
     e.preventDefault();
-    
+
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
   })

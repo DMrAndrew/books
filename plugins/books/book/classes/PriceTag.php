@@ -50,7 +50,7 @@ class PriceTag
         if ($this->promocode) {
             return 100;
         }
-        return $this->discountsArr ? max($this->discountsArr) : 0;
+        return array_key_exists('values', $this->discountsArr) ? max($this->discountsArr['values']) : 0;
     }
 
     /**
@@ -72,7 +72,13 @@ class PriceTag
     public function fillDiscountArray()
     {
         if ($discount = $this->discount?->amount) {
-            $this->discountsArr[] = $discount;
+            $this->discountsArr['values'][] = $discount;
+            if ($discount > $this->discountAmount()) {
+                $this->discountsArr['discount'] = [
+                    'color' => 'purple',
+                    'text' => "{$discount}% на книгу"
+                ];
+            }
         }
 
         if ($reader = Auth::getUser()) {
@@ -84,12 +90,17 @@ class PriceTag
             $regularReaderProgram = AuthorsPrograms::userProgramRegularReader()->where('user_id', $authorAccount->id)->first();
 
             if ($readerBirthdayProgram) {
-                if (Carbon::now() === $reader?->birthday->subDay()
-                    || $reader?->birthday->isBirthday()
-                    || Carbon::now() === $reader?->birthday->addDay()
-                ) {
-                    if (!array_intersect($this->edition->book->bookGenre->pluck('genre_id')->toArray(), $reader->loved_genres)) {
-                        $this->discountsArr[] = $readerBirthdayProgram->condition->percent;
+                if ( (Carbon::now() === $reader?->birthday->subDay())
+                    xor (Carbon::now() === $reader?->birthday->addDay())
+                    xor $reader?->birthday->isBirthday() ) {
+                    if (array_intersect($this->edition->book->bookGenre->pluck('genre_id')->toArray(), $reader->loved_genres)) {
+                        $this->discountsArr['values'][] = $readerBirthdayProgram->condition->percent;
+                        if ($readerBirthdayProgram->condition->percent >= $this->discountAmount()) {
+                            $this->discountsArr['discount'] = [
+                                'color' => 'green',
+                                'text' => "{$readerBirthdayProgram->condition->percent}% по программе \"День рождения читателя\""
+                            ];
+                        }
                     }
                 }
 
@@ -100,8 +111,14 @@ class PriceTag
                 ->whereIn('ownable_id', $authorBooks)
                 ->orderBy('created_at', 'ASC');
 
-            if ($regularReaderProgram && $readerBooksPurchased->count() >= $regularReaderProgram->condition->books) {
-                $this->discountsArr[] = $regularReaderProgram->condition->percent;
+            if ($regularReaderProgram && $readerBooksPurchased->count() > $regularReaderProgram->condition->books) {
+                $this->discountsArr['values'][] = $regularReaderProgram->condition->percent;
+                if ($regularReaderProgram->condition->percent >= $this->discountAmount()) {
+                $this->discountsArr['discount'] = [
+                    'color' => 'orange',
+                    'text' => "{$regularReaderProgram->condition->percent}% по программе \"Постоянный читатель\""
+                ];
+                }
             }
 
             if ($newReaderProgram
@@ -109,7 +126,13 @@ class PriceTag
                     $readerBooksPurchased->first()?->created_at,
                     $readerBooksPurchased->first()?->created_at->addDays($newReaderProgram->condition->days)
                 )) {
-                $this->discountsArr[] = $newReaderProgram->condition->percent;
+                if ($newReaderProgram->condition->percent >= $this->discountAmount()) {
+                    $this->discountsArr['values'][] = $newReaderProgram->condition->percent;
+                    $this->discountsArr['discount'] = [
+                        'color' => 'red',
+                        'text' => "{$newReaderProgram->condition->percent}% по программе \"Новый читатель\""
+                    ];
+                }
             }
         }
 
@@ -117,6 +140,11 @@ class PriceTag
 
     public function discountExists()
     {
-        return (boolean)$this->discountsArr;
+        return (boolean)$this->discountsArr ?? false;
+    }
+
+    public function getDiscountInfo()
+    {
+        return array_key_exists('discount', $this->discountsArr) ? $this->discountsArr['discount'] : [];
     }
 }

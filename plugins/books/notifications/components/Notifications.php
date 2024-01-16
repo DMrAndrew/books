@@ -103,6 +103,17 @@ class Notifications extends ComponentBase
         );
     }
 
+    public function onGetPagination()
+    {
+        return [
+            '.notifications_list' => $this->renderPartial('@notifications', ['notifications' => $this->service->getNotifications(
+                Auth::getUser()->profile,
+                $this->getTabType(),
+                (int)$this->property('recordsPerPage', 16)
+            )]),
+        ];
+    }
+
     public function getTabType(): string
     {
         return NotificationTypeEnum::tryFrom(post('type') ?? $this->param('type'))?->value ?? 'all';
