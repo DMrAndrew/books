@@ -3,10 +3,12 @@
 namespace Books\Book\Classes;
 
 use Books\Book\Classes\Enums\BookStatus;
+use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Exceptions\FBParserException;
 use Books\Book\Classes\Exceptions\UnknownFormatException;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book;
+use Books\Book\Models\Edition;
 use Books\Book\Models\Tag;
 use Books\Catalog\Models\Genre;
 use Books\Profile\Models\Profile;
@@ -100,6 +102,11 @@ class BookService
                 $this->fromTizis($tizisBook);
                 $payload->save();
                 $ebook = $this->book->ebook()->first();
+
+                if (! $ebook) {
+                    $ebook = $this->book->editions()->save(Edition::make(['type' => EditionsEnums::default()]));
+                }
+
                 $ebook->fb2()->add($payload);
                 $ebook->parseFB2($payload);
                 Event::fire('books.book.parsed', [$this->book]);

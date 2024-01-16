@@ -257,9 +257,9 @@ class Book extends Model
     public static function findForPublic(int $book_id, User $user = null)
     {
         return Book::query()->public()->find($book_id) // открыта в публичной зоне
-            ?? $user?->profile->books()->find($book_id) // пользователь автор книги
+            ?? $user?->profile->books()->whereHas('editions')->find($book_id) // пользователь автор книги
             ?? ($user ? Book::query()
-                ->whereHas('ebook', fn ($ebook) => $ebook->whereHas('customers', fn ($customers) => $customers->where('user_id', $user->id)))
+                ->whereHas('editions', fn ($edition) => $edition->whereHas('customers', fn ($customers) => $customers->where('user_id', $user->id)))
                 ->find($book_id)
                 : null); // пользователь купил книгу
     }
@@ -632,7 +632,7 @@ class Book extends Model
     protected function afterCreate(): void
     {
         $this->setDefaultCover();
-        $this->setDefaultEdition();
+        // $this->setDefaultEdition();
         $this->stats()->add(new Stats());
         $this->advert()->create();
     }
@@ -701,6 +701,14 @@ class Book extends Model
         }
     }
 
+    /**
+     * @deprecated
+     *
+     * Убрали автоматическое создание Электронного издания при создании книги
+     *  после добавления функционала аудиокниг - 16.01.2024
+     *
+     * @return void
+     */
     protected function setDefaultEdition(): void
     {
         if (! $this->ebook()->exists()) {
