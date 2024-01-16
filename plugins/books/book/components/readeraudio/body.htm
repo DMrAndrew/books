@@ -29,8 +29,8 @@
 {% partial '@pagination' %}
 
 {% if reader.chapter.audio %}
-{% set progressSaveTimeout = constant('Books\\Book\\Models\\AudioReadProgress::SAVE_USER_AUDIO_READ_PROGRESS_TIMEOUT_SECONDS') %}
-{% set progressSaveStepSeconds = constant('Books\\Book\\Models\\AudioReadProgress::SAVE_USER_AUDIO_READ_PROGRESS_STEP_SECONDS') %}
+{% set progressSaveTimeout = save_user_audio_read_pregress_delay_in_seconds() %}
+{% set progressSaveStepSeconds = save_user_audio_read_pregress_timeout_in_seconds() %}
 <script>
     var options = {
         onPlayCallback: (player) => trackProgress(player),
@@ -53,14 +53,14 @@
     window.audioPlayer = null;
     initAudioPlayer(options);
 
-    var progressSaveTimeout = {{ progressSaveTimeout * 1000 }};
+    var progressSaveTimeoutMilliseconds = {{ progressSaveTimeout * 1000 }};
     var progressSaveStepSeconds = {{ progressSaveStepSeconds }};
     var progressT;
 
     function trackProgress(player) {
         progressT = setInterval(function() {
             updateProgress(player);
-        }, progressSaveTimeout)
+        }, progressSaveTimeoutMilliseconds)
     }
 
     function updateProgress(player) {
@@ -75,6 +75,7 @@
                 },
                 progressBar: false,
                 error: (e) => console.log(e),
+                success: (e) => {},
             })
         }
     }

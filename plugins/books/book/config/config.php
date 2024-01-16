@@ -80,6 +80,8 @@ return [
     ],
     'audio' => [
         'check_token_to_allow_user_download_audio' => env('AUDIOBOOK_CHECK_TOKEN_TO_ALLOW_USER_DOWNLOAD_AUDIO', true),
+        'save_user_audio_read_pregress_delay_in_seconds' => env('AUDIOBOOK_SAVE_USER_READ_PROGRESS_DELAY_IN_SECONDS', 60),
+        'save_user_audio_read_pregress_timeout_in_seconds' => env('AUDIOBOOK_SAVE_USER_READ_PROGRESS_TIMEOUT_IN_SECONDS', 60),
     ],
 
 ];

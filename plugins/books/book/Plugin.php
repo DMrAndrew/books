@@ -46,6 +46,7 @@ use Books\Book\Console\CleanHTMLContent;
 use Books\Book\FormWidgets\ContentDiff;
 use Books\Book\FormWidgets\DeferredComments;
 use Books\Book\Jobs\GenreRaterExec;
+use Books\Book\Models\AudioReadProgress;
 use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
@@ -459,7 +460,12 @@ class Plugin extends PluginBase
                 'humanFileSize' => function(mixed $kilobytes) { return humanFileSize($kilobytes); },
                 'humanTime' => function(mixed $seconds) { return humanTime($seconds); },
                 'humanTimeShort' => function(mixed $seconds) { return humanTimeShort($seconds); },
-                'formatMoneyAmount' => function(mixed $number) { return formatMoneyAmount($number); }
+                'save_user_audio_read_pregress_delay_in_seconds' => function() {
+                    return AudioReadProgress::getStartSavingUserReadProgressAfterDelay();
+                },
+                'save_user_audio_read_pregress_timeout_in_seconds' => function() {
+                    return AudioReadProgress::getSaveUserReadProgressStep();
+                },
             ],
         ];
     }

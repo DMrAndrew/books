@@ -15,8 +15,8 @@ class AudioReadProgress extends Model
     use Validation;
     use HasUserScope;
 
-    const SAVE_USER_AUDIO_READ_PROGRESS_STEP_SECONDS = 60; // минимальный прогресс для сохранения
-    const SAVE_USER_AUDIO_READ_PROGRESS_TIMEOUT_SECONDS = 60; // сохраняем прогресс каждые хх секунд
+    const SAVE_USER_AUDIO_READ_PROGRESS_STEP_SECONDS = 3; // минимальный прогресс для сохранения
+    const SAVE_USER_AUDIO_READ_PROGRESS_TIMEOUT_SECONDS = 5; // сохраняем прогресс каждые хх секунд
 
     public $table = 'books_book_audio_read_progresses';
 
@@ -33,6 +33,26 @@ class AudioReadProgress extends Model
         'chapter_id',
         'progress',
     ];
+
+    /**
+     * Start to save progress after x seconds of playing
+     *
+     * @return int
+     */
+    public static function getStartSavingUserReadProgressAfterDelay(): int
+    {
+        return (int) config('book.audio.save_user_audio_read_pregress_delay_in_seconds');
+    }
+
+    /**
+     * Save audio read progress each x seconds
+     *
+     * @return int
+     */
+    public static function getSaveUserReadProgressStep(): int
+    {
+        return (int) config('book.audio.save_user_audio_read_pregress_timeout_in_seconds');
+    }
 
     public function scopeBook(Builder $builder, ?Book $book = null): Builder
     {
