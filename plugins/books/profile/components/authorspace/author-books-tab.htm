@@ -1,0 +1,9 @@
+{% set books = books_paginator.getCollection %}
+
+{% if books[0] %}
+    {% for book in books %}
+        {% ajaxPartial "bookCard::standard-card" book=book %}
+    {% endfor %}
+{% endif %}
+
+{% partial 'site/ajax_paginator' paginator=books_paginator function='onBooksPage' customPageName='booksPage' customTagName='#author-books' %}

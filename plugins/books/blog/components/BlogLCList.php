@@ -65,6 +65,7 @@ class BlogLCList extends ComponentBase
             '#posts' => $this->renderPartial('@list', ['post' => $this->getPosts()]),
         ];
     }
+
     public function blogPostsCurrentPage(): int
     {
         return (int)(post('blog-lc') ?? $this->blogPostsCurrentPage);

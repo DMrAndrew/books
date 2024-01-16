@@ -54,9 +54,9 @@
                     <div class="ui-tabs-line"></div>
                     <div class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
                         <div class="ui-tabs-link " data-tab="1">Профиль</div>
-                        <div class="ui-tabs-link {{ books.count ? 'active' : ''}} " data-tab="2">Книги
-                            {% if books.count %}
-                            <span>{{books.count?:''}}</span>
+                        <div class="ui-tabs-link {{ books_paginator.total ? 'active' : ''}} " data-tab="2">Книги
+                            {% if books_paginator.total %}
+                            <span>{{books_paginator.total?:''}}</span>
                             {% endif %}
                         </div>
                         <!--                        <div class="ui-tabs-link " data-tab="3">Магазин<span>12</span></div>-->
@@ -108,9 +108,9 @@
         <div class="ui-tabs-content" data-tab-content="1">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Профиль</div>
         </div>
-        <div class="ui-tabs-content {{ books.count ? 'active' : ''}} " data-tab-content="2">
+        <div class="ui-tabs-content {{ books_paginator.total ? 'active' : ''}} " data-tab-content="2">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Книги <span
-                class="ui-text-body--2"> {{ books.count }}</span></div>
+                class="ui-text-body--2"> {{ books_paginator.total }}</span></div>
         </div>
         <div class="author-cycles ui-tabs-content" data-tab-content="4">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Циклы <span
@@ -222,11 +222,11 @@
                     {% component 'comments' %}
                 </div>
                 <!-- Книги -->
-                <div class="author-books ui-tabs-content {{ books.count ? 'active' : ''}} " data-tab-content="2">
-                    {% if books.count %}
-                    {% for book in books %}
-                    {% ajaxPartial "bookCard::standard-card" book=book %}
-                    {% endfor %}
+                <div id="author-books"
+                     class="author-books ui-tabs-content {{ books_paginator.total ? 'active' : ''}} "
+                     data-tab-content="2">
+                    {% if books_paginator.total %}
+                        {% partial 'author_space::author-books-tab' books_paginator=books_paginator %}
                     {% endif %}
                 </div>
                 <!-- Циклы -->
@@ -291,7 +291,7 @@
                     {% endif %}
                 </div>
                 <!-- Комментарии -->
-                <div class="ui-tabs-content" id="author-comments" data-tab-content="10">
+                <div id="author-tab-comments" class="ui-tabs-content" id-old="author-comments" data-tab-content="10">
                     {% partial 'author_space::author-comments-tab' comments_paginator=comments_paginator %}
                 </div>
                 <div id="author-tab-reposts" class="ui-tabs-content" data-tab-content="11">
