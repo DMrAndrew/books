@@ -84,7 +84,7 @@ class AudioChapterer extends ComponentBase
             [
                 'modelClass' => Chapter::class,
                 'deferredBinding' => true, // всегда отложенное, чтобы не заменялся/удалялся файл без сохранения формы
-                "maxSize" => 30,
+                "maxSize" => 50,
                 "fileTypes" => ".mp3,.aac",
             ]
         );
