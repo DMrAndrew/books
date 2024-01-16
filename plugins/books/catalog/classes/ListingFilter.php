@@ -7,7 +7,6 @@ use Books\Book\Classes\Enums\SortEnum;
 use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Models\Tag;
 use Books\Catalog\Models\Genre;
-use Books\Catalog\Models\Type;
 use Cache;
 use Illuminate\Support\Collection;
 use Model;
@@ -30,10 +29,12 @@ class ListingFilter
 
     public ?SortEnum $sort = null;
 
+    public string $page = '1';
+
     public function __construct(protected ?string $session_key = null)
     {
         $this->filters = collect();
-        if (!$this->getSessionKey()) {
+        if (! $this->getSessionKey()) {
             $this->fromQuery();
         } else {
             $this->type = post('type') ? EditionsEnums::tryFrom(post('type') ?? '') : null;
@@ -41,8 +42,9 @@ class ListingFilter
             $this->sort = $this->sortFromString(post('sort'));
             $this->complete = post('complete_only') == 'on';
             $this->free = post('free') == 'on';
-            $this->max_price = (int)post('max_price') ?: null;
-            $this->min_price = (int)post('min_price') ?: null;
+            $this->max_price = (int) post('max_price') ?: null;
+            $this->min_price = (int) post('min_price') ?: null;
+            $this->page = $this->getCurrentPage();
             $this->filters = collect(Cache::get($this->getSessionKey()) ?? []);
         }
     }
@@ -53,21 +55,21 @@ class ListingFilter
 
         $this->include($this->fromPost(Tag::class, $query['tag'] ?? null));
         $this->include($this->fromPost(Genre::class, $query['genre'] ?? null));
-        $this->type = ($query['type'] ?? null) ? EditionsEnums::tryFrom($query['type']??null) : null;
+        $this->type = ($query['type'] ?? null) ? EditionsEnums::tryFrom($query['type'] ?? null) : null;
         $this->widget = WidgetEnum::tryFrom($query['widget'] ?? '');
-        $this->sort = $this->sortFromString($query['sort']??null);
+        $this->sort = $this->sortFromString($query['sort'] ?? null);
     }
 
     public function fromParams(array $params): void
     {
         if (isset($params['genreSlug'])) {
             $this->include($this->fromPost(Genre::class, $params['genreSlug'] ?? null));
-        } else if (isset($params['typeSlug'])) {
+        } elseif (isset($params['typeSlug'])) {
             $this->type = EditionsEnums::tryFrom($params['typeSlug'] ?? '');
         }
     }
 
-    public function sortFromString(?string $val = null): SortEnum
+    public function sortFromString(string $val = null): SortEnum
     {
         return SortEnum::tryFrom($val ?? '') ?? $this->widget?->mapSortEnum() ?? SortEnum::default();
     }
@@ -79,9 +81,6 @@ class ListingFilter
         }
     }
 
-    /**
-     * @return Collection
-     */
     public function getFilters(): Collection
     {
         return $this->filters;
@@ -89,7 +88,7 @@ class ListingFilter
 
     public function toBind(): array
     {
-        return array_merge((array)$this, [
+        return array_merge((array) $this, [
             'include_genres' => $this->includes(Genre::class),
             'exclude_genres' => $this->excludes(Genre::class),
             'include_tags' => $this->includes(Tag::class),
@@ -109,7 +108,7 @@ class ListingFilter
 
     public function push(?Model $model, string $type): void
     {
-        if (!$model) {
+        if (! $model) {
             return;
         }
         $class = get_class($model);
@@ -129,7 +128,6 @@ class ListingFilter
             $this->push($model, $type);
         }
     }
-
 
     public function removeInclude(Model $model): void
     {
@@ -187,7 +185,7 @@ class ListingFilter
         $this->push($model, 'exclude');
     }
 
-    public function fromPost(string $class, int|array|null|string $id = null)
+    public function fromPost(string $class, int|array|string $id = null)
     {
         return $this->query($class)->find($id ?? post('item')['id'] ?? post('remove_id'));
     }
@@ -205,5 +203,10 @@ class ListingFilter
     public function getSessionKey()
     {
         return post('_session_key') ?? $this->session_key;
+    }
+
+    public function getCurrentPage()
+    {
+        return post('page') ?? $this->page;
     }
 }
