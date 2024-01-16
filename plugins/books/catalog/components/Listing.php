@@ -29,7 +29,7 @@ class Listing extends ComponentBase
 
     protected int $trackInputTime = 620;
 
-    protected int $perPage = 1;
+    protected int $perPage = 15;
 
     protected ?Genre $categoryGenre = null;
 
