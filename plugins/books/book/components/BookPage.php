@@ -136,7 +136,7 @@ class BookPage extends ComponentBase
             'audiobookVisible' => $this->audioVisible(),
 
             'cycle' => $this->book->cycle,
-            'download_btn' => $this->book->ebook->isDownloadAllowed(),
+            'download_btn' => $this->book->ebook?->isDownloadAllowed(),
         ];
     }
 
@@ -159,7 +159,7 @@ class BookPage extends ComponentBase
             /**
              * Уже куплена
              */
-            if ($this->book->ebook->isSold($this->user)) {
+            if ($this->book->ebook?->isSold($this->user)) {
                 return false;
             }
         }
@@ -167,7 +167,7 @@ class BookPage extends ComponentBase
         /**
          * Книга бесплатная
          */
-        if ($this->book->ebook->isFree()) {
+        if ($this->book->ebook?->isFree()) {
             return false;
         }
 
@@ -179,9 +179,9 @@ class BookPage extends ComponentBase
      */
     public function readButtonForEbook(): bool
     {
-        return $this->book->ebook->isFree()
-            || ($this->user && $this->book->ebook->isSold($this->user))
-            || $this->book->ebook->chapters->some->isFree();
+        return $this->book->ebook?->isFree()
+            || ($this->user && $this->book->ebook?->isSold($this->user))
+            || $this->book->ebook?->chapters->some->isFree();
     }
 
     /**
@@ -295,22 +295,24 @@ class BookPage extends ComponentBase
     public function onDownload()
     {
         try {
-            $format = ElectronicFormats::tryFrom(post('format')) ?? ElectronicFormats::default();
-            if (! $this->book->ebook->isDownloadAllowed()) {
+            if (! $this->book->ebook?->isDownloadAllowed()) {
                 throw new DownloadNotAllowed();
             }
+
+            $format = ElectronicFormats::tryFrom(post('format')) ?? ElectronicFormats::default();
 
             $h = ['Content-Description' => 'File Transfer'];
             $file = (new DownloadService($this->book, $format))->getFile();
 
             ob_get_clean();
+
             return \Response::download($file->getLocalPath(), $file->getFilename(), $h);
+
         } catch (Exception $exception) {
             Flash::error($exception->getMessage());
             Log::error($exception->getMessage());
 
             return [];
         }
-
     }
 }
