@@ -173,10 +173,12 @@
                                                                  style="width:{{ lib.book.ebook.readPercent }}% ">
                                                             </div>
                                                         </div>
+                                                        {% if lib.book.ebook %}
                                                         <div
                                                             class="book-mini-card-progress__text">{{ lib.book.ebook.readPercent }}
                                                             %
                                                         </div>
+                                                        {% endif %}
                                                     </div>
                                                 {% endif %}
                                             </div>
