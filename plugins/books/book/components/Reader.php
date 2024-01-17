@@ -63,7 +63,8 @@ class Reader extends ComponentBase
         $this->book_id = (int) $this->param('book_id') ?? abort(404);
         $this->book = Book::findForPublic($this->book_id, $this->user);
         $this->chapter_id = (int) $this->param('chapter_id');
-        $this->chapter = $this->chapter_id ? Chapter::find($this->chapter_id) ?? abort(404) : null;
+        $this->chapter = $this->chapter_id ? Chapter::public()->withLength()->find($this->chapter_id)
+            ?? abort(404) : null;
         $this->tryInjectAdultModal();
         $this->addMeta();
         $recommend = $this->addComponent(Widget::class, 'recommend');
@@ -82,7 +83,7 @@ class Reader extends ComponentBase
         }
 
         if (! $this->service()->isPageAllowed()) {
-            return Redirect::to(sprintf('/out-of-free/%s/%s', $this->book->id, $this->chapter?->id));
+            return Redirect::to(sprintf('/out-of-free/%s/%s', $this->book->ebook->id, $this->chapter?->id));
         }
     }
 
@@ -216,7 +217,7 @@ class Reader extends ComponentBase
             }
 
             /** Название книги */
-            $trail->push($this->book->title);
+            $trail->push($this->book->title, url('/book-card/' . $this->book->id));
         });
     }
 }

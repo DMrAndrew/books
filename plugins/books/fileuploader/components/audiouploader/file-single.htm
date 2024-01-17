@@ -1,0 +1,200 @@
+{% set audiofile = __SELF__.singleFile %}
+
+<!-- Existing file -->
+{% if audiofile %}
+<div class="personal-area__wrap _indent-large ui-input">
+    <div class="personal-area__wrap _indent-medium">
+        {% partial 'audioplayer/audio-data' chapter=audiofile.model audiofile=audiofile %}
+        {% partial 'audioplayer/default' audiofile = audiofile %}
+    </div>
+</div>
+<script>
+    initAudioPlayer();
+</script>
+{% endif %}
+
+<div class="personal-area__wrap _indent-medium _color-gray ui-text-body--3">
+    Загружайте файлы в формате <span class="attention">.MP3 или .AAC</span>
+    и размером <span class="attention">не более 50 МБ</span>.
+</div>
+
+<div
+    class="responsiv-uploader-fileupload style-file-single"
+    data-control="fileupload"
+    data-request-flash="1"
+    data-template="#uploaderTemplate{{ __SELF__ }}"
+    data-unique-id="{{ __SELF__ }}"
+    data-upload-handler="{{ __SELF__ }}::onUpload"
+    {% if __SELF__.fileTypes %}data-file-types="{{ __SELF__.fileTypes }}"{% endif %}
+>
+    <!-- Field placeholder -->
+    <input type="hidden" name="_uploader[{{ __SELF__.attribute }}]" value="" />
+
+    <!-- Upload button -->
+    <button type="button" class="ui button btn btn-default upload-button">
+        <span class="ui-button ui-button-size--32 ui-button-view--2">{{ audiofile ? 'Заменить аудиофайл' : 'Загрузить аудиофайл' }}</span>
+    </button>
+
+    <div class="upload-files-container">
+        {% if file %}
+            <div class="upload-object is-success" data-id="{{ audiofile.id }}" data-path="{{ file.pathUrl }}">
+                {% partial 'audioplayer/default' audiofile = file %}
+            </div>
+        {% else %}
+
+        {% endif %}
+    </div>
+
+    <!-- Empty message -->
+    <div class="upload-empty-message">
+        <span class="text-muted">{{ __SELF__.placeholderText }}</span>
+    </div>
+</div>
+
+<!-- Template for new file -->
+<script type="text/template" id="uploaderTemplate{{ __SELF__ }}">
+    <div class="upload-object dz-preview dz-file-preview">
+        <div class="icon-container">
+            <img data-dz-thumbnail src="{{ 'plugins/books/fileuploader/assets/images/upload.png'|app }}" />
+        </div>
+        <div class="info">
+            <h4 class="filename">
+                <span data-dz-name></span>
+            </h4>
+            <p class="size" data-dz-size></p>
+            <p class="error"><span data-dz-errormessage></span></p>
+        </div>
+        <div class="meta">
+            <a
+                    href="javascript:;"
+                    class="upload-remove-button"
+                    data-request="{{ __SELF__ ~ '::onRemoveAttachment' }}"
+                    data-request-confirm="{{ 'books.fileuploader::lang.are_you_sure' | trans }}"
+            >&times;</a>
+            <div class="progress-bar"><span class="upload-progress" data-dz-uploadprogress></span></div>
+        </div>
+
+        <div class="audioplayer" data-sounds="" tabindex="0">
+            <div class="audioplayer__header">
+                <div class="audioplayer__left">
+                    <div class="audioplayer__rate-container">
+                        <button type="button" class="audioplayer__speed">
+                            <svg class="" width="24" height="24">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#player-speed' | theme }}"></use>
+                                <span class="audioplayer__rate-indicator">1x</span>
+                            </svg>
+                        </button>
+                        <ul class="audioplayer__rate-popup">
+                            <li class="audioplayer__rate-popup-item">
+                                <button type="button" class="audioplayer__rate-btn" data-rate="0.25">
+                                    <svg width="24" height="24">
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme }}"></use>
+                                    </svg>
+                                    <span>0.25</span>
+                                </button>
+                            </li>
+                            <li class="audioplayer__rate-popup-item">
+                                <button type="button" class="audioplayer__rate-btn" data-rate="0.5">
+                                    <svg width="24" height="24">
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme }}"></use>
+                                    </svg>
+                                    <span>0.5</span>
+                                </button>
+                            </li>
+                            <li class="audioplayer__rate-popup-item">
+                                <button type="button" class="audioplayer__rate-btn" data-rate="0.75">
+                                    <svg width="24" height="24">
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme }}"></use>
+                                    </svg>
+                                    <span>0.75</span>
+                                </button>
+                            </li>
+                            <li class="audioplayer__rate-popup-item">
+                                <button type="button" class="audioplayer__rate-btn" data-rate="1">
+                                    <svg width="24" height="24">
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme }}"></use>
+                                    </svg>
+                                    <span>Обычная</span>
+                                </button>
+                            </li>
+                            <li class="audioplayer__rate-popup-item">
+                                <button type="button" class="audioplayer__rate-btn" data-rate="1.25">
+                                    <svg width="24" height="24">
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme }}"></use>
+                                    </svg>
+                                    <span>1.25</span>
+                                </button>
+                            </li>
+                            <li class="audioplayer__rate-popup-item">
+                                <button type="button" class="audioplayer__rate-btn" data-rate="1.5">
+                                    <svg width="24" height="24">
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme }}"></use>
+                                    </svg>
+                                    <span>1.5</span>
+                                </button>
+                            </li>
+                            <li class="audioplayer__rate-popup-item">
+                                <button type="button" class="audioplayer__rate-btn" data-rate="1.75">
+                                    <svg width="24" height="24">
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme }}"></use>
+                                    </svg>
+                                    <span>1.75</span>
+                                </button>
+                            </li>
+                            <li class="audioplayer__rate-popup-item">
+                                <button type="button" class="audioplayer__rate-btn" data-rate="2">
+                                    <svg width="24" height="24">
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#check-stroked-16' | theme }}"></use>
+                                    </svg>
+                                    <span>2</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="audioplayer__center">
+                    <button type="button" class="audioplayer__prev">
+                        <svg class="" width="24" height="24">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#player-prev' | theme }}"></use>
+                        </svg>
+                    </button>
+                    <button type="button" class="audioplayer__prev-30">
+                        <svg class="" width="24" height="24">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#player-prev-30' | theme }}"></use>
+                        </svg>
+                    </button>
+                    <button type="button" class="audioplayer__playpause">
+                        <svg class="" width="24" height="24">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#player-play' | theme }}"></use>
+                        </svg>
+                    </button>
+                    <button type="button" class="audioplayer__next-30">
+                        <svg class="" width="24" height="24">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#player-next-30' | theme }}"></use>
+                        </svg>
+                    </button>
+                    <button type="button" class="audioplayer__next">
+                        <svg class="" width="24" height="24">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#player-next' | theme }}"></use>
+                        </svg>
+                    </button>
+                </div>
+                <div class="audioplayer__right">
+                    <div class="audioplayer__volume-container">
+                        <button type="button" class="audioplayer__volume">
+                            <svg class="" width="24" height="24">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#player-volume' | theme }}"></use>
+                            </svg>
+                        </button>
+                        <div class="audioplayer__volume-popup">
+                            <input class="audioplayer__volume-input" type="range" value="0.5" step="0.01" max="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="audioplayer__middle">
+                <input class="audioplayer__seek" type="range" value="0" max="100" step="0.01">
+            </div>
+        </div>
+    </div>
+</script>

@@ -65,6 +65,13 @@ class AboutBook extends ComponentBase
                 'book_id' => $this->book->id,
             ]
         );
+        $this->addComponent(
+            AudioBooker::class,
+            'audiobooker',
+            [
+                'book_id' => $this->book->id,
+            ]
+        );
         $this->prepareVals();
     }
 

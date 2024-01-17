@@ -117,7 +117,9 @@ class Booker extends ComponentBase
             $redirect = (bool) $this->book->id;
 
             return ! $redirect ?
-                ['#about-header' => $this->renderPartial('book/about-header', ['book' => $book])]
+                [
+                    '#about-header' => $this->renderPartial('book/about-header', ['book' => $book]),
+                ]
                 : Redirect::to("/about-book/$book->id");
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());

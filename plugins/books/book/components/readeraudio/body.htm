@@ -1,0 +1,109 @@
+{% if redirectIfJSIsOff %}
+<noscript>
+    <meta http-equiv="refresh" content="0;url=https://bookstime.ru">
+</noscript>
+{% endif %}
+<input type="hidden" name="paginator_id" value="{{reader.paginator.id}}"/>
+<div>
+
+    {% if reader.chapter.audio %}
+        <div class="personal-area__wrap _indent-large ui-input">
+            <div class="personal-area__wrap _indent-medium">
+                {% partial 'audioplayer/default' audiofile = reader.chapter.audio %}
+            </div>
+        </div>
+
+        {% if audioProgress %}
+            <div class="personal-area__wrap _indent-large ui-input">
+                <button id="playFromButton"
+                        class="book-card-full__author ui-link _violet"
+                        onclick="playFromPosition({{audioProgress}});">
+                    Продолжить прослушивание с {{ humanTime(audioProgress) }}
+                </button>
+            </div>
+        {% endif %}
+    {% endif %}
+
+</div>
+
+{% partial '@pagination' %}
+
+{% if reader.chapter.audio %}
+{% set progressSaveTimeout = save_user_audio_read_pregress_delay_in_seconds() %}
+{% set progressSaveStepSeconds = save_user_audio_read_pregress_timeout_in_seconds() %}
+<script>
+    var options = {
+        onPlayCallback: (player) => trackProgress(player),
+        onPauseCallback: (player) => stopTrackingProgress(player),
+        onEndCallback: (player) => nextChapter(player),
+    };
+
+    var playPrevChapterBtn = document.getElementById("audioPrev");
+    if (playPrevChapterBtn) {
+        Howler.stop();
+        options.onPrevChapterBtnCallback = (player) => prevChapter(player);
+    }
+
+    var playNextChapterBtn = document.getElementById("audioNext");
+    if (playNextChapterBtn) {
+        Howler.stop();
+        options.onNextChapterBtnCallback = (player) => nextChapter(player);
+    }
+
+    window.audioPlayer = null;
+    initAudioPlayer(options);
+
+    var progressSaveTimeoutMilliseconds = {{ progressSaveTimeout * 1000 }};
+    var progressSaveStepSeconds = {{ progressSaveStepSeconds }};
+    var progressT;
+
+    function trackProgress(player) {
+        progressT = setInterval(function() {
+            updateProgress(player);
+        }, progressSaveTimeoutMilliseconds)
+    }
+
+    function updateProgress(player) {
+        let progress = parseInt(player.currentSeek());
+
+        if (progress >= progressSaveStepSeconds) {
+            oc.ajax('onSaveProgress', {
+                data: {
+                    book: "{{ book.id }}",
+                    chapter: "{{ reader.chapter.id }}",
+                    progress: progress
+                },
+                progressBar: false,
+                error: (e) => console.log(e),
+                success: (e) => {},
+            })
+        }
+    }
+
+    function stopTrackingProgress(player) {
+        clearTimeout(progressT);
+    }
+
+    function prevChapter(player) {
+        var playPrevChapterBtn = document.getElementById("audioPrev");
+        if (playPrevChapterBtn) {
+            playPrevChapterBtn.click();
+        }
+    }
+
+    function nextChapter(player) {
+        var playNextChapterBtn = document.getElementById("audioNext");
+        if (playNextChapterBtn) {
+            playNextChapterBtn.click();
+        }
+    }
+
+    function playFromPosition(seconds) {
+        const players = window.audioPlayer;
+        const player = window.audioPlayer[Object.keys(players)[0]];
+
+        player.playFromPosition(seconds);
+        $('#playFromButton').fadeOut(1900);
+    }
+</script>
+{% endif %}

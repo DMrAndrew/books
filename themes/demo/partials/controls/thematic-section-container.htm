@@ -1,29 +1,38 @@
 <div class="thematic-section__container swiper">
     <div class="thematic-section__card-container swiper-wrapper">
         {% for book in books %}
-            <div class="_mobile-size swiper-slide">
-                <a class="book-mini-card" href="/book-card/{{ book.id }}">
+        <div class="book-mini-card _mobile-size swiper-slide">
+            <a href="/book-card/{{ book.id }}">
                 <div class="book-mini-card__image">
-                        <img src="{{ book.cover.getThumb(190,300) }}"
-                             alt="Обложка для книги {{ book.title }}"
-                             loading="lazy"/>
+                    <img src="{{ book.cover.getThumb(190,300) }}"
+                         class="book-mini-card__image"
+                         alt="Обложка для книги {{ book.title }}"
+                         loading="lazy"/>
                     {% if book.ebook.priceTag.discountExists %}
-                        {% partial 'SaleTagBlock::default' discountInfo = book.ebook.priceTag.getDiscountInfo %}
+                    {% partial 'SaleTagBlock::default' discountInfo = book.ebook.priceTag.getDiscountInfo %}
                     {% endif %}
                 </div>
                 <div class="book-mini-card__title">
                     {{ book.title }}
                 </div>
-                </a>
-                {% if book.ebook.discount_exists %}
-                    <div class="book-mini-card__price ui-tooltip" data-tooltip="Электронная книга">
-                        <svg>
-                            <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#book-16' | theme }}"></use>
-                        </svg>
-                        {% partial 'book/book-price' edition=book.ebook %}
-                    </div>
-                {% endif %}
+            </a>
+            {% if book.ebook.priceTag.discountExists %}
+            <div class="book-mini-card__price ui-tooltip" data-tooltip="Электронная книга">
+                <svg>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>
+                </svg>
+                {% partial 'book/book-price' edition=book.ebook %}
             </div>
+            {% endif %}
+            {% if book.audiobook.priceTag.discountExists %}
+            <div class="book-mini-card__price ui-tooltip" data-tooltip="Аудиокнига">
+                <svg>
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-16' | theme}}"></use>
+                </svg>
+                {% partial 'book/book-price' edition=book.audiobook %}
+            </div>
+            {% endif %}
+        </div>
         {% endfor %}
     </div>
     <div class="thematic-section__nav _left">

@@ -5,7 +5,7 @@
             <thead>
             <tr>
                 <td class="table__col">Дата</td>
-                <td class="table__col _wide">Книга</td>
+                <td class="table__col _wide">Издание</td>
                 <td class="table__col">Тип продажи</td>
                 <td class="table__col">Цена</td>
                 <td class="table__col">Количество</td>
@@ -23,11 +23,11 @@
                         <div class="_name">{{ record.title == previousTitle ? '' : record.title }}</div>
                     </td>
                     <td class="table__col">{{ (record.type == previousType and record.title == previousTitle ) ? '' : record.type }}</td>
-                    <td class="table__col _left">{{ record.price }}</td>
+                    <td class="table__col _left">{{ formatMoneyAmount(record.price) }}</td>
                     <td class="table__col _left">{{ record.count }}</td>
-                    <td class="table__col _left">{{ record.reward }}</td>
+                    <td class="table__col _left">{{ formatMoneyAmount(record.reward) }}</td>
                     <td class="table__col _left">
-                        {% if previousDetailLink != record.book_id ~ record.date ~ record.sell_type %}
+                        {% if previousDetailLink != record.edition_id ~ record.date ~ record.sell_type %}
                             <a href="{{ 'lc-commercial-statistics-detail'|page({book_id: record.book_id, date: record.date, sell_type: record.sell_type}) }}" class="ui-link _violet">Подробнее</a>
                         {% endif %}
                     </td>
@@ -43,9 +43,9 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td class="table__col _wide"><div class="table__col _right _wide _bold">Итого:</td>
+                <td class="table__col _wide"><div class="table__col _right _wide _bold">Итого:</div></td>
                 <td class="table__col _bold _left">{{ summary.sells_count }}</td>
-                <td class="table__col _bold _left">{{ summary.sells_reward_amount }}</td>
+                <td class="table__col _bold _left">{{ formatMoneyAmount(summary.sells_reward_amount) }}</td>
                 <td></td>
                 <td></td>
             </tr>

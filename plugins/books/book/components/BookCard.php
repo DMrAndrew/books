@@ -41,7 +41,10 @@ class BookCard extends ComponentBase
     public function acceptable(): bool
     {
         $this->user = Auth::getUser();
-        $this->book = Book::find(post('book_id'));
+        $this->book = Book::query()
+            ->notEmptyEdition()
+            ->find(post('book_id'));
+
         return $this->user && $this->book;
     }
 
@@ -75,13 +78,21 @@ class BookCard extends ComponentBase
 
     public function render(array $options = [])
     {
+        $book = Book::query()
+            ->notEmptyEdition()
+            ->defaultEager()
+            ->findOrFail($this->book->id);
+
         if ($partial = request()->header('X-OCTOBER-REQUEST-PARTIAL')) {
             return [
                 $partial => $this->renderPartial($partial,
-                    ['book' => Book::query()->defaultEager()->find($this->book->id), ...$options])
+                    [
+                        'book' => $book, ...$options
+                    ])
             ];
         }
 
+        return [];
     }
 
 

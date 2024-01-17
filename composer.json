@@ -48,6 +48,8 @@
         "laravel-notification-channels/telegram": "^3.0",
         "ext-simplexml": "*",
         "ext-libxml": "*",
+        "books/moderation-plugin": "*",
+        "books/certificates-plugin": "*",
         "soundasleep/html2text": "^2.1"
     },
     "require-dev": {
@@ -176,6 +178,10 @@
         "books/sitemap-plugin": {
             "type": "path",
             "url": "./plugins/books/sitemap"
+        },
+        "books/moderation-plugin": {
+            "type": "path",
+            "url": "./plugins/books/moderation"
         },
         "vdlp/oc-telescope-plugin": {
             "type": "path",
