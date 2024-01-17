@@ -110,7 +110,7 @@ class AuthorSpace extends ComponentBase
             'reposts_count' => $this->profile?->reposts_count,
         ],
             $this->getAuthorBooks(),
-            //$this->getAuthorComments(),
+            $this->getAuthorComments(),
             $this->getAuthorBlogPosts(),
             $this->getAuthorVideoBlogPosts(),
         );
