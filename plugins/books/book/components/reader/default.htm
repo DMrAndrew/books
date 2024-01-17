@@ -17,9 +17,10 @@
                     <div class="reader-header__dropdown">
                         <select  class="book-select" name="chapter_id" data-request="onChapter" id="reader-chapter-select" style="display: none">
                             {% for chapter in chapters %}
+
                             <option  value="{{chapter.id}}"
                                      {{ reader.chapter.id == chapter.id ? 'selected' : ''  }}
-                            >{{chapter.title|md}}</option>
+                            >{{chapter.title|striptags}}</option>
                             {% endfor %}
 
                         </select>
