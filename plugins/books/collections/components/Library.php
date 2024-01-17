@@ -77,7 +77,7 @@ class Library extends ComponentBase
     }
 
     public function onSwitch()
-    {
+    {dd(post());
         $book = Book::find(post('book_id'));
         $action = post('action');
         if ($book && in_array($action, ['loved', 'remove', 'interested', 'watched', 'reading', 'read', 'unloved'])) {
