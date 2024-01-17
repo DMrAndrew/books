@@ -61,7 +61,6 @@ class EBooker extends ComponentBase
             ->books()
             ->with(['ebook.chapters' => fn($chapters) => $chapters->with(['deferred' => fn($d) => $d->deferred()])])
             ->find($this->property('book_id'))?->ebook
-            //?? throw new ApplicationException('Электронное издание книги не найдено.');
             ?? new Edition([
                 'type' => EditionsEnums::Ebook,
                 'status' => BookStatus::HIDDEN,
@@ -159,6 +158,8 @@ class EBooker extends ComponentBase
             $this->service->update(post());
             $this->vals();
             $this->setAllowedStatuses();
+
+            Flash::success('Сохранение прошло успешно');
 
             return [
                 '#about-header' => $this->renderPartial('book/about-header'),
