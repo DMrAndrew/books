@@ -167,19 +167,20 @@
                                                     {{ lib.book.title }}
                                                 </a>
                                                 {% if item.type.value == 3 %}
+                                                {% if lib.book.ebook %}
                                                     <div class="book-mini-card__progress book-mini-card-progress">
                                                         <div class="book-mini-card-progress__item-wrapper">
                                                             <div class="book-mini-card-progress__line"
                                                                  style="width:{{ lib.book.ebook.readPercent }}% ">
                                                             </div>
                                                         </div>
-                                                        {% if lib.book.ebook %}
+
                                                         <div
                                                             class="book-mini-card-progress__text">{{ lib.book.ebook.readPercent }}
                                                             %
                                                         </div>
-                                                        {% endif %}
                                                     </div>
+                                                {% endif %}
                                                 {% endif %}
                                             </div>
                                         {% endfor %}
