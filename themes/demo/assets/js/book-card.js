@@ -60,4 +60,5 @@ addEventListener('render', function() {
 		this.value = this.value.replace(/[^\d.]/g, '');
 		oc.request('#orderForm', 'onOrderAddPromocode', {})
 	});
-});
+
+}, { once: true });

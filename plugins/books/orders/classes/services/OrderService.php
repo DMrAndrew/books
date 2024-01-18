@@ -243,17 +243,19 @@ class OrderService implements OrderServiceContract
      */
     public function activatePromocode(Order $order, Promocode $promocode): void
     {
-        OrderPromocode::create([
+        $orderPromocode = OrderPromocode::firstOrCreate([
             'order_id' => $order->id,
             'promocode_id' => $promocode->id,
         ]);
 
-        $promocode->update([
-            'is_activated' => true,
-            'activated_at' => Carbon::now(),
-            'user_id' => $order->user_id,
-            'used_by_profile_id' => $order->user->profile->id
-        ]);
+        if ($orderPromocode->wasRecentlyCreated) {
+            $promocode->update([
+                'is_activated' => true,
+                'activated_at' => Carbon::now(),
+                'user_id' => $order->user_id,
+                'used_by_profile_id' => $order->user->profile->id
+            ]);
+        }
     }
 
     /**
