@@ -121,6 +121,7 @@ class AudioBooker extends ComponentBase
             Flash::success('Сохранение прошло успешно');
 
             return [
+                '#about-header' => $this->renderPartial('book/about-header'),
                 PartialSpawns::SPAWN_EDIT_AUDIOBOOK_CHAPTERS->value => $this->renderPartial('@chapters'),
                 PartialSpawns::SPAWN_EDIT_AUDIOBOOK_SETTINGS->value => $this->renderPartial('@settings'),
             ];
