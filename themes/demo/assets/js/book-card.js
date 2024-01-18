@@ -55,9 +55,10 @@ addEventListener('render', function() {
 	});
 
 	// promocode
-	$('body').on('click', '#promocodeSubmit', function (e) {
+	$('body').on('click', '#promocodeSubmit', function (e) { console.log('click')
 		e.preventDefault();
 		this.value = this.value.replace(/[^\d.]/g, '');
 		oc.request('#orderForm', 'onOrderAddPromocode', {})
 	});
-});
+
+}, { once: true });
