@@ -55,7 +55,7 @@ addEventListener('render', function() {
 	});
 
 	// promocode
-	$('body').on('click', '#promocodeSubmit', function (e) { console.log('click')
+	$('body').on('click', '#promocodeSubmit', function (e) {
 		e.preventDefault();
 		this.value = this.value.replace(/[^\d.]/g, '');
 		oc.request('#orderForm', 'onOrderAddPromocode', {})
