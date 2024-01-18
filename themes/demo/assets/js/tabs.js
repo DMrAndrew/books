@@ -21,7 +21,7 @@ function initTabs(container) {
                 link.classList.toggle('active', activeTabIndex === link.dataset.tab)
             }
             // location.hash = activeTabIndex;
-            openDropdown();
+            //openDropdown();
         });
         // check if active
         activeIndex = curLink.classList.contains('active') ? key : activeIndex;
