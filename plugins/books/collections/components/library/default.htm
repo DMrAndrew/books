@@ -38,8 +38,14 @@
                                                 class="ui-col-md-2 ui-col-sm-3 ui-col-xs-4 ui-col-xxs-4 book-mini-card">
                                                 <div data-tippy-continer>
                                                     <div class="book-mini-card__image">
-                                                        <a href="/reader/{{ lib.book.id }}" data-tippy-init><img
-                                                                src="{{ lib.book.cover.getThumb(208,300) }}"
+
+                                                        {% if lib.book.ebook %}
+                                                            <a href="/reader/{{ lib.book.id }}" data-tippy-init>
+                                                        {% elseif lib.book.audiobook %}
+                                                            <a href="/readeraudio/{{ lib.book.id }}" data-tippy-init>
+                                                        {% endif %}
+
+                                                            <img src="{{ lib.book.cover.getThumb(208,300) }}"
                                                                 class="book-mini-card__image" alt=""
                                                                 loading="lazy">
                                                             {% if lib.book.ebook.priceTag.discountExists %}
