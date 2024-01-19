@@ -1,0 +1,5 @@
+v1.0.1: First version of Shop
+v1.0.2:
+    - 'Миграции'
+    - create_categories_table.php
+    - create_products_table.php

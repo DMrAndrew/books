@@ -1,0 +1,18 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+    id:
+        label: ID
+        searchable: false
+
+    title:
+        label: 'Название'
+        searchable: true
+
+    parent:
+        label: 'Родительская категория'
+        relation: parent
+        emptyOption: 'Основная категория'
+        select: concat(id, ' - ', title)
