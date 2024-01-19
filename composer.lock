@@ -234,6 +234,23 @@
             }
         },
         {
+            "name": "books/certificates-plugin",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./plugins/books/certificates",
+                "reference": "6e981516c4f65f2dcfa9baf0f44a17fdd29d9aed"
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "october-plugin",
+            "description": "No description provided yet...",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "books/collections-plugin",
             "version": "dev-master",
             "dist": {
@@ -291,6 +308,23 @@
                 "upload",
                 "uploader"
             ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "books/moderation-plugin",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./plugins/books/moderation",
+                "reference": "55258461f920effba2f7c0aab082dc4ce11b563e"
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "october-plugin",
+            "description": "No description provided yet...",
             "transport-options": {
                 "relative": true
             }

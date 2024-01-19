@@ -1,0 +1,85 @@
+<div class="ui-container-fluid">
+
+    <!-- заголовок -->
+    <div class="personal-area__subtitle">
+        <span class="ui-text-head--2 ui-text--bold">Добавление товара</span>
+    </div>
+
+    <!-- заголовок -->
+    <form class="ui-container-fluid wrapper">
+        <div class="ui-grid-container ui-grid-gap">
+            <div class="ui-col-sm-3">
+                <div class="lc-shop__add-block">
+                    <div class="lc-shop__add-img"></div>
+                </div>
+                <div class="lc-shop__add-block">
+                    <div class="ui-prompt">Размер 288x288</div>
+                </div>
+                <label class="ui-input-file">
+                    <input type="file" hidden="">
+                    <div class="ui-input-file-item ui-text--medium">Добавить изображение</div>
+                </label>
+            </div>
+            <div class="ui-col-sm-9">
+                <div class="lc-shop__add-block ui-input">
+                    <label class="ui-input-label">Название товара</label>
+                    <input class="ui-input-item _size-32" type="text" name="title">
+                </div>
+
+                <div class="lc-shop__add-block ui-input">
+                    <label class="ui-input-label">Описание товара</label>
+                    <textarea class="ui-input-textarea _size-32" name="description"></textarea>
+                </div>
+
+                {% partial 'ShopLCForm::input-categories' categories=categories %}
+
+                <div class="lc-shop__add-block ui-select">
+                    <label class="ui-input-label">Название части</label>
+                    <style>
+                        .someClass {
+                            display: none;
+                        }
+                    </style>
+                    <select id="multiple" multiple class="someClass">
+                        <option value="Фэнтези">Фэнтези</option>
+                        <option value="Попаданцы">Попаданцы</option>
+                        <option value="Космос">Космос</option>
+                        <option value="Проза">Проза</option>
+                        <option value="Мистика">Мистика</option>
+                        <option value="Бояръ-аниме">Бояръ-аниме</option>
+                        <option value="Неформат">Неформат</option>
+                        <option value="Поэзия">Поэзия</option>
+                        <option value="Фантастика">Фантастика</option>
+                        <option value="18+">18+</option>
+                        <option value="Фанфик">Фанфик</option>
+                        <option value="Детское">Детское</option>
+                        <option value="Ужасы">Ужасы</option>
+                        <option value="Сказка">Сказка</option>
+                        <option value="Уся">Уся</option>
+                        <option value="Романы">Романы</option>
+                        <option value="Детективы">Детективы</option>
+                        <option value="РПГ">РПГ</option>
+                        <option value="Триллер">Триллер</option>
+                        <option value="Янг-эдалт">Янг-эдалт</option>
+                        <option value="Драма">Драма</option>
+                        <option value="Магический реализм">Магический реализм</option>
+                    </select>
+                </div>
+
+                <div class="lc-shop__add-block ui-input">
+                    <label class="ui-input-label">Укажите стоимость товара</label>
+                    <input class="ui-input-item _size-32" type="number">
+                </div>
+
+                <div class="lc-shop__add-block ui-input">
+                    <label class="ui-input-label">Укажите количество товара</label>
+                    <input class="ui-input-item _size-32" type="number">
+                </div>
+
+                <button href="#" class="ui-button ui-button-size--32 ui-button-view--2">Добавить товар</button>
+            </div>
+        </div>
+
+    </form>
+
+</div>

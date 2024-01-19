@@ -1,6 +1,11 @@
 <?php namespace Books\Shop;
 
 use Backend;
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Shop\Components\ShopLCForm;
+use Books\Shop\Components\ShopLCList;
+use RainLab\User\Facades\Auth;
 use System\Classes\PluginBase;
 
 /**
@@ -11,7 +16,8 @@ use System\Classes\PluginBase;
 class Plugin extends PluginBase
 {
     public $require = [
-        'RainLab.User'
+        'RainLab.User',
+        'Books.Breadcrumbs',
     ];
 
     /**
@@ -48,10 +54,9 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
         return [
-            'Books\Shop\Components\MyComponent' => 'myComponent',
+            ShopLCList::class => 'ShopLCList',
+            ShopLCForm::class => 'ShopLCForm',
         ];
     }
 
@@ -96,4 +101,5 @@ class Plugin extends PluginBase
             ],
         ];
     }
+
 }

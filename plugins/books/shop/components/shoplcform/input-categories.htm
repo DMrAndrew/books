@@ -1,0 +1,11 @@
+<div id="input-categories">
+    {% partial
+    'controls/slim_select'
+    label='Категории'
+    id='categories'
+    list=categories
+    selected=categories
+    formID='shopLCForm'
+    onRequest='ShopLCForm::onAddCategories'
+    %}
+</div>

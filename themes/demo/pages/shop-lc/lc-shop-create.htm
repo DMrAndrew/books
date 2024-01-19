@@ -1,0 +1,13 @@
+title = "Личный кабинет - Добавление товара"
+layout = "default"
+url = "/lc-shop/create"
+meta_title = "Личный кабинет - Добавление товара"
+breadcrumbs = "lc-shop-create"
+[session]
+security = "user"
+redirect = "/"
+[ShopLCForm]
+==
+{% component 'Breadcrumbs' %}
+<!-- Тело страницы -->
+{% component 'ShopLCForm' %}
