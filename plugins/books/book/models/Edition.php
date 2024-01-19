@@ -542,9 +542,9 @@ class Edition extends Model implements ProductInterface
     public function changeChaptersOrder(array $ids, array $order = null)
     {
         Db::transaction(function () use ($ids, $order) {
-            $order ??= $this->chapters()->pluck((new Chapter())->getSortOrderColumn())->toArray();
-            $this->chapters()->first()->setSortableOrder($ids, $order);
-            $this->chapters()->get()->each->setNeighbours();
+            $order ??= $this->chapters()->public()->pluck((new Chapter())->getSortOrderColumn())->toArray();
+            $this->chapters()->public()->first()->setSortableOrder($ids, $order);
+            $this->chapters()->public()->get()->each->setNeighbours();
             $this->setFreeParts();
         });
     }
