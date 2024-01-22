@@ -260,7 +260,9 @@ class Edition extends Model implements ProductInterface
     public function getReadPercentAttribute(): int
     {
         return match ($this->type) {
-            EditionsEnums::Ebook => min(100, (int) ceil((($this->read_length ?? 0) * 100) / $this->length)),
+            EditionsEnums::Ebook => $this->length
+                ? min(100, (int) ceil((($this->read_length ?? 0) * 100) / $this->length))
+                : 0,
             EditionsEnums::Audio => 0, // todo
         };
     }
@@ -540,9 +542,9 @@ class Edition extends Model implements ProductInterface
     public function changeChaptersOrder(array $ids, array $order = null)
     {
         Db::transaction(function () use ($ids, $order) {
-            $order ??= $this->chapters()->pluck((new Chapter())->getSortOrderColumn())->toArray();
-            $this->chapters()->first()->setSortableOrder($ids, $order);
-            $this->chapters()->get()->each->setNeighbours();
+            $order ??= $this->chapters()->public()->pluck((new Chapter())->getSortOrderColumn())->toArray();
+            $this->chapters()->public()->first()->setSortableOrder($ids, $order);
+            $this->chapters()->public()->get()->each->setNeighbours();
             $this->setFreeParts();
         });
     }

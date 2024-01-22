@@ -15,7 +15,6 @@ use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Books\FileUploader\Components\AudioUploader;
-use Books\FileUploader\Components\FileUploader;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Cms\Classes\ComponentBase;
@@ -84,7 +83,7 @@ class AudioChapterer extends ComponentBase
             [
                 'modelClass' => Chapter::class,
                 'deferredBinding' => true, // всегда отложенное, чтобы не заменялся/удалялся файл без сохранения формы
-                "maxSize" => 50,
+                "maxSize" => 32,
                 "fileTypes" => ".mp3,.aac",
             ]
         );
@@ -178,6 +177,7 @@ class AudioChapterer extends ComponentBase
              * Публикация без премодерации
              */
             else {
+
                 $this->chapter
                     ->fill($data->toArray())
                     ->save(sessionKey: $this->getSessionKey());
@@ -185,9 +185,10 @@ class AudioChapterer extends ComponentBase
                     $this->chapter->setLive();
                     $this->chapter->saveQuietly();
 
-                $this->chapter->edition->chapters->each->setNeighbours();
+                $audioLength = $this->chapter->recalculateAudioLength();
+                $this->chapter->edition->setFreeParts();
             }
-            
+
             return Redirect::to('/about-book/' . $this->book->id)->withFragment('#audiobook')->setLastModified(now());
 
         } catch (Exception $ex) {

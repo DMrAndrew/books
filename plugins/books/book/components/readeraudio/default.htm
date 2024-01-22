@@ -29,10 +29,10 @@
                     <div class="reader-header__action _full">
                         {% if book.ebook.exists %}
                         <button class="reader-header__button _with-seperator">
-                            <a href="/reader/{{book.ebook.id}}">Текст</a>
+                            <a href="/reader/{{book.id}}">Текст</a>
                         </button>
                         {% else %}
-                        <button class="reader-header__button _with-seperator _disabled" disabled>Текст</button>
+                            <button class="reader-header__button _with-seperator _disabled" disabled>Текст</button>
                         {% endif %}
                         <button class="reader-header__button _with-seperator">Аудио</button>
                     </div>

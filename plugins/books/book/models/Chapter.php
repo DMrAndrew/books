@@ -241,14 +241,19 @@ class Chapter extends Model
 
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where($this->getQualifiedStatusColumn(), ChapterStatus::PUBLISHED);
+        return $query
+                ->where($this->getQualifiedStatusColumn(), ChapterStatus::PUBLISHED)
+                ->where($this->qualifyColumn('moderation_is_published'), true)
+                ->where($this->qualifyColumn('moderation_is_current'), true);
     }
 
     public function scopePublic(Builder $builder, bool $withPlanned = false)
     {
         return $builder
             ->when($withPlanned, fn ($q) => $q->where(fn ($where) => $where->published()->orWhere(fn ($or) => $or->planned())), fn ($q) => $q->published())
-            ->whereDoesntHave('deferred', fn ($deferred) => $deferred->deferred()->deferredCreate());
+            ->whereDoesntHave('deferred', fn ($deferred) => $deferred->deferred()->deferredCreate())
+            ->where($this->qualifyColumn('moderation_is_published'), true)
+            ->where($this->qualifyColumn('moderation_is_current'), true);
     }
 
     // подсчет текстов отложенный, подсчет длины аудиоглав - по запросу
@@ -271,7 +276,7 @@ class Chapter extends Model
 
     public function setNeighbours(): void
     {
-        $builder = fn () => $this->edition()->first()->chapters()->public()->withLength();
+        $builder = fn () => $this->edition->chapters()->public()->withLength();
         $sort_order = $this->{$this->getSortOrderColumn()};
         $this->update([
             'prev_id' => $builder()->maxSortOrder($sort_order)->latest($this->getSortOrderColumn())->first()?->id,
@@ -281,6 +286,8 @@ class Chapter extends Model
 
     protected function afterSave(): void
     {
+        $audioLength = $this->recalculateAudioLength();
+
         if ($this->isDirty(['status'])) {
             $fresh = $this->fresh();
             $this->edition()->first()->setFreeParts();
@@ -350,9 +357,21 @@ class Chapter extends Model
                 $this->saveQuietly();
             }
 
-            return AudioFileLengthHelper::getAudioLengthHumanReadableShort($durationInSeconds);
+            return AudioFileLengthHelper::getAudioLengthHumanReadableShort(file: $this->audio);
         }
 
-        return AudioFileLengthHelper::getAudioLengthHumanReadableShort($this->length);
+        return AudioFileLengthHelper::getAudioLengthHumanReadableShort(file: $this->audio);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function recalculateAudioLength(): mixed
+    {
+        if ($this->type == EditionsEnums::Audio && $this->audio) {
+            return $this->audioLength;
+        }
+
+        return null;
     }
 }

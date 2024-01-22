@@ -155,7 +155,7 @@
         if (initSortable) {
             initSortable('#audio-sortable', 'audiobooker::onUpdateSortOrder')
         }
-        openDropdown();
+        //openDropdown();
 
         function deleteAudioChapter(id) {
             id && uiconfirm('Удалить часть?', () => oc.ajax('audiobooker::onDeleteChapter', {

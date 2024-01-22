@@ -161,7 +161,7 @@
         if (initSortable) {
             initSortable('#sortable', 'ebooker::onUpdateSortOrder')
         }
-        openDropdown();
+        //openDropdown();
 
         function deleteChapter(id) {
             id && uiconfirm('Удалить часть?', () => oc.ajax('ebooker::onDeleteChapter', {

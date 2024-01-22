@@ -38,14 +38,19 @@ class HasLibrary extends ExtensionBase
     {
         $libs = $this->model->libs()
             ->whereHas('favorable', fn ($favorable) => $favorable->public())
-            ->with(['favorable' => fn ($q) => $q->with(['book.ebook' => fn ($ebook) => $ebook->withReadLength($this->model)])])
+            ->with(['favorable' => function ($q) {
+                $q->with([
+                    'book.ebook' => fn ($ebook) => $ebook->withReadLength($this->model),
+                    'book.audiobook' => fn ($audiobook) => $audiobook->withReadLength($this->model),
+                ]);
+            }])
             ->get()
             ->pluck('favorable')
             ->sortByDesc('id')
             ->groupBy(fn ($i) => $i->type->value);
 
         if ($libs[CollectionEnum::READING->value] ?? false) {
-            $libs[CollectionEnum::READING->value] = $libs[CollectionEnum::READING->value]?->sortByDesc(fn ($c) => $c->book->ebook->read_percent);
+            $libs[CollectionEnum::READING->value] = $libs[CollectionEnum::READING->value]?->sortByDesc(fn ($c) => $c->book->ebook?->read_percent);
         }
         $libs[CollectionEnum::LOVED->value] = $libs->flatten(1)->filter(fn ($i) => $i->loved);
 
