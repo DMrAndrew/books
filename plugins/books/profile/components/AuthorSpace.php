@@ -38,7 +38,7 @@ class AuthorSpace extends ComponentBase
     protected int $perPage = 15;
     protected int $perPageBooks = 10;
     protected int $perPageBlogPosts = 10;
-    protected int $perPageVideoblogPosts = 6;
+    protected int $perPageVideoblogPosts = 2;
     protected int $perPageComments = 20;
 
     /**
@@ -209,7 +209,6 @@ class AuthorSpace extends ComponentBase
                     ->paginate(
                         perPage: $this->perPageVideoblogPosts,
                         pageName: 'videoblogPostsPage',
-                        //currentPage: $this->videoBlogPostsCurrentPage()
                     )
             ) : collect(),
         ];
@@ -334,11 +333,11 @@ class AuthorSpace extends ComponentBase
 
     public function blogPostsCurrentPage(): int
     {
-        return (int)(post('blogPostsPage') ?? get('blogPostsPage') ?? $this->blogPostsCurrentPage);
+        return (int)(post('blogPostsPage') ?? (int)get('blogPostsPage') ?? $this->blogPostsCurrentPage);
     }
 
     public function videoBlogPostsCurrentPage(): int
     {
-        return (int)(post('videoblogPostsPage') ?? $this->videoBlogPostsCurrentPage);
+        return (int)(post('videoblogPostsPage') ?? (int)get('blogPostsPage') ?? $this->videoBlogPostsCurrentPage);
     }
 }
