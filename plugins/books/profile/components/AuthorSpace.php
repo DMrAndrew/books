@@ -101,7 +101,6 @@ class AuthorSpace extends ComponentBase
             'cycles' => $this->profile->cyclesWithShared()
                 ->booksEager()
                 ->get(),
-            //'posts' => $this->profile->posts()->published()->get(),
 
             'received_awards_count' => $this->profile?->received_awards_count,
             'left_awards_count' => $this->profile?->left_awards_count,
@@ -110,7 +109,7 @@ class AuthorSpace extends ComponentBase
             'reposts_count' => $this->profile?->reposts_count,
         ],
             $this->getAuthorBooks(),
-            $this->getAuthorComments(),
+            $this->getAuthorCommentsCount(),
             $this->getAuthorBlogPosts(),
             $this->getAuthorVideoBlogPosts(),
         );
@@ -141,6 +140,16 @@ class AuthorSpace extends ComponentBase
                         currentPage: $this->booksCurrentPage(),
                     )
             ),
+        ];
+    }
+
+    public function getAuthorCommentsCount(): array
+    {
+        $can_see_comments = $this->profile->canSeeCommentFeed($this->authUser?->profile);
+
+        return [
+            'can_see_comments' => $can_see_comments,
+            'comments_count' => $can_see_comments ? $this->profile->leftComments()->count() : 0,
         ];
     }
 

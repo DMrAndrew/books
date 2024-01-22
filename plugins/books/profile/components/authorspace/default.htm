@@ -88,9 +88,10 @@
                             {% set awardsCount = received_awards_count + left_awards_count %}
                             {% if awardsCount %}<span>{{awardsCount?:''}}</span>{% endif %}
                         </div>
-                        <div class="ui-tabs-link " data-tab="10">Комментарии
-                            {% if comments_paginator.total %}
-                            <span>{{comments_paginator.total?:''}}</span>
+                        <div class="ui-tabs-link " data-tab="10" onclick="oc.ajax(`author_space::onShowTabComments`)">
+                            Комментарии
+                            {% if comments_count %}
+                            <span>{{comments_count?:''}}</span>
                             {% endif %}
                         </div>
                         <div class="ui-tabs-link" data-tab="11" onclick="oc.ajax(`author_space::onShowTabReposts`)">
@@ -292,7 +293,16 @@
                 </div>
                 <!-- Комментарии -->
                 <div id="author-tab-comments" class="ui-tabs-content" id-old="author-comments" data-tab-content="10">
-                    {% partial 'author_space::author-comments-tab' comments_paginator=comments_paginator %}
+                    {% if received_awards_count + left_awards_count > 0 %}
+                    <div class="author__placeholder _indent">
+                        <div class="commerce__loading-wrap">
+                            <div class="commerce__loading-icon">
+                                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {# % partial 'author_space::author-comments-tab' comments_paginator=comments_paginator % #}
                 </div>
                 <div id="author-tab-reposts" class="ui-tabs-content" data-tab-content="11">
                     {% if reposts_count %}
