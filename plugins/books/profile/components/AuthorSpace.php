@@ -38,7 +38,7 @@ class AuthorSpace extends ComponentBase
     protected int $perPage = 15;
     protected int $perPageBooks = 10;
     protected int $perPageBlogPosts = 10;
-    protected int $perPageVideoblogPosts = 2;
+    protected int $perPageVideoblogPosts = 6;
     protected int $perPageComments = 20;
 
     /**
