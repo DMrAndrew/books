@@ -247,18 +247,8 @@ class Book extends Model
         return new DownloadService($this, ...func_get_args());
     }
 
-    public function converter(ElectronicFormats $format = ElectronicFormats::FB2): BaseConverter
-    {
-        return $format->converter($this);
-    }
-
-    public function mobiConverter()
-    {
-        return $this->converter(ElectronicFormats::MOBI);
-    }
-    public function epubConverter()
-    {
-        return $this->converter(ElectronicFormats::EPUB);
+    public function pdfConverter(){
+        return ElectronicFormats::PDF->converter($this);
     }
 
     public static function findForPublic(int $book_id, User $user = null)

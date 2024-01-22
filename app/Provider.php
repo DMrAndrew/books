@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Queue\Console\BatchesTableCommand;
 use Model;
 use Request;
