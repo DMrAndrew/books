@@ -2,7 +2,10 @@
 
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Shop\Models\Product;
 use Cms\Classes\ComponentBase;
+use Flash;
+use Redirect;
 
 /**
  * ShopLCList Component
@@ -38,6 +41,7 @@ class ShopLCList extends ComponentBase
 
     private function prepareVals()
     {
+        $this->page['products'] = Product::orderByDesc('created_at')->paginate(6);
     }
 
     private function registerBreadcrumbs(): void
@@ -48,5 +52,12 @@ class ShopLCList extends ComponentBase
             $trail->parent('lc');
             $trail->push('Магазин', url('/lc-shop'));
         });
+    }
+
+    public function onDelete()
+    {
+        Product::where('id', post('id'))->delete();
+        Flash::success('Товар удален');
+        return Redirect::to('/lc-shop');
     }
 }

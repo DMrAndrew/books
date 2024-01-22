@@ -1,33 +1,17 @@
-<div class="shop-item">
-    <div class="shop-item-img"><img src="{{'assets/images/product/product-rect-01.jpg' | theme}}" alt=""/></div>
-    <div class="shop-item-name">Бизнес блокнот/ записная книжка А5</div>
-    <div class="shop-item-price">139 ₽</div>
-    <div class="shop-item-actions">
-        <a href="#" class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Удалить</a>
+{% for product in products %}
+    <div class="shop-item">
+        {% if product.product_image %}
+        <div class="shop-item-img">
+            <img src="{{ product.product_image.thumbUrl(250, 250, {quality: 100 }) }}" alt="product_image"/>
+        </div>
+        {% endif %}
+
+        <div class="shop-item-name">{{ product.title }}</div>
+        <div class="shop-item-price">{{ product.price }} ₽</div>
+        <div class="shop-item-actions">
+            <a href="#" data-request="onDelete" data-request-data="{ id: {{ product.id }} }" class="ui-button ui-button-size--32 ui-button-view--3  ui-button--full-mobile">Удалить</a>
+        </div>
     </div>
-</div>
-<div class="shop-item">
-    <div class="shop-item-img"><img src="{{'assets/images/product/product-rect-02.jpg' | theme}}" alt=""/></div>
-    <div class="shop-item-name">Закладка магнитная для книг, 1 шт. Закладка магнитная для книг, 1 шт.</div>
-    <div class="shop-item-price">139 ₽</div>
-    <div class="shop-item-actions">
-        <a href="#" class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Удалить</a>
-    </div>
-</div>
-<div class="shop-item">
-    <div class="shop-item-img"><img src="{{'assets/images/product/product-rect-03.jp' | theme}}g" alt=""/></div>
-    <div class="shop-item-name">Бизнес блокнот</div>
-    <div class="shop-item-price">139 ₽</div>
-    <div class="shop-item-actions">
-        <a href="#" class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Удалить</a>
-    </div>
-</div>
-<div class="shop-item">
-    <div class="shop-item-img"><img src="{{'assets/images/product/product-rect-02.jpg' | theme}}" alt=""/></div>
-    <div class="shop-item-name">Бизнес блокнот/ записная книжка А5</div>
-    <div class="shop-item-price">139 ₽</div>
-    <div class="shop-item-actions">
-        <a href="#" class="ui-button ui-button-size--32 ui-button-view--3 ui-text--medium">Удалить</a>
-    </div>
-</div>
+{% endfor %}
+
 
