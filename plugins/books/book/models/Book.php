@@ -449,9 +449,9 @@ class Book extends Model
         return $builder->whereHas('editions', fn ($e) => $e->status(BookStatus::COMPLETE));
     }
 
-    public function scopeEditionTypeIn(Builder $builder, BookStatus ...$status): Builder|\Illuminate\Database\Eloquent\Builder
+    public function scopeEditionTypeIn(Builder $builder, EditionsEnums ...$type): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn ($query) => $query->type($status));
+        return $builder->whereHas('editions', fn ($query) => $query->whereIn('type', $type));
     }
 
     public function scopeDiffWithUnloved(Builder $builder, User $user = null)
