@@ -63,10 +63,12 @@ class BookPage extends ComponentBase
 
         $this->book_id = is_numeric($this->param('book_id'))
             ? (int) $this->param('book_id')
-            : abort(404);
+            : $this->controller->run('404');
         $this->book = Book::findForPublic($this->book_id, $this->user);
+
         if (! $this->book) {
-            abort(404);
+            //dd('404 from BookPage');
+            $this->controller->run('404');
         }
 
         $this->tryInjectAdultModal();
@@ -115,6 +117,11 @@ class BookPage extends ComponentBase
         $this->setSEO();
     }
 
+//    public function onRun()
+//    {
+//        return $this->controller->run('404');
+//    }
+
     public function onRender()
     {
         foreach ($this->vals() as $key => $val) {
@@ -124,14 +131,21 @@ class BookPage extends ComponentBase
 
     public function vals()
     {
+        if (! $this->book) {
+            return [
+                'book' => null,
+            ];
+        }
+
         return [
+            'book' => $this->book,
+
             'buyBtn_ebook' => $this->buyButtonForEbook(),
             'readBtn_ebook' => $this->readButtonForEbook(),
             'buyBtn_audiobook' => $this->buyButtonForAudiobook(),
             'readBtn_audiobook' => $this->readButtonForAudiobook(),
             'supportBtn' => $this->supportBtn(),
 
-            'book' => $this->book,
             'ebookVisible' => $this->ebookVisible(),
             'audiobookVisible' => $this->audioVisible(),
 

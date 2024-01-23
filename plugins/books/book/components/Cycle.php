@@ -24,7 +24,8 @@ class Cycle extends ComponentBase
 
     public function init()
     {
-        $this->cycle = CycleModel::query()->booksEager()->find((int)$this->param('cycle_id')) ?? abort(404);
+        $this->cycle = CycleModel::query()->booksEager()->find((int)$this->param('cycle_id'))
+            ?? $this->controller->run('404');
         $books = $this->cycle->books;
         $this->page['cycle'] = $this->cycle;
         $this->page['books'] = $books;
