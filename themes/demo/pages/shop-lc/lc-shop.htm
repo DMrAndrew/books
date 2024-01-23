@@ -1,0 +1,62 @@
+title = "Личный кабинет - Магазин"
+layout = "default"
+url = "/lc-shop"
+meta_title = "Личный кабинет - Магазин"
+breadcrumbs="lc-shop"
+[session]
+security = "user"
+redirect = "/"
+[ShopLCList]
+==
+{% component 'Breadcrumbs' %}
+{% partial 'profile/personal_area_header' %}
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
+
+            {% if user.profile.books.count %}
+                {% partial "profile/sidebarmenu" %}
+                <div class="ui-col-sm-9">
+                    <div class="personal-area__subtitle">
+                        <span class="ui-text-head--3 ui-text--bold">Магазин</span>
+                        <svg class="square-16">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                        </svg>
+                    </div>
+                    <div class="personal-area__wrap _indent-large lc-books__action-container">
+                        <div class="lc-shop__action-wrapper">
+                            <a href="/lc-shop/create" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">
+                                Добавить товар
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="shop-list">
+                        {% component 'ShopLCList' %}
+                    </div>
+                    {{ pager(products, { partial: 'site/standart_pagination'}) }}
+                </div>
+            {% else %}
+                {% partial "profile/sidebarmenu" %}
+                    <div class="ui-col-sm-9">
+                        <div class="personal-area__subtitle">
+                            <span class="ui-text-head--3 ui-text--bold">Магазин</span>
+                            <svg class="square-16">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#chevron-down-16' | theme}}"></use>
+                            </svg>
+                        </div>
+                        <div class="author__placeholder _indent">
+                            <div class="ui-text-head--3 ui-text--bold" style="text-align: center">Чтобы воспользоавться функционалом магазина
+                                вы должны стать автором книг на нашем портале.</div>
+                            <a href="/lc-books" style="margin-top: 16px">
+                                <button class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile">
+                                    Стать автором
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
