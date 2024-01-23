@@ -31,11 +31,11 @@ class Product extends Model
      * @var array rules for validation
      */
     public $rules = [
-        'title.required|string|min:3',
-        'description.required|string|min:10',
-        'price.required|integer',
-        'quantity.required|integer',
-        'category_id.required',
+        'title' => 'required|string|min:3',
+        'description' => 'required|string|min:10',
+        'price' => 'required|integer',
+        'quantity' => 'required|integer',
+        'category_id' => 'required',
     ];
 
     public $customMessages = [
