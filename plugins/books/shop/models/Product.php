@@ -1,5 +1,6 @@
 <?php namespace Books\Shop\Models;
 
+use Books\Profile\Models\Profile;
 use Model;
 use RainLab\User\Models\User;
 use System\Models\File;
