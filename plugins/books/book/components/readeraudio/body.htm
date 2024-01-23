@@ -44,11 +44,13 @@
         options.onPrevChapterBtnCallback = (player) => prevChapter(player);
     }
 
+    {% if not lastChapter %}
     var playNextChapterBtn = document.getElementById("audioNext");
     if (playNextChapterBtn) {
         Howler.stop();
         options.onNextChapterBtnCallback = (player) => nextChapter(player);
     }
+    {% endif %}
 
     window.audioPlayer = null;
     initAudioPlayer(options);

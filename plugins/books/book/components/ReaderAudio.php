@@ -141,6 +141,7 @@ class ReaderAudio extends ComponentBase
         }
 
         $this->page['user'] = $this->user;
+        $this->page['lastChapter'] = $this->page['pagination']['next'] === false;
         $this->page['audioProgress'] = $this->getAudioReadProgress();
     }
 
