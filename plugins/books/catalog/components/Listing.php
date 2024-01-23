@@ -77,7 +77,7 @@ class Listing extends ComponentBase
         }
 
         if (! $this->appliedSlug()) {
-            abort(404);
+            $this->controller->run('404');
         }
     }
 

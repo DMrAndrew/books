@@ -46,7 +46,8 @@ class OutOfFree extends ComponentBase
             ->whereHas('book', function ($query) {
                 return $query->public();
             })
-            ->findOrFail($this->param('edition_id')) ?? abort(404);
+            ->findOrFail($this->param('edition_id'))
+            ?? $this->controller->run('404');
 
         $this->chapter = Chapter::find($this->param('chapter_id'));
 

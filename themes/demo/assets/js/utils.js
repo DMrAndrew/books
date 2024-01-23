@@ -2,7 +2,7 @@ let closeForm = (id = 'auth_popup') => {
     $('#' + id).hide()
 }
 
-let loginPopup = () => oc.ajax('onGetLoginPopup');
+let loginPopup = () => oc.ajax('bookAccount::onGetLoginPopup');
 let registerPopup = () => oc.ajax('onGetRegisterPopup');
 let loginForm = () => oc.ajax('onGetLoginForm');
 let registerForm = () => oc.ajax('onGetRegisterForm');
