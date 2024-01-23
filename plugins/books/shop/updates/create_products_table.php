@@ -32,7 +32,7 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             $table->foreign('seller_id')
-                ->on('users')
+                ->on('books_profile_profiles')
                 ->references('id')
                 ->onDelete('cascade');
         });
