@@ -45,7 +45,7 @@ class ShopLCList extends ComponentBase
 
     private function prepareVals()
     {
-        $this->page['products'] = Product::where('seller_id', $this->user->id)
+        $this->page['products'] = Product::where('seller_id', $this->user->profile->id)
             ->orderByDesc('created_at')
             ->paginate(6);
     }
