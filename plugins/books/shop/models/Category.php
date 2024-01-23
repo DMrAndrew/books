@@ -10,7 +10,7 @@ use October\Rain\Database\Traits\SimpleTree;
  */
 class Category extends Model
 {
-    use \October\Rain\Database\Traits\Validation;
+    use \October\Rain\Database\Traits\Validation, SimpleTree;
 
     const PARENT_ID = 'parent_id';
 

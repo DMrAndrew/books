@@ -5,6 +5,7 @@ use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Books\Shop\Models\Product;
 use Cms\Classes\ComponentBase;
 use Flash;
+use RainLab\User\Facades\Auth;
 use Redirect;
 
 /**
@@ -14,6 +15,8 @@ use Redirect;
  */
 class ShopLCList extends ComponentBase
 {
+    private $user;
+
     public function componentDetails()
     {
         return [
@@ -32,6 +35,7 @@ class ShopLCList extends ComponentBase
 
     public function init()
     {
+        $this->user = Auth::getUser();
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
@@ -41,7 +45,9 @@ class ShopLCList extends ComponentBase
 
     private function prepareVals()
     {
-        $this->page['products'] = Product::orderByDesc('created_at')->paginate(6);
+        $this->page['products'] = Product::where('seller_id', $this->user->id)
+            ->orderByDesc('created_at')
+            ->paginate(6);
     }
 
     private function registerBreadcrumbs(): void

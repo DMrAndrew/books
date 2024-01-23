@@ -110,7 +110,7 @@ class ShopLCForm extends ComponentBase
                 'price' => $postData['price'],
                 'quantity' => $postData['quantity'],
                 'category_id' => $postData['category_id'],
-                'seller_id' => $this->user->id
+                'seller_id' => $this->user->profile->id
             ];
 
             $product = new Product();

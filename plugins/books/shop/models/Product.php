@@ -54,9 +54,12 @@ class Product extends Model
         'category_id' => 'Категория',
     ];
 
-    public $belongsTo = ['seller' => User::class, 'key' => 'id', 'otherKey' => 'seller_id'];
+    public $belongsTo = [
+        'seller' => [Profile::class, 'key' => 'seller_id', 'otherKey' => 'id'],
+        'category' => [Category::class, 'key' => 'category_id', 'otherKey' => 'id'],
+    ];
 
     public $attachOne = [
-        'product_image' => File::class,
+        'product_image' => [File::class],
     ];
 }

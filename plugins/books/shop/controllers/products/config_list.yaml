@@ -12,7 +12,7 @@ modelClass: Books\Shop\Models\Product
 title: Manage Products
 
 # Link URL for each record
-recordUrl: books/shop/products/update/:id
+recordUrl: books/shop/products/preview/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records
