@@ -556,7 +556,8 @@ class Book extends Model
                 'authors.profile',
             ])
             ->inLibExists()
-            ->likeExists();
+            ->likeExists()
+            ->distinct($this->qualifyColumn('id'));
     }
 
     public function scopeAllowedForDiscount(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder

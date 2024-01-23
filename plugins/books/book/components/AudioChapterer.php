@@ -71,8 +71,7 @@ class AudioChapterer extends ComponentBase
         }
 
         $this->user = Auth::getUser();
-        $this->book = $this->user->profile->books()->find($this->param('book_id'))
-            ?? $this->controller->run('404');
+        $this->book = $this->user->profile->books()->findOrFail($this->param('book_id'));
         $this->audiobook = $this->getAudioBook();
         $this->chapter = $this->getChapter();
 

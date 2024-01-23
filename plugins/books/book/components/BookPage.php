@@ -61,13 +61,13 @@ class BookPage extends ComponentBase
     {
         $this->user = Auth::getUser();
 
-        $this->book_id = is_numeric($this->param('book_id'))
-            ? (int) $this->param('book_id')
-            : $this->controller->run('404');
-        $this->book = Book::findForPublic($this->book_id, $this->user);
+        $this->book_id = is_numeric($this->param('book_id')) ? (int) $this->param('book_id') : null;
+        if (! $this->book_id) {
+            $this->controller->run('404');
+        }
 
+        $this->book = Book::findForPublic($this->book_id, $this->user);
         if (! $this->book) {
-            //dd('404 from BookPage');
             $this->controller->run('404');
         }
 
