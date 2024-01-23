@@ -131,11 +131,11 @@
                         </div>
                         <div class="ui-tabs-content" data-tab-content="6">
                             {% if book.cycle %}
-                            {% partial 'cycle/cycle-book-header' body cycle=book.cycle %}
-                            {% put thematic %}
-                            {% component 'cycle_widget' %}
-                            {% endput %}
-                            {% endpartial %}
+                                {% partial 'cycle/cycle-book-header' body cycle=book.cycle %}
+                                {% put thematic %}
+                                {% component 'cycle_widget' %}
+                                {% endput %}
+                                {% endpartial %}
                             {% endif %}
                         </div>
                     </div>
