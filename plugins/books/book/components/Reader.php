@@ -32,7 +32,7 @@ class Reader extends ComponentBase
 
     protected ?Service $service = null;
 
-    protected int $book_id;
+    protected ?int $book_id;
 
     protected int $chapter_id;
 
@@ -60,11 +60,16 @@ class Reader extends ComponentBase
     public function init()
     {
         $this->user = Auth::getUser();
-        $this->book_id = (int) $this->param('book_id') ?? abort(404);
+        $this->book_id = (int) $this->param('book_id');
+        if (! $this->book_id) {
+            $this->controller->run('404');
+        }
+
         $this->book = Book::findForPublic($this->book_id, $this->user);
+
         $this->chapter_id = (int) $this->param('chapter_id');
-        $this->chapter = $this->chapter_id ? Chapter::public()->withLength()->find($this->chapter_id)
-            ?? abort(404) : null;
+        $this->chapter = $this->chapter_id ? Chapter::find($this->chapter_id) ?? abort(404) : null;
+
         $this->tryInjectAdultModal();
         $this->addMeta();
         $recommend = $this->addComponent(Widget::class, 'recommend');

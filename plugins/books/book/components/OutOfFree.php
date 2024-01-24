@@ -18,7 +18,7 @@ use Redirect;
 class OutOfFree extends ComponentBase
 {
     protected Book $book;
-    protected Edition $edition;
+    protected ?Edition $edition;
 
     protected ?Chapter $chapter;
 
@@ -46,7 +46,11 @@ class OutOfFree extends ComponentBase
             ->whereHas('book', function ($query) {
                 return $query->public();
             })
-            ->findOrFail($this->param('edition_id')) ?? abort(404);
+            ->findOrFail($this->param('edition_id'));
+
+        if (! $this->edition) {
+            $this->controller->run('404');
+        }
 
         $this->chapter = Chapter::find($this->param('chapter_id'));
 

@@ -62,15 +62,17 @@ class ReaderAudio extends ComponentBase
     public function init()
     {
         $this->user = Auth::getUser();
-        $this->audiobook_id = (int) $this->param('book_id') ?? abort(404);
+        $this->audiobook_id = (int) $this->param('book_id')
+            ?? $this->controller->run('404');
         $this->book = Book::findForPublic($this->audiobook_id, $this->user);
 
         if (!$this->book?->audiobook) {
-            abort(404);
+            $this->controller->run('404');
         }
 
         $this->chapter_id = (int) $this->param('chapter_id');
-        $this->chapter = $this->chapter_id ? Chapter::public()->find($this->chapter_id) ?? abort(404) : null;
+        $this->chapter = $this->chapter_id ? Chapter::find($this->chapter_id) ?? abort(404) : null;
+
         $this->tryInjectAdultModal();
         $this->addMeta();
         //$recommend = $this->addComponent(Widget::class, 'recommend');
@@ -139,6 +141,7 @@ class ReaderAudio extends ComponentBase
         }
 
         $this->page['user'] = $this->user;
+        $this->page['lastChapter'] = $this->page['pagination']['next'] === false;
         $this->page['audioProgress'] = $this->getAudioReadProgress();
     }
 

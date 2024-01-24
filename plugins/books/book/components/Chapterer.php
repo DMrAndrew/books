@@ -68,7 +68,7 @@ class Chapterer extends ComponentBase
             return $redirect;
         }
         $this->user = Auth::getUser();
-        $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
+        $this->book = $this->user->profile->books()->findOrFail($this->param('book_id'));
         $this->ebook = $this->getEbook();
         $this->chapter = $this->ebook->chapters()
                 ->withDrafts()
