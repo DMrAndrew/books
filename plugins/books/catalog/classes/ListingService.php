@@ -28,9 +28,7 @@ class ListingService
         $this->useWidgetSort = $this->useWidgetService && !$this->useRater && $this->filter->widget->mapSortEnum() === $this->filter->sort;
         $this->builder = Book::query()->public()->defaultEager()->distinct((new Book())->getQualifiedKeyName());
         $this->hasIncludeGenres = $this->filter->includes(Genre::class)->count();
-
     }
-
 
     public function selfBind()
     {
@@ -43,7 +41,11 @@ class ListingService
             ->when(!$this->filter->free && $this->filter->min_price, fn($q) => $q->minPrice($this->filter->min_price))
             ->when(!$this->filter->free && $this->filter->max_price, fn($q) => $q->maxPrice($this->filter->max_price))
             ->when($this->filter->free, fn($q) => $q->free())
-            ->when($this->filter->type, fn($q) => $q->type($this->filter->type))
+            ->when($this->filter->type, function ($q) {
+                $q->whereHas('editions', function ($q) {
+                    $q->where('type', $this->filter->type)->visible();
+                });
+            })
             ->when(!$this->useWidgetSort && !$this->useRater, fn($builder) => match ($this->filter->sort) {
                 default => $builder->when($this->hasIncludeGenres,
                     fn($b) => $b->orderByGenresRate(...Genre::find($this->filter->includes(Genre::class)->pluck('id')->toArray()))
@@ -87,9 +89,7 @@ class ListingService
         $r->performClosures();
         $seq = $r->getResult()->sortByDesc(fn(Book $book) => $book->stats->popular())->pluck('id')->toArray();
         $this->builder->orderByRaw('FIELD (' . (new Book())->getQualifiedKeyName() . ', ' . implode(', ', $seq) . ') ASC');
-
     }
-
 
     /**
      * @throws Exception

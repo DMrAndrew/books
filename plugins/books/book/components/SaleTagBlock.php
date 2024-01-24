@@ -29,6 +29,5 @@ class SaleTagBlock extends ComponentBase
     {
         parent::onRun();
         $this->defineProperties();
-        $this->page['text'] = 'djkaslkdjaslkj';
     }
 }

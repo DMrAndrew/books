@@ -102,7 +102,7 @@ class Cycle extends Model
     public function scopeBooksEager(Builder $builder): Builder
     {
         return $builder
-            ->whereHas('books', fn($books) => $books->public())
+            ->whereHas('books', fn($books) => $books->public()->defaultEager())
             ->with(['books' => fn($books) => $books->public()->defaultEager()->orderBySalesAt(true)]);
     }
 

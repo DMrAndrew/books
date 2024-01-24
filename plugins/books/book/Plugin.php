@@ -19,6 +19,8 @@ use Books\Book\Classes\WidgetService;
 use Books\Book\Components\AboutBook;
 use Books\Book\Components\AdvertBanner;
 use Books\Book\Components\AdvertLC;
+use Books\Book\Components\AudioBooker;
+use Books\Book\Components\AudioChapterer;
 use Books\Book\Components\AwardsLC;
 use Books\Book\Components\BookAwards;
 use Books\Book\Components\BookCard;
@@ -36,6 +38,7 @@ use Books\Book\Components\LCBooker;
 use Books\Book\Components\OutOfFree;
 use Books\Book\Components\Promocode;
 use Books\Book\Components\Reader;
+use Books\Book\Components\ReaderAudio;
 use Books\Book\Components\ReadStatistic;
 use Books\Book\Components\SaleTagBlock;
 use Books\Book\Components\Widget;
@@ -43,6 +46,7 @@ use Books\Book\Console\CleanHTMLContent;
 use Books\Book\FormWidgets\ContentDiff;
 use Books\Book\FormWidgets\DeferredComments;
 use Books\Book\Jobs\GenreRaterExec;
+use Books\Book\Models\AudioReadProgress;
 use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
 use Books\Book\Models\Book;
@@ -86,6 +90,7 @@ class Plugin extends PluginBase
         'Books.Profile',
         'Books.Breadcrumbs',
         'Books.AuthorPrograms',
+        'Books.Moderation',
     ];
 
     /**
@@ -212,10 +217,13 @@ class Plugin extends PluginBase
             AboutBook::class => 'AboutBook',
             Booker::class => 'booker',
             EBooker::class => 'ebooker',
+            AudioBooker::class => 'audiobooker',
             LCBooker::class => 'LCBooker',
             Chapterer::class => 'Chapterer',
+            AudioChapterer::class => 'AudioChapterer',
             BookPage::class => 'BookPage',
             Reader::class => 'reader',
+            ReaderAudio::class => 'readeraudio',
             BookCard::class => 'bookCard',
             ReadStatistic::class => 'readStatistic',
             Widget::class => 'widget',
@@ -440,5 +448,25 @@ class Plugin extends PluginBase
             $trail->parent('lc');
             $trail->push('Подписки');
         });
+    }
+
+    /**
+     * @return array []
+     */
+    public function registerMarkupTags(): array
+    {
+        return [
+            'functions' => [
+                'humanFileSize' => function(mixed $kilobytes) { return humanFileSize($kilobytes); },
+                'humanTime' => function(mixed $seconds) { return humanTime($seconds); },
+                'humanTimeShort' => function(mixed $seconds) { return humanTimeShort($seconds); },
+                'save_user_audio_read_pregress_delay_in_seconds' => function() {
+                    return AudioReadProgress::getStartSavingUserReadProgressAfterDelay();
+                },
+                'save_user_audio_read_pregress_timeout_in_seconds' => function() {
+                    return AudioReadProgress::getSaveUserReadProgressStep();
+                },
+            ],
+        ];
     }
 }

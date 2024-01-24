@@ -34,6 +34,7 @@ class ListingFilter
     public function __construct(protected ?string $session_key = null)
     {
         $this->filters = collect();
+
         if (! $this->getSessionKey()) {
             $this->fromQuery();
         } else {
@@ -192,6 +193,7 @@ class ListingFilter
 
     public function query(string $class)
     {
+        /** @var Model $class */
         return $class::query()->public()->asOption();
     }
 

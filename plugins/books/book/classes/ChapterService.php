@@ -74,6 +74,7 @@ class ChapterService implements iChapterService
 
             return $this->isNew() ? static::create($data) : $this->update($data);
         }
+
         throw new UnknownFormatException();
     }
 
