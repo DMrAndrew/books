@@ -10,9 +10,17 @@ return new class() extends Migration
 {
     public function up()
     {
-        Schema::table('books_book_chapters', function (Blueprint $table) {
-            $table->drafts();
-        });
+        /**
+         * For multiple retries on deploy
+         */
+        if (! Schema::hasColumn(
+            'books_book_chapters',
+            config('books.moderation::column_names.is_published', 'is_published'))
+        ){
+            Schema::table('books_book_chapters', function (Blueprint $table) {
+                $table->drafts();
+            });
+        }
 
         /**
          * Fill moderation data for existing records
@@ -20,14 +28,14 @@ return new class() extends Migration
         Chapter::query()
             ->withTrashed()
             ->whereNull('moderation_uuid')
-            ->chunkById(50, function (Collection $models) {
-                $models->each(function ($model) {
+            ->chunkById(100, function (Collection $models) {
+                foreach ($models as $model) {
                     $model->generateUuid();
                     $model->setLive();
                     $model->saveQuietly();
+                }
 
-                    return true;
-                });
+                unset($models);
 
             return true;
         });
