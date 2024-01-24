@@ -32,6 +32,7 @@ class Product extends Model
      * @var array rules for validation
      */
     public $rules = [
+//        'uploader.product_image' => 'required',
         'title' => 'required|string|min:3',
         'description' => 'required|string|min:10',
         'price' => 'required|integer',
@@ -45,6 +46,7 @@ class Product extends Model
         'price.required' => 'Укажите цену товара',
         'quantity.required' => 'Укажите категорию товара',
         'category_id.required' => 'Укажите категорию товара',
+        'uploader.product_image' => 'Добавьте изображение товара',
     ];
 
     public $attributeNames = [
@@ -53,6 +55,7 @@ class Product extends Model
         'price' => 'Цена',
         'quantity' => 'Количество',
         'category_id' => 'Категория',
+        'uploader.product_image' => 'Изображение',
     ];
 
     public $belongsTo = [

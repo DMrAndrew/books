@@ -51,12 +51,13 @@ class ShopLCForm extends ComponentBase
             [
                 'modelClass' => Product::class,
                 'modelKeyColumn' => 'image',
-                'deferredBinding' => true,
+                'deferredBinding' => false,
                 'imageWidth' => 250,
                 'imageHeight' => 250,
-
+                'required' => true
             ]
         );
+
         $component->bindModel('product_image', new Product());
         $this->prepareVals();
         $this->registerBreadcrumbs();
@@ -87,17 +88,17 @@ class ShopLCForm extends ComponentBase
     {
         try {
             $postData = collect(post());
-
+            dd($postData);
             $validator = Validator::make(
                 $postData->toArray(),
                 collect((new Product())->rules)->only([
-                    'title', 'description', 'price', 'quantity', 'category_id'
+                    'title', 'description', 'price', 'quantity', 'category_id', 'uploader.product_image'
                 ])->toArray(),
                 collect((new Product())->customMessages)->only([
-                    'title', 'description', 'price', 'quantity', 'category_id'
+                    'title', 'description', 'price', 'quantity', 'category_id', 'uploader.product_image'
                 ])->toArray(),
                 collect((new Product())->attributeNames)->only([
-                    'title', 'description', 'price', 'quantity', 'category_id'
+                    'title', 'description', 'price', 'quantity', 'category_id', 'uploader.product_image'
                 ])->toArray()
             );
             if ($validator->fails()) {
