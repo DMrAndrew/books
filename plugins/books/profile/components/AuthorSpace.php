@@ -73,12 +73,6 @@ class AuthorSpace extends ComponentBase
         foreach ($this->prepareVals() as $key => $val) {
             $this->page[$key] = $val;
         }
-
-        $this->page['title'] = sprintf(
-            '%s - скачать в fb2, epub, txt, pdf или читать онлайн бесплатно',
-            $this->profile->username
-        );
-        //dd($this->page);
     }
 
     protected function prepareVals()
