@@ -338,7 +338,6 @@ class Listing extends ComponentBase
     private function getCanonicalUrl(): string
     {
         return $this->buildUrl(request()->url(), collect(get())->only(ListingParamsEnum::values()->toArray()));
-
     }
 
     private function buildUrl(string $url = '', array|Collection $params = []): string

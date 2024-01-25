@@ -279,8 +279,8 @@ class Chapter extends Model
         $builder = fn () => $this->edition->chapters()->public()->withLength();
         $sort_order = $this->{$this->getSortOrderColumn()};
         $this->update([
-            'prev_id' => $builder()->maxSortOrder($sort_order)->latest($this->getSortOrderColumn())->first()?->id,
-            'next_id' => $builder()->minSortOrder($sort_order)->first()?->id,
+            'prev_id' => $builder()->maxSortOrder($sort_order)->latest($this->getSortOrderColumn())->value('id'),
+            'next_id' => $builder()->minSortOrder($sort_order)->value('id'),
         ]);
     }
 
