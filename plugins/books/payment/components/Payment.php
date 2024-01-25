@@ -42,7 +42,7 @@ class Payment extends ComponentBase
     {
         $this->user = Auth::getUser();
         if (!$this->user) {
-            abort(404);
+            $this->controller->run('404');
         }
 
         $this->orderService = app(OrderService::class);

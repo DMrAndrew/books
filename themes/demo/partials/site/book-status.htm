@@ -1,3 +1,6 @@
+{% set status = edition.status %}
+{% set editionTypeName = edition.type.labelShort %}
+
 {% if status.value == 'complete' %}
 <div class="book-card__info-wrap">
     <svg class="book-card__favorit-active">

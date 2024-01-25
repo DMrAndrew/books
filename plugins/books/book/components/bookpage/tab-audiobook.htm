@@ -1,0 +1,66 @@
+{% if book.audiobook %}
+<div class="ui-tabs-content" data-tab-content="2">
+    <div class="book-card-full-type">
+        <div class="book-card-full-type__description _indent-bottom">
+            {% partial 'site/book-status' edition=book.audiobook %}
+            <span class="book-card-full-type__description-dot"></span>
+            {% if historyAudiobook.items.first %}
+                <span itemprop="bookEdition">{{ historyAudiobook.items.first.date.format('d.m.y') }}</span>
+            {% else %}
+                <span>{{carbon(book.audiobook.sales_at).format('d.m.y')}}</span>
+            {% endif %}
+
+            <span class="book-card-full-type__description-dot"></span>
+            <span>{{book.audiobook.audio_length}}</span>
+
+            {% if historyAudiobook.items.first %}
+                <span class="book-card-full-type__description-dot"></span>
+                <a class="ui-link _violet cursor-pointer" data-modal="open-history-audiobook">История</a>
+            {% endif %}
+        </div>
+
+        <div class="book-card-full-type__link-wrapper {{buyBtn_audiobook and readBtn_audiobook ? '_double' : ''}}">
+            {% if readBtn_audiobook %}
+            <a href="/readeraudio/{{book.id}}"
+               class="ui-button ui-button-size--56 ui-button-view--2 ui-button--full">Слушать</a>
+            {% endif %}
+
+            {% if buyBtn_audiobook %}
+            {% if not book.audiobook.isBought %}
+
+            {% if user %}
+                <a href="javascript:;"
+                   data-request="Order::onCreateOrder"
+                   data-request-flash="1"
+                   data-request-validate="1"
+                   data-request-data="edition_id: {{ book.audiobook.id }}"
+                   class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
+                    {% if book.audiobook.discount_exists %}
+                        <span>
+                            <span class="ui-text--medium">Купить {{book.audiobook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.audiobook.priceTag.initialPrice}} ₽</span></span>
+                            <span class="ui-text-body--3 ui-text--regular">Скидка {{book.audiobook.discount.amount}}%</span>
+                        </span>
+                    {% else %}
+                    <span> Купить {{book.audiobook.price}} ₽</span>
+                    {% endif %}
+                </a>
+            {% else %}
+                <a onclick="loginPopup()" class="ui-button ui-button-size--56
+                                                ui-button-view--1 ui-button--full cursor-pointer">
+                    {% if book.audiobook.discount_exists %}
+                    <span>
+                        <span class="ui-text--medium">Купить {{book.audiobook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.audiobook.priceTag.initialPrice}} ₽</span></span>
+                        <span class="ui-text-body--3 ui-text--regular">Скидка {{book.audiobook.discount.amount}}%</span>
+                    </span>
+                    {% else %}
+                    <span> Купить {{book.audiobook.price}} ₽</span>
+                    {% endif %}
+                </a>
+            {% endif %}
+
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
