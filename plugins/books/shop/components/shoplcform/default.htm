@@ -17,7 +17,10 @@
 
         <div class="ui-grid-container ui-grid-gap">
             <div class="ui-col-sm-3">
-                {% component 'productUploader' %}
+                <div id="imageUploader">
+                    <input type="file" name="product_image" id="fileUpload" accept="image/*" style="display: none;">
+                    <img id="previewImage" src="/themes/demo/assets/images/placeholder-uploader.svg" alt="" style="max-width: 250px; max-height: 250px;">
+                </div>
 
                 <div class="lc-shop__add-block">
                     <div class="ui-prompt">
@@ -84,9 +87,23 @@
 {% put scripts %}
 <script>
     $(function () {
-        $('[data-control="fileupload"]').on('uploadSuccess', function () {
-            $('input[name=upload_image]').val(1);
+        $('#previewImage').on('click', function () {
+            $('#fileUpload').click();
         });
+
+        $('#fileUpload').on('change', function () {
+            const file = this.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function (event) {
+                    $('#previewImage').attr('src', event.target.result);
+                };
+
+                reader.readAsDataURL(file);
+            }
+        })
     });
 </script>
 {% endput %}

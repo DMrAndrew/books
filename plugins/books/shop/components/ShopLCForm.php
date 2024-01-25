@@ -7,15 +7,16 @@ namespace Books\Shop\Components;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
-use Books\FileUploader\Components\ImageUploader;
 use Books\Shop\Models\Category;
 use Books\Shop\Models\Product;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
 use October\Rain\Exception\ApplicationException;
+use October\Rain\Support\Facades\Input;
 use RainLab\User\Facades\Auth;
 use Redirect;
+use System\Models\File;
 use ValidationException;
 use Validator;
 
@@ -47,21 +48,6 @@ class ShopLCForm extends ComponentBase
 
         $this->registerBreadcrumbs();
         $this->prepareVars();
-
-        /** @var ImageUploader $component */
-        $component = $this->addComponent(
-            ImageUploader::class,
-            'productUploader',
-            [
-                'deferredBinding' => true,
-                'imageWidth' => 250,
-                'imageHeight' => 250,
-                'fileTypes' => '.gif,.jpg,.jpeg,.png',
-                'maxSize' => 4,
-            ]
-        );
-
-        $component->bindModel('product_image', new Product());
     }
 
     /**
@@ -75,13 +61,11 @@ class ShopLCForm extends ComponentBase
             }
 
             $product = new Product();
-            $data = post();
+            $data = Input::all();
 
             $validator = Validator::make(
                 $data,
-                $product->rules + [
-                    'upload_image' => 'required|accepted',
-                ],
+                $product->rules,
                 $product->customMessages,
                 $product->attributeNames
             );
@@ -90,9 +74,20 @@ class ShopLCForm extends ComponentBase
                 throw new ValidationException($validator);
             }
 
+            if (!Input::hasFile('product_image')) {
+                throw new ApplicationException($product->customMessages['product_image.required']);
+            }
+
+            $file = new File;
+            $file->data = Input::file('product_image');
+            $file->is_public = true;
+            $file->save();
+
+            $product->product_image()->add($file);
+
             $product->fill($validator->valid());
             $product->seller()->associate(Auth::getUser()->profile);
-            $product->save(null, post('_session_key'));
+            $product->save();
 
             Flash::success('Товар успешно создан');
 

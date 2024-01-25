@@ -44,6 +44,7 @@ class Product extends Model
         'price' => 'required|integer',
         'quantity' => 'required|integer',
         'category_id' => 'required|exists:books_shop_categories,id',
+        'product_image' => 'required|image|extensions:gif,jpg,jpeg,png|max:4096|dimensions:max_width=250,max_height=250',
     ];
 
     /**
@@ -55,7 +56,7 @@ class Product extends Model
         'price.required' => 'Укажите цену товара',
         'quantity.required' => 'Укажите категорию товара',
         'category_id.required' => 'Укажите категорию товара',
-        'upload_image.accepted' => 'Добавьте изображение товара',
+        'product_image.required' => 'Добавьте изображение товара',
     ];
 
     /**
@@ -67,6 +68,7 @@ class Product extends Model
         'price' => 'Цена',
         'quantity' => 'Количество',
         'category_id' => 'Категория',
+        'product_image' => 'Изображение',
     ];
 
     /**
