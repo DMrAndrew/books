@@ -117,11 +117,6 @@ class BookPage extends ComponentBase
         $this->setSEO();
     }
 
-//    public function onRun()
-//    {
-//        return $this->controller->run('404');
-//    }
-
     public function onRender()
     {
         foreach ($this->vals() as $key => $val) {

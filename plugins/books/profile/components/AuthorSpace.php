@@ -13,6 +13,7 @@ use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
+use Request;
 
 /**
  * AuthorSpace Component
@@ -63,6 +64,8 @@ class AuthorSpace extends ComponentBase
         $awards = $this->addComponent(AwardsLC::class, 'awardsLC');
         $awards->bindProfile($this->profile);
         $this->addComponent(SaleTagBlock::class, 'SaleTagBlock');
+
+        $this->setSEO();
     }
 
     public function onRender()
@@ -203,5 +206,20 @@ class AuthorSpace extends ComponentBase
     public function videoBlogPostsCurrentPage(): int
     {
         return (int)(post('videoblog-page') ?? $this->videoBlogPostsCurrentPage);
+    }
+
+    private function setSEO(): void
+    {
+        $this->page->og_type = 'profile';
+        $this->page->meta_canonical = Request::url();
+
+        $this->page->meta_title = sprintf(
+            '%s - скачать в fb2, epub, txt, pdf или читать онлайн бесплатно',
+            $this->profile->username
+        );
+        $this->page->meta_description = sprintf(
+            'Карточка автора %s - все произведения доступные в нашей электронной библиотеке',
+            $this->profile->username
+        );
     }
 }
