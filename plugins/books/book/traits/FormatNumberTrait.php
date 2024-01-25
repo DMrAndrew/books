@@ -5,12 +5,16 @@ namespace Books\Book\Traits;
 trait FormatNumberTrait
 {
     /**
-     * @param $number
+     * @param mixed $number
      *
      * @return string
      */
-    private function formatNumber($number): string
+    private function formatNumber(mixed $number): string
     {
-        return number_format($number, 2, '.', ' ');
+        if (null === $number) {
+            return '';
+        }
+
+        return number_format(floatval($number), 2, '.', ' ');
     }
 }

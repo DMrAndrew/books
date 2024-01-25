@@ -5,6 +5,7 @@
  * и включено расширение mbstring (Multibyte String Functions)
  */
 
+use Books\Book\Classes\Services\AudioFileLengthHelper;
 use Books\Book\Models\Book;
 use Books\User\Classes\CookieEnum;
 use Books\User\Classes\UserService;
@@ -104,11 +105,9 @@ function getFreqString(int $count, int $days): string
     if (!$count) {
         return '';
     }
-    $text = "%s %s за %s";
-    $forHumans = CarbonInterval::days($days)->cascade()
-        ->forHumans(['parts' => 2]);
+    $forHumans = CarbonInterval::days($days)->cascade()->forHumans(['parts' => 2]);
 
-    return sprintf($text,
+    return sprintf("%s %s за %s",
         $count,
         word_form(['раз', 'раза', 'раз'], $count),
         str_replace('неделя', 'неделю', $forHumans)
@@ -151,7 +150,58 @@ function restrictProhibited(Book $book): bool
  */
 function formatMoneyAmount(mixed $number): string
 {
-    return number_format((int)$number, 2, '.', ' ');
+    if (null === $number) {
+        return '';
+    }
+
+    return number_format(floatval($number), 2, '.', ' ');
+}
+
+/**
+ * @param mixed $bytes
+ *
+ * @return string|null
+ */
+function humanFileSize(mixed $bytes): ?string
+{
+    if (!$bytes) {
+        return null;
+    }
+
+    $dec = 2;
+    $size   = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+    $factor = floor((strlen($bytes) - 1) / 3);
+    if ($factor == 0) $dec = 0;
+
+    return sprintf("%.{$dec}f %s", $bytes / (1024 ** $factor), $size[$factor]);
+}
+
+/**
+ * @param mixed $seconds
+ *
+ * @return string|null
+ */
+function humanTime(mixed $seconds): ?string
+{
+    if (!$seconds) {
+        return null;
+    }
+
+    return AudioFileLengthHelper::formatSecondsToHumanReadableTime($seconds);
+}
+
+/**
+ * @param mixed $seconds
+ *
+ * @return string|null
+ */
+function humanTimeShort(mixed $seconds): ?string
+{
+    if (!$seconds) {
+        return null;
+    }
+
+    return AudioFileLengthHelper::formatSecondsToHumanReadableTimeShort($seconds);
 }
 
 function translit($value)

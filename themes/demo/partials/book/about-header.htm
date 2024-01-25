@@ -1,4 +1,4 @@
-<div id="about-header" class="about-book__header ui-container-fluid">
+<div class="about-book__header ui-container-fluid">
     <div class="listing-book__book book-card">
         <div class="book-card__body">
             <div class="book-card__column-left">
@@ -28,26 +28,81 @@
                 <div class="book-card__genres tags-list">
                     {% partial 'controls/tags-link-list' tags=book.tags %}
                 </div>
-                {% partial 'site/book-status' status=book.ebook.status %}
 
-                {% if book.ebook.is_deferred %}
-                <div class="chapter-book__info-container">
-                    <div class="chapter-book__status">
-
-                        <svg class="square-16 attention">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
-                        </svg>
-
-                        <span>Отложенное редактирование&nbsp;</span>
-                        <span class="ui-tooltip square-16"
-                              data-tooltip="Редактирование глав только через подтверждение от администратора">
-                              <svg class="square-16">
-                            <use
-                                xlink:href="{{'assets/icon-sprite/svg-sprite.svg#questions-stroked-circle-16' | theme}}"></use>
-                        </svg>
-                        </span>
+                {% if book.ebook %}
+                    <div class="chapter-book__info-container">
+                        <div class="book-card__info-wrapper">
+                            {% partial 'book/edition-info' edition=book.ebook %}
+                            {% partial 'site/book-status' edition=book.ebook %}
+                            {% if book.ebook.sales_at %}
+                            <div class="book-card__info-dot"></div>
+                            <div class="book-card__info-wrap _text">{{ carbon(book.ebook.sales_at).format('d.m.y') }}</div>
+                            {% endif %}
+                            <div class="book-card__info-dot"></div>
+                            {% if book.ebook.length %}
+                            <div class="book-card__info-wrap _text">{{book.ebook.length}}&thinsp;зн.</div>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
+
+                    {% if book.ebook.is_deferred %}
+                    <div class="chapter-book__info-container" id="ebook_is_deferred">
+                        <div class="chapter-book__status">
+
+                            <svg class="square-16 attention">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
+                            </svg>
+
+                            <span>Редактирование глав электронного издания только через подтверждение от администратора&nbsp;</span>
+                            <span class="ui-tooltip square-16"
+                                  data-tooltip="Правки вступят в силу после того, как модератор проверит и примет их">
+                                <svg class="square-16">
+                                    <use
+                                        xlink:href="{{'assets/icon-sprite/svg-sprite.svg#questions-stroked-circle-16' | theme}}">
+                                    </use>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endif %}
+
+                {% if book.audiobook %}
+                    <div class="chapter-book__info-container">
+                        <div class="book-card__info-wrapper">
+                            {% partial 'book/edition-info' edition=book.audiobook %}
+                            {% partial 'site/book-status' edition=book.audiobook %}
+                            {% if book.audiobook.sales_at %}
+                            <div class="book-card__info-dot"></div>
+                            <div class="book-card__info-wrap _text">{{ carbon(book.audiobook.sales_at).format('d.m.y') }}</div>
+                            {% endif %}
+                            <div class="book-card__info-dot"></div>
+                            {% if book.audiobook.length %}
+                            <div class="book-card__info-wrap _text">{{ book.audiobook.audio_length }}&thinsp;</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if book.audiobook.is_deferred %}
+                        <div class="chapter-book__info-container" id="audiobook_is_deferred">
+
+
+                            <div class="chapter-book__status">
+
+                                <svg class="square-16 attention">
+                                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#info-stroked-24' | theme}}"></use>
+                                </svg>
+
+                                <span>Редактирование глав аудиокниги только через подтверждение от администратора&nbsp;</span>
+                                <span class="ui-tooltip square-16"
+                                      data-tooltip="Правки вступят в силу после того, как модератор проверит и примет их">
+                                      <svg class="square-16">
+                                        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#questions-stroked-circle-16' | theme}}"></use>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

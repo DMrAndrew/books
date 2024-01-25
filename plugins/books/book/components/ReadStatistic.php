@@ -2,6 +2,7 @@
 
 namespace Books\Book\Components;
 
+use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\StatisticService;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
@@ -64,7 +65,10 @@ class ReadStatistic extends ComponentBase
             $this->service->setClass(Chapter::class);
         }
         $this->user = Auth::getUser();
-        $this->book = $this->user->profile->books()->find($this->param('book_id') ?? post('book_id'));
+        $this->book = $this->user->profile
+            ->books()
+            ->editionTypeIn(EditionsEnums::Ebook)
+            ->find($this->param('book_id') ?? post('book_id'));
     }
 
     public function onRender()
@@ -89,7 +93,9 @@ class ReadStatistic extends ComponentBase
 
         $this->page['from'] = $this->from->format('d.m.Y');
         $this->page['to'] = $this->to->format('d.m.Y');
-        $this->page['books'] = $this->user->profile->books()->get();
+        $this->page['books'] = $this->user->profile->books()
+            ->editionTypeIn(EditionsEnums::Ebook)
+            ->get();
         $this->page['current_book'] = $this->book;
         $this->page['statistic'] = $this->service->get(...$item);
     }

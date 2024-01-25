@@ -7,12 +7,14 @@
             <div class="ui-select-container">
                 <div class="ui-select-item _size-32">
 
-                    <select class="book-select" id="book_id" name="book_id" style="display: none"
+                    <select class="book-select" id="edition_id" name="edition_id" style="display: none"
                             data-request="onGetBookPromocodes"
                         >
                         <option value="">Выберите произведение</option>
-                        {% for book in books %}
-                        <option  value="{{book.id}}" {{bookItem.id == book.id ? 'selected' : ''}}>{{book.title}}</option>
+                        {% for edition in editions %}
+                        <option  value="{{edition.id}}" {{editionItem.id == edition.id ? 'selected' : ''}}>
+                        {{edition.title}}
+                        </option>
                         {% endfor %}
 
                     </select>

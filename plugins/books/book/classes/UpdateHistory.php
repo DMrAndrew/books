@@ -2,20 +2,22 @@
 
 namespace Books\Book\Classes;
 
+use Books\Book\Classes\Enums\EditionsEnums;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use October\Rain\Database\Collection;
-use  Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Collection as BaseCollection;
 
 class UpdateHistory
 {
-    const CHUNK_LENGTH = 4999;
+    const HISTORY_UPDATE_VALUEABLE_SIZE_EBOOK = 4999; // ebook кол-во символов
+    const HISTORY_UPDATE_VALUEABLE_SIZE_AUDIO = 3 * 60; // audiobook кол-во секунд
 
     protected BaseCollection $chunks;
 
-    public function __construct(public Collection $collection)
+    public function __construct(public Collection $collection, EditionsEnums $editionType = EditionsEnums::Ebook)
     {
-        $this->chunks = $this->makeChunks();
+        $this->chunks = $this->makeChunks($editionType);
     }
 
     /**
@@ -34,11 +36,21 @@ class UpdateHistory
         return $this->chunks;
     }
 
-    public function makeChunks(): BaseCollection
+    /**
+     * @param EditionsEnums $editionType
+     *
+     * @return BaseCollection
+     */
+    public function makeChunks(EditionsEnums $editionType): BaseCollection
     {
+        $chunkSize = match ($editionType) {
+            EditionsEnums::Ebook => self::HISTORY_UPDATE_VALUEABLE_SIZE_EBOOK,
+            EditionsEnums::Audio => self::HISTORY_UPDATE_VALUEABLE_SIZE_AUDIO,
+        };
+
         return $this->collection
-            ->chunkWhile(fn($value, $key, $chunk) => (int)$chunk->sum('odds') <= self::CHUNK_LENGTH)
-            ->filter(fn($i) => $i->sum('odds') >= self::CHUNK_LENGTH)
+            ->chunkWhile(fn($value, $key, $chunk) => (int)$chunk->sum('odds') <= $chunkSize)
+            ->filter(fn($i) => $i->sum('odds') >= $chunkSize)
             ->map(fn($collection) => new UpdateHistoryItem(...[
                 $collection->last()->created_at,
                 (int)$collection->sum('odds'),
@@ -54,7 +66,6 @@ class UpdateHistory
 
 class UpdateHistoryView
 {
-
     public int|float $freq;
     public string $freq_string;
     public BaseCollection $items;

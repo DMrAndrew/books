@@ -19,7 +19,7 @@ enum EditionsEnums: int
     {
         return match ($this) {
             self::Ebook => 'Электронная книга',
-            self::Audio => 'Аудиокниги',
+            self::Audio => 'Аудиокнига',
             self::Physic => 'Бумажная книга',
             self::Comics => 'Комикс',
         };

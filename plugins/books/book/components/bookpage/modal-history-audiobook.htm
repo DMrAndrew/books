@@ -1,0 +1,45 @@
+{% if book.audiobook %}
+<div class="ui-modal personal-area-discount-modal overlay" data-modal="history-audiobook">
+    <div class="ui-modal-container book-card-history-modal__container">
+        <div class="ui-modal-content book-card-history-modal">
+            <div class="ui-modal-header book-card-history-modal__header">
+                <div class="square-16 "></div>
+                <div class="ui-text-head--2 ui-text--bold">История обновлений аудиокниги</div>
+                <svg class="square-24" data-modal="close">
+                    <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme}}"></use>
+                </svg>
+            </div>
+            <div class="book-card-history-modal__body">
+                <div class="book-card-history-modal__data">
+                    <dl class="book-card-history-modal__data-list">
+                        <dt class="book-card-history-modal__data-title">Частота обновлений:</dt>
+                        <dd>{{historyAudiobook.freq_string}}</dd>
+                    </dl>
+                    <dl class="book-card-history-modal__data-list">
+                        <dt class="book-card-history-modal__data-title">Начало публикации:</dt>
+                        <dd>{{ historyAudiobook.items.last.date.format('d.m.y') }}</dd>
+                    </dl>
+                </div>
+                <div class="book-card-history-modal__table-container">
+                    <table class="book-card-history-modal__table">
+                        <thead>
+                        <td>Дата</td>
+                        <td>Добавлено времени</td>
+                        <td>Общая длительность</td>
+                        </thead>
+                        <tbody>
+                        {% for item in historyAudiobook.items %}
+                        <tr>
+                            <td>{{ item.date.format('d.m.y') }}</td>
+                            <td>{{ humanTimeShort(item.value) }}</td>
+                            <td>{{ humanTime(item.new_value) }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
