@@ -1,7 +1,12 @@
-<?php namespace Books\Shop\Models;
+<?php
+
+declare(strict_types=1);
+
+namespace Books\Shop\Models;
 
 use Model;
 use October\Rain\Database\Traits\SimpleTree;
+use October\Rain\Database\Traits\Validation;
 
 /**
  * Category Model
@@ -10,9 +15,7 @@ use October\Rain\Database\Traits\SimpleTree;
  */
 class Category extends Model
 {
-    use \October\Rain\Database\Traits\Validation, SimpleTree;
-
-    const PARENT_ID = 'parent_id';
+    use SimpleTree, Validation;
 
     /**
      * @var string table name
@@ -23,6 +26,17 @@ class Category extends Model
      * @var array rules for validation
      */
     public $rules = [
+        'title' => 'required',
+    ];
 
+    /**
+     * @var \string[][]
+     */
+    public $hasMany = [
+        'products' => [
+            Product::class,
+            'key' => 'id',
+            'otherKey' => 'category_id',
+        ],
     ];
 }

@@ -1,8 +1,12 @@
-<?php namespace Books\Shop\Models;
+<?php
+
+declare(strict_types=1);
+
+namespace Books\Shop\Models;
 
 use Books\Profile\Models\Profile;
 use Model;
-use RainLab\User\Models\User;
+use October\Rain\Database\Traits\Validation;
 use System\Models\File;
 
 /**
@@ -12,13 +16,16 @@ use System\Models\File;
  */
 class Product extends Model
 {
-    use \October\Rain\Database\Traits\Validation;
+    use Validation;
 
     /**
      * @var string table name
      */
     public $table = 'books_shop_products';
 
+    /**
+     * @var string[]
+     */
     public $fillable = [
         'title',
         'description',
@@ -32,37 +39,47 @@ class Product extends Model
      * @var array rules for validation
      */
     public $rules = [
-//        'uploader.product_image' => 'required',
         'title' => 'required|string|min:3',
         'description' => 'required|string|min:10',
         'price' => 'required|integer',
         'quantity' => 'required|integer',
-        'category_id' => 'required',
+        'category_id' => 'required|exists:books_shop_categories,id',
     ];
 
-    public $customMessages = [
+    /**
+     * @var array|string[]
+     */
+    public array $customMessages = [
         'title.required' => 'Название товара обязательно для заполнения',
         'description.required' => 'Описание товара обязательно для заполнения',
         'price.required' => 'Укажите цену товара',
         'quantity.required' => 'Укажите категорию товара',
         'category_id.required' => 'Укажите категорию товара',
-        'uploader.product_image' => 'Добавьте изображение товара',
+        'upload_image.accepted' => 'Добавьте изображение товара',
     ];
 
-    public $attributeNames = [
+    /**
+     * @var array|string[]
+     */
+    public array $attributeNames = [
         'title' => 'Название товара',
         'description' => 'Описание товара',
         'price' => 'Цена',
         'quantity' => 'Количество',
         'category_id' => 'Категория',
-        'uploader.product_image' => 'Изображение',
     ];
 
+    /**
+     * @var \string[][]
+     */
     public $belongsTo = [
         'seller' => [Profile::class, 'key' => 'seller_id', 'otherKey' => 'id'],
         'category' => [Category::class, 'key' => 'category_id', 'otherKey' => 'id'],
     ];
 
+    /**
+     * @var array[]
+     */
     public $attachOne = [
         'product_image' => [File::class],
     ];
