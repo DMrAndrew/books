@@ -14,14 +14,14 @@
 
                         <div class="ui-select-container">
                             <div class="ui-select-item _size-32">
-                                <select class="book-select" name="book_id" style="display: none">
+                                <select class="book-select" name="edition_id" style="display: none">
                                     <option
-                                        {{ not current_book ? 'selected' : ''  }}
+                                        {{ not current_edition ? 'selected' : ''  }}
                                     value="">Все произведения</option>
-                                    {% for book in books %}
-                                    <option  value="{{book.id}}"
-                                             {{ current_book.id == book.id ? 'selected' : ''  }}
-                                    >{{book.title}}</option>
+                                    {% for edition in editions %}
+                                    <option value="{{edition.id}}"
+                                             {{ current_edition.id == edition.id ? 'selected' : ''  }}
+                                    >{{edition.title}}</option>
                                     {% endfor %}
 
                                 </select>

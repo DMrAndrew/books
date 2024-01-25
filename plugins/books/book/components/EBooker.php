@@ -5,7 +5,9 @@ namespace Books\Book\Components;
 use App\classes\PartialSpawns;
 use ApplicationException;
 use Books\Book\Classes\EditionService;
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ContentTypeEnum;
+use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Content;
 use Books\Book\Models\Edition;
@@ -59,7 +61,11 @@ class EBooker extends ComponentBase
             ->books()
             ->with(['ebook.chapters' => fn($chapters) => $chapters->with(['deferred' => fn($d) => $d->deferred()])])
             ->find($this->property('book_id'))?->ebook
-            ?? throw new ApplicationException('Электронное издание книги не найдено.');
+            ?? new Edition([
+                'type' => EditionsEnums::Ebook,
+                'status' => BookStatus::HIDDEN,
+                'book_id' => $this->property('book_id'),
+            ]);
         $this->page['mass_request'] = $this->ebook->chapters->some(fn(Chapter $chapter) => $chapter->deferred?->some(fn(Content $d) => $d->infoHelper()->requestAllowed()));
     }
 
@@ -147,10 +153,13 @@ class EBooker extends ComponentBase
             Flash::error('Проверьте наличие опубликованных глав и контента в них или повторите попытку позже.');
             return [];
         }
+
         try {
             $this->service->update(post());
             $this->vals();
             $this->setAllowedStatuses();
+
+            Flash::success('Сохранение прошло успешно');
 
             return [
                 '#about-header' => $this->renderPartial('book/about-header'),

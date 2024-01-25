@@ -65,8 +65,10 @@ use WordForm;
  * @property  Profile profile
  *
  * @method HasOne ebook
+ * @method HasOne audiobook
  *
  * @property  Edition ebook
+ * @property  Edition audiobook
  *
  * @method AttachOne cover
  *
@@ -161,6 +163,7 @@ class Book extends Model
     public $hasOne = [
         'author' => [Author::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'owner'],
         'ebook' => [Edition::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'ebook'],
+        'audiobook' => [Edition::class, 'key' => 'book_id', 'otherKey' => 'id', 'scope' => 'audio'],
         'stats' => [Stats::class, 'key' => 'book_id', 'otherKey' => 'id'],
         'advert' => [Advert::class, 'key' => 'book_id', 'otherKey' => 'id'],
     ];
@@ -254,9 +257,9 @@ class Book extends Model
     public static function findForPublic(int $book_id, User $user = null)
     {
         return Book::query()->public()->find($book_id) // открыта в публичной зоне
-            ?? $user?->profile->books()->find($book_id) // пользователь автор книги
+            ?? $user?->profile->books()->whereHas('editions')->find($book_id) // пользователь автор книги
             ?? ($user ? Book::query()
-                ->whereHas('ebook', fn ($ebook) => $ebook->whereHas('customers', fn ($customers) => $customers->where('user_id', $user->id)))
+                ->whereHas('editions', fn ($edition) => $edition->whereHas('customers', fn ($customers) => $customers->where('user_id', $user->id)))
                 ->find($book_id)
                 : null); // пользователь купил книгу
     }
@@ -446,9 +449,9 @@ class Book extends Model
         return $builder->whereHas('editions', fn ($e) => $e->status(BookStatus::COMPLETE));
     }
 
-    public function scopeEditionTypeIn(Builder $builder, BookStatus ...$status): Builder|\Illuminate\Database\Eloquent\Builder
+    public function scopeEditionTypeIn(Builder $builder, EditionsEnums ...$type): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('editions', fn ($query) => $query->type($status));
+        return $builder->whereHas('editions', fn ($query) => $query->whereIn('type', $type));
     }
 
     public function scopeDiffWithUnloved(Builder $builder, User $user = null)
@@ -541,18 +544,22 @@ class Book extends Model
     public function scopeDefaultEager(Builder $q): Builder
     {
         return $q->with([
-            'cover',
-            'tags',
-            'genres' => fn ($q) => $q->withPivot(['rate_number']),
-            'stats',
-            'ebook' => fn ($ebook) => $ebook->withActiveDiscountExist(),
-            'ebook.discount',
-            'ebook.promocodes',
-            'author.profile',
-            'authors.profile',
-        ])
+                'cover',
+                'tags',
+                'genres' => fn ($q) => $q->withPivot(['rate_number']),
+                'stats',
+                'ebook' => fn ($ebook) => $ebook->withActiveDiscountExist(),
+                'ebook.discount',
+                'ebook.promocodes',
+                'audiobook' => fn ($audiobook) => $audiobook->withActiveDiscountExist(),
+                'audiobook.discount',
+                'audiobook.promocodes',
+                'author.profile',
+                'authors.profile',
+            ])
             ->inLibExists()
-            ->likeExists();
+            ->likeExists()
+            ->distinct($this->qualifyColumn('id'));
     }
 
     public function scopeAllowedForDiscount(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
@@ -567,7 +574,7 @@ class Book extends Model
 
     public function scopeWithChapters(Builder $builder): Builder
     {
-        return $builder->with(['ebook.chapters' => fn ($i) => $i->public()]);
+        return $builder->with(['ebook.chapters' => fn ($i) => $i->public()->withLength()]);
     }
 
     public function scopeAfterPublishedAtDate(Builder $builder, Carbon|int $date): Builder
@@ -628,7 +635,7 @@ class Book extends Model
     protected function afterCreate(): void
     {
         $this->setDefaultCover();
-        $this->setDefaultEdition();
+        // $this->setDefaultEdition();
         $this->stats()->add(new Stats());
         $this->advert()->create();
     }
@@ -697,6 +704,14 @@ class Book extends Model
         }
     }
 
+    /**
+     * @deprecated
+     *
+     * Убрали автоматическое создание Электронного издания при создании книги
+     *  после добавления функционала аудиокниг - 16.01.2024
+     *
+     * @return void
+     */
     protected function setDefaultEdition(): void
     {
         if (! $this->ebook()->exists()) {

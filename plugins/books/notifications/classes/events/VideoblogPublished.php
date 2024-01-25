@@ -2,13 +2,12 @@
 
 namespace Books\Notifications\Classes\Events;
 
-use Books\Notifications\Classes\Events\BaseEvent;
 use Books\Notifications\Classes\NotificationTypeEnum;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
+use RainLab\Notify\Classes\EventBase;
 
-class VideoblogPublished extends BaseEvent
+class VideoblogPublished extends EventBase
 {
     public string $eventName = 'Новая публикация в видеоблоге';
 
@@ -36,6 +35,8 @@ class VideoblogPublished extends BaseEvent
     {
         $profile = Arr::get($args, 0);
         $post = Arr::get($args, 1);
+
+        //dd($profile, $post);
 
         return array_merge(
             static::defaultParams(),

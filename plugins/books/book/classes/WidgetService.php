@@ -410,7 +410,10 @@ class WidgetService
     public function cycle()
     {
         $ids = $this->book->cycle?->books()->public()->pluck('id')->toArray();
-        return $this->query()->whereIn((new Book())->getQualifiedKeyName(), $ids);
+
+        return $this->query()
+            ->whereIn((new Book())->getQualifiedKeyName(), $ids)
+            ->distinct((new Book)->getQualifiedKeyName());
     }
 
     public function emptyBuilder()

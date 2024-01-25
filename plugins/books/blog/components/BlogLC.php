@@ -7,14 +7,20 @@ use Books\Book\Classes\Services\TextCleanerService;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
+use Books\Notifications\Classes\Events\PostPublished;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
+use Illuminate\Contracts\Bus\Dispatcher as Bus;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Notifications\NotificationSender;
+use Illuminate\Support\Arr;
 use October\Rain\Support\Facades\Event;
+use RainLab\Notify\Classes\Notifier;
 use RainLab\User\Facades\Auth;
 use Redirect;
 use ValidationException;
@@ -153,7 +159,7 @@ class BlogLC extends ComponentBase
             PostService::replaceBase64ImagesWithFiles($post);
 
             if ($post->wasRecentlyCreated) {
-                Event::fire('books.blog::post.published', [$this->profile, $post]);
+                Event::dispatch('books.blog::post.published', [$this->profile, $post]);
             }
 
             /**

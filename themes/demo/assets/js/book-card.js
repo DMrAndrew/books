@@ -37,13 +37,17 @@ function closeAllTextareBlocks (query) {
 	}
 }
 
+let promocodeSubmitLstnr;
 addEventListener('render', function() {
+
+	// new updated dom dropdowns
+	openDropdown();
+
 	//donation
 	if (typeof updateDonateTimeout === 'undefined' || updateDonateTimeout == null) {
 		var updateDonateTimeout;
 	}
 	$('body').on('keyup', '#donate', function (e) {
-		console.log('keyup');
 		e.preventDefault();
 		this.value = this.value.replace(/[^\d.]/g, '');
 
@@ -55,9 +59,12 @@ addEventListener('render', function() {
 	});
 
 	// promocode
-	$('body').on('click', '#promocodeSubmit', function (e) {
-		e.preventDefault();
-		this.value = this.value.replace(/[^\d.]/g, '');
-		oc.request('#orderForm', 'onOrderAddPromocode', {})
-	});
+	if (typeof promocodeSubmitLstnr === 'undefined' || promocodeSubmitLstnr == null) {
+		promocodeSubmitLstnr = $('body').on('click', '#promocodeSubmit', function (e) {
+			e.preventDefault();
+
+			this.value = this.value.replace(/[^\d.]/g, '');
+			oc.request('#orderForm', 'onOrderAddPromocode', {})
+		});
+	}
 });

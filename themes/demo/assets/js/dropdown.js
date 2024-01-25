@@ -1,16 +1,13 @@
 function openDropdown() {
-  const buttons = document.querySelectorAll('[data-dropdown="button"]');
-
-  buttons.forEach(item => {
-    item.addEventListener('click', e => {
+  $('body').on('click', '*', function (e) {
+    if ($(e.target).attr('data-dropdown') && $(e.target).attr('data-dropdown') === "button") {
       e.preventDefault();
-
-      let t = e.currentTarget;
-
-      item.classList.toggle('dropdown-menu__button');
-    })
-  })
+      e.stopPropagation();
+      e.target.classList.toggle('dropdown-menu__button');
+    }
+  });
 }
+
 
 //dropdowns
 window.dropdownsInit = function () {

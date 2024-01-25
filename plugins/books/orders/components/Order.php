@@ -21,7 +21,8 @@ use RainLab\User\Models\User;
  */
 class Order extends ComponentBase
 {
-    protected ?Book $book;
+    protected ?Book $book = null;
+    protected ?Edition $edition = null;
     private OrderService $orderService;
 
     public function componentDetails()
@@ -67,13 +68,16 @@ class Order extends ComponentBase
 
     public function onCreateOrder(): array
     {
+        $edition = Edition::findOrFail(post('edition_id'));
+
         try {
-            $order = $this->getOrder($this->getUser(), $this->book);
+            $order = $this->getOrder($this->getUser(), $edition);
 
             return [
                 '#order_form' => $this->renderPartial('@order_create', [
                     'order' => $order,
-                    'book' => $this->book,
+                    'book' => $this->book ?? $edition->book,
+                    'edition' => $edition,
                     'availableAwards' => $this->getAvailableAwards(),
                 ]),
                 '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
@@ -89,13 +93,16 @@ class Order extends ComponentBase
 
     public function onOrderSubmit(): array
     {
+        $edition = Edition::findOrFail(post('edition_id'));
+
         try {
-            $order = $this->getOrder($this->getUser(), $this->book);
+            $order = $this->getOrder($this->getUser(), $edition);
 
             return [
                 '#order_form' => $this->renderPartial('@order_submit', [
                     'order' => $order,
                     'book' => $this->book,
+                    'edition' => $edition,
                     'availableAwards' => $this->getAvailableAwards(),
                 ]),
                 '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
@@ -116,15 +123,17 @@ class Order extends ComponentBase
             return [];
         }
 
-        $order = $this->getOrder($this->getUser(), $this->book);
+        $edition = Edition::findOrFail(post('edition_id'));
+
+        $order = $this->getOrder($this->getUser(), $edition);
 
         /**
          * Check already own
          */
         $alreadyOwnBook = UserBook::query()
             ->user($this->getUser())
-            ->whereHasMorph('ownable', [Edition::class], function ($q) {
-                $q->where('id', $this->book->id);
+            ->whereHasMorph('ownable', [Edition::class], function ($q) use ($edition){
+                $q->where('id', $edition->id);
             })
             ->exists();
 
@@ -142,7 +151,7 @@ class Order extends ComponentBase
         if ($this->orderService->calculateAmount($order) === 0) {
             $this->orderService->approveOrder($order);
 
-            return Redirect::to($this->currentPageUrl());
+            return Redirect::to($this->orderService->getOrderSuccessRedirectPage($order));
         }
 
         /**
@@ -159,7 +168,7 @@ class Order extends ComponentBase
             try {
                 $this->orderService->payFromDeposit($order);
 
-                return Redirect::to($this->currentPageUrl());
+                return Redirect::to($this->orderService->getOrderSuccessRedirectPage($order));
 
             } catch (Exception $e) {
                 Log::error($e->getMessage());
@@ -176,7 +185,8 @@ class Order extends ComponentBase
 
     public function onOrderAddAward(): array
     {
-        $order = $this->getOrder($this->getUser(), $this->book);
+        $edition = Edition::findOrFail(post('edition_id'));
+        $order = $this->getOrder($this->getUser(), $edition);
         $awards = Award::find($this->getAwardsIds());
 
         $this->orderService->applyAwards($order, $awards, $this->book);
@@ -185,6 +195,7 @@ class Order extends ComponentBase
             '#order_form' => $this->renderPartial('@order_create', [
                 'order' => $order,
                 'book' => $this->book,
+                'edition' => $edition,
                 'availableAwards' => $this->getAvailableAwards(),
             ]),
             '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
@@ -193,13 +204,15 @@ class Order extends ComponentBase
 
     public function onOrderAddDonation(): array
     {
-        $order = $this->getOrder($this->getUser(), $this->book);
+        $edition = Edition::findOrFail(post('edition_id'));
+        $order = $this->getOrder($this->getUser(), $edition);
         $this->orderService->applyAuthorSupport($order, (int)post('donate'));
 
         return [
             '#order_form' => $this->renderPartial('@order_create', [
                 'order' => $order,
                 'book' => $this->book,
+                'edition' => $edition,
                 'availableAwards' => $this->getAvailableAwards(),
             ]),
             '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
@@ -208,7 +221,8 @@ class Order extends ComponentBase
 
     public function onOrderAddPromocode(): array
     {
-        $order = $this->getOrder($this->getUser(), $this->book);
+        $edition = Edition::findOrFail(post('edition_id'));
+        $order = $this->getOrder($this->getUser(), $edition);
         $promocodeIsApplied = $this->orderService->applyPromocode($order, (string)post('promocode'));
 
         if (!$promocodeIsApplied) {
@@ -221,6 +235,7 @@ class Order extends ComponentBase
             '#order_form' => $this->renderPartial('@order_create', [
                 'order' => $order,
                 'book' => $this->book,
+                'edition' => $edition,
                 'availableAwards' => $this->getAvailableAwards(),
             ]),
             '#orderTotalAmountSpawn' => $this->orderService->calculateAmount($order) . ' ₽',
@@ -237,7 +252,7 @@ class Order extends ComponentBase
         return Award::all()->toArray();
     }
 
-    private function getOrder(User $user, Book $book): OrderModel
+    private function getOrder(User $user, Edition $edition): OrderModel
     {
         /**
          * Если редактируем поля
@@ -252,9 +267,9 @@ class Order extends ComponentBase
         $order = OrderModel::query()
             ->user($user)
             ->created()
-            ->whereHas('products', function ($query) use ($book) {
-                $query->whereHasMorph('orderable', [Edition::class], function ($q) use ($book) {
-                    $q->where('id', $book->ebook->id);
+            ->whereHas('products', function ($query) use ($edition) {
+                $query->whereHasMorph('orderable', [Edition::class], function ($q) use ($edition) {
+                    $q->where('id', $edition->id);
                 });
             })
             ->orderBy('id', 'desc')
@@ -265,7 +280,7 @@ class Order extends ComponentBase
          */
         if (!$order) {
             $order = $this->orderService->createOrder($user);
-            $this->orderService->addProducts($order, $book->ebook);
+            $this->orderService->addProducts($order, $edition);
         }
 
         return $order;

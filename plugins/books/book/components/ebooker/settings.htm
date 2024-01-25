@@ -74,7 +74,7 @@
     </div>
     {{ form_close() }}
     <div class="ui-grid-gap ui-grid-container">
-        <a {{book.ebook.allowed_for_discount ? 'href=/lc-discounts/'~book.id : ''}}
+        <a {{book.ebook.allowed_for_discount ? 'href=/lc-discounts/'~book.ebook.id : ''}}
         class="e-book-sale-card ui-col-sm-4 {{book.ebook.allowed_for_discount ? '':'disabled'}}"
         >
             <svg class="square-32">
@@ -88,7 +88,7 @@
             </svg>
             <span>Реклама</span>
         </a>
-        <a href="/lc-promocodes/{{book.id}}" class="e-book-sale-card ui-col-sm-4">
+        <a href="/lc-promocodes/{{book.ebook.id}}" class="e-book-sale-card ui-col-sm-4">
             <svg class="square-32">
                 <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#speaker-stroked-32' | theme}}"></use>
             </svg>
