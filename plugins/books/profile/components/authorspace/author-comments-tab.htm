@@ -1,30 +1,22 @@
 {% if can_see_comments and comments_paginator.count %}
-<div class="author-awards__container">
-    {% for comment in comments_paginator.getCollection %}
-    <div class="cb-mini-card _avatar">
-        <div class="cb-mini-card__wrapper">
-            <div class="">Написал комментарий <a class="ui-link _violet"
-                                                 href="{{comment.toCommentableLink}}">{{comment.toShortString}}</a>
+
+{% set comments = comments_paginator.getCollection %}
+
+    <div class="author-awards__container">
+        {% for comment in comments %}
+        <div class="cb-mini-card _avatar">
+            <div class="cb-mini-card__wrapper">
+                <div class="">
+                    Написал комментарий
+                    <a class="ui-link _violet" href="{{comment.toCommentableLink}}">{{comment.toShortString}}</a>
+                </div>
+                <div class="cb-mini-card__date">{{comment.addition}} {{comment.dateFormated}}</div>
+                <div class="cb-mini-card__text">{{comment.content | raw }}</div>
             </div>
-            <div class="cb-mini-card__date">{{comment.addition}} {{comment.dateFormated}}</div>
-            <div class="cb-mini-card__text">{{comment.content | raw }}</div>
         </div>
-    </div>
-    {% endfor %}
-</div>
-<nav class="comments__pagination ui-pagination">
-    <ul class="ui-pagination-list">
-        {% for link in comments_paginator.getLinks %}
-        <li>
-            <a class="ui-pagination-item cursor-pointer {{ link.active ? 'active' : '' }} "
-               data-request="{{__SELF__}}::onCommentsPage"
-               data-request-data="page:{{ link.url }}"
-               data-request-complete=" $('#author-comments')[0].scrollIntoView() "
-            >
-                {{link.label}}
-            </a>
-        </li>
         {% endfor %}
-    </ul>
-</nav>
+    </div>
+
+    {% partial 'site/ajax_paginator' paginator=comments_paginator function='onShowTabComments' customPageName='commentsPage' customTagName='#author-tab-comments' %}
+
 {% endif %}

@@ -54,9 +54,9 @@
                     <div class="ui-tabs-line"></div>
                     <div class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
                         <div class="ui-tabs-link " data-tab="1">Профиль</div>
-                        <div class="ui-tabs-link {{ books.count ? 'active' : ''}} " data-tab="2">Книги
-                            {% if books.count %}
-                            <span>{{books.count?:''}}</span>
+                        <div class="ui-tabs-link {{ books_paginator.total ? 'active' : ''}} " data-tab="2">Книги
+                            {% if books_paginator.total %}
+                            <span>{{books_paginator.total?:''}}</span>
                             {% endif %}
                         </div>
                         <!--                        <div class="ui-tabs-link " data-tab="3">Магазин<span>12</span></div>-->
@@ -75,33 +75,28 @@
                             <span>{{videoblog_posts_paginator.total?:''}}</span>
                             {% endif %}
                         </div>
-                        <div class="ui-tabs-link " data-tab="7">Подписки
-                            {% if subscriptions.count %}
-                            <span>{{subscriptions.count?:''}}</span>
+                        <div class="ui-tabs-link" data-tab="7" onclick="oc.ajax(`author_space::onShowTabSubscribtions`)">
+                            Подписки
+                            {% if subscriptions_count %}<span>{{subscriptions_count?:''}}</span>{% endif %}
+                        </div>
+                        <div class="ui-tabs-link" data-tab="8" onclick="oc.ajax(`author_space::onShowTabSubscribers`)">
+                            Подписчики
+                            {% if subscribers_count %}<span>{{subscribers_count?:''}}</span>{% endif %}
+                        </div>
+                        <div class="ui-tabs-link " data-tab="9" onclick="oc.ajax(`author_space::onShowTabAwards`)">
+                            Награды
+                            {% set awardsCount = received_awards_count + left_awards_count %}
+                            {% if awardsCount %}<span>{{awardsCount?:''}}</span>{% endif %}
+                        </div>
+                        <div class="ui-tabs-link " data-tab="10" onclick="oc.ajax(`author_space::onShowTabComments`)">
+                            Комментарии
+                            {% if can_see_comments and comments_count %}
+                            <span>{{comments_count?:''}}</span>
                             {% endif %}
                         </div>
-                        <div class="ui-tabs-link " data-tab="8">Подписчики
-                            {% set subscribers_count = collect(subscribers.authors).count +
-                            collect(subscribers.readers).count %}
-                            {% if subscribers_count %}
-                            <span>{{subscribers_count}}</span>
-                            {% endif %}
-                        </div>
-
-                        <div class="ui-tabs-link " data-tab="9">Награды
-                            {% if received_awards_count+left_awards_count %}
-                            <span>{{received_awards_count+left_awards_count?:''}}</span>
-                            {% endif %}
-                        </div>
-                        <div class="ui-tabs-link " data-tab="10">Комментарии
-                            {% if comments_paginator.total %}
-                            <span>{{comments_paginator.total?:''}}</span>
-                            {% endif %}
-                        </div>
-                        <div class="ui-tabs-link " data-tab="11">Репосты
-                            {% if reposts.count %}
-                            <span>{{reposts.count?:''}}</span>
-                            {% endif %}
+                        <div class="ui-tabs-link" data-tab="11" onclick="oc.ajax(`author_space::onShowTabReposts`)">
+                            Репосты
+                            {% if reposts_count %}<span>{{reposts_count?:''}}</span>{% endif %}
                         </div>
                     </div>
                 </div>
@@ -114,9 +109,9 @@
         <div class="ui-tabs-content" data-tab-content="1">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Профиль</div>
         </div>
-        <div class="ui-tabs-content {{ books.count ? 'active' : ''}} " data-tab-content="2">
+        <div class="ui-tabs-content {{ books_paginator.total ? 'active' : ''}} " data-tab-content="2">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Книги <span
-                class="ui-text-body--2"> {{ books.count }}</span></div>
+                class="ui-text-body--2"> {{ books_paginator.total }}</span></div>
         </div>
         <div class="author-cycles ui-tabs-content" data-tab-content="4">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Циклы <span
@@ -130,26 +125,28 @@
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Видеоблог <span
                 class="ui-text-body--2">{{videoblog_posts_paginator.total?:''}}</span></div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="7">
-            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписки <span
-                class="ui-text-body--2">{{subscriptions.count?:''}}</span></div>
+        <div class="ui-tabs-content" data-tab-content="7" onclick="oc.ajax(`author_space::onShowTabSubscribtions`)">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">
+                Подписки <span class="ui-text-body--2">{{subscriptions_count?:''}}</span>
+            </div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="8">
-            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Подписчики <span
-                class="ui-text-body--2">{{subscribers_count}}</span></div>
+        <div class="ui-tabs-content" data-tab-content="8" onclick="oc.ajax(`author_space::onShowTabSubscribers`)">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">
+                Подписчики <span class="ui-text-body--2">{{subscribers_count}}</span>
+            </div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="9">
+        <div class="ui-tabs-content" data-tab-content="9" onclick="oc.ajax(`author_space::onShowTabAwards`)">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Награды <span
-                class="ui-text-body--2">{{received_awards_count+left_awards_count?:''}}</span>
+                class="ui-text-body--2">{{received_awards_count + left_awards_count?:''}}</span>
             </div>
         </div>
         <div class="ui-tabs-content" data-tab-content="10">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Комментарии <span
-                class="ui-text-body--2">{{comments_paginator.total?:''}}</span></div>
+                class="ui-text-body--2">{{ comments_count ?:''}}</span></div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="11">
+        <div class="ui-tabs-content" data-tab-content="11" onclick="oc.ajax(`author_space::onShowTabReposts`)">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Репосты <span
-                class="ui-text-body--2">{{reposts.count?:''}}</span></div>
+                class="ui-text-body--2">{{reposts_count?:''}}</span></div>
         </div>
     </div>
     <div class="ui-grid-container ui-grid-gap">
@@ -194,6 +191,7 @@
                             </div>
                         </div>
                         {% endif %}
+                        {#
                         <!--                        <div class="author-profile-description__wrapper">-->
                         <!--                            <div class="author-profile-description__label">Любимы жанры</div>-->
                         <!--                            <div class="author-profile-description__info">-->
@@ -201,6 +199,7 @@
                         <!--                                <a class="ui-link _violet" href="#">РеалРПГ</a>-->
                         <!--                            </div>-->
                         <!--                        </div>-->
+                        #}
                         <div class="author-profile-description__wrapper">
                             <div class="author-profile-description__label">Регистрация</div>
                             <div class="author-profile-description__info">
@@ -208,6 +207,7 @@
                             </div>
                         </div>
                     </div>
+                    {#
                     <!--                    <div class="author-profile__comments comments">-->
                     <!--                        <form class="comments-form _indent">-->
                     <!--                            <h3 class="comments-form__title ui-text&#45;&#45;bold"><span class="ui-text-head&#45;&#45;3">Комментарии</span></h3>-->
@@ -217,17 +217,17 @@
                     <!--                                <button class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;3 ui-text&#45;&#45;medium">Войти</button>-->
                     <!--                            </div>-->
                     <!--                        </form>-->
-
+                    #}
 
                     <!--                    </div>-->
                     {% component 'comments' %}
                 </div>
                 <!-- Книги -->
-                <div class="author-books ui-tabs-content {{ books.count ? 'active' : ''}} " data-tab-content="2">
-                    {% if books.count %}
-                    {% for book in books %}
-                    {% ajaxPartial "bookCard::standard-card" book=book %}
-                    {% endfor %}
+                <div id="author-books"
+                     class="author-books ui-tabs-content {{ books_paginator.total ? 'active' : ''}} "
+                     data-tab-content="2">
+                    {% if books_paginator.total %}
+                        {% partial 'author_space::author-books-tab' books_paginator=books_paginator %}
                     {% endif %}
                 </div>
                 <!-- Циклы -->
@@ -255,107 +255,62 @@
                     {% partial 'author_space::author-videoblog-tab' videoblog_posts_paginator=videoblog_posts_paginator %}
                 </div>
                 <!-- Подписки -->
-                <div class="author-blog ui-tabs-content" data-tab-content="7">
-                    {% if not subscriptions[0] %}
+                <div id="author-tab-subscriptions" class="author-blog ui-tabs-content" data-tab-content="7">
+                    {% if subscriptions_count %}
                     <div class="author__placeholder _indent">
-                        <svg class="square-32">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#users-stroked-32' | theme}}"></use>
-                        </svg>
-                        <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
-                            одной подписки
+                        <div class="commerce__loading-wrap">
+                            <div class="commerce__loading-icon">
+                                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                            </div>
                         </div>
-                        <span>Когда они появятся, вы увидите их здесь</span>
-                    </div>
-                    {% else %}
-                    <div class="ui-grid-container ui-grid-gap">
-                        {% for subscription in subscriptions %}
-                        {% partial 'controls/subscribe-card' item=subscription footer=true %}
-                        {% endfor %}
                     </div>
                     {% endif %}
                 </div>
 
                 <!-- Подписчики -->
-                <div class="author-subscribers ui-tabs-content" data-tab-content="8">
-                    {% if not subscribers.authors and not subscribers.readers %}
+                <div id="author-tab-subscribers" class="author-subscribers ui-tabs-content" data-tab-content="8">
+                    {% if subscribers_count %}
                     <div class="author__placeholder _indent">
-                        <svg class="square-32">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#users-stroked-32' | theme}}"></use>
-                        </svg>
-                        <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
-                            одного подписчика
-                        </div>
-                        <span>Когда они появятся, вы увидите их здесь</span>
-                    </div>
-                    {% else %}
-                    <div class="ui-tabs">
-                        <div class="ui-tabs-header">
-                            <div class="ui-tabs-line"></div>
-                            <div class="ui-tabs-header-wrapper" data-tabs="2">
-                                <div class="ui-tabs-link active" data-tab="1">Авторы <span>{{collect(subscribers.authors).count}}</span>
-                                </div>
-                                <div class="ui-tabs-link " data-tab="2">Читатели <span>{{collect(subscribers.readers).count}}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ui-tabs-body" data-tabs="2">
-                            <div class="ui-tabs-content active" data-tab-content="1">
-                                {% if subscribers.authors %}
-                                <div class="ui-grid-container ui-grid-gap">
-                                    {% for authors in subscribers.authors %}
-                                    {% partial 'controls/subscribe-card' item=authors footer=true %}
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
-                            </div>
-                            <div class="ui-tabs-content" data-tab-content="2">
-                                {% if subscribers.readers %}
-                                <div class="ui-grid-container ui-grid-gap">
-                                    {% for reader in subscribers.readers %}
-                                    {% partial 'controls/subscribe-card' item=reader %}
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
+                        <div class="commerce__loading-wrap">
+                            <div class="commerce__loading-icon">
+                                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
                             </div>
                         </div>
                     </div>
                     {% endif %}
                 </div>
-                <div class="author-awards ui-tabs-content" data-tab-content="9">
-                    <div class="author-awards__container">
-                        {% component 'awardsLC' %}
+
+                <div id="author-tab-awards" class="author-awards ui-tabs-content" data-tab-content="9">
+                    {% if received_awards_count + left_awards_count > 0 %}
+                    <div class="author__placeholder _indent">
+                        <div class="commerce__loading-wrap">
+                            <div class="commerce__loading-icon">
+                                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                            </div>
+                        </div>
                     </div>
+                    {% endif %}
                 </div>
                 <!-- Комментарии -->
-                <div class="ui-tabs-content" id="author-comments" data-tab-content="10">
-                    {% partial 'author_space::author-comments-tab' comments_paginator=comments_paginator %}
-                </div>
-                <div class="ui-tabs-content" data-tab-content="11">
-
-                    {% if reposts.count %}
-                    <div class="author-awards__container">
-                        {% for repost in reposts %}
-                        <div class="cb-mini-card _avatar">
-                            <div class="cb-mini-card__image-wrapper">
-                                <img src="{{profile.avatar.getThumb(50,50)}}" alt="">
-                            </div>
-                            <div class="cb-mini-card__wrapper">
-                                <div class="">Поделился <a class="ui-link _violet" href="{{repost.getLink}}">{{repost.getLabel}}</a>
-                                </div>
-                                <div class="cb-mini-card__date">{{repost.created_at.diffForHumans}}</div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
+                <div id="author-tab-comments" class="ui-tabs-content" data-tab-content="10">
+                    {% if can_see_comments and comments_count %}
                     <div class="author__placeholder _indent">
-                        <svg class="square-32">
-                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#share-stroked-32' | theme}}"></use>
-                        </svg>
-                        <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
-                            одного репоста
+                        <div class="commerce__loading-wrap">
+                            <div class="commerce__loading-icon">
+                                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                            </div>
                         </div>
-                        <span>Когда они появятся, вы увидите их здесь</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div id="author-tab-reposts" class="ui-tabs-content" data-tab-content="11">
+                    {% if reposts_count %}
+                    <div class="author__placeholder _indent">
+                        <div class="commerce__loading-wrap">
+                            <div class="commerce__loading-icon">
+                                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                            </div>
+                        </div>
                     </div>
                     {% endif %}
                 </div>
