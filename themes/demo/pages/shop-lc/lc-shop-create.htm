@@ -2,12 +2,18 @@ title = "Личный кабинет - Добавление товара"
 layout = "default"
 url = "/lc-shop/create"
 meta_title = "Личный кабинет - Добавление товара"
+turbo_cache_control='no-cache'
 breadcrumbs = "lc-shop-create"
 [session]
 security = "user"
 redirect = "/"
 [ShopLCForm]
 ==
+
+{% put meta %}
+    <meta name="turbo-visit-control" content="disable" />
+{% endput %}
+
 <div class="ui-container-fluid">
     {% component 'Breadcrumbs' %}
     <!-- Тело страницы -->
