@@ -169,7 +169,7 @@ class Chapter extends Model
 
     public function service(): iChapterService
     {
-        return match ($this->edition->type) {
+        return match ($this->edition?->type) {
             EditionsEnums::Audio => $this->edition?->is_deferred ? $this->deferredService(...func_get_args()) : $this->chapterService(...func_get_args()),
             default => $this->edition?->is_deferred ? $this->deferredService(...func_get_args()) : $this->chapterService(...func_get_args()),
         };

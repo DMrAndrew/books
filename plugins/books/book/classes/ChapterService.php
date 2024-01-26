@@ -92,6 +92,9 @@ class ChapterService implements iChapterService
         $this->chapter['edition_id'] = $this->edition->id;
         $this->chapter->save();
 
+        $this->chapter->setLive();
+        $this->chapter->saveQuietly();
+
         Event::fire('books.chapter.created', [$this->chapter]);
 
         return $this->chapter;
