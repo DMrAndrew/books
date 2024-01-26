@@ -2,7 +2,7 @@ title = "Личный кабинет - Магазин"
 layout = "default"
 url = "/lc-shop"
 meta_title = "Личный кабинет - Магазин"
-
+turbo_cache_control='no-cache'
 breadcrumbs="lc-shop"
 [session]
 security = "user"
@@ -11,7 +11,7 @@ redirect = "/"
 ==
 
 {% put meta %}
-    <meta name="turbo-visit-control" content="reload" />
+    <meta name="turbo-visit-control" content="disable" />
 {% endput %}
 
 {% component 'Breadcrumbs' %}
