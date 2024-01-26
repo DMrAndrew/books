@@ -62,6 +62,7 @@ class ShopLCForm extends ComponentBase
         );
 
         $component->bindModel('product_image', new Product());
+        $this->page['titleMaxLength'] = 60;
     }
 
     /**

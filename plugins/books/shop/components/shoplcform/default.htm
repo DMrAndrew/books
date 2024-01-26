@@ -33,9 +33,15 @@
                 </div>
             </div>
             <div class="ui-col-sm-9">
-                <div class="lc-shop__add-block ui-input">
-                    <label class="ui-input-label" for="title">Название товара</label>
-                    <input class="ui-input-item _size-32" type="text" name="title" id="title">
+                <div class="lc-shop__add-block ui-input title-counter__container">
+                    <div class="title-counter__top">
+                        <label class="">Название товара</label>
+                        <label class="title-counter__numbers"><span data-counter-number="title">{{ title ? (titleMaxLength - title|length) : '0' }}</span>/{{titleMaxLength}}</label><!-- sync with input maxlength -->
+                    </div>
+                    <input class="ui-input-item _size-32" type="text" name="title" id="title"
+                           maxlength="{{titleMaxLength}}"
+                           onkeyup="updateLengthCounter(this);"
+                    >
                 </div>
 
                 <div class="lc-shop__add-block ui-input">
@@ -79,6 +85,15 @@
             placeholderText: 'Выберите категорию',
         }
     })
+
+    function updateLengthCounter(field)
+    {
+        let maxLimit = {{titleMaxLength}};
+        if ( field.value.length > maxLimit ) {
+            field.value = field.value.substring( 0, maxLimit );
+        }
+        $('[data-counter-number="title"]').text(maxLimit - field.value.length);
+    }
 </script>
 
 {% put scripts %}
