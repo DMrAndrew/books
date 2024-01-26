@@ -41,7 +41,7 @@ class Product extends Model
     public $rules = [
         'title' => 'required|string|min:3',
         'description' => 'required|string|min:10',
-        'price' => 'required|integer',
+        'price' => 'required|integer|min:50',
         'quantity' => 'required|integer',
         'category_id' => 'required|exists:books_shop_categories,id',
     ];
