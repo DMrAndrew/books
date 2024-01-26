@@ -136,7 +136,7 @@ class AuthorSpace extends ComponentBase
     {
         return [
             'books_paginator' => CustomPaginator::from(
-                $this->profile->books()->defaultEager()
+                $this->profile->books()->public()->defaultEager()
                     ->orderBy('updated_at', 'desc')
                     ->paginate(
                         perPage: $this->perPageBooks,
