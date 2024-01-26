@@ -2,12 +2,18 @@ title = "Личный кабинет - Магазин"
 layout = "default"
 url = "/lc-shop"
 meta_title = "Личный кабинет - Магазин"
+
 breadcrumbs="lc-shop"
 [session]
 security = "user"
 redirect = "/"
 [ShopLCList]
 ==
+
+{% put meta %}
+    <meta name="turbo-visit-control" content="reload" />
+{% endput %}
+
 {% component 'Breadcrumbs' %}
 {% partial 'profile/personal_area_header' %}
 
