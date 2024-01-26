@@ -53,7 +53,7 @@ class Product extends Model
         'title.required' => 'Название товара обязательно для заполнения',
         'description.required' => 'Описание товара обязательно для заполнения',
         'price.required' => 'Укажите цену товара',
-        'quantity.required' => 'Укажите категорию товара',
+        'quantity.required' => 'Укажите количество товара',
         'category_id.required' => 'Укажите категорию товара',
         'upload_image.accepted' => 'Добавьте изображение товара',
     ];
