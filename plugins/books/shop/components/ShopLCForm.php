@@ -1,15 +1,20 @@
-<?php namespace Books\Shop\Components;
+<?php
 
-use Backend\Controllers\Auth;
+declare(strict_types=1);
+
+namespace Books\Shop\Components;
+
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
-use Books\Certificates\Models\CertificateTransactions;
+use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
 use Books\FileUploader\Components\ImageUploader;
 use Books\Shop\Models\Category;
 use Books\Shop\Models\Product;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
+use October\Rain\Exception\ApplicationException;
+use RainLab\User\Facades\Auth;
 use Redirect;
 use ValidationException;
 use Validator;
@@ -21,9 +26,7 @@ use Validator;
  */
 class ShopLCForm extends ComponentBase
 {
-    private $user;
-
-    public function componentDetails()
+    public function componentDetails(): array
     {
         return [
             'name' => 'ShopLCForm Component',
@@ -32,96 +35,93 @@ class ShopLCForm extends ComponentBase
     }
 
     /**
-     * @link https://docs.octobercms.com/3.x/element/inspector-types.html
+     * @return bool|\Illuminate\Http\RedirectResponse|void
+     * @throws \Cms\Classes\CmsException
+     * @throws DuplicateBreadcrumbException
      */
-    public function defineProperties()
-    {
-        return [];
-    }
-
     public function init()
     {
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
-        $this->user = \RainLab\User\Facades\Auth::getUser() ?? throw new ApplicationException('User required');
+
+        $this->registerBreadcrumbs();
+        $this->prepareVars();
+
+        /** @var ImageUploader $component */
         $component = $this->addComponent(
             ImageUploader::class,
             'productUploader',
             [
-                'modelClass' => Product::class,
-                'modelKeyColumn' => 'image',
                 'deferredBinding' => true,
                 'imageWidth' => 250,
                 'imageHeight' => 250,
-
+                'fileTypes' => '.gif,.jpg,.jpeg,.png',
+                'maxSize' => 4,
             ]
         );
+
         $component->bindModel('product_image', new Product());
-        $this->prepareVals();
-        $this->registerBreadcrumbs();
     }
 
-    private function prepareVals()
+    /**
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
+    public function onSave()
     {
-        $this->page['categories'] = Category::all();
+        try {
+            if (!Auth::check()) {
+                throw new ApplicationException('Требуется авторизация');
+            }
+
+            $product = new Product();
+            $data = post();
+
+            $validator = Validator::make(
+                $data,
+                $product->rules + [
+                    'upload_image' => 'required|accepted',
+                ],
+                $product->customMessages,
+                $product->attributeNames
+            );
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+
+            $product->fill($validator->valid());
+            $product->seller()->associate(Auth::getUser()->profile);
+            $product->save(null, post('_session_key'));
+
+            Flash::success('Товар успешно создан');
+
+            return Redirect::to('/lc-shop');
+        } catch (Exception $e) {
+            Flash::error($e->getMessage());
+        }
     }
 
+    /**
+     * @return void
+     * @throws DuplicateBreadcrumbException
+     */
     private function registerBreadcrumbs(): void
     {
         $manager = app(BreadcrumbsManager::class);
 
-        $manager->register('lc-shop-create', function (BreadcrumbsGenerator $trail, $params) {
+        $manager->register('lc-shop-create', static function (BreadcrumbsGenerator $trail, $params): void {
             $trail->parent('lc');
             $trail->push('Магазин', url('/lc-shop'));
             $trail->push('Добавление товара');
         });
     }
 
-    public function getSessionKey()
+    /**
+     * @return void
+     */
+    private function prepareVars(): void
     {
-        return post('_session_key');
-    }
-
-    public function onSave()
-    {
-        try {
-            $postData = collect(post());
-
-            $validator = Validator::make(
-                $postData->toArray(),
-                collect((new Product())->rules)->only([
-                    'title', 'description', 'price', 'quantity', 'category_id'
-                ])->toArray(),
-                collect((new Product())->customMessages)->only([
-                    'title', 'description', 'price', 'quantity', 'category_id'
-                ])->toArray(),
-                collect((new Product())->attributeNames)->only([
-                    'title', 'description', 'price', 'quantity', 'category_id'
-                ])->toArray()
-            );
-            if ($validator->fails()) {
-                throw new ValidationException($validator);
-            }
-
-            $data = [
-                'title' => $postData['title'],
-                'description' => $postData['description'],
-                'price' => $postData['price'],
-                'quantity' => $postData['quantity'],
-                'category_id' => $postData['category_id'],
-                'seller_id' => $this->user->profile->id
-            ];
-
-            $product = new Product();
-            $product->fill($data)->save();
-            $product->save(null, $this->getSessionKey());
-
-            Flash::success('Товар успешно создан');
-            return Redirect::to('/lc-shop');
-
-        } catch (Exception $e) {
-            Flash::error($e->getMessage());
-        }
+        $this->page['categories'] = Category::all();
     }
 }
