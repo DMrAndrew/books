@@ -1,0 +1,30 @@
+{% if reposts.count %}
+<div class="author-awards__container">
+    {% for repost in reposts %}
+    <div class="cb-mini-card _avatar">
+        <div class="cb-mini-card__image-wrapper">
+            {% if profile.avatar %}
+            <img src="{{profile.avatar.getThumb(50,50)}}">
+            {% else %}
+            <span>{{ profile.firstLatter }}</span>
+            {% endif %}
+        </div>
+        <div class="cb-mini-card__wrapper">
+            <div class="">Поделился <a class="ui-link _violet" href="{{repost.getLink}}">{{repost.getLabel}}</a>
+            </div>
+            <div class="cb-mini-card__date">{{repost.created_at.diffForHumans}}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="author__placeholder _indent">
+    <svg class="square-32">
+        <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#share-stroked-32' | theme}}"></use>
+    </svg>
+    <div class="ui-text-head--3 ui-text--bold">У {{isOwner ? 'вас' : 'пользователя'}} пока нет ни
+        одного репоста
+    </div>
+    <span>Когда они появятся, вы увидите их здесь</span>
+</div>
+{% endif %}

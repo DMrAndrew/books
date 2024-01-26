@@ -69,6 +69,13 @@ class PriceTag
         return $this->discount;
     }
 
+    /**
+     * todo: необходимо отрефакторить:
+     *  на список из 10книг выполняет ~30 запросов
+     *  можно попробовать в Edition->defaultEager() добавить необходимые поля
+     *  и с готовыми полями работать в этом методе
+     * @return void
+     */
     public function fillDiscountArray()
     {
         if ($discount = $this->discount?->amount) {
@@ -85,6 +92,7 @@ class PriceTag
             $authorProfile = $this->edition->book->profile;
             $authorAccount = $authorProfile->user;
 
+            // todo: тут три запроса выполняется, можно сделать один и дальше коллекцию фильтровать
             $readerBirthdayProgram = AuthorsPrograms::userProgramReaderBirthday()->where('user_id', $authorAccount->id)->first();
             $newReaderProgram = AuthorsPrograms::userProgramNewReader()->where('user_id', $authorAccount->id)->first();
             $regularReaderProgram = AuthorsPrograms::userProgramRegularReader()->where('user_id', $authorAccount->id)->first();
