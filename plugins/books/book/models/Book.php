@@ -274,6 +274,13 @@ class Book extends Model
         return $builder->withSum(['awardsItems' => fn ($awards) => $awards->when($ofLastDays, fn ($b) => $b->ofLastDays($b))], 'rate');
     }
 
+    public function scopeOrderByAuthorSortOrder(Builder $builder)
+    {
+        return $builder
+            ->with('authors')
+            ->orderBy(Author::make()->qualifyColumn('sort_order'),'desc');
+    }
+
     public function scopeOrderByPopularGenres(Builder $builder)
     {
         return $builder->orderByPowerJoinsMin('bookGenre.rate_number');

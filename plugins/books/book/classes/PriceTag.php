@@ -10,6 +10,7 @@ use Books\Book\Models\Edition;
 use Books\Book\Models\Promocode;
 use Books\Book\Models\UserBook;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use RainLab\User\Facades\Auth;
 
 class PriceTag
@@ -133,7 +134,9 @@ class PriceTag
                 && Carbon::now()->between(
                     $readerBooksPurchased->first()?->created_at,
                     $readerBooksPurchased->first()?->created_at->addDays($newReaderProgram->condition->days)
-                )) {
+                )
+                && $readerBooksPurchased->count() > 1
+            ) {
                 if ($newReaderProgram->condition->percent >= $this->discountAmount()) {
                     $this->discountsArr['values'][] = $newReaderProgram->condition->percent;
                     $this->discountsArr['discount'] = [
