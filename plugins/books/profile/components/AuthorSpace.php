@@ -57,8 +57,12 @@ class AuthorSpace extends ComponentBase
     {
         $this->profile_id = (int)$this->param('profile_id');
         $this->authUser = Auth::getUser();
-        $this->profile = Profile::query()->find($this->profile_id ?? $this->authUser?->profile->id)
-            ?? $this->controller->run('404');
+        $this->profile = Profile::query()->find($this->profile_id ?? $this->authUser?->profile->id);
+        if (! $this->profile) {
+            $this->controller->run('404');
+
+            return;
+        }
 
         $comments = $this->addComponent(Comments::class, 'comments');
         $comments->bindModel($this->profile);

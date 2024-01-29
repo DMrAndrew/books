@@ -78,6 +78,8 @@ class Listing extends ComponentBase
 
         if (! $this->appliedSlug()) {
             $this->controller->run('404');
+
+            return;
         }
     }
 
