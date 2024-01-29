@@ -200,7 +200,10 @@ class CommercialSalesStatistics extends ComponentBase
      */
     private function getAccountEditions(): Collection
     {
-        $books = $this->user->toBookUser()->booksInAuthorOrder()->get();
+        $books = $this->user->toBookUser()
+            ->booksInAuthorOrder()
+            ->public()->defaultEager()
+            ->get();
 
         return Edition::query()
             ->whereIn('book_id', $books->pluck('id')->toArray())
