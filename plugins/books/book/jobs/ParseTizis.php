@@ -1,10 +1,8 @@
-<?php
-
-namespace Books\Book\Jobs;
+<?php namespace Books\Book\Jobs;
 
 use Books\Book\Classes\Exceptions\UnknownFormatException;
-use Books\Book\Models\Chapter as BookChapter;
 use Books\Book\Models\Edition;
+use Books\Book\Models\Chapter as BookChapter;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,21 +24,22 @@ class ParseTizis implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 2;
+    public $tries = 1;
 
     /**
      * __construct a new job instance.
      */
     public function __construct(public TizisChapter $tizis,
-        public Edition $edition,
-        public array $payload = []
-    ) {
+                                public Edition      $edition,
+                                public array        $payload = []
+    )
+    {
         $this->onQueue('parsing');
     }
 
+
     /**
      * handle the job.
-     *
      * @throws UnknownFormatException
      */
     public function handle(): void
@@ -62,8 +61,7 @@ class ParseTizis implements ShouldQueue
         }
     }
 
-    public function tags(): array
-    {
-        return ['parsing', 'parseTizisChapter', get_class($this->edition).':'.$this->edition->id];
+    public function tags(): array{
+        return ['parsing','parseTizisChapter', get_class($this->edition).':'.$this->edition->id];
     }
 }
