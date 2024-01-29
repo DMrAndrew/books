@@ -64,11 +64,15 @@ class BookPage extends ComponentBase
         $this->book_id = is_numeric($this->param('book_id')) ? (int) $this->param('book_id') : null;
         if (! $this->book_id) {
             $this->controller->run('404');
+
+            return;
         }
 
         $this->book = Book::findForPublic($this->book_id, $this->user);
         if (! $this->book) {
             $this->controller->run('404');
+
+            return;
         }
 
         $this->tryInjectAdultModal();
