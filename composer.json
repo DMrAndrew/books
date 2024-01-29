@@ -194,6 +194,10 @@
         "books/authorprograms-plugin": {
             "type": "path",
             "url": "./plugins/books/authorprograms"
+        },
+        "books/shop-plugin": {
+            "type": "path",
+            "url": "./plugins/books/shop"
         }
     },
     "extra": {

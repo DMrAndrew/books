@@ -1,0 +1,17 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    id:
+        label: ID
+        disabled: true
+
+    title:
+        label: 'Название'
+
+    parent:
+        label: 'Родительская категория'
+        type: relation
+        emptyOption: 'Основная категория'
+        select: concat(id, ' - ', title)
