@@ -1,0 +1,107 @@
+<div class="ui-container-fluid wrapper">
+    <!-- заголовок -->
+    <div class="personal-area__subtitle">
+        <span class="ui-text-head--2 ui-text--bold">Добавление товара</span>
+    </div>
+
+    <!-- заголовок -->
+    {{
+        form_ajax('onSave', {
+            flash: 1,
+            files: 1,
+            class:'ui-container-fluid wrapper',
+            'data-request-validate':'true',
+        })
+    }}
+        <input type="hidden" name="upload_image" value="0">
+
+        <div class="ui-grid-container ui-grid-gap">
+            <div class="ui-col-sm-3">
+                {% component 'productUploader' %}
+
+                <div class="lc-shop__add-block">
+                    <div class="ui-prompt">
+                        Загружайте изображение с соотношением сторон
+                        <span class="attention">1:1</span>
+                        c разрешением
+                        <span class="attention"> не более 250x250</span>
+                        в формате
+                        <span class="attention">JPG, PNG или GIF </span>
+                        и размером
+                        <span class="attention">не более 4МБ.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="ui-col-sm-9">
+                <div class="lc-shop__add-block ui-input title-counter__container">
+                    <div class="title-counter__top">
+                        <label class="">Название товара</label>
+                        <label class="title-counter__numbers"><span data-counter-number="title">{{ title ? (titleMaxLength - title|length) : '0' }}</span>/{{titleMaxLength}}</label><!-- sync with input maxlength -->
+                    </div>
+                    <input class="ui-input-item _size-32" type="text" name="title" id="title"
+                           maxlength="{{titleMaxLength}}"
+                           onkeyup="updateLengthCounter(this);"
+                    >
+                </div>
+
+                <div class="lc-shop__add-block ui-input">
+                    <label class="ui-input-label" for="description">Описание товара</label>
+                    <textarea class="ui-input-textarea _size-32" name="description" id="description"></textarea>
+                </div>
+
+                <div class="lc-shop__add-block ui-select">
+                    <label class="ui-input-label" for="categories">Название категории</label>
+
+                    <select id="categories" name="category_id" class="someClass">
+                        {% for item in categories %}
+                        <option value="{{item.id}}">{{item.title}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="lc-shop__add-block ui-input">
+                    <label class="ui-input-label" for="price">Укажите стоимость товара</label>
+                    <input class="ui-input-item _size-32" min="50" value="50" type="number" name="price" id="price">
+                </div>
+
+                <div class="lc-shop__add-block ui-input">
+                    <label class="ui-input-label" for="quantity">Укажите количество товара</label>
+                    <input class="ui-input-item _size-32" min="1" value="1" type="number" name="quantity" id="quantity">
+                </div>
+
+                <button type="submit" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full-mobile" data-attach-loading>Добавить товар</button>
+            </div>
+        </div>
+
+    {{ form_close() }}
+</div>
+
+<script>
+    let categories = new SlimSelect({
+        select: '#categories',
+        settings: {
+            searchText: 'Ничего не найдено',
+            searchPlaceholder: 'Найти категорию',
+            placeholderText: 'Выберите категорию',
+        }
+    })
+
+    function updateLengthCounter(field)
+    {
+        let maxLimit = {{titleMaxLength}};
+        if ( field.value.length > maxLimit ) {
+            field.value = field.value.substring( 0, maxLimit );
+        }
+        $('[data-counter-number="title"]').text(maxLimit - field.value.length);
+    }
+</script>
+
+{% put scripts %}
+<script>
+    $(function () {
+        $('[data-control="fileupload"]').on('uploadSuccess', function () {
+            $('input[name=upload_image]').val(1);
+        });
+    });
+</script>
+{% endput %}

@@ -70,7 +70,7 @@ class Pagination extends Model
 
     public function setNeighbours(): void
     {
-        $builder = fn ($page) => $this->chapter->pagination()->page($page)->value('id');
+        $builder = fn ($page) => $this->chapter->pagination()->page($page)->first()?->id;
         $this->update([
             'next_id' => $builder($this->page + 1),
             'prev_id' => $builder($this->page - 1),

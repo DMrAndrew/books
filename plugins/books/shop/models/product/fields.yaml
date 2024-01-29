@@ -1,0 +1,29 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    id:
+        label: ID
+        searchable: true
+
+    title:
+        label: 'Название товара'
+
+    category:
+        label: 'Категория'
+        type: relation
+        select: concat(id, ' - ', title)
+
+    seller:
+        label: 'Продавец'
+        type: relation
+        select: concat(id, ' - ', username)
+
+    description:
+        label: 'Описание'
+
+    product_image:
+        label: 'Изображение товара'
+        type: fileupload
+        mode: image
