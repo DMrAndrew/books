@@ -7,6 +7,7 @@ use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Components\AwardsLC;
 use Books\Book\Components\SaleTagBlock;
 use Books\Book\Components\Widget;
+use Books\Book\Models\Author;
 use Books\Comments\Components\Comments;
 use Books\Profile\Models\Profile;
 use Cms\Classes\CmsException;
@@ -140,8 +141,9 @@ class AuthorSpace extends ComponentBase
     {
         return [
             'books_paginator' => CustomPaginator::from(
-                $this->profile->books()->public()->defaultEager()
-                    ->orderBy('updated_at', 'desc')
+                $this->profile->books()
+                    ->public()->defaultEager()
+                    ->orderByAuthorSortOrder()
                     ->paginate(
                         perPage: $this->perPageBooks,
                         pageName: 'booksPage',

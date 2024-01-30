@@ -95,6 +95,7 @@ class ReadStatistic extends ComponentBase
         $this->page['to'] = $this->to->format('d.m.Y');
         $this->page['books'] = $this->user->profile->books()
             ->editionTypeIn(EditionsEnums::Ebook)
+            ->orderByAuthorSortOrder()
             ->get();
         $this->page['current_book'] = $this->book;
         $this->page['statistic'] = $this->service->get(...$item);
