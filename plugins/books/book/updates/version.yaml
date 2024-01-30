@@ -113,3 +113,6 @@
 1.0.35:
     - 'Кол-во загрузок'
     - create_downloads_table.php
+1.0.36:
+    - 'Внешние ключи - Authors ссылается на Book'
+    - update_foreign_keys_v2.php
