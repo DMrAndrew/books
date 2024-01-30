@@ -1,5 +1,6 @@
 <?php namespace Books\Book\Components;
 
+use Books\Book\Classes\Traits\AccoutBooksTrait;
 use Books\Book\Models\Book;
 use Books\Book\Models\Edition;
 use Books\Book\Models\SellStatistics;
@@ -20,6 +21,8 @@ use RainLab\User\Models\User;
  */
 class CommercialSalesStatistics extends ComponentBase
 {
+    use AccoutBooksTrait;
+
     protected ?User $user;
 
     protected Carbon $from;
@@ -166,6 +169,7 @@ class CommercialSalesStatistics extends ComponentBase
     {
         $this->from = Carbon::now()->startOfMonth();
         $this->to = Carbon::now()->endOfMonth();
+
         return;
 //        $sellAtRange = SellStatistics
 //            ::whereIn('profile_id', $this->user->profiles->pluck('id'))
@@ -193,20 +197,5 @@ class CommercialSalesStatistics extends ComponentBase
             $trail->parent('commercial_cabinet');
             $trail->push('Статистика продаж');
         });
-    }
-
-    /**
-     * @return Collection
-     */
-    private function getAccountEditions(): Collection
-    {
-        $books = $this->user->toBookUser()
-            ->booksInAuthorOrder()
-            ->public()->defaultEager()
-            ->get();
-
-        return Edition::query()
-            ->whereIn('book_id', $books->pluck('id')->toArray())
-            ->get();
     }
 }
