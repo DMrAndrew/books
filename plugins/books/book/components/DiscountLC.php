@@ -1,6 +1,7 @@
 <?php namespace Books\Book\Components;
 
 use Books\Book\Classes\PriceTag;
+use Books\Book\Classes\Traits\AccoutBooksTrait;
 use Books\Book\Models\Book;
 use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
@@ -21,6 +22,7 @@ use Validator;
  */
 class DiscountLC extends ComponentBase
 {
+    use AccoutBooksTrait;
 
     protected User $user;
 
@@ -164,11 +166,12 @@ class DiscountLC extends ComponentBase
      */
     private function getNotFreeAccountEditions(): Collection
     {
-        $books = $this->user->toBookUser()->booksInAuthorOrder()->get();
+        $accountBooks = $this->getAccountBooks();
 
         return Edition::query()
-            ->whereIn('book_id', $books->pluck('id')->toArray())
+            ->whereIn('book_id', $accountBooks->pluck('id')->toArray())
             ->free(false)
+            ->orderBySalesAt()
             ->get();
     }
 

@@ -64,8 +64,10 @@ class CommercialSalesStatisticsDetail extends ComponentBase
         /**
          * Book
          */
-        if (!$this->book) {
+        if (! $this->book) {
             $this->controller->run('404');
+
+            return;
         }
 
         $editionIds = $this->book->editions->pluck('id')->toArray();

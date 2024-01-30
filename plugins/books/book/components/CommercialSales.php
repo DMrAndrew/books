@@ -1,6 +1,7 @@
 <?php namespace Books\Book\Components;
 
 use Books\Book\Classes\Traits\AccoutBooksTrait;
+use Books\Book\Models\Edition;
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Books\Breadcrumbs\Exceptions\DuplicateBreadcrumbException;
@@ -58,20 +59,20 @@ class CommercialSales extends ComponentBase
     {
         $accountBooks = $this->getAccountBooks();
 
-        $editionsInSale = new Collection();
-        $accountBooks->map(function ($book) use (&$editionsInSale) {
-            return $editionsInSale->push(
-                ...$book->editions()
-                    ->selling()
-                    ->get()
-                );
-        });
+        $editionsInSale = Edition
+            ::whereHas('book', function($q) use ($accountBooks) {
+                $q->whereIn('id', $accountBooks->pluck('id'));
+            })
+            ->selling()
+            ->orderBySalesAt()
+            ->get();
 
         return $editionsInSale;
     }
 
     /**
      * @return void
+     * @throws DuplicateBreadcrumbException
      */
     private function registerBreadcrumbs(): void
     {

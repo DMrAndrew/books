@@ -63,6 +63,8 @@ class Reader extends ComponentBase
         $this->book_id = (int) $this->param('book_id');
         if (! $this->book_id) {
             $this->controller->run('404');
+
+            return;
         }
 
         $this->book = Book::findForPublic($this->book_id, $this->user);

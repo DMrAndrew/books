@@ -50,6 +50,8 @@ class OutOfFree extends ComponentBase
 
         if (! $this->edition) {
             $this->controller->run('404');
+
+            return;
         }
 
         $this->chapter = Chapter::find($this->param('chapter_id'));

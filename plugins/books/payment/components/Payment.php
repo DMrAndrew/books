@@ -41,8 +41,10 @@ class Payment extends ComponentBase
     public function init()
     {
         $this->user = Auth::getUser();
-        if (!$this->user) {
+        if (! $this->user) {
             $this->controller->run('404');
+
+            return;
         }
 
         $this->orderService = app(OrderService::class);
