@@ -497,6 +497,11 @@ class Edition extends Model implements ProductInterface
             ->free(false);
     }
 
+    public function scopeOrderBySalesAt(Builder $builder): Builder
+    {
+        return $builder->orderBy('sales_at', 'desc');
+    }
+
     public function scopeEbook(Builder $builder): Builder
     {
         return $builder->type(EditionsEnums::Ebook);

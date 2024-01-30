@@ -1,6 +1,7 @@
 <?php namespace Books\Book\Components;
 
 use Books\Book\Classes\PromocodeGenerationLimiter;
+use Books\Book\Classes\Traits\AccoutBooksTrait;
 use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use Exception;
@@ -17,6 +18,8 @@ use RainLab\User\Models\User;
  */
 class Promocode extends ComponentBase
 {
+    use AccoutBooksTrait;
+
     protected User $user;
 
     protected ?Edition $edition;
@@ -142,14 +145,12 @@ class Promocode extends ComponentBase
      */
     private function getNotFreeAccountEditions(): Collection
     {
-        $books = $this->user->toBookUser()
-            ->booksInAuthorOrder()
-            ->public()->defaultEager()
-            ->get();
+        $accountBooks = $this->getAccountBooks();
 
         return Edition::query()
-            ->whereIn('book_id', $books->pluck('id')->toArray())
+            ->whereIn('book_id', $accountBooks->pluck('id')->toArray())
             ->free(false)
+            ->orderBySalesAt()
             ->get();
     }
 }
