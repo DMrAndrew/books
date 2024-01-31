@@ -27,7 +27,7 @@ class Epub extends BaseConverter
         }
         $epub->AddPage($this->annotation(), null, 'Аннотация', true);
         foreach ($this->chapters() as $chapter) {
-            $epub->AddPage($chapter->content->body, null, $chapter->title, true);
+            $epub->AddPage($chapter->content->body, null, strip_tags($chapter->title), true);
         }
         $epub->CreateEPUB();
         return 'success';
