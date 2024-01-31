@@ -88,8 +88,17 @@ class CommercialSalesStatistics extends ComponentBase
             ->whereDate('sell_at', '>=', $periodFrom)
             ->whereDate('sell_at', '<=', $periodTo);
 
-        if (!empty($bookId)) {
-            $book = Book::findOrFail($bookId);
+        if (! empty($editionId)) {
+
+            $book = Book
+                ::whereHas('editions', function ($q) use ($editionId) {
+                    $q->where('id', $editionId);
+                })
+                ->whereHas('authors', function ($q) use ($editionId) {
+                    $q->whereIn('profile_id', $this->user->profiles->pluck('id'));
+                })
+                ->first();
+
             $editionIds = $book->editions->pluck('id')->toArray();
             $sellStatisticsQuery->whereIn('edition_id', $editionIds);
         }
