@@ -42,6 +42,6 @@ class Reading implements ShouldQueue
      */
     public function tags(): array
     {
-        return ['reading', get_class($this->tracker->trackable).':'.$this->tracker->trackable->id, $this->tracker->user_id ? $this->tracker->user_id:$this->tracker->ip];
+        return ['reading',( $this->tracker->trackable ? get_class($this->tracker->trackable) : '').':'.$this->tracker->trackable?->id, $this->tracker->user_id ? $this->tracker->user_id:$this->tracker->ip];
     }
 }
