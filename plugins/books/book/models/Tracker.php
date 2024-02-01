@@ -207,4 +207,9 @@ class Tracker extends Model
     {
         $this->readProgressService()->apply();
     }
+
+    public function reprogress(): void
+    {
+        static::query()->withoutTodayScope()->unparent()->broken()->orderBy('created_at')->cursor()->each->progress();
+    }
 }

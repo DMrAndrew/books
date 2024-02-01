@@ -27,7 +27,7 @@ class ClearTrackers implements ShouldQueue
 
     public ?Carbon $last_send = null;
 
-    const NOTIFY_PROCESS_PERIOD = 2;
+    const NOTIFY_PROCESS_PERIOD = 4;
 
     /**
      * __construct a new job instance.
@@ -64,17 +64,14 @@ class ClearTrackers implements ShouldQueue
         $this->removeUnnecessaryTrackers();
         $total_deleted = 0;
         $total_processed = 0;
-        $processed = $this->processed();
         $total = $this->trackerQuery()->count();
-        unset($processed);
         $this->notify(sprintf('%s found', $total));
         foreach ($this->trackerQuery()->cursor() as $item) {
-            $processed = $this->processed();
-            if (in_array($item->id, $processed)) {
+            if (in_array($item->id, $this->processed())) {
                 continue;
             }
 
-            $this->saveProcessed(array_merge([$item->id], $processed));
+            $this->saveProcessed(array_merge([$item->id], $this->processed()));
             $total_deleted += $item->clearDuplicates();
             $total_processed++;
             $this->notifyProcess($total_deleted, $total_processed);
@@ -104,6 +101,7 @@ class ClearTrackers implements ShouldQueue
         if (abs($this->lastSend()->diffInMinutes(now())) >= self::NOTIFY_PROCESS_PERIOD) {
             $this->notify(sprintf('%s deleted.'.PHP_EOL.'%s processed.', $deleted, $processed));
             $this->last_send = now();
+            Cache::set('cleared_trackers',[]);
         }
 
     }
