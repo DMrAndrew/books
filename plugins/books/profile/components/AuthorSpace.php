@@ -140,16 +140,11 @@ class AuthorSpace extends ComponentBase
     public function getAuthorBooks(): array
     {
         return [
-            'books_paginator' => CustomPaginator::from(
+            'books' =>
                 $this->profile->books()
                     ->public()->defaultEager()
                     ->orderByAuthorSortOrder()
-                    ->paginate(
-                        perPage: $this->perPageBooks,
-                        pageName: 'booksPage',
-                        currentPage: $this->booksCurrentPage(),
-                    )
-            ),
+                    ->get()
         ];
     }
 
