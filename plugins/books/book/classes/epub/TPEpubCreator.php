@@ -463,8 +463,9 @@ class TPEpubCreator
                 $value['content']
             );
 
+            $title = sprintf('<h2>%s</h2>',$value['title']??'');
             // Fill the page content and ends the XHTML
-            $value['content'] = $page_content . $value['content'];
+            $value['content'] = $page_content . $title. $value['content'];
             $value['content'] .= '</body></html>';
 
             // Replace the HTML images to the new images
