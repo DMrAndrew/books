@@ -8,6 +8,7 @@ use Books\Book\Classes\Enums\ChapterSalesType;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Enums\ElectronicFormats;
 use Books\Book\Classes\PriceTag;
+use Books\Book\Classes\Services\AudioFileLengthHelper;
 use Books\Book\Classes\UpdateHistory;
 use Books\Book\Classes\UpdateHistoryView;
 use Books\Book\Jobs\ParseFB2;
@@ -26,6 +27,7 @@ use October\Rain\Database\Traits\Purgeable;
 use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
 use Staudenmeir\EloquentHasManyDeep\HasRelationships;
@@ -234,7 +236,10 @@ class Edition extends Model implements ProductInterface
 
     public function collectUpdateHistory(): UpdateHistory
     {
-        return new UpdateHistory($this->revision_history()->where('field', '=', 'length')->get());
+        return new UpdateHistory(
+            $this->revision_history()->where('field', '=', 'length')->get(),
+            $this->type
+        );
     }
 
     public function getUpdateHistoryViewAttribute(): UpdateHistoryView
@@ -254,7 +259,20 @@ class Edition extends Model implements ProductInterface
 
     public function getReadPercentAttribute(): int
     {
-        return min(100, (int) ceil((($this->read_length ?? 0) * 100) / $this->length));
+        return match ($this->type) {
+            EditionsEnums::Ebook => $this->length
+                ? min(100, (int) ceil((($this->read_length ?? 0) * 100) / $this->length))
+                : 0,
+            EditionsEnums::Audio => 0, // todo
+        };
+    }
+
+    public function getTitleAttribute(): string
+    {
+        return match ($this->type) {
+            EditionsEnums::Ebook => $this->book->title,
+            default => $this->book->title . ' ('. EditionsEnums::Audio->label().') ',
+        };
     }
 
     public function scopeWithActiveDiscountExist(Builder $builder): Builder
@@ -315,6 +333,15 @@ class Edition extends Model implements ProductInterface
         return (bool) $this->getOriginal('sales_at');
     }
 
+    public function isVisible(): bool
+    {
+        return in_array($this->getOriginal('status'), [
+            BookStatus::WORKING,
+            BookStatus::COMPLETE
+        ])
+        || $this->book->profiles()->user(Auth::getUser())->exists();
+    }
+
     public function setPublishAt(): void
     {
         $this->attributes['sales_at'] = Carbon::now();
@@ -334,24 +361,26 @@ class Edition extends Model implements ProductInterface
     }
 
     /**
-     * Функция определяет разрешённые статусы для книги
+     * Функция определяет разрешённые статусы для издания
      */
     public function getAllowedStatusCases(): array
     {
         $cases = collect(BookStatus::publicCases());
 
-        $cases = match ($this->getOriginal('status')) {
-            BookStatus::WORKING => $this->is_has_customers ? $cases->forget(BookStatus::HIDDEN) : $cases,
-            // нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
-            BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value),
-            // Из “Завершено” можем перевести только в статус “Скрыто”.
-            BookStatus::HIDDEN => $this->isPublished() && $this->is_has_completed && $this->is_has_customers ? $cases->only(BookStatus::COMPLETE->value) : $cases,
-            //Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”,
-            // то книгу можно вернуть в статус “Скрыто”, но редактирование и удаление глав будет невозможным если есть продажи.
-            default => collect()
-        };
+        if ($this->exists) {
+            $cases = match ($this->getOriginal('status')) {
+                BookStatus::WORKING => $this->is_has_customers ? $cases->forget(BookStatus::HIDDEN) : $cases,
+                // нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
+                BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value),
+                // Из “Завершено” можем перевести только в статус “Скрыто”.
+                BookStatus::HIDDEN => $this->isPublished() && $this->is_has_completed && $this->is_has_customers ? $cases->only(BookStatus::COMPLETE->value) : $cases,
+                //Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”,
+                // то книгу можно вернуть в статус “Скрыто”, но редактирование и удаление глав будет невозможным если есть продажи.
+                default => collect()
+            };
 
-        $cases[$this->getOriginal('status')->value] = $this->getOriginal('status');
+            $cases[$this->getOriginal('status')->value] = $this->getOriginal('status');
+        }
 
         return $cases->toArray();
     }
@@ -361,7 +390,12 @@ class Edition extends Model implements ProductInterface
      */
     public function shouldDeferredUpdate(): bool
     {
-        return in_array($this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE]) && $this->is_has_customers;
+        return
+            // в статусе
+            in_array(
+            $this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE])
+            // и есть продажи
+            && $this->is_has_customers;
     }
 
     public function hasCompleted(): bool
@@ -440,6 +474,14 @@ class Edition extends Model implements ProductInterface
         return $builder->where($this->getQualifiedPriceColumn(), '<=', $price);
     }
 
+    public function scopeVisible(Builder $builder): Builder
+    {
+        return $builder->whereIn($this->getQualifiedStatusColumn(), [
+                BookStatus::WORKING,
+                BookStatus::COMPLETE
+            ]);
+    }
+
     public function scopeFree(Builder $builder, bool $free = true): Builder
     {
         return $builder->when($free,
@@ -453,6 +495,11 @@ class Edition extends Model implements ProductInterface
         return $builder
             ->status(BookStatus::WORKING, BookStatus::COMPLETE)
             ->free(false);
+    }
+
+    public function scopeOrderBySalesAt(Builder $builder): Builder
+    {
+        return $builder->orderBy('sales_at', 'desc');
     }
 
     public function scopeEbook(Builder $builder): Builder
@@ -500,26 +547,23 @@ class Edition extends Model implements ProductInterface
     public function changeChaptersOrder(array $ids, array $order = null)
     {
         Db::transaction(function () use ($ids, $order) {
-            $order ??= $this->chapters()->pluck((new Chapter())->getSortOrderColumn())->toArray();
-            $this->chapters()->first()->setSortableOrder($ids, $order);
-            $this->chapters()->get()->each->setNeighbours();
+            $order ??= $this->chapters()->public()->pluck((new Chapter())->getSortOrderColumn())->toArray();
+            $this->chapters()->public()->first()->setSortableOrder($ids, $order);
+            $this->chapters()->public()->get()->each->setNeighbours();
             $this->setFreeParts();
         });
     }
 
     public function setFreeParts()
     {
-        Db::transaction(function () {
-            $builder = fn () => $this->chapters()->public(withPlanned: true);
-
-            if ($this->isFree() || $this->status === BookStatus::FROZEN) {
-                $builder()->update(['sales_type' => ChapterSalesType::FREE]);
-            } else {
-                $builder()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
-                $builder()->get()->skip($this->free_parts)->toQuery()->update(['sales_type' => ChapterSalesType::PAY]);
-            }
-            $this->chapters()->public()->get()->each->setNeighbours();
-        }, 3);
+        $builder = fn () => $this->chapters()->public(withPlanned: true);
+        if ($this->isFree() || $this->status === BookStatus::FROZEN) {
+            $builder()->update(['sales_type' => ChapterSalesType::FREE]);
+        } else {
+            $builder()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
+            $builder()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
+        }
+        $this->chapters()->public()->get()->each->setNeighbours();
     }
 
     public function paginateContent()
@@ -578,5 +622,23 @@ class Edition extends Model implements ProductInterface
     public function getQualifiedPriceColumn(): string
     {
         return $this->qualifyColumn('price');
+    }
+
+    public function getAudioLengthAttribute(): ?string
+    {
+        if ($this->type != EditionsEnums::Audio) {
+            return null;
+        }
+
+        return AudioFileLengthHelper::formatSecondsToHumanReadableTime($this->length);
+    }
+
+    public function getAudioLengthShortAttribute(): ?string
+    {
+        if ($this->type != EditionsEnums::Audio) {
+            return null;
+        }
+
+        return AudioFileLengthHelper::getAudioLengthHumanReadableShort($this->length);
     }
 }

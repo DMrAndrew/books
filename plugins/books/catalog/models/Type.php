@@ -14,6 +14,7 @@ use October\Rain\Database\Traits\Validation;
  *
  * @property string label
  * @property EditionsEnums type
+ * @property  string slug
  */
 class Type extends Model
 {

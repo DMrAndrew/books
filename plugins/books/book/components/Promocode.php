@@ -1,8 +1,8 @@
 <?php namespace Books\Book\Components;
 
 use Books\Book\Classes\PromocodeGenerationLimiter;
-use Books\Book\Models\Author;
-use Books\Book\Models\Book;
+use Books\Book\Classes\Traits\AccoutBooksTrait;
+use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
 use Exception;
 use Flash;
@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Log;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
-use Books\User\Models\User as BookUser;
 
 /**
  * Promocode Component
@@ -19,9 +18,11 @@ use Books\User\Models\User as BookUser;
  */
 class Promocode extends ComponentBase
 {
+    use AccoutBooksTrait;
+
     protected User $user;
 
-    protected ?Book $book;
+    protected ?Edition $edition;
 
     public function componentDetails()
     {
@@ -46,7 +47,7 @@ class Promocode extends ComponentBase
         }
         $this->user = Auth::getUser();
 
-        $this->book = $this->getBook();
+        $this->edition = $this->getEdition();
     }
 
     public function onRender()
@@ -59,17 +60,19 @@ class Promocode extends ComponentBase
     public function vals()
     {
         return [
-            'books' => $this->getNotFreeAccountBooks(),
-            'bookItem' => $this->getBook(),
+            'editions' => $this->getNotFreeAccountEditions(),
+            'editionItem' => $this->getEdition(),
             'promocodes' => $this->getBooksPromocodes()
         ];
     }
 
-    public function getBook()
+    public function getEdition()
     {
-        return $this
-            ->query()
-            ->find(post('value') ?? post('book_id') ?? $this->param('book_id'));
+        $editions = $this->getNotFreeAccountEditions();
+
+        return $editions
+            ->where('id', post('value') ?? post('edition_id') ?? $this->param('edition_id'))
+            ->first();
     }
 
     public function onGetBookPromocodes()
@@ -86,8 +89,8 @@ class Promocode extends ComponentBase
             /**
              * current user is book author
              */
-            if (!$this->book) {
-                Flash::error("Книга не найдена");
+            if (!$this->edition) {
+                Flash::error("Издание не найдено");
 
                 return [];
             }
@@ -95,7 +98,7 @@ class Promocode extends ComponentBase
             /**
              * check promocode limits
              */
-            $promoLimiter = new PromocodeGenerationLimiter(profile: $this->user->profile, book: $this->book);
+            $promoLimiter = new PromocodeGenerationLimiter(profile: $this->user->profile, edition: $this->edition);
             if (!$promoLimiter->canGenerate()) {
                 Flash::error($promoLimiter->getReason());
 
@@ -105,7 +108,7 @@ class Promocode extends ComponentBase
             /**
              * generate promocode
              */
-            $this->book->ebook->promocodes()->create([
+            $this->edition->promocodes()->create([
                 'profile_id' => $this->user->profile->id,
                 'expire_in' => $promoLimiter->getExpireIn(),
             ]);
@@ -128,7 +131,7 @@ class Promocode extends ComponentBase
      */
     private function getBooksPromocodes(): ?Collection
     {
-        return $this->book?->ebook?->promocodes()
+        return $this->edition?->promocodes()
             ->with(['user'])
             ->get() ?? new Collection();
     }
@@ -140,17 +143,14 @@ class Promocode extends ComponentBase
     /**
      * @return Collection
      */
-    private function getNotFreeAccountBooks(): Collection
+    private function getNotFreeAccountEditions(): Collection
     {
-        return $this->query()->get();
-        $allAccountProfilesIds = $this->user->profiles->pluck('id')->toArray();
-        $booksIds = Author
-            ::with(['book'])
-            ->whereIn('profile_id', $allAccountProfilesIds)
-            ->get()
-            ->pluck('book_id')
-            ->toArray();
+        $accountBooks = $this->getAccountBooks();
 
-        return Book::whereIn('id', $booksIds)->notFree()->get();
+        return Edition::query()
+            ->whereIn('book_id', $accountBooks->pluck('id')->toArray())
+            ->free(false)
+            ->orderBySalesAt()
+            ->get();
     }
 }

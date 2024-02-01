@@ -1,0 +1,5 @@
+{% if books[0] %}
+    {% for book in books %}
+        {% ajaxPartial "bookCard::standard-card" book=book %}
+    {% endfor %}
+{% endif %}

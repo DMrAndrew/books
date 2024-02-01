@@ -1,12 +1,15 @@
 <?php namespace Books\Book\Components;
 
 use Books\Book\Classes\PriceTag;
+use Books\Book\Classes\Traits\AccoutBooksTrait;
 use Books\Book\Models\Book;
 use Books\Book\Models\Discount;
+use Books\Book\Models\Edition;
 use Carbon\Carbon;
 use Cms\Classes\ComponentBase;
 use Event;
 use Flash;
+use Illuminate\Database\Eloquent\Collection;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use ValidationException;
@@ -19,10 +22,11 @@ use Validator;
  */
 class DiscountLC extends ComponentBase
 {
+    use AccoutBooksTrait;
 
     protected User $user;
 
-    protected ?Book $book;
+    protected ?Edition $edition;
 
     public function componentDetails()
     {
@@ -47,7 +51,7 @@ class DiscountLC extends ComponentBase
         }
         $this->user = Auth::getUser();
 
-        $this->book = $this->getBook();
+        $this->edition = $this->getEdition();
     }
 
     public function onRender()
@@ -62,27 +66,14 @@ class DiscountLC extends ComponentBase
 
     public function vals()
     {
+        $discounts = $this->getDiscounts();
+
         return [
-            'books' => $this->query()->get(),
+            'editions' => $this->getNotFreeAccountEditions(),
             'active_at' => Carbon::tomorrow()->format('d.m.Y'),
-            'bookItem' => $this->getBook(),
-            'discounts' => $this->query()
-                ->has('ebook.discounts')
-                ->with('ebook.discounts', 'ebook.discounts.edition', 'ebook.discounts.edition.book')
-                ->get()->map->ebook->pluck('discounts')->flatten(1)->sortByDesc('active_at')
+            'editionItem' => $this->getEdition(),
+            'discounts' => $discounts->flatten(1)->sortByDesc('active_at'),
         ];
-    }
-
-
-    public function query()
-    {
-        return $this->user->toBookUser()->booksInAuthorOrder()->allowedForDiscount();
-    }
-
-
-    public function getBook()
-    {
-        return $this->query()->find(post('value') ?? post('book_id') ?? $this->param('book_id'));
     }
 
     public function onChangeEdition(): array
@@ -101,8 +92,10 @@ class DiscountLC extends ComponentBase
             Flash::error('Нельзя удалить активную скидку.');
             return [];
         }
+
         //TODO ref
         Discount::find(post('id'))->delete();
+
         return $this->render();
     }
 
@@ -113,24 +106,25 @@ class DiscountLC extends ComponentBase
         return [
             '#create_discount_modal_content' => $this->renderPartial('@discount_modal_content', array_merge(post(), [
                 'active' => true,
-                'priceTag' => $discount ? new PriceTag($this->book->ebook, $discount) : null
+                'priceTag' => $discount ? new PriceTag($this->edition, $discount) : null
             ]))
         ];
     }
 
     public function onCreateDiscount()
     {
-        if (!$this->book) {
-            Flash::error('Книга не найдена');
+        if (!$this->edition) {
+            Flash::error("Издание не найдено");
+
             return [];
         }
 
         $discount = $this->makeDiscount();
-        if ($this->book->ebook->discounts()->alreadySetInMonth($discount->active_at)->exists()) {
-            Flash::error('За календарный месяц можно установить только одну скидку для книги. Попробуйте другой месяц.');
+        if ($this->edition->discounts()->alreadySetInMonth($discount->active_at)->exists()) {
+            Flash::error('За календарный месяц можно установить только одну скидку для издания. Попробуйте другой месяц.');
             return [];
         }
-        $this->book->ebook->discounts()->add($discount);
+        $this->edition->discounts()->add($discount);
 
         if ($discount->active_at->eq(today()->startOfDay())) {
             Event::fire('books.book::edition.discounted', [$discount]);
@@ -148,7 +142,7 @@ class DiscountLC extends ComponentBase
 
     public function makeDiscount(): ?Discount
     {
-        if ($this->book) {
+        if ($this->edition) {
             $discount = new Discount();
             $data = collect(post())->only(['active_at', 'amount'])->toArray();
             $discount->removeValidationRule('amount', 'max:100');
@@ -163,7 +157,40 @@ class DiscountLC extends ComponentBase
             $discount->fill($data);
             return $discount;
         }
+
         return null;
+    }
+
+    /**
+     * @return Collection
+     */
+    private function getNotFreeAccountEditions(): Collection
+    {
+        $accountBooks = $this->getAccountBooks();
+
+        return Edition::query()
+            ->whereIn('book_id', $accountBooks->pluck('id')->toArray())
+            ->free(false)
+            ->orderBySalesAt()
+            ->get();
+    }
+
+    private function getEdition()
+    {
+        $editions = $this->getNotFreeAccountEditions();
+
+        return $editions
+            ->where('id', post('value') ?? post('edition_id') ?? $this->param('edition_id'))
+            ->first();
+    }
+
+    private function getDiscounts()
+    {
+        $editions = $this->getNotFreeAccountEditions();
+
+        return Discount::query()
+            ->whereIn('edition_id', $editions->pluck('id')->toArray())
+            ->get();
     }
 
 }

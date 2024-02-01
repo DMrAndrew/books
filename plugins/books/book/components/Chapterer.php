@@ -3,7 +3,9 @@
 namespace Books\Book\Components;
 
 use Books\Book\Classes\ChapterService;
+use Books\Book\Classes\Enums\BookStatus;
 use Books\Book\Classes\Enums\ChapterStatus;
+use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Services\TextCleanerService;
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
@@ -66,9 +68,15 @@ class Chapterer extends ComponentBase
             return $redirect;
         }
         $this->user = Auth::getUser();
-        $this->book = $this->user->profile->books()->find($this->param('book_id')) ?? abort(404);
-        $this->ebook = $this->book->ebook;
-        $this->chapter = $this->ebook->chapters()->find($this->param('chapter_id')) ?? new Chapter();
+        $this->book = $this->user->profile->books()->findOrFail($this->param('book_id'));
+        $this->ebook = $this->getEbook();
+        $this->chapter = $this->ebook->chapters()
+                ->withDrafts()
+                ->find($this->param('chapter_id'))
+            ?? new Chapter([
+                'edition_id' => $this->ebook->id,
+                'type' => EditionsEnums::Audio,
+            ]);
         $this->chapterManager = ($this->ebook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->ebook);
         $this->prepareVals();
 
@@ -90,6 +98,8 @@ class Chapterer extends ComponentBase
             if ($data->has('chapter_content')) {
                 $data['content'] = $data['chapter_content'] = TextCleanerService::cleanContent($data['chapter_content']);
             }
+
+            $data['type'] = EditionsEnums::Ebook;
 
             if ($status = $data['action'] ?? false) {
                 switch ($status) {
@@ -134,6 +144,9 @@ class Chapterer extends ComponentBase
 
             $this->chapter = $this->chapterManager->from($data->toArray());
 
+            $this->chapter->setLive();
+            $this->chapter->saveQuietly();
+
             return Redirect::to('/about-book/' . $this->book->id)->withFragment('#electronic')->setLastModified(now());
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
@@ -166,5 +179,16 @@ class Chapterer extends ComponentBase
             $trail->push($this->book->title, '/about-book/' . $this->book->id);
             $trail->push('Добавление текста');
         });
+    }
+
+    private function getEbook(): Edition
+    {
+        $ebook = $this->book->ebook
+            ?? $this->book->ebook()->create([
+                'type' => EditionsEnums::Ebook,
+                'status' => BookStatus::HIDDEN
+            ]);
+
+        return $ebook;
     }
 }

@@ -39,9 +39,11 @@ class Profile extends ComponentBase
 
     public function onSwitchProfile()
     {
-        $profile = \Books\Profile\Models\Profile::find(post('profile_id')) ?? abort(404);
+        $profile = \Books\Profile\Models\Profile::find(post('profile_id'))
+            ?? $this->controller->run('404');
         if ($this->user->profiles()->find($profile?->id) && $this->user->profile->id !== $profile->id) {
             $profile->service()->switch();
+
             return Redirect::refresh();
         }
     }
@@ -49,6 +51,7 @@ class Profile extends ComponentBase
     public function onCreateProfile(): RedirectResponse
     {
         $this->user->profile->service()->newProfile(post());
+
         return Redirect::refresh();
     }
 }

@@ -19,7 +19,7 @@
         </div>
     {% endif %}
 
-    {% partial 'site/ajax_paginator' paginator=posts_paginator function='onBlogPage' customPageName='blog-page' customTagName='#author-posts' %}
+    {% partial 'site/ajax_paginator' paginator=posts_paginator function='onBlogPage' customPageName='blogPostsPage' customTagName='#author-posts' %}
 
 {% else %}
     <div class="author__placeholder _indent">

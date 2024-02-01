@@ -10,7 +10,9 @@ use Books\Book\Classes\Enums\ChapterStatus;
 use Books\Book\Classes\Enums\EditionsEnums;
 use Books\Book\Classes\Reader;
 use Books\Book\Classes\ScopeToday;
+use Books\Book\Classes\Services\AudioFileLengthHelper;
 use Books\Book\Jobs\Paginate;
+use Books\Moderation\Classes\Traits\HasDrafts;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Model;
@@ -59,6 +61,7 @@ class Chapter extends Model
     use SoftDelete;
     use Purgeable;
     use HasRelationships;
+    use HasDrafts;
 
     /**
      * @var string table associated with the model
@@ -102,7 +105,7 @@ class Chapter extends Model
         'type' => EditionsEnums::class,
         'status' => ChapterStatus::class,
         'sales_type' => ChapterSalesType::class,
-        'audio' => ['nullable', 'file', 'mimes:mp3,mp4'],
+        //'audio' => ['nullable', 'file', 'mimes:mp3,aac'],
         'picture' => ['nullable', 'file', 'jpeg,jpg,png'],
     ];
 
@@ -114,9 +117,7 @@ class Chapter extends Model
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
      */
-    protected $appends = [
-
-    ];
+    protected $appends = [];
 
     /**
      * @var array hidden attributes removed from the API representation of the model (ex. toArray())
@@ -157,6 +158,10 @@ class Chapter extends Model
 
     public $attachMany = [];
 
+    protected array $draftableRelations = [
+        'audio',
+    ];
+
     public function reader(): Reader
     {
         return new Reader($this->edition->book, $this);
@@ -164,7 +169,10 @@ class Chapter extends Model
 
     public function service(): iChapterService
     {
-        return $this->edition?->is_deferred ? $this->deferredService(...func_get_args()) : $this->chapterService(...func_get_args());
+        return match ($this->edition?->type) {
+            EditionsEnums::Audio => $this->edition?->is_deferred ? $this->deferredService(...func_get_args()) : $this->chapterService(...func_get_args()),
+            default => $this->edition?->is_deferred ? $this->deferredService(...func_get_args()) : $this->chapterService(...func_get_args()),
+        };
     }
 
     public function chapterService(): iChapterService
@@ -185,6 +193,17 @@ class Chapter extends Model
     public function isFree(): bool
     {
         return $this->sales_type === ChapterSalesType::FREE;
+    }
+
+    public function isPublished(): bool
+    {
+        $published = match($this->type) {
+            EditionsEnums::Audio => $this->audio
+                                    && in_array($this->getOriginal('status'), [ChapterStatus::PUBLISHED]),
+            EditionsEnums::Ebook => in_array($this->getOriginal('status'), [ChapterStatus::PUBLISHED]),
+        };
+
+        return $published && $this->moderation_is_published;
     }
 
     public function paginationTrackers()
@@ -222,15 +241,25 @@ class Chapter extends Model
 
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where($this->getQualifiedStatusColumn(), ChapterStatus::PUBLISHED);
+        return $query
+                ->where($this->getQualifiedStatusColumn(), ChapterStatus::PUBLISHED)
+                ->where($this->qualifyColumn('moderation_is_published'), true)
+                ->where($this->qualifyColumn('moderation_is_current'), true);
     }
 
     public function scopePublic(Builder $builder, bool $withPlanned = false)
     {
         return $builder
-            ->where($this->qualifyColumn('length'), '>', 0)
             ->when($withPlanned, fn ($q) => $q->where(fn ($where) => $where->published()->orWhere(fn ($or) => $or->planned())), fn ($q) => $q->published())
-            ->whereDoesntHave('deferred', fn ($deferred) => $deferred->deferred()->deferredCreate());
+            ->whereDoesntHave('deferred', fn ($deferred) => $deferred->deferred()->deferredCreate())
+            ->where($this->qualifyColumn('moderation_is_published'), true)
+            ->where($this->qualifyColumn('moderation_is_current'), true);
+    }
+
+    // подсчет текстов отложенный, подсчет длины аудиоглав - по запросу
+    public function scopeWithLength(Builder $builder)
+    {
+        return $builder->where($this->qualifyColumn('length'), '>', 0);
     }
 
     public function scopeType(Builder $builder, ChapterStatus ...$status): Builder
@@ -247,7 +276,7 @@ class Chapter extends Model
 
     public function setNeighbours(): void
     {
-        $builder = fn () => $this->edition()->first()->chapters()->public();
+        $builder = fn () => $this->edition->chapters()->public()->withLength();
         $sort_order = $this->{$this->getSortOrderColumn()};
         $this->update([
             'prev_id' => $builder()->maxSortOrder($sort_order)->latest($this->getSortOrderColumn())->value('id'),
@@ -257,6 +286,8 @@ class Chapter extends Model
 
     protected function afterSave(): void
     {
+        $audioLength = $this->recalculateAudioLength();
+
         if ($this->isDirty(['status'])) {
             $fresh = $this->fresh();
             $this->edition()->first()->setFreeParts();
@@ -287,5 +318,60 @@ class Chapter extends Model
     public function getQualifiedStatusColumn(): string
     {
         return $this->qualifyColumn('status');
+    }
+
+    public function getAudioLengthAttribute(): ?string
+    {
+        if ($this->type != EditionsEnums::Audio || !$this->audio) {
+            return null;
+        }
+
+        /**
+         * Считаем длительность в секундах один раз,
+         * и сохраняем в поле length, чтобы не парсить файл при каждом запросе,
+         * так как файлы не редактируются
+         */
+        if (!$this->length) {
+            $durationInSeconds = AudioFileLengthHelper::getAudioLengthInSeconds(file: $this->audio);
+            if ($durationInSeconds) {
+                $this->length = $durationInSeconds;
+                $this->saveQuietly();
+            }
+
+            return AudioFileLengthHelper::formatSecondsToHumanReadableTime($durationInSeconds);
+        }
+
+        return AudioFileLengthHelper::formatSecondsToHumanReadableTime($this->length);
+    }
+
+    public function getAudioLengthShortAttribute(): ?string
+    {
+        if ($this->type != EditionsEnums::Audio || !$this->audio) {
+            return null;
+        }
+
+        if (!$this->length) {
+            $durationInSeconds = AudioFileLengthHelper::getAudioLengthInSeconds(file: $this->audio);
+            if ($durationInSeconds) {
+                $this->length = $durationInSeconds;
+                $this->saveQuietly();
+            }
+
+            return AudioFileLengthHelper::getAudioLengthHumanReadableShort(file: $this->audio);
+        }
+
+        return AudioFileLengthHelper::getAudioLengthHumanReadableShort(file: $this->audio);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function recalculateAudioLength(): mixed
+    {
+        if ($this->type == EditionsEnums::Audio && $this->audio) {
+            return $this->audioLength;
+        }
+
+        return null;
     }
 }

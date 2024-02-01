@@ -60,10 +60,21 @@ class BookPage extends ComponentBase
     public function init(): void
     {
         $this->user = Auth::getUser();
-        $this->book_id = is_numeric($this->param('book_id'))
-            ? (int) $this->param('book_id')
-            : abort(404);
+
+        $this->book_id = is_numeric($this->param('book_id')) ? (int) $this->param('book_id') : null;
+        if (! $this->book_id) {
+            $this->controller->run('404');
+
+            return;
+        }
+
         $this->book = Book::findForPublic($this->book_id, $this->user);
+        if (! $this->book) {
+            $this->controller->run('404');
+
+            return;
+        }
+
         $this->tryInjectAdultModal();
         $this->user?->library($this->book)->get(); //Добавить в библиотеку
         $this->book = Book::query()
@@ -119,17 +130,33 @@ class BookPage extends ComponentBase
 
     public function vals()
     {
+        if (! $this->book) {
+            return [
+                'book' => null,
+            ];
+        }
+
         return [
-            'buyBtn' => $this->buyBtn(),
-            'readBtn' => $this->readBtn(),
-            'supportBtn' => $this->supportBtn(),
             'book' => $this->book,
+
+            'buyBtn_ebook' => $this->buyButtonForEbook(),
+            'readBtn_ebook' => $this->readButtonForEbook(),
+            'buyBtn_audiobook' => $this->buyButtonForAudiobook(),
+            'readBtn_audiobook' => $this->readButtonForAudiobook(),
+            'supportBtn' => $this->supportBtn(),
+
+            'ebookVisible' => $this->ebookVisible(),
+            'audiobookVisible' => $this->audioVisible(),
+
             'cycle' => $this->book->cycle,
-            'download_btn' => $this->book->ebook->isDownloadAllowed(),
+            'download_btn' => $this->book->ebook?->isDownloadAllowed(),
         ];
     }
 
-    public function buyBtn(): bool
+    /**
+     * @return bool
+     */
+    public function buyButtonForEbook(): bool
     {
         /**
          * Авторизованным пользователям
@@ -145,7 +172,7 @@ class BookPage extends ComponentBase
             /**
              * Уже куплена
              */
-            if ($this->book->ebook->isSold($this->user)) {
+            if ($this->book->ebook?->isSold($this->user)) {
                 return false;
             }
         }
@@ -153,18 +180,65 @@ class BookPage extends ComponentBase
         /**
          * Книга бесплатная
          */
-        if ($this->book->ebook->isFree()) {
+        if ($this->book->ebook?->isFree()) {
             return false;
         }
 
         return true;
     }
 
-    public function readBtn(): bool
+    /**
+     * @return bool
+     */
+    public function readButtonForEbook(): bool
     {
-        return $this->book->ebook->isFree()
-            || ($this->user && $this->book->ebook->isSold($this->user))
-            || $this->book->ebook->chapters->some->isFree();
+        return $this->book->ebook?->isFree()
+            || ($this->user && $this->book->ebook?->isSold($this->user))
+            || $this->book->ebook?->chapters->some->isFree();
+    }
+
+    /**
+     * @return bool
+     */
+    private function buyButtonForAudiobook(): bool
+    {
+        /**
+         * Авторизованным пользователям
+         */
+        if ($this->user) {
+            /**
+             * Автор не может купить
+             */
+            if ($this->book->profiles()->user($this->user)->exists()) {
+                return false;
+            }
+
+            /**
+             * Уже куплена
+             */
+            if ($this->book->audiobook?->isSold($this->user)) {
+                return false;
+            }
+        }
+
+        /**
+         * Книга бесплатная
+         */
+        if ($this->book->audiobook?->isFree()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    private function readButtonForAudiobook(): bool
+    {
+        return $this->book->audiobook?->isFree()
+            || ($this->user && $this->book->audiobook?->isSold($this->user))
+            || $this->book->audiobook?->chapters->some->isFree();
     }
 
     /**
@@ -174,6 +248,22 @@ class BookPage extends ComponentBase
     private function supportBtn(): bool
     {
         return $this->user && ! $this->book->profiles()->user($this->user)->exists();
+    }
+
+    /**
+     * @return bool
+     */
+    private function ebookVisible(): bool
+    {
+        return $this->book->ebook?->isVisible() || $this->book->profiles()->user($this->user)->exists();
+    }
+
+    /**
+     * @return bool
+     */
+    private function audioVisible(): bool
+    {
+        return $this->book->audiobook?->isVisible() || $this->book->profiles()->user($this->user)->exists();
     }
 
     /**
@@ -218,22 +308,24 @@ class BookPage extends ComponentBase
     public function onDownload()
     {
         try {
-            $format = ElectronicFormats::tryFrom(post('format')) ?? ElectronicFormats::default();
-            if (! $this->book->ebook->isDownloadAllowed()) {
+            if (! $this->book->ebook?->isDownloadAllowed()) {
                 throw new DownloadNotAllowed();
             }
+
+            $format = ElectronicFormats::tryFrom(post('format')) ?? ElectronicFormats::default();
 
             $h = ['Content-Description' => 'File Transfer'];
             $file = (new DownloadService($this->book, $format))->getFile();
 
             ob_get_clean();
+
             return \Response::download($file->getLocalPath(), $file->getFilename(), $h);
+
         } catch (Exception $exception) {
             Flash::error($exception->getMessage());
             Log::error($exception->getMessage());
 
             return [];
         }
-
     }
 }

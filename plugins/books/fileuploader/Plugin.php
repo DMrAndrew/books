@@ -1,8 +1,9 @@
 <?php namespace Books\FileUploader;
 
-use System\Classes\PluginBase;
+use Books\FileUploader\Components\AudioUploader;
 use Books\FileUploader\Components\FileUploader;
 use Books\FileUploader\Components\ImageUploader;
+use System\Classes\PluginBase;
 
 /**
  * Uploader Plugin Information File
@@ -27,6 +28,7 @@ class Plugin extends PluginBase
         return [
            FileUploader::class  => 'fileUploader',
            ImageUploader::class => 'imageUploader',
+           AudioUploader::class => 'audioUploader',
         ];
     }
 }

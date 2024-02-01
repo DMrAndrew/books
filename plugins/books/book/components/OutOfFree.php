@@ -4,8 +4,11 @@ namespace Books\Book\Components;
 
 use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
+use Books\Book\Models\Edition;
 use Cms\Classes\ComponentBase;
+use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use Redirect;
 
 /**
  * OutOfFree Component
@@ -15,6 +18,7 @@ use RainLab\User\Models\User;
 class OutOfFree extends ComponentBase
 {
     protected Book $book;
+    protected ?Edition $edition;
 
     protected ?Chapter $chapter;
 
@@ -38,13 +42,32 @@ class OutOfFree extends ComponentBase
 
     public function init()
     {
-        $this->book = Book::query()
-            ->public()->with([
-                'ebook' => fn($ebook) => $ebook->withActiveDiscountExist()->with('discount'),
-            ])
-            ->find($this->param('book_id')) ?? abort(404);
+        $this->edition = Edition::query()
+            ->whereHas('book', function ($query) {
+                return $query->public();
+            })
+            ->findOrFail($this->param('edition_id'));
+
+        if (! $this->edition) {
+            $this->controller->run('404');
+
+            return;
+        }
+
         $this->chapter = Chapter::find($this->param('chapter_id'));
-        $this->page['book'] = $this->book;
+
+        $this->page['edition'] = $this->edition;
         $this->page['chapter'] = $this->chapter;
+    }
+
+    public function onRun()
+    {
+        $currentUserAlreadyOwnEdition = $this->edition->customers()->whereHas('user', function ($q) {
+            $q->where('user_id', Auth::getUser()?->id);
+        })->exists();
+
+        if ($currentUserAlreadyOwnEdition) {
+            return Redirect::to(sprintf('/book-card/%s', $this->edition->book->id));
+        }
     }
 }

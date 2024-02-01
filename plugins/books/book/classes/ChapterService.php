@@ -74,6 +74,7 @@ class ChapterService implements iChapterService
 
             return $this->isNew() ? static::create($data) : $this->update($data);
         }
+
         throw new UnknownFormatException();
     }
 
@@ -90,6 +91,9 @@ class ChapterService implements iChapterService
         $this->chapter->sales_type ??= ChapterSalesType::PAY;
         $this->chapter['edition_id'] = $this->edition->id;
         $this->chapter->save();
+
+        $this->chapter->setLive();
+        $this->chapter->saveQuietly();
 
         Event::fire('books.chapter.created', [$this->chapter]);
 

@@ -4,7 +4,7 @@
     {% if not posts[0] %}
         <div class="author__placeholder _indent">
             <svg class="square-32">
-                <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#video-blog-stroked-32' | theme }}"></use>
+                <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#blog-stroked-32' | theme }}"></use>
             </svg>
             <div class="ui-text-head--3 ui-text--bold">У {{ isOwner ? 'вас' : 'пользователя' }} пока нет ни
                 одной публикации
@@ -19,7 +19,7 @@
         </div>
     {% endif %}
 
-    {% partial 'site/ajax_paginator' paginator=videoblog_posts_paginator function='onVideoBlogPage' customPageName='videoblog-page' customTagName='#author-videoposts' %}
+    {% partial 'site/ajax_paginator' paginator=videoblog_posts_paginator function='onVideoBlogPage' customPageName='videoblogPostsPage' customTagName='#author-videoposts' %}
 
 {% else %}
     <div class="author__placeholder _indent">

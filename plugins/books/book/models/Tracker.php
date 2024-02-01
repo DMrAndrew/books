@@ -7,6 +7,7 @@ use Books\Book\Classes\ReadProgress;
 use Books\Book\Classes\ScopeToday;
 use Books\Book\Jobs\ClearTrackers;
 use Books\Book\Jobs\Reading;
+use Carbon\Carbon;
 use Db;
 use Illuminate\Notifications\Notifiable;
 use Model;
@@ -78,6 +79,16 @@ class Tracker extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new ScopeToday());
+    }
+
+    public function scopeUnParent(Builder $builder)
+    {
+        return $builder->whereNull('parent_id');
+    }
+
+    public function scopeBroken(Builder $builder)
+    {
+        return $builder->whereDate('created_at', '<=', Carbon::parse('2023-09-15'));
     }
 
     public function scopeOrderByUpdatedAt(Builder $builder, bool $asc = true): Builder

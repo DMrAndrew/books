@@ -2,14 +2,12 @@
 
 namespace Books\Notifications\Classes\Events;
 
-use Books\Book\Models\Book;
-use Books\Collections\classes\CollectionEnum;
-use Books\Collections\Models\Lib;
 use Books\Notifications\Classes\NotificationTypeEnum;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use RainLab\Notify\Classes\EventBase;
 
-class PostPublished extends BaseEvent
+class PostPublished extends EventBase
 {
     public string $eventName = 'Новая публикация в блоге';
 

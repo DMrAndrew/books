@@ -3,7 +3,6 @@
 namespace Books\Book\Jobs;
 
 use App\telegram\TChatsEnum;
-use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
@@ -52,6 +51,8 @@ class ClearTrackers implements ShouldQueue
             ->withoutTodayScope()
             ->type(Pagination::class)
             ->where('time', 0)
+            ->unparent()
+            ->broken()
             ->orderBy('created_at');
     }
 
@@ -78,15 +79,22 @@ class ClearTrackers implements ShouldQueue
             $total_processed++;
             $this->notifyProcess($total_deleted, $total_processed);
         }
-        $this->notify(sprintf('End.'.PHP_EOL.'Deleted: %s'.PHP_EOL.'Processed: %s'.PHP_EOL.'Total: %s', $total_deleted, $total_processed, $total));
+        $template = collect([
+            'End.',
+            'Deleted: %s',
+            'Processed: %s',
+            'Total: %s',
+        ])->join(PHP_EOL);
+
+        $this->notify(sprintf($template, $total_deleted, $total_processed, $total));
     }
 
     public function removeUnnecessaryTrackers(): void
     {
         if (! Cache::has('unnecessary_trackers_removed')) {
-
-            $this->notify(sprintf('%s: deleted %s', Chapter::class, Tracker::query()->withoutTodayScope()->type(Chapter::class)->delete()));
-            $this->notify(sprintf('%s: deleted %s', Edition::class, Tracker::query()->withoutTodayScope()->type(Edition::class)->delete()));
+            $builder = fn () => Tracker::query()->withoutTodayScope()->broken();
+            $this->notify(sprintf('%s: deleted %s', Chapter::class, $builder()->type(Chapter::class)->delete()));
+            $this->notify(sprintf('%s: deleted %s', Edition::class, $builder()->type(Edition::class)->delete()));
         }
         Cache::set('unnecessary_trackers_removed', true);
     }
