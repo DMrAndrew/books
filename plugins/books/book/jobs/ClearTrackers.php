@@ -67,11 +67,6 @@ class ClearTrackers implements ShouldQueue
         $total = $this->trackerQuery()->count();
         $this->notify(sprintf('%s found', $total));
         foreach ($this->trackerQuery()->cursor() as $item) {
-            if (in_array($item->id, $this->processed())) {
-                continue;
-            }
-
-            $this->saveProcessed(array_merge([$item->id], $this->processed()));
             $total_deleted += $item->clearDuplicates();
             $total_processed++;
             $this->notifyProcess($total_deleted, $total_processed);
@@ -117,16 +112,6 @@ class ClearTrackers implements ShouldQueue
     private function notify(string $msg)
     {
         return TChatsEnum::PERSONAL->make()->content('#'.spl_object_id($this).PHP_EOL.$msg)->send();
-    }
-
-    public function processed()
-    {
-        return Cache::get('cleared_trackers') ?? [];
-    }
-
-    public function saveProcessed(array $array): void
-    {
-        Cache::set('cleared_trackers', $array,20);
     }
 
     public function __destruct()
