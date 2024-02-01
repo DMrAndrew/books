@@ -67,11 +67,6 @@ class ClearTrackers implements ShouldQueue
         $total = $this->trackerQuery()->count();
         $this->notify(sprintf('%s found', $total));
         foreach ($this->trackerQuery()->cursor() as $item) {
-            if (in_array($item->id, $this->processed())) {
-                continue;
-            }
-
-            $this->saveProcessed(array_merge([$item->id], $this->processed()));
             $total_deleted += $item->clearDuplicates();
             $total_processed++;
             $this->notifyProcess($total_deleted, $total_processed);
@@ -92,8 +87,8 @@ class ClearTrackers implements ShouldQueue
             $builder = fn () => Tracker::query()->withoutTodayScope()->broken();
             $this->notify(sprintf('%s: deleted %s', Chapter::class, $builder()->type(Chapter::class)->delete()));
             $this->notify(sprintf('%s: deleted %s', Edition::class, $builder()->type(Edition::class)->delete()));
+            Cache::set('unnecessary_trackers_removed', true);
         }
-        Cache::set('unnecessary_trackers_removed', true);
     }
 
     public function notifyProcess(int $deleted, int $processed)
@@ -101,7 +96,6 @@ class ClearTrackers implements ShouldQueue
         if (abs($this->lastSend()->diffInMinutes(now())) >= self::NOTIFY_PROCESS_PERIOD) {
             $this->notify(sprintf('%s deleted.'.PHP_EOL.'%s processed.', $deleted, $processed));
             $this->last_send = now();
-            Cache::set('cleared_trackers',[]);
         }
 
     }
@@ -117,17 +111,13 @@ class ClearTrackers implements ShouldQueue
      */
     private function notify(string $msg)
     {
-        return TChatsEnum::PERSONAL->make()->content('#'.spl_object_id($this).PHP_EOL.$msg)->send();
-    }
-
-    public function processed()
-    {
-        return Cache::get('cleared_trackers') ?? [];
-    }
-
-    public function saveProcessed(array $array): void
-    {
-        Cache::set('cleared_trackers', $array);
+        $template = collect([
+            '#',
+            spl_object_id($this),
+            PHP_EOL,
+            $msg
+        ]);
+        return TChatsEnum::PERSONAL->make()->content($template->join(''))->send();
     }
 
     public function __destruct()

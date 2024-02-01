@@ -210,6 +210,8 @@ class Tracker extends Model
 
     public function reprogress(): void
     {
-        static::query()->withoutTodayScope()->unparent()->broken()->orderBy('created_at')->cursor()->each->progress();
+        foreach (static::query()->withoutTodayScope()->unparent()->broken()->orderBy('created_at')->cursor() as $item){
+            $item->progress();
+        }
     }
 }
