@@ -101,7 +101,6 @@ class ClearTrackers implements ShouldQueue
         if (abs($this->lastSend()->diffInMinutes(now())) >= self::NOTIFY_PROCESS_PERIOD) {
             $this->notify(sprintf('%s deleted.'.PHP_EOL.'%s processed.', $deleted, $processed));
             $this->last_send = now();
-            Cache::set('cleared_trackers',[]);
         }
 
     }
@@ -127,7 +126,7 @@ class ClearTrackers implements ShouldQueue
 
     public function saveProcessed(array $array): void
     {
-        Cache::set('cleared_trackers', $array);
+        Cache::set('cleared_trackers', $array,20);
     }
 
     public function __destruct()
