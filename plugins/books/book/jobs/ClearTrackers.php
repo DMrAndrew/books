@@ -3,7 +3,6 @@
 namespace Books\Book\Jobs;
 
 use App\telegram\TChatsEnum;
-use Books\Book\Models\Book;
 use Books\Book\Models\Chapter;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Pagination;
@@ -28,7 +27,7 @@ class ClearTrackers implements ShouldQueue
 
     public ?Carbon $last_send = null;
 
-    const NOTIFY_PROCESS_PERIOD = 2;
+    const NOTIFY_PROCESS_PERIOD = 4;
 
     /**
      * __construct a new job instance.
@@ -52,6 +51,7 @@ class ClearTrackers implements ShouldQueue
             ->withoutTodayScope()
             ->type(Pagination::class)
             ->where('time', 0)
+            ->broken()
             ->orderBy('created_at');
     }
 
@@ -63,32 +63,31 @@ class ClearTrackers implements ShouldQueue
         $this->removeUnnecessaryTrackers();
         $total_deleted = 0;
         $total_processed = 0;
-        $processed = $this->processed();
-        $total = $this->trackerQuery()->get()->filter(fn ($i) => ! in_array($i->id, $processed))->count();
-        unset($processed);
+        $total = $this->trackerQuery()->count();
         $this->notify(sprintf('%s found', $total));
         foreach ($this->trackerQuery()->cursor() as $item) {
-            $processed = $this->processed();
-            if (in_array($item->id, $processed)) {
-                continue;
-            }
-
-            $this->saveProcessed(array_merge([$item->id], $processed));
             $total_deleted += $item->clearDuplicates();
             $total_processed++;
             $this->notifyProcess($total_deleted, $total_processed);
         }
-        $this->notify(sprintf('End.'.PHP_EOL.'Deleted: %s'.PHP_EOL.'Processed: %s'.PHP_EOL.'Total: %s', $total_deleted, $total_processed, $total));
+        $template = collect([
+            'End.',
+            'Deleted: %s',
+            'Processed: %s',
+            'Total: %s',
+        ])->join(PHP_EOL);
+
+        $this->notify(sprintf($template, $total_deleted, $total_processed, $total));
     }
 
     public function removeUnnecessaryTrackers(): void
     {
         if (! Cache::has('unnecessary_trackers_removed')) {
-
-            $this->notify(sprintf('%s: deleted %s', Chapter::class, Tracker::query()->withoutTodayScope()->type(Chapter::class)->delete()));
-            $this->notify(sprintf('%s: deleted %s', Edition::class, Tracker::query()->withoutTodayScope()->type(Edition::class)->delete()));
+            $builder = fn () => Tracker::query()->withoutTodayScope()->broken();
+            $this->notify(sprintf('%s: deleted %s', Chapter::class, $builder()->type(Chapter::class)->delete()));
+            $this->notify(sprintf('%s: deleted %s', Edition::class, $builder()->type(Edition::class)->delete()));
+            Cache::set('unnecessary_trackers_removed', true);
         }
-        Cache::set('unnecessary_trackers_removed', true);
     }
 
     public function notifyProcess(int $deleted, int $processed)
@@ -111,17 +110,13 @@ class ClearTrackers implements ShouldQueue
      */
     private function notify(string $msg)
     {
-        return TChatsEnum::PERSONAL->make()->content('#'.spl_object_id($this).PHP_EOL.$msg)->send();
-    }
-
-    public function processed()
-    {
-        return Cache::get('cleared_trackers') ?? [];
-    }
-
-    public function saveProcessed(array $array): void
-    {
-        Cache::set('cleared_trackers', $array);
+        $template = collect([
+            '#',
+            spl_object_id($this),
+            PHP_EOL,
+            $msg
+        ]);
+        return TChatsEnum::PERSONAL->make()->content($template->join(''))->send();
     }
 
     public function __destruct()

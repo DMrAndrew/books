@@ -50,7 +50,7 @@ class ReadProgress
 
     public function validate(): bool
     {
-        return in_array($this->parent_relation, ['chapter', 'edition']);
+        return $this->tracker->trackable && in_array($this->parent_relation, ['chapter', 'edition']);
     }
 
     public function apply(): ?int

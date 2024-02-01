@@ -15,7 +15,6 @@ class AddTrackersSimpleFree extends Migration
             Schema::table($this->table(), function (Blueprint $table) {
                 $table->unsignedBigInteger('parent_id')->nullable()->index();
                 $table->index('user_id');
-                $table->index('ip');
                 $table->index('created_at');
             });
         }
@@ -26,9 +25,8 @@ class AddTrackersSimpleFree extends Migration
         if (Schema::hasColumn($this->table(), 'parent_id')) {
             Schema::dropColumns($this->table(), 'parent_id');
             Schema::table($this->table(), function (Blueprint $table) {
-                $table->dropIndex('user_id');
-                $table->dropIndex('ip');
-                $table->dropIndex('created_at');
+                $table->dropIndex(['user_id']);
+                $table->dropIndex(['created_at']);
             });
         }
     }
