@@ -88,7 +88,9 @@ class Tracker extends Model
 
     public function scopeBroken(Builder $builder)
     {
-        return $builder->whereDate('created_at', '<=', Carbon::parse('2023-09-15'));
+//        return $builder->whereDate('created_at', '<=', Carbon::parse('2023-09-15'));
+        $builder->whereDate('created_at', '>=', Carbon::parse('2023-09-01'))
+        ->whereDate('created_at', '<=', Carbon::parse('2023-09-15'));
     }
 
     public function scopeOrderByUpdatedAt(Builder $builder, bool $asc = true): Builder
