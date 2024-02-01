@@ -87,8 +87,8 @@ class ClearTrackers implements ShouldQueue
             $builder = fn () => Tracker::query()->withoutTodayScope()->broken();
             $this->notify(sprintf('%s: deleted %s', Chapter::class, $builder()->type(Chapter::class)->delete()));
             $this->notify(sprintf('%s: deleted %s', Edition::class, $builder()->type(Edition::class)->delete()));
+            Cache::set('unnecessary_trackers_removed', true);
         }
-        Cache::set('unnecessary_trackers_removed', true);
     }
 
     public function notifyProcess(int $deleted, int $processed)
@@ -111,7 +111,13 @@ class ClearTrackers implements ShouldQueue
      */
     private function notify(string $msg)
     {
-        return TChatsEnum::PERSONAL->make()->content('#'.spl_object_id($this).PHP_EOL.$msg)->send();
+        $template = collect([
+            '#',
+            spl_object_id($this),
+            PHP_EOL,
+            $msg
+        ]);
+        return TChatsEnum::PERSONAL->make()->content($template->join(''))->send();
     }
 
     public function __destruct()
