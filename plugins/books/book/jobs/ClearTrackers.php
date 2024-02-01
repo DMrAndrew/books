@@ -65,7 +65,7 @@ class ClearTrackers implements ShouldQueue
         $total_deleted = 0;
         $total_processed = 0;
         $processed = $this->processed();
-        $total = $this->trackerQuery()->get()->filter(fn ($i) => ! in_array($i->id, $processed))->count();
+        $total = $this->trackerQuery()->count();
         unset($processed);
         $this->notify(sprintf('%s found', $total));
         foreach ($this->trackerQuery()->cursor() as $item) {
