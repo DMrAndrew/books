@@ -60,7 +60,33 @@
             {% endif %}
             {% endif %}
         </div>
+        {% if download_btn %}
+        <div class="book-card-full-type__description _indent-top">
+            <span class="_indent">Скачать: </span>
+            <a href="#" data-attach-loading onclick="oc.ajax('onDownload',{data:{format:'fb2'},download:true, flash:true, loading:'#loading_book'}); return false"  class="ui-link _violet cursor-pointer">fb2</a>&nbsp;
+            <a href="#" data-attach-loading onclick="oc.ajax('onDownload',{data:{format:'epub'}, download:true, flash:true, loading:'#loading_book'});return false" class="ui-link _violet">epub</a>&nbsp;
+            <a href="#" data-attach-loading onclick="oc.ajax('onDownload',{data:{format:'mobi'}, download:true, flash:true, loading:'#loading_book' });return false" class="ui-link _violet">mobi</a>&nbsp;
+            <a href="#" data-attach-loading onclick="oc.ajax('onDownload',{data:{format:'pdf'}, download:true, flash:true, loading:'#loading_book'});return false" class="ui-link _violet">pdf</a>&nbsp;
+            <a href="#" data-attach-loading onclick="oc.ajax('onDownload',{data:{format:'txt'}, download:true, flash:true, loading:'#loading_book'});return false" class="ui-link _violet">txt</a>&nbsp;
+            <span class="book-card-full-type__description-dot"></span>
 
+            <span>{{book.ebook.downloadsCount}}</span>
+        </div>
+        <div style="display:flex;justify-content: center">
+            <div class="loading__wrap" id="loading_book" style="margin: 0;display: none">
+                <div class="loading__icon">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
         <!-- <div class="book-card-full-type__description _indent-top">-->
         <!-- <span class="_indent">Скачать: </span>-->
         <!-- <a href="#" class="ui-link _violet">epub</a>,-->
