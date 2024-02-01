@@ -225,7 +225,7 @@ return [
             'maxJobs' => 10,
             'memory' => 1024,
             'tries' => 1,
-            'timeout' => 10000,
+            'timeout' => 1200,
             'nice' => 0,
             'balanceMaxShift' => 2,
             'balanceCooldown' => 2,
