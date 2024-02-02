@@ -252,6 +252,9 @@ class PaymentController extends Controller
          * Validation string from CloudPayment service
          */
         $hmacRequestHeader = $request->header('Content-HMAC');
+        if (empty($hmacRequestHeader)) {
+            return false;
+        }
 
         /**
          * Validation string calculated on client side
