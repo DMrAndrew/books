@@ -107,20 +107,38 @@ class PaymentController extends Controller
                 /**
                  * Verify payment
                  */
-                if (!$this->validPaymentInvoiceId($payment, $paymentWebhookData)) {
-                    $this->logWebhookProcessing('Verification failed', "Invalid order {$paymentWebhookData['InvoiceId']} for transaction {$transactionId}");
+                if (! $this->validRequestHashHMAC($request)) {
+                    $this->logWebhookProcessing(
+                        'Verification failed',
+                        "HMac-hash from Cloudpayments does not match the hash calculated on the client for transaction {$transactionId}"
+                    );
+
+                    return self::STATUS_CODE_ERROR;
+                }
+
+                if (! $this->validPaymentInvoiceId($payment, $paymentWebhookData)) {
+                    $this->logWebhookProcessing(
+                        'Verification failed',
+                        "Invalid order {$paymentWebhookData['InvoiceId']} for transaction {$transactionId}"
+                    );
 
                     return self::STATUS_CODE_INVALID_INVOICE_ID;
                 }
 
-                if (!$this->validPaymentAccountId($payment, $paymentWebhookData)) {
-                    $this->logWebhookProcessing('Verification failed', "Invalid AccountId {$paymentWebhookData['AccountId']} for transaction {$transactionId}");
+                if (! $this->validPaymentAccountId($payment, $paymentWebhookData)) {
+                    $this->logWebhookProcessing(
+                        'Verification failed',
+                        "Invalid AccountId {$paymentWebhookData['AccountId']} for transaction {$transactionId}"
+                    );
 
                     return self::STATUS_CODE_INVALID_ACCOUNT_ID;
                 }
-                ;
-                if (!$this->validPaymentAmount($payment, $paymentWebhookData)) {
-                    $this->logWebhookProcessing('Verification failed', "Payment amount does not match the order amount for transaction {$transactionId}");
+
+                if (! $this->validPaymentAmount($payment, $paymentWebhookData)) {
+                    $this->logWebhookProcessing(
+                        'Verification failed',
+                        "Payment amount does not match the order amount for transaction {$transactionId}"
+                    );
 
                     return self::STATUS_CODE_INVALID_AMOUNT;
                 }
@@ -128,7 +146,7 @@ class PaymentController extends Controller
                 /**
                  * Update payment status
                  */
-                if (!$checkOnly) {
+                if (! $checkOnly) {
                     $this->updatePaymentStatus($payment, $paymentWebhookData);
                 }
 
@@ -150,12 +168,12 @@ class PaymentController extends Controller
      */
     private function getPayment(string $paymentId): PaymentModel
     {
-        if (!isset($paymentId)) {
+        if (! isset($paymentId)) {
             throw new Exception("Field paymentId is required in Data array");
         }
 
         $payment = PaymentModel::where('payment_id', $paymentId)->first();
-        if (!$payment) {
+        if (! $payment) {
             throw new Exception("Cant resolve payment from request data");
         }
 
@@ -197,7 +215,7 @@ class PaymentController extends Controller
                     $this->orderService->updateOrderstatus($order, $orderStatus);
                     $isApproved = $this->orderService->approveOrder($order);
 
-                    if (!$isApproved) {
+                    if (! $isApproved) {
                         throw new Exception("Something went wrong with completing order #{$order->id}");
                     }
                 }
@@ -209,12 +227,48 @@ class PaymentController extends Controller
                     $this->orderService->updateOrderstatus($order, $orderStatus);
                     $isCancelled = $this->orderService->cancelOrder($order);
 
-                    if (!$isCancelled) {
+                    if (! $isCancelled) {
                         throw new Exception("Something went wrong with cancelling order #{$order->id}");
                     }
                 }
                 break;
         }
+    }
+
+    /**
+     * https://developers.cloudpayments.ru/#proverka-uvedomleniy
+     *
+     * @param Request $request
+     *
+     * @return bool
+     */
+    private function validRequestHashHMAC(Request $request): bool
+    {
+        if (config('cloudpayments.disable_payment_hmac_hash_validation')) {
+            return true;
+        }
+
+        /**
+         * Validation string from CloudPayment service
+         */
+        $hmacRequestHeader = $request->header('Content-HMAC');
+
+        /**
+         * Validation string calculated on client side
+         */
+        $hashKeyFromApiSecret = config('cloudpayments.apiSecret');
+        $requestBody = $request->getContent();
+
+        $clientHmac = base64_encode(
+            hash_hmac(
+                'sha256',
+                $requestBody,
+                $hashKeyFromApiSecret,
+                true
+            )
+        );
+
+        return $hmacRequestHeader === $clientHmac;
     }
 
     /**
