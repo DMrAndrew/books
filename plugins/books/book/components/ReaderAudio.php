@@ -78,7 +78,7 @@ class ReaderAudio extends ComponentBase
         }
 
         $this->chapter_id = (int) $this->param('chapter_id');
-        $this->chapter = $this->chapter_id ? Chapter::find($this->chapter_id) ?? abort(404) : null;
+        $this->chapter = $this->chapter_id ? Chapter::find($this->chapter_id) : null;
 
         $this->tryInjectAdultModal();
         $this->addMeta();
