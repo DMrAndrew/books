@@ -10,6 +10,8 @@ use BackendMenu;
 use Books\Book\Models\Author;
 use Books\Book\Models\Book as BookModel;
 use Books\Profile\Models\Profile;
+use Flash;
+use Lang;
 
 /**
  * Book Backend Controller
@@ -66,5 +68,37 @@ class Book extends Controller
         $query->leftJoin($profileTableName, $authorsTableName . '.profile_id', '=', $profileTableName . '.id');
 
         $query->groupBy($bookTableName . '.id');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function onDelete()
+    {
+        $checkedIds = post('checked');
+
+        if (!$checkedIds || !is_array($checkedIds) || !count($checkedIds)) {
+            Flash::error(Lang::get('backend::lang.list.delete_selected_empty'));
+            return $this->listRefresh();
+        }
+
+        // Create the model
+        $model = new BookModel;
+
+        $query = BookModel::query();
+        $records = $query->whereIn($model->getQualifiedKeyName(), $checkedIds)->get();
+
+        if ($records->count()) {
+            foreach ($records as $record) {
+                $record->delete();
+            }
+
+            Flash::success(Lang::get('backend::lang.list.delete_selected_success'));
+        }
+        else {
+            Flash::error(Lang::get('backend::lang.list.delete_selected_empty'));
+        }
+
+        return $this->listRefresh();
     }
 }
