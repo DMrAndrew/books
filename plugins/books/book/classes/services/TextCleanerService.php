@@ -110,6 +110,11 @@ class TextCleanerService
             // todo
 
             /**
+             * Extract span's text of <span>'s without styles
+             */
+            self::extractSpans($doc);
+
+            /**
              * Check links domains
              */
             self::validateLinkProcessMode($processLinksMode);
@@ -364,6 +369,36 @@ class TextCleanerService
 
             if($node->hasChildNodes()) {
                 self::validateLinkHrefDomains($node, $allowDomains, $processLinksMode);
+            }
+        }
+    }
+
+    /**
+     * @param DOMNode $domNode
+     *
+     * @return void
+     */
+    private static function extractSpans(DOMNode &$domNode): void
+    {
+        /** @var DOMNode $node */
+        foreach ($domNode->childNodes as $nodeKey => $node)
+        {
+            $nodeName = $node->nodeName;
+
+            if ($nodeName === 'span') {
+                $attributes = $node->attributes;
+
+                // развернуть пустой span
+                if (count($attributes) == 0) {
+                    $domNode->childNodes[$nodeKey]->parentNode->replaceChild(new DOMText($node->textContent), $node);
+                    self::extractSpans($domNode);
+
+                    return;
+                }
+            }
+
+            if($node->hasChildNodes()) {
+                self::extractSpans($node);
             }
         }
     }
