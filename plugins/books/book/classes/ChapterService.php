@@ -19,7 +19,6 @@ use Db;
 use Event;
 use Exception;
 use Illuminate\Support\Collection;
-use Log;
 use ValidationException;
 
 class ChapterService implements iChapterService
@@ -255,13 +254,7 @@ class ChapterService implements iChapterService
 
     public function paginate()
     {
-        Log::info('start paginate: ');
-
         $chunks = $this->chunkContent();
-
-        Log::info('chunks: ');
-        Log::info($chunks->slice(0, 6)->toArray());
-
         $pages = $chunks->map(function ($chunk, $index) {
             return new Pagination(
                 [
@@ -289,17 +282,9 @@ class ChapterService implements iChapterService
 
     public function chunkContent(): Collection
     {
-//        $preCollection = BookUtilities
-//            ::parseStringToParagraphCollection($this->chapter->content->body, SaveHtmlMode::STANDARD);
-//
-//        Log::info('preCollection');
-//        Log::info($preCollection->slice(0, 5)->toArray());
-
-        return BookUtilities
-            ::parseStringToParagraphCollection($this->chapter->content->body, SaveHtmlMode::WITH_WRAP)
-            ->chunkWhile(function ($value, $key, $chunk) {
-                return $chunk->sum('length') + $value['length'] <= Pagination::RECOMMEND_MAX_LENGTH;
-            });
+        return BookUtilities::parseStringToParagraphCollection($this->chapter->content->body, SaveHtmlMode::WITH_WRAP)->chunkWhile(function ($value, $key, $chunk) {
+            return $chunk->sum('length') + $value['length'] <= Pagination::RECOMMEND_MAX_LENGTH;
+        });
     }
 
     public function publish(bool $forceFireEvent = true): Closure

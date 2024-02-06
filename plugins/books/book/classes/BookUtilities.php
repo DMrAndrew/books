@@ -3,9 +3,7 @@
 namespace Books\Book\Classes;
 
 use DiDom\Document;
-use DiDom\Element;
 use Illuminate\Support\Collection;
-use Log;
 use Str;
 
 class BookUtilities
@@ -171,35 +169,9 @@ class BookUtilities
         return $str;
     }
 
-    /**
-     * todo: сравнить обе коллекции и привести вторую коллекцию к нужному виду, получая её первым способом
-     */
     public static function parseStringToParagraphCollection(?string $content, SaveHtmlMode $mode = SaveHtmlMode::STANDARD): Collection
     {
         $dom = self::stringToDiDom($content);
-
-        Log::info('STANDARD: ');
-        Log::info(
-            collect($dom->getDocument()->childNodes)->map(fn ($node) => [
-                'html' => $dom->getDocument()->saveHTML($node),
-                'length' => self::countContentLength($node->textContent),
-            ])
-                ->slice(0, 10)
-                ->toArray()
-        );
-
-        Log::info('WITH_WRAP: ');
-        Log::info(
-            collect($dom->toElement()->children())->map(function ($node) {
-                return [
-                    'html' => $node->html(),
-                    'length' => self::countContentLength($node->text()),
-                ];
-            })
-                ->slice(0, 10)
-                ->toArray()
-            );
-
 
         if ($mode === SaveHtmlMode::STANDARD) {
             return collect($dom->getDocument()->childNodes)->map(fn ($node) => [
@@ -209,12 +181,10 @@ class BookUtilities
         }
 
         if ($mode === SaveHtmlMode::WITH_WRAP) {
-            return collect($dom->toElement()->children())->map(function ($node) {
-                return [
-                    'html' => $node->html(),
-                    'length' => self::countContentLength($node->text()),
-                ];
-            });
+            return collect($dom->toElement()->children())->map(fn ($node) => [
+                'html' => $node->html(),
+                'length' => self::countContentLength($node->text()),
+            ]);
         }
     }
 
@@ -241,7 +211,6 @@ class BookUtilities
     public static function str_remove(string $str, array $items = []): array|string|null
     {
         foreach ($items as $item) {
-            Log::info('remove ' . $item);
             $str = str_replace($item, '', $str);
         }
 
