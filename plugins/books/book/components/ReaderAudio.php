@@ -71,7 +71,7 @@ class ReaderAudio extends ComponentBase
 
         $this->book = Book::findForPublic($this->audiobook_id, $this->user);
 
-        if (! $this->book?->audiobook) {
+        if (! $this->book?->audiobook || !$this->editionVisible()) {
             $this->controller->run('404');
 
             return;
@@ -150,6 +150,8 @@ class ReaderAudio extends ComponentBase
         $this->page['user'] = $this->user;
         $this->page['lastChapter'] = $this->page['pagination']['next'] === false;
         $this->page['audioProgress'] = $this->getAudioReadProgress();
+
+        $this->page['ebookVisible'] = $this->ebookVisible();
     }
 
     public function onNext()
@@ -306,5 +308,21 @@ class ReaderAudio extends ComponentBase
             ->first();
 
         return $audioReadProgress?->progress;
+    }
+
+    /**
+     * @return bool
+     */
+    private function editionVisible(): bool
+    {
+        return $this->book->audiobook?->isVisible();
+    }
+
+    /**
+     * @return bool
+     */
+    private function ebookVisible(): bool
+    {
+        return $this->book->ebook?->isVisible();
     }
 }
