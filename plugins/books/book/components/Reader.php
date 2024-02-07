@@ -69,7 +69,8 @@ class Reader extends ComponentBase
         }
 
         $this->book = Book::findForPublic($this->book_id, $this->user);
-        if (! $this->book) {
+
+        if (! $this->book?->ebook || !$this->editionVisible()) {
             $this->controller->run('404');
 
             return;
@@ -232,5 +233,13 @@ class Reader extends ComponentBase
             /** Название книги */
             $trail->push($this->book->title, url('/book-card/' . $this->book->id));
         });
+    }
+
+    /**
+     * @return bool
+     */
+    private function editionVisible(): bool
+    {
+        return $this->book->ebook?->isVisible();
     }
 }
