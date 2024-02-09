@@ -450,7 +450,7 @@ class OrderService implements OrderServiceContract
                 ?->book;
 
             $book->profiles->each(function ($profile) use ($byEdition, $book, $order) {
-                $rewardTaxedCoefficient = $this->getAuthorRewardCoefficient($profile->user->birthday->isBirthday());
+                $rewardTaxedCoefficient = $this->getAuthorRewardCoefficient($profile->user->birthday?->isBirthday());
                 $authorRewardPartRounded = intdiv(($byEdition * $profile->pivot->percent), 100);
                 $authorRewardPartTaxed = intval($rewardTaxedCoefficient * $authorRewardPartRounded);
                 $profile->user->proxyWallet()->deposit($authorRewardPartTaxed);
@@ -470,7 +470,7 @@ class OrderService implements OrderServiceContract
             $authorsRewardPartRounded = $this->getRewardPartRounded($bySupport, $profiles->count());
 
             $profiles->each(function ($profile) use ($order, $authorsRewardPartRounded) {
-                $rewardTaxedCoefficient = $this->getAuthorRewardCoefficient($profile->user->birthday->isBirthday());
+                $rewardTaxedCoefficient = $this->getAuthorRewardCoefficient($profile->user->birthday?->isBirthday());
                 $authorRewardPartTaxed = intval($rewardTaxedCoefficient * $authorsRewardPartRounded);
                 $profile->user->proxyWallet()->deposit($authorRewardPartTaxed);
 
