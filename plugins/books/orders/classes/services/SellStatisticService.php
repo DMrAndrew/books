@@ -40,7 +40,7 @@ class SellStatisticService implements SellStatisticServiceContract
         $book = $edition->book;
 
         $rewardTaxedCoefficient = $this->orderService->getAuthorRewardCoefficient(
-            $book->authors->first()->profile->user->birthday->isBirthday()
+            $book->authors->first()->profile->user->birthday?->isBirthday()
         );
 
         /**

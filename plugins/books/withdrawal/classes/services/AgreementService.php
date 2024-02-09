@@ -60,7 +60,7 @@ class AgreementService implements AgreementServiceContract
                 </tr>
                 <tr>
                   <td>{$withdrawal->fio}<br>
-                    Дата рождения: {$withdrawal->birthday->format('d.m.Y')}<br>
+                    Дата рождения: {$withdrawal->birthday?->format('d.m.Y')}<br>
                     {$withdrawal->employment_type->getLabel()} ИНН {$withdrawal->inn} {$egrip}<br>
                     Паспорт: {$withdrawal->passport_number}, выдан {$withdrawal->passport_issued_by}, дата выдачи {$withdrawal->passport_date->format('d.m.Y')}<br>
                     Зарегистрирован(на) по адресу: {$withdrawal->address}<br>
