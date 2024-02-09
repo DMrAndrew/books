@@ -50,7 +50,7 @@ class ModalNotification extends ComponentBase
         $modalId = '#reader-birthday-modal';
 
         if (!Cookie::has('never_show_reader_birthday_program')) {
-            if ($reader?->birthday->isBirthday() && Cookie::get('show_reader_birthday_program')) {
+            if ($reader?->birthday?->isBirthday() && Cookie::get('show_reader_birthday_program')) {
                 $authors = collect();
 
                 $renderData = [
