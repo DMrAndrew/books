@@ -23,7 +23,7 @@ class MessengerService
 
     public function __construct(protected ?MessengerProvider $provider)
     {
-        $this->provider ??= Auth::getUser()->profile;
+        $this->provider ??= Auth::getUser()?->profile;
         if (!$this->provider) {
             return;
         }

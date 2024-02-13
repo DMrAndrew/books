@@ -145,11 +145,10 @@ function needShowModalAskAboutAdult(Book $book): bool
      * If book is 18+
      */
     if ($book->isAdult()) {
-
         /**
          * Cant ask and not allowed
          */
-        if ( !UserService::canBeAskedAdultPermission() && !UserService::allowedSeeAdult()) {
+        if (!UserService::canBeAskedAdultPermission() && !UserService::allowedSeeAdult()) {
             abort(404);
         }
 
@@ -231,6 +230,7 @@ function humanTimeShort(mixed $seconds): ?string
 
     return AudioFileLengthHelper::formatSecondsToHumanReadableTimeShort($seconds);
 }
+
 function loadAlias(array $aliases): void
 {
     array_walk($aliases, fn($class, $alias) => AliasLoader::getInstance()->alias($alias, $class));
@@ -241,6 +241,23 @@ function loadImplements(array $implements): void
 {
     foreach ($implements as $class => $implement) {
         $class::extend(fn($model) => array_map(fn($ext) => $model->implementClassWith($ext), array_wrap($implement)));
+    }
+}
+
+if (!function_exists('forceTLS')) {
+    /**
+     * Should websockets use TLS
+     *
+     * @return bool
+     */
+    function forceTLS(): bool
+    {
+        return app()->isProduction()
+            || config('app.schema', 'http') === 'https'
+            || collect([
+                config('app.url', ''),
+                request()->url()
+            ])->some(fn($i) => starts_with($i, 'https'));
     }
 }
 

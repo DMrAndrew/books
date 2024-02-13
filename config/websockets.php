@@ -49,7 +49,9 @@ return [
      */
     'allowed_origins' => env('APP_ENV','local') === 'production' ? [
         'bookstime.ru',
-        'booktime2022'
+        'booktime2022',
+        'books.pomon.ru',
+        'books-stage.pomon.ru'
     ] : [],
 
     /*
