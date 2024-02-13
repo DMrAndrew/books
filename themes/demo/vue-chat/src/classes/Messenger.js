@@ -12,11 +12,19 @@ class Messenger {
         this.thread_meta = []
         this._settings = {}
         this._heartbeat = {}
-        axios.get('/settings').then(e => {
-            this._settings = e.data
-        })
         this.heartbeat()
         this._heartbeat_interval = setInterval(this.heartbeat.bind(this), 50000)
+    }
+
+    async syncSettings() {
+        await axios.get('/settings').then(e => {
+            this._settings = e.data
+            const profile = this.settings.owner?.base
+            localStorage.setItem('user', JSON.stringify({
+                profile:profile
+            }))
+        })
+
     }
 
     hasThread(thread) {
@@ -60,7 +68,7 @@ class Messenger {
         if (!msg) {
             return this;
         }
-        this._threads.find(e => e.id === msg.thread_id)?.load(msg, true,true)
+        this._threads.find(e => e.id === msg.thread_id)?.load(msg, true, true)
         return this;
     }
 
@@ -77,7 +85,7 @@ class Messenger {
     }
 
     async removeThread(threadID) {
-        await this.deleteThread({id: threadID},false)
+        await this.deleteThread({id: threadID}, false)
     }
 
     async deleteThread(thread, clean = true) {

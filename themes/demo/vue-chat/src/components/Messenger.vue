@@ -46,21 +46,25 @@ export default {
   },
   methods: {
     async connectChannel() {
-      if (!this.user) {
-        console.error('Auth user not found.')
-        return;
-      }
-      if(!window.Echo){
-        console.error('Echo not found.')
-        return
-      }
+      await this.messenger.syncSettings().then(() => {
 
-      this.channel = await window.Echo.private('messenger.profile.' + this.user.profile.id)
-          .listen('.new.message', (e) => this.messenger.newMessage(e))
-          .listen('.new.thread', (e) => this.messenger.loadThread(e.thread.id))
-          .listen('.thread.read', (e) => this.messenger.markLastRead(e))
-          // .listen('.thread.left', (e) => console.log(e))
-          .listen('.thread.archived', (e) => this.messenger.removeThread(e.thread_id))
+        if (!this.user) {
+          console.error('Auth user not found.')
+          return;
+        }
+        if(!window.Echo){
+          console.error('Echo not found.')
+          return
+        }
+
+        this.channel = window.Echo.private('messenger.profile.' + this.user.profile.id)
+            .listen('.new.message', (e) => this.messenger.newMessage(e))
+            .listen('.new.thread', (e) => this.messenger.loadThread(e.thread.id))
+            .listen('.thread.read', (e) => this.messenger.markLastRead(e))
+            // .listen('.thread.left', (e) => console.log(e))
+            .listen('.thread.archived', (e) => this.messenger.removeThread(e.thread_id))
+
+      })
          // .listen('.message.archived', (e) => console.log(e))
       // .listen('.knock.knock', (e) => console.log(e))
       // .listen('.thread.approval', (e) => console.log(e))

@@ -30,7 +30,7 @@ return [
             'path' => env('PUSHER_APP_PATH'),
             'capacity' => null,
             'enable_client_messages' => true,
-            'enable_statistics' => false,
+            'enable_statistics' => true,
         ],
     ],
 
@@ -47,10 +47,7 @@ return [
      * This array contains the hosts of which you want to allow incoming requests.
      * Leave this empty if you want to accept requests from all hosts.
      */
-    'allowed_origins' => env('APP_ENV','local') === 'production' ? [
-        'bookstime.ru',
-        'booktime2022'
-    ] : [],
+    'allowed_origins' => [],
 
     /*
      * The maximum request size in kilobytes that is allowed for an incoming WebSocket request.
@@ -70,8 +67,7 @@ return [
      * the existing middleware. Or, you can simply stick with this list.
      */
     'middleware' => [
-        'web',
-        \RainLab\User\Classes\AuthMiddleware::class,
+        'web'
 
     ],
 

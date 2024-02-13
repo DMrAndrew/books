@@ -81,6 +81,7 @@ class Plugin extends PluginBase
         })
             ->middleware(['web', AuthMiddleware::class, SetMessengerProvider::class])
             ->prefix('api/messenger');
+
         Event::listen(MessengerService::updatableEvents(), fn($e) => MessengerService::broadcastUpdate($e));
         Broadcast::routes(['web', AuthMiddleware::class, SetMessengerProvider::class]);
         require_once __DIR__.'/channels.php';

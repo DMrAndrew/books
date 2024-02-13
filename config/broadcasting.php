@@ -34,11 +34,15 @@ return [
             'secret' => env('PUSHER_APP_SECRET'),
             'app_id' => env('PUSHER_APP_ID'),
             'options' => [
-                'cluster' => env('PUSHER_APP_CLUSTER'),
-                'encrypted' => env('PUSHER_APP_ENCRYPTED'),
-                'host' => env('PUSHER_APP_APP_HOST'),
-                'port' => 6001,
-                'scheme' => env('PUSHER_APP_SCHEME')
+                'host' => env('PUSHER_HOST'),
+                'port' => env('PUSHER_PORT'),
+                'scheme' => env('PUSHER_SCHEME'),
+                'cluster' => env('PUSHER_CLUSTER'),
+                'encrypted' => env('PUSHER_ENCRYPTED'),
+                'client_options' => [
+                    'verify' => false,
+                ],
+                'useTLS' => env('PUSHER_SCHEME') === 'https'
             ],
         ],
 

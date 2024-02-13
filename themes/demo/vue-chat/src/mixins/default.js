@@ -6,14 +6,14 @@ export default {
         isProduction() {
             return this.mode === 'production';
         },
-        user(){
-            return this.$store.getters.user
+        user() {
+            return JSON.parse(localStorage.getItem('user'))
         },
-        messenger(){
+        messenger() {
             return this.$messenger.value
         }
     },
-    methods:{
+    methods: {
         momentize(date) {
             return moment(date, 'DD-MM-YY')
         },

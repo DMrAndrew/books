@@ -49,6 +49,23 @@ services:
             - sail
         depends_on:
             - site.loc
+    soketi:
+        image: 'quay.io/soketi/soketi:latest-16-alpine'
+        expose:
+            - "6001"
+        volumes:
+            - './soketi.json:/opt/config.json'
+        command: [ "node", "/app/bin/server.js", "start", "--config=/opt/config.json" ]
+        environment:
+            SOKETI_DEBUG: '1'
+            SOKETI_METRICS_SERVER_PORT: '9601'
+            COMPOSE_INTERACTIVE_NO_CLI: 1
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+        networks:
+            - sail
+        depends_on:
+            - site.loc
     queue:
         restart: unless-stopped
         image: sail-8.1/app

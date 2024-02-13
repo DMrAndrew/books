@@ -40,7 +40,7 @@ export default {
     },
     body(){
       let body = this.last_message.body;
-      if(this.user.profile.id === this.last_message?.owner?.providerID){
+      if(this.user?.profile.id === this.last_message?.owner?.providerID){
         body = 'Вы: '+body
       }
       return body;
