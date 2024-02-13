@@ -106,7 +106,7 @@ addEventListener('page:loaded', function () {
      // console.log('page:loaded')
     initUserStuff()
     iniSelect()
-
+   // window.Echo.private('mc-chat-conversation-4').listen('.Test', (e) => console.log(e));
 });
 addEventListener(`DOMContentLoaded`, function () {
     // console.log(`DOMContentLoaded`)

@@ -22,83 +22,72 @@ class Rater
     protected Collection|array|\Illuminate\Database\Eloquent\Collection|null $result = null;
 
     protected array $closures = [];
+
     protected ?Builder $builder = null;
 
     /**
      * Создает новый экземпляр класса Rater.
      *
-     * @param Book|null $book Объект книги.
-     * @param int|null $ofLastDays Длительность в днях.
-     * @param bool $withDump Флаг для определения, включать ли дамп.
+     * @param  Book|null  $book  Объект книги.
+     * @param  int|null  $ofLastDays  Длительность в днях.
+     * @param  bool  $withDump  Флаг для определения, включать ли дамп.
      */
-    public function __construct(protected ?Book $book = null,
-                                protected ?int  $ofLastDays = null,
-                                protected bool  $withDump = false)
-    {
+    public function __construct(
+        protected ?Book $book = null,
+        protected ?int $ofLastDays = null,
+        protected bool $withDump = false
+    ) {
         $this->setBuilder(Book::query());
     }
 
     /**
-     * @param int|null $ofLastDays
      * @return Rater
      */
-    public
-    function setOfLastDays(?int $ofLastDays): static
+    public function setOfLastDays(?int $ofLastDays): static
     {
         $this->ofLastDays = is_int($ofLastDays) ? abs($ofLastDays) : $ofLastDays;
+
         return $this;
     }
-
 
     /**
-     * @param Builder $builder
      * @return Rater
      */
-    public
-    function setBuilder(Builder $builder): static
+    public function setBuilder(Builder $builder): static
     {
         $this->builder = $builder->with('stats')
-            ->when($this->book?->exists, fn($b) => $b->where(Book::make()->getQualifiedKeyName(), $this->book->id));
+            ->when($this->book?->exists, fn ($b) => $b->where(Book::make()->getQualifiedKeyName(), $this->book->id));
 
         return $this;
     }
 
-    public
-    function getResult(): \Illuminate\Database\Eloquent\Collection|Collection|array|null
+    public function getResult(): \Illuminate\Database\Eloquent\Collection|Collection|array|null
     {
         return $this->result;
     }
 
-    /**
-     * @return int|null
-     */
-    public
-    function getOfLastDays(): ?int
+    public function getOfLastDays(): ?int
     {
         return $this->ofLastDays;
     }
 
     /**
-     * @param bool $withDump
+     * @param  bool  $withDump
      * @return Rater
      */
-    public
-    function setWithDump(bool $withDump): static
+    public function setWithDump(bool $withDump): static
     {
         $this->withDump = $withDump;
 
         return $this;
     }
 
-
-    private
-    function canPerform(): bool
+    private function canPerform(): bool
     {
         return count($this->closures);
     }
 
-    public
-    function performClosures(): static
+    public function performClosures(): static
     {
         if ($this->canPerform()) {
             $this->result = $this->builder->get();
@@ -115,17 +104,11 @@ class Rater
         return $this;
     }
 
-    /**
-     * @return Builder
-     */
-    public
-    function getBuilder(): Builder
+    public function getBuilder(): Builder
     {
         return $this->builder;
     }
 
-    /**
-     */
     public function run(): static
     {
         $this->performClosures();
@@ -136,12 +119,12 @@ class Rater
         return $this;
     }
 
-    public
-    function queue(): static
+    public function queue(): static
     {
         if ($this->canPerform()) {
             RaterExec::dispatch($this->toArray());
         }
+
         return $this;
     }
 
@@ -158,15 +141,13 @@ class Rater
     public static function make(array $payload): static
     {
         $r = new static();
-        $r->setBuilder($r->getBuilder()->when($payload['ids'] ?? false, fn($b) => $b->whereIn('id', $payload['ids'])));
+        $r->setBuilder($r->getBuilder()->when($payload['ids'] ?? false, fn ($b) => $b->whereIn('id', $payload['ids'])));
         $r->setWithDump($payload['withDump'] ?? false);
         $r->setOfLastDays($payload['ofLastDays'] ?? false);
-        $r->applyStats(...collect($payload['closures'] ?? [])->map(fn($i) => StatsEnum::tryFrom($i))->filter());
+        $r->applyStats(...collect($payload['closures'] ?? [])->map(fn ($i) => StatsEnum::tryFrom($i))->filter());
 
         return $r;
-
     }
-
 
     public function applyStats(StatsEnum ...$stats): static
     {
@@ -178,8 +159,7 @@ class Rater
         return $this;
     }
 
-    public
-    function applyAllStats(): static
+    public function applyAllStats(): static
     {
         $this->applyStats(...StatsEnum::cases());
 
@@ -189,14 +169,16 @@ class Rater
     protected function applyScope(StatsEnum $stat): static
     {
         match ($stat) {
-            StatsEnum::LIKES => $this->builder->likesCount(fn($b) => $this->applyOfLastDaysScope($b)),
-            StatsEnum::LIBS => $this->builder->inLibCount(fn($b) => $this->applyOfLastDaysScope($b)),
-            StatsEnum::COMMENTS => $this->builder->withCount(['comments' => fn($comments) => $this->applyOfLastDaysScope($comments)]),
-            StatsEnum::READ => $this->builder->withReadChaptersTrackersCount(fn($b) => $this->applyOfLastDaysScope($b)),
+            StatsEnum::LIKES => $this->builder->likesCount(fn ($b) => $this->applyOfLastDaysScope($b)),
+            StatsEnum::LIBS => $this->builder->inLibCount(fn ($b) => $this->applyOfLastDaysScope($b)),
+            StatsEnum::COMMENTS => $this->builder->withCount([
+                'comments' => fn ($comments) => $this->applyOfLastDaysScope($comments),
+            ]),
+            StatsEnum::READ => $this->builder->withReadChaptersTrackersCount(fn ($b) => $this->applyOfLastDaysScope($b)),
             StatsEnum::RATE => $this->applyStats(StatsEnum::LIKES)
                 && $this->builder->withSum('awardsItems', 'rate')->withCount('reposts'),
-            StatsEnum::READ_TIME => $this->builder->withReadTime(fn($b) => $this->applyOfLastDaysScope($b)),
-            StatsEnum::sells_count => $this->builder->withCountEditionSells(fn($b) => $this->applyOfLastDaysScope($b)),
+            StatsEnum::READ_TIME => $this->builder->withReadTime(fn ($b) => $this->applyOfLastDaysScope($b)),
+            StatsEnum::sells_count => $this->builder->withCountEditionSells(fn ($b) => $this->applyOfLastDaysScope($b)),
             default => null
         };
 
@@ -205,7 +187,7 @@ class Rater
 
     protected function applyClosure(StatsEnum $stat): static
     {
-        $this->closures[$stat->value] = fn(Book $book) => match ($stat) {
+        $this->closures[$stat->value] = fn (Book $book) => match ($stat) {
             StatsEnum::LIKES => $book->stats->likes_count = $book->likes_count,
             StatsEnum::LIBS => $book->stats->in_lib_count = $book->in_lib_count,
             StatsEnum::COMMENTS => $book->stats->comments_count = $book->comments_count,
@@ -215,7 +197,7 @@ class Rater
                 $book['awards_items_sum_rate'] ?? 0,
                 ($book['reposts_count'] ?? 0) * 2,
             ])->sum(),
-            StatsEnum::READ_TIME => $book->stats->read_time = (int)ceil((int)$book->pagination_trackers_sum_time / 60),
+            StatsEnum::READ_TIME => $book->stats->read_time = (int) ceil((int) $book->pagination_trackers_sum_time / 60),
             StatsEnum::UPDATE_FREQUENCY => $book->stats->freq = $book->ebook?->getUpdateHistoryViewAttribute()->freq,
             StatsEnum::COLLECTED_GENRE_RATE => $book->stats->collected_genre_rate = $book->stats->forGenres($book->isWorking()),
             StatsEnum::collected_gain_popularity_rate => $book->stats->collected_gain_popularity_rate = $book->stats->gainingPopularity($book->isWorking()),
@@ -223,12 +205,13 @@ class Rater
             StatsEnum::sells_count => $book->stats->sells_count = $book->sells_count,
             default => $book
         };
+
         return $this;
     }
 
     protected function applyOfLastDaysScope(Builder $builder)
     {
-        return $builder->when($this->ofLastDays, fn($q) => $q->ofLastDays($this->ofLastDays));
+        return $builder->when($this->ofLastDays, fn ($q) => $q->ofLastDays($this->ofLastDays));
     }
 
     /**
@@ -238,11 +221,8 @@ class Rater
     {
         if (in_array($name, StatsEnum::toArray())) {
             return $this->applyStats(StatsEnum::tryFrom($name), ...$arguments);
-        } else {
-
-            throw new Exception(sprintf('%s: метод %s не найден.', __CLASS__, $name));
         }
+
+        return $this->{$name}(...$arguments);
     }
-
-
 }

@@ -15,11 +15,9 @@ use Books\Profile\Classes\SlaveScope;
 use Books\Profile\Factories\ProfileFactory;
 use Books\Profile\Traits\Subscribable;
 use Books\Reposts\Models\Repost;
-use Books\User\Classes\BoolOptionsEnum;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
-use Books\Videoblog\Models\Videoblog;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
@@ -31,6 +29,9 @@ use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use RTippin\Messenger\Contracts\MessengerProvider;
+use RTippin\Messenger\Facades\Messenger;
+use RTippin\Messenger\Traits\Messageable;
 use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
 use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
@@ -42,6 +43,7 @@ use WordForm;
  * Profile Model
  *
  * @property Carbon created_at
+ *
  * @method BelongsToMany books
  * @method BelongsToMany subscribers
  * @method BelongsToMany subscriptions
@@ -49,7 +51,7 @@ use WordForm;
  * @method AttachOne banner
  * @method AttachOne avatar
  */
-class Profile extends Model
+class Profile extends Model implements MessengerProvider
 {
     use Validation;
     use Revisionable;
@@ -57,6 +59,7 @@ class Profile extends Model
     use HasFactory;
     use HasRelationships;
     use HasUserScope;
+    use Messageable;
 
     const MAX_USER_PROFILES_COUNT = 5;
 
@@ -156,7 +159,7 @@ class Profile extends Model
             'scope' => 'accepted',
         ],
         'settings' => [Settings::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
-//        'cycles' => [Cycle::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
+        //        'cycles' => [Cycle::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
         'promocodes' => [Promocode::class, 'key' => 'profile_id', 'otherKey' => 'id'],
     ];
 
@@ -210,6 +213,7 @@ class Profile extends Model
     public function cyclesWithShared(): \Illuminate\Database\Eloquent\Builder
     {
         $column_id = (new Cycle())->getQualifiedKeyName();
+
         return Cycle::query()->whereIn($column_id, $this->cycles()->select('id')
             ->union($this->books()->select('cycle_id')));
     }
@@ -235,7 +239,7 @@ class Profile extends Model
         return $this->belongsToManyTroughProfiler(Repost::class);
     }
 
-    public function isCommentAllowed(?Profile $profile = null)
+    public function isCommentAllowed(Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
         if (!$profile) {
@@ -256,7 +260,7 @@ class Profile extends Model
         };
     }
 
-    public function canSeeCommentFeed(?Profile $profile = null)
+    public function canSeeCommentFeed(Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
         if (!$profile) {
@@ -277,7 +281,7 @@ class Profile extends Model
         };
     }
 
-    public function canSeeBlogPosts(?Profile $profile = null)
+    public function canSeeBlogPosts(Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
 
@@ -292,12 +296,12 @@ class Profile extends Model
 
         return match (PrivacySettingsEnum::tryFrom($setting->value)) {
             PrivacySettingsEnum::ALL => true,
-            PrivacySettingsEnum::SUBSCRIBERS => (bool) $profile?->hasSubscription($this),
+            PrivacySettingsEnum::SUBSCRIBERS => (bool)$profile?->hasSubscription($this),
             default => false
         };
     }
 
-    public function canSeeVideoBlogPosts(?Profile $profile = null)
+    public function canSeeVideoBlogPosts(Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
 
@@ -312,7 +316,7 @@ class Profile extends Model
 
         return match (PrivacySettingsEnum::tryFrom($setting->value)) {
             PrivacySettingsEnum::ALL => true,
-            PrivacySettingsEnum::SUBSCRIBERS => (bool) $profile?->hasSubscription($this),
+            PrivacySettingsEnum::SUBSCRIBERS => (bool)$profile?->hasSubscription($this),
             default => false
         };
     }
@@ -320,8 +324,8 @@ class Profile extends Model
     public function scopeSettingsEnabledBlogPostNotifications(Builder $builder): Builder
     {
         return $builder->whereHas('user', function ($q) {
-                $q->settingsEnabledBlogPostNotifications();
-            });
+            $q->settingsEnabledBlogPostNotifications();
+        });
     }
 
     public function scopeSettingsEnabledVideoBlogPostNotifications(Builder $builder): Builder
@@ -334,15 +338,15 @@ class Profile extends Model
     public function scopeSettingsEnabledUpdateLibraryItemsNotifications(Builder $builder): Builder
     {
         return $builder->whereHas('user', function ($q) {
-                $q->settingsEnabledUpdateLibraryItemsNotifications();
-            });
+            $q->settingsEnabledUpdateLibraryItemsNotifications();
+        });
     }
 
     public function scopeSettingsEnabledBookDiscountNotifications(Builder $builder): Builder
     {
         return $builder->whereHas('user', function ($q) {
-                $q->settingsEnabledBookDiscountNotifications();
-            });
+            $q->settingsEnabledBookDiscountNotifications();
+        });
     }
 
     public function scopeShortPublicEager(Builder $builder)
@@ -442,5 +446,42 @@ class Profile extends Model
         if ($this->isUsernameExists($this->username)) {
             throw new ValidationException(['username' => 'Псевдоним уже занят.']);
         }
+    }
+
+    protected function afterCreate()
+    {
+        Messenger::getProviderMessenger($this);
+    }
+
+    public static function getProviderSettings(): array
+    {
+        return [
+            'alias' => 'profile',
+            'searchable' => true,
+            'friendable' => true,
+            'devices' => false,
+            'default_avatar' => themes_path('/demo/assets/images/author/avatar-placeholder.png'),
+            'cant_message_first' => [],
+            'cant_search' => [],
+            'cant_friend' => [],
+        ];
+    }
+
+    public function getProviderAvatarColumn(): string
+    {
+        return 'avatar';
+    }
+
+    public function getProviderName(): string
+    {
+        return strip_tags(ucwords($this->username));
+    }
+
+    public static function getProviderSearchableBuilder(Builder $query,
+                                                        string  $search,
+                                                        array   $searchItems)
+    {
+        return $query->usernameLike($search);
+
     }
 }

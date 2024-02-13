@@ -1,6 +1,12 @@
-<?php namespace Books\Chat;
+<?php
+
+namespace Books\Chat;
 
 use Backend;
+use Books\Chat\Components\Messenger;
+use Broadcast;
+use Musonza\Chat\ChatServiceProvider;
+use RainLab\User\Classes\AuthMiddleware;
 use System\Classes\PluginBase;
 
 /**
@@ -8,6 +14,8 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
+
+    public $require = ['Books.User'];
     /**
      * Returns information about this plugin.
      *
@@ -16,10 +24,10 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'Chat',
+            'name' => 'Chat',
             'description' => 'No description provided yet...',
-            'author'      => 'Books',
-            'icon'        => 'icon-leaf'
+            'author' => 'Books',
+            'icon' => 'icon-leaf',
         ];
     }
 
@@ -40,7 +48,8 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-
+       Broadcast::routes(['middleware' => ['web']]);
+        require_once __DIR__.'/channels.php';
     }
 
     /**
@@ -50,10 +59,8 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
         return [
-            'Books\Chat\Components\MyComponent' => 'myComponent',
+            Messenger::class => 'Messenger',
         ];
     }
 
@@ -69,7 +76,7 @@ class Plugin extends PluginBase
         return [
             'books.chat.some_permission' => [
                 'tab' => 'Chat',
-                'label' => 'Some permission'
+                'label' => 'Some permission',
             ],
         ];
     }
@@ -85,11 +92,11 @@ class Plugin extends PluginBase
 
         return [
             'chat' => [
-                'label'       => 'Chat',
-                'url'         => Backend::url('books/chat/mycontroller'),
-                'icon'        => 'icon-leaf',
+                'label' => 'Chat',
+                'url' => Backend::url('books/chat/mycontroller'),
+                'icon' => 'icon-leaf',
                 'permissions' => ['books.chat.*'],
-                'order'       => 500,
+                'order' => 500,
             ],
         ];
     }

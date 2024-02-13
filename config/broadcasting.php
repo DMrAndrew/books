@@ -30,12 +30,15 @@ return [
 
         'pusher' => [
             'driver' => 'pusher',
-            'key' => env('PUSHER_KEY'),
-            'secret' => env('PUSHER_SECRET'),
+            'key' => env('PUSHER_APP_KEY'),
+            'secret' => env('PUSHER_APP_SECRET'),
             'app_id' => env('PUSHER_APP_ID'),
             'options' => [
-                'cluster' => 'eu',
-                'encrypted' => true,
+                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'encrypted' => env('PUSHER_APP_ENCRYPTED'),
+                'host' => env('APP_HOST'),
+                'port' => 6001,
+                'scheme' => env('APP_SCHEMA')
             ],
         ],
 
@@ -46,6 +49,9 @@ return [
 
         'log' => [
             'driver' => 'log',
+        ],
+        'null' => [
+            'driver' => 'null',
         ],
 
     ],

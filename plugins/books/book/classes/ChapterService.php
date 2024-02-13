@@ -117,8 +117,7 @@ class ChapterService implements iChapterService
     {
         $this->chapter->load('edition', 'edition.book');
 
-        if ($this->chapter->edition->status === BookStatus::COMPLETE
-            || $this->chapter->edition->status === BookStatus::WORKING) {
+        if (in_array($this->chapter->edition->status,[BookStatus::COMPLETE,BookStatus::WORKING])) {
             $lengthDeltaUpdates = $this->chapter->edition->revision_history()
                 ->where('field', '=', 'length')
                 ->latest('id')

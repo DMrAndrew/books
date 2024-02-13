@@ -75,8 +75,8 @@ enum WidgetEnum: string
     public function defaultCacheTTL(): int
     {
         return match ($this) {
-            default => 10,
             self::interested, self::cycle => 3,
+            default => 10,
         };
     }
 

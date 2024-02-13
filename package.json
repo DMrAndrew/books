@@ -40,8 +40,10 @@
         "chai": "^4.2.0",
         "jquery": "^3.4.1",
         "jsdom": "^16.5.0",
+        "laravel-echo": "^1.15.3",
         "mocha": "^6.2.0",
         "onchange": "^6.1.0",
+        "pusher-js": "^8.4.0-rc2",
         "sinon": "^7.4.1"
     }
 }

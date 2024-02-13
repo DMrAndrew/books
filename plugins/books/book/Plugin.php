@@ -324,6 +324,11 @@ class Plugin extends PluginBase
             ChapterService::audit();
         })->everyMinute();
 
+//        $schedule->call(function () {
+//            TestEvent::dispatch();
+//        })->everyMinute();
+
+
         $times = app()->isProduction() ? 'everyTenMinutes' :'everyMinute';
         $schedule->call(function () {
             GenreRaterExec::dispatch();
