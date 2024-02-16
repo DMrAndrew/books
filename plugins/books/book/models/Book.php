@@ -515,7 +515,7 @@ class Book extends Model
             ->hasProhibitedGenres(has: false)
             ->notEmptyEdition()
             ->onlyPublicStatus()
-            ->adult()
+            //->adult()
             ->genresExists();
     }
 
