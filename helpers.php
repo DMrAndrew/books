@@ -159,10 +159,7 @@ function needShowModalAskAboutAdult(Book $book): bool
  */
 function restrictProhibited(Book $book): bool
 {
-    //dump(isComDomainRequested());
-    //dd($book->isProhibited());
     return isComDomainRequested() && $book->isProhibited();
-    //return (isComDomainRequested() && $book->isProhibited()) ? abort(404) : true;
 }
 
 /**
