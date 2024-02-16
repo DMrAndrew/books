@@ -75,6 +75,12 @@ class BookPage extends ComponentBase
             return;
         }
 
+        if (restrictProhibited($this->book)) { dump('restrictProhibited from bookPage component');
+            $this->controller->run('404');
+
+            return;
+        }
+
         $this->tryInjectAdultModal();
         $this->user?->library($this->book)->get(); //Добавить в библиотеку
         $this->book = Book::query()

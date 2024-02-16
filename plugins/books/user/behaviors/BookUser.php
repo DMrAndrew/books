@@ -134,7 +134,9 @@ class BookUser extends ExtensionBase
 
     public function canSetAdult(): bool
     {
-        return $this->parent->birthday && abs(Carbon::now()->diffInYears($this->parent->birthday)) > 17;
+        return
+            $this->parent->birthday
+            && $this->parent->birthday->addYears(18)->lt(Carbon::now());
     }
 
     public function allowedSeeAdult(): bool
@@ -154,7 +156,7 @@ class BookUser extends ExtensionBase
 
     public function requiredAskAdult(): bool
     {
-        return $this->parent->asked_adult_agreement == 0 && $this->parent->canSetAdult();
+        return $this->parent->asked_adult_agreement == false && $this->parent->canSetAdult();
     }
 
     public function getNameAttribute()

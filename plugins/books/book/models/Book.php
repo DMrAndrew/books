@@ -262,6 +262,13 @@ class Book extends Model
                 ->whereHas('editions', fn ($edition) => $edition->whereHas('customers', fn ($customers) => $customers->where('user_id', $user->id)))
                 ->find($book_id)
                 : null); // пользователь купил книгу
+
+//        return Book::query()->public()->find($book_id) // открыта в публичной зоне
+//            ?? $user?->profile->books()->find($book_id) // пользователь автор книги
+//            ?? ($user ? Book::query()
+//                ->whereHas('ebook', fn ($ebook) => $ebook->whereHas('customers', fn ($customers) => $customers->where('user_id', $user->id)))
+//                ->find($book_id)
+//                : null); // пользователь купил книгу
     }
 
     public function awardsItems()
@@ -515,7 +522,7 @@ class Book extends Model
             ->hasProhibitedGenres(has: false)
             ->notEmptyEdition()
             ->onlyPublicStatus()
-            ->adult()
+            //->adult()
             ->genresExists();
     }
 
