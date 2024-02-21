@@ -6,6 +6,11 @@ meta_title = "Электронная библиотека “Время книг
 meta_description = "Самые свежие произведения, большой выбор популярных жанров, аудио и электронные книги на любой вкус"
 ==
 {% partial 'chat/meta' %}
+<script>
+    localStorage.removeItem('user')
+    localStorage.setItem('user',`{{user|raw}}`)
+</script>
+
 <div class="ui-container">
     <div class="ui-text-head--2 ui-text--bold page-title">Чат</div>
 </div>

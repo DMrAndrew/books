@@ -27,10 +27,6 @@ recordsPerView = 11
     {% partial 'site/vk_pixel' %}
 </head>
 <body class="{{ 'page-'~this.page.id }}" data-user="{{user ? 1: 0}}">
-<script>
-    localStorage.setItem('user',`{{user|raw}}`)
-</script>
-
 <!-- Header -->
 <header id="layout-header" class="header">
     <div id='modal-spawn'></div>

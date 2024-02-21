@@ -5,12 +5,10 @@ import axios from "./axios";
 import VueAxios from "vue-axios";
 import mixin from './mixins/default'
 import moment from 'moment'
-import {devUser} from './classes/stubs'
 import createMessenger from "@/classes/Messenger";
 moment.locale('ru')
 window.moment = moment
 const isProduction = mixin.computed.isProduction();
-(() => isProduction ? true : localStorage.setItem('user', JSON.stringify(devUser)))(); // default user for dev
 
 const app = createApp(App)
     .use(store)

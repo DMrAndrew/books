@@ -13,4 +13,9 @@ export default {
             return this.$messenger
         }
     },
+    methods:{
+        momentize(date) {
+            return moment(date, 'DD-MM-YY')
+        },
+    }
 }

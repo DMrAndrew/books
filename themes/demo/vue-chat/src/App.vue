@@ -29,24 +29,28 @@ export default {
                 : import('./components/app-templates/Development.vue'))
         }
     },
-    methods: {},
-    beforeCreate() {
-        window.Echo = new Echo({
-            broadcaster: 'pusher',
-            key: process.env.VUE_APP_PUSHER_APP_KEY,
-            httpHost: window.location.hostname,
-            wsHost: window.location.hostname,
-            wsPort: process.env.VUE_APP_PUSHER_APP_PORT,
-            forceTLS: false,
-            disableStats: true,
-            cluster: process.env.VUE_APP_PUSHER_APP_CLUSTER,
-            authEndpoint: 'api/broadcasting/auth',
-            auth: {
-                headers: {
-                    'x-app-id': process.env.VUE_APP_PUSHER_APP_ID
-                }
+    methods: {
+      echo(){
+        window.Echo =  new Echo({
+          broadcaster: 'pusher',
+          key: process.env.VUE_APP_PUSHER_APP_KEY,
+          httpHost: window.location.hostname,
+          wsHost: window.location.hostname,
+          wsPort: process.env.VUE_APP_PUSHER_APP_PORT,
+          forceTLS: false,
+          disableStats: true,
+          cluster: process.env.VUE_APP_PUSHER_APP_CLUSTER,
+          authEndpoint: 'api/broadcasting/auth',
+          auth: {
+            headers: {
+              'x-app-id': process.env.VUE_APP_PUSHER_APP_ID
             }
-        });
+          }
+        })
+      }
+    },
+    beforeCreate() {
+
 
     },
 }

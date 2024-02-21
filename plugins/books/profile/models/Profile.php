@@ -43,6 +43,8 @@ use WordForm;
  * Profile Model
  *
  * @property Carbon created_at
+ * @property File avatar
+ * @property File banner
  *
  * @method BelongsToMany books
  * @method BelongsToMany subscribers
@@ -130,7 +132,7 @@ class Profile extends Model implements MessengerProvider
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
      */
-    protected $appends = [];
+    protected $appends = ['picture'];
 
     /**
      * @var array hidden attributes removed from the API representation of the model (ex. toArray())
@@ -153,7 +155,8 @@ class Profile extends Model implements MessengerProvider
     ];
 
     public $hasMany = [
-        'authorships' => [Author::class,
+        'authorships' => [
+            Author::class,
             'key' => 'profile_id',
             'otherKey' => 'id',
             'scope' => 'accepted',
@@ -173,8 +176,18 @@ class Profile extends Model implements MessengerProvider
             'otherKey' => 'book_id',
             'pivot' => ['percent', 'sort_order', 'is_owner', 'accepted'],
         ],
-        'subscribers' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'profile_id', 'otherKey' => 'subscriber_id'],
-        'subscriptions' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'subscriber_id', 'otherKey' => 'profile_id'],
+        'subscribers' => [
+            Profile::class,
+            'table' => 'books_profile_subscribers',
+            'key' => 'profile_id',
+            'otherKey' => 'subscriber_id',
+        ],
+        'subscriptions' => [
+            Profile::class,
+            'table' => 'books_profile_subscribers',
+            'key' => 'subscriber_id',
+            'otherKey' => 'profile_id',
+        ],
     ];
 
     public $morphTo = [];
@@ -190,9 +203,16 @@ class Profile extends Model implements MessengerProvider
 
     public $attachMany = [];
 
+    protected $with = ['avatar'];
+
     public function service(): ProfileService
     {
         return new ProfileService($this);
+    }
+
+    public function getPictureAttribute(): bool|string
+    {
+        return is_null($this->avatar) ?: $this->avatar->getPath();
     }
 
     public function name()
@@ -214,8 +234,11 @@ class Profile extends Model implements MessengerProvider
     {
         $column_id = (new Cycle())->getQualifiedKeyName();
 
-        return Cycle::query()->whereIn($column_id, $this->cycles()->select('id')
-            ->union($this->books()->select('cycle_id')));
+        return Cycle::query()->whereIn(
+            $column_id,
+            $this->cycles()->select('id')
+                ->union($this->books()->select('cycle_id'))
+        );
     }
 
     public function receivedAwards(): HasManyDeep
@@ -242,14 +265,14 @@ class Profile extends Model implements MessengerProvider
     public function isCommentAllowed(Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
-        if (!$profile) {
+        if (! $profile) {
             return false;
         }
         if ($profile->is($this)) {
             return true;
         }
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_FIT_ACCOUNT_INDEX_PAGE)->first();
-        if (!$setting) {
+        if (! $setting) {
             return false;
         }
 
@@ -263,14 +286,14 @@ class Profile extends Model implements MessengerProvider
     public function canSeeCommentFeed(Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
-        if (!$profile) {
+        if (! $profile) {
             return false;
         }
         if ($profile->is($this)) {
             return true;
         }
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_COMMENT_FEED)->first();
-        if (!$setting) {
+        if (! $setting) {
             return false;
         }
 
@@ -290,13 +313,13 @@ class Profile extends Model implements MessengerProvider
         }
 
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_BLOG)->first();
-        if (!$setting) {
+        if (! $setting) {
             return true;
         }
 
         return match (PrivacySettingsEnum::tryFrom($setting->value)) {
             PrivacySettingsEnum::ALL => true,
-            PrivacySettingsEnum::SUBSCRIBERS => (bool)$profile?->hasSubscription($this),
+            PrivacySettingsEnum::SUBSCRIBERS => (bool) $profile?->hasSubscription($this),
             default => false
         };
     }
@@ -310,13 +333,13 @@ class Profile extends Model implements MessengerProvider
         }
 
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_VIDEO_BLOG)->first();
-        if (!$setting) {
+        if (! $setting) {
             return true;
         }
 
         return match (PrivacySettingsEnum::tryFrom($setting->value)) {
             PrivacySettingsEnum::ALL => true,
-            PrivacySettingsEnum::SUBSCRIBERS => (bool)$profile?->hasSubscription($this),
+            PrivacySettingsEnum::SUBSCRIBERS => (bool) $profile?->hasSubscription($this),
             default => false
         };
     }
@@ -356,12 +379,12 @@ class Profile extends Model implements MessengerProvider
 
     public function scopeBooksExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('books', fn($book) => $book->public());
+        return $builder->whereHas('books', fn ($book) => $book->public());
     }
 
     public function scopeBooksCount(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->withCount(['books' => fn($book) => $book->public()]);
+        return $builder->withCount(['books' => fn ($book) => $book->public()]);
     }
 
     public function getIsCurrentAttribute(): bool
@@ -406,12 +429,12 @@ class Profile extends Model implements MessengerProvider
 
     public function isEmpty(): bool
     {
-        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => (bool)$i);
+        return ! collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn ($i) => (bool) $i);
     }
 
     public function isContactsEmpty(): bool
     {
-        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn($i) => (bool)$i);
+        return ! collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn ($i) => (bool) $i);
     }
 
     public static function wordForm(): WordForm
@@ -421,7 +444,9 @@ class Profile extends Model implements MessengerProvider
 
     public function isUsernameExists(string $string): bool
     {
-        return $this->user->profiles()->username($string)->exists() || $this->user->profiles()->usernameClipboard($string)->exists();
+        return $this->user->profiles()->username($string)->exists() || $this->user->profiles()->usernameClipboard(
+            $string
+        )->exists();
     }
 
     public function maxProfilesCount(): int
@@ -460,7 +485,7 @@ class Profile extends Model implements MessengerProvider
             'searchable' => true,
             'friendable' => true,
             'devices' => false,
-            'default_avatar' => themes_path('/demo/assets/images/author/avatar-placeholder.png'),
+            'default_avatar' => 'avatar',
             'cant_message_first' => [],
             'cant_search' => [],
             'cant_friend' => [],
@@ -477,11 +502,11 @@ class Profile extends Model implements MessengerProvider
         return strip_tags(ucwords($this->username));
     }
 
-    public static function getProviderSearchableBuilder(Builder $query,
-                                                        string  $search,
-                                                        array   $searchItems)
-    {
+    public static function getProviderSearchableBuilder(
+        Builder $query,
+        string $search,
+        array $searchItems
+    ) {
         return $query->usernameLike($search);
-
     }
 }
