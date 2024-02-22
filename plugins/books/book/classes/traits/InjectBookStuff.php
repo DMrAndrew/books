@@ -8,7 +8,6 @@ trait InjectBookStuff
 {
     public function tryInjectAdultModal()
     {
-
         if (!$this->validate()) {
             return false;
         }
