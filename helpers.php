@@ -127,10 +127,31 @@ function getLovedFromCookie(): array
 /**
  * @throws NotFoundHttpException
  */
-function askAboutAdult(Book $book): bool
+function needShowModalAskAboutAdult(Book $book): bool
 {
-    return restrictProhibited($book) &&
-        (($book->isAdult() && UserService::canBeAskedAdultPermission()) || abort(404));
+    /**
+     * If book is restrict prohibited
+     */
+    if (restrictProhibited($book)) {
+        abort(404);
+    }
+
+    /**
+     * If book is 18+
+     */
+    if ($book->isAdult()) {
+
+        /**
+         * Cant ask and not allowed
+         */
+        if ( !UserService::canBeAskedAdultPermission() && !UserService::allowedSeeAdult()) {
+            abort(404);
+        }
+
+        return UserService::canBeAskedAdultPermission();
+    }
+
+    return false;
 }
 
 /**
@@ -138,7 +159,7 @@ function askAboutAdult(Book $book): bool
  */
 function restrictProhibited(Book $book): bool
 {
-    return (isComDomainRequested() && $book->isProhibited()) ? abort(404) : true;
+    return isComDomainRequested() && $book->isProhibited();
 }
 
 /**

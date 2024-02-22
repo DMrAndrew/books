@@ -495,7 +495,7 @@ class Book extends Model
 
     public function isAdult(): bool
     {
-        return $this->age_restriction === AgeRestrictionsEnum::A18;
+        return $this->age_restriction === AgeRestrictionsEnum::A18 || $this->genres->where('adult', true)->count();
     }
 
     public function scopeAdult(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
@@ -514,7 +514,7 @@ class Book extends Model
             ->hasProhibitedGenres(has: false)
             ->notEmptyEdition()
             ->onlyPublicStatus()
-            ->adult()
+            //->adult()
             ->genresExists();
     }
 
