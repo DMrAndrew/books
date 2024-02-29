@@ -329,7 +329,7 @@ class Plugin extends PluginBase
 
         $schedule->call(function () {
             Repaginate::dispatch();
-        })->everyMinute();
+        })->dailyAt('05:00');
 
         $times = app()->isProduction() ? 'everyTenMinutes' :'everyMinute';
         $schedule->call(function () {
