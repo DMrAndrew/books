@@ -46,6 +46,8 @@ use Books\Book\Console\CleanHTMLContent;
 use Books\Book\FormWidgets\ContentDiff;
 use Books\Book\FormWidgets\DeferredComments;
 use Books\Book\Jobs\GenreRaterExec;
+use Books\Book\Jobs\Paginate;
+use Books\Book\Jobs\Repaginate;
 use Books\Book\Models\AudioReadProgress;
 use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
@@ -73,6 +75,7 @@ use Config;
 use Event;
 use Illuminate\Database\Console\PruneCommand;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Log;
 use Mobecan\Favorites\Behaviors\Favorable;
 use October\Rain\Database\Models\DeferredBinding;
 use RainLab\Location\Behaviors\LocationModel;
@@ -323,6 +326,10 @@ class Plugin extends PluginBase
         $schedule->call(function () {
             ChapterService::audit();
         })->everyMinute();
+
+        $schedule->call(function () {
+            Repaginate::dispatch();
+        })->dailyAt('05:00');
 
         $times = app()->isProduction() ? 'everyTenMinutes' :'everyMinute';
         $schedule->call(function () {
