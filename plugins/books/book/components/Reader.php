@@ -240,6 +240,6 @@ class Reader extends ComponentBase
      */
     private function editionVisible(): bool
     {
-        return $this->book->ebook?->isVisible();
+        return $this->book->ebook?->isVisible($this->user);
     }
 }

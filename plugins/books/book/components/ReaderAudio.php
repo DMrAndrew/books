@@ -315,7 +315,7 @@ class ReaderAudio extends ComponentBase
      */
     private function editionVisible(): bool
     {
-        return $this->book->audiobook?->isVisible();
+        return $this->book->audiobook?->isVisible($this->user);
     }
 
     /**
@@ -323,6 +323,6 @@ class ReaderAudio extends ComponentBase
      */
     private function ebookVisible(): bool
     {
-        return $this->book->ebook?->isVisible();
+        return $this->book->ebook?->isVisible($this->user);
     }
 }

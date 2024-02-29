@@ -35,6 +35,8 @@ class Cycle extends ComponentBase
         $this->page['start_at'] = $books->first()?->editions()->first()?->sales_at?->format('d.m.y') ?? '-';
         $this->page['end_at'] = $books->last()?->editions()->first()?->sales_at?->format('d.m.y') ?? '-';
         $this->page['last_updated_at'] = $this->cycle->last_updated_at?->format('d.m.y') ?? '-';
+
+        $this->setSEO();
     }
 
     /**
@@ -43,5 +45,16 @@ class Cycle extends ComponentBase
     public function defineProperties()
     {
         return [];
+    }
+
+    /**
+     * @return void
+     */
+    private function setSEO(): void
+    {
+        $this->page->meta_description = sprintf(
+            'Перечень произведений из цикла «%s»',
+            $this->cycle->name
+        );
     }
 }

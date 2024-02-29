@@ -263,7 +263,6 @@ class Book extends Model
                 ->find($book_id)
                 : null); // пользователь купил книгу
     }
-
     public function awardsItems()
     {
         return $this->hasManyDeepFromRelations($this->awards(), (new AwardBook())->award());
