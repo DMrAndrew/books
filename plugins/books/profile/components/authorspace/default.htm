@@ -65,36 +65,41 @@
                             <span>{{cycles.count?:''}}</span>
                             {% endif %}
                         </div>
-                        <div class="ui-tabs-link " data-tab="5">Блог
+                        <div class="ui-tabs-link " data-tab="5">Магазин
+                            {% if products_paginator.total %}
+                            <span>{{products_paginator.total?:''}}</span>
+                            {% endif %}
+                        </div>
+                        <div class="ui-tabs-link " data-tab="6">Блог
                             {% if posts_paginator.total %}
                             <span>{{posts_paginator.total?:''}}</span>
                             {% endif %}
                         </div>
-                        <div class="ui-tabs-link " data-tab="6">Видеоблог
+                        <div class="ui-tabs-link " data-tab="7">Видеоблог
                             {% if videoblog_posts_paginator.total %}
                             <span>{{videoblog_posts_paginator.total?:''}}</span>
                             {% endif %}
                         </div>
-                        <div class="ui-tabs-link" data-tab="7" onclick="oc.ajax(`author_space::onShowTabSubscribtions`)">
+                        <div class="ui-tabs-link" data-tab="8" onclick="oc.ajax(`author_space::onShowTabSubscribtions`)">
                             Подписки
                             {% if subscriptions_count %}<span>{{subscriptions_count?:''}}</span>{% endif %}
                         </div>
-                        <div class="ui-tabs-link" data-tab="8" onclick="oc.ajax(`author_space::onShowTabSubscribers`)">
+                        <div class="ui-tabs-link" data-tab="9" onclick="oc.ajax(`author_space::onShowTabSubscribers`)">
                             Подписчики
                             {% if subscribers_count %}<span>{{subscribers_count?:''}}</span>{% endif %}
                         </div>
-                        <div class="ui-tabs-link " data-tab="9" onclick="oc.ajax(`author_space::onShowTabAwards`)">
+                        <div class="ui-tabs-link " data-tab="10" onclick="oc.ajax(`author_space::onShowTabAwards`)">
                             Награды
                             {% set awardsCount = received_awards_count + left_awards_count %}
                             {% if awardsCount %}<span>{{awardsCount?:''}}</span>{% endif %}
                         </div>
-                        <div class="ui-tabs-link " data-tab="10" onclick="oc.ajax(`author_space::onShowTabComments`)">
+                        <div class="ui-tabs-link " data-tab="11" onclick="oc.ajax(`author_space::onShowTabComments`)">
                             Комментарии
                             {% if can_see_comments and comments_count %}
                             <span>{{comments_count?:''}}</span>
                             {% endif %}
                         </div>
-                        <div class="ui-tabs-link" data-tab="11" onclick="oc.ajax(`author_space::onShowTabReposts`)">
+                        <div class="ui-tabs-link" data-tab="12" onclick="oc.ajax(`author_space::onShowTabReposts`)">
                             Репосты
                             {% if reposts_count %}<span>{{reposts_count?:''}}</span>{% endif %}
                         </div>
@@ -118,33 +123,37 @@
                 class="ui-text-body--2">{{cycles.count}}</span></div>
         </div>
         <div class="author-cycles ui-tabs-content" data-tab-content="5">
+            <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Магазин <span
+                class="ui-text-body--2">{{products_paginator.total?:''}}</span></div>
+        </div>
+        <div class="author-cycles ui-tabs-content" data-tab-content="6">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Блог <span
                 class="ui-text-body--2">{{posts_paginator.total?:''}}</span></div>
         </div>
-        <div class="author-cycles ui-tabs-content" data-tab-content="6">
+        <div class="author-cycles ui-tabs-content" data-tab-content="7">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Видеоблог <span
                 class="ui-text-body--2">{{videoblog_posts_paginator.total?:''}}</span></div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="7" onclick="oc.ajax(`author_space::onShowTabSubscribtions`)">
+        <div class="ui-tabs-content" data-tab-content="8" onclick="oc.ajax(`author_space::onShowTabSubscribtions`)">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">
                 Подписки <span class="ui-text-body--2">{{subscriptions_count?:''}}</span>
             </div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="8" onclick="oc.ajax(`author_space::onShowTabSubscribers`)">
+        <div class="ui-tabs-content" data-tab-content="9" onclick="oc.ajax(`author_space::onShowTabSubscribers`)">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">
                 Подписчики <span class="ui-text-body--2">{{subscribers_count}}</span>
             </div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="9" onclick="oc.ajax(`author_space::onShowTabAwards`)">
+        <div class="ui-tabs-content" data-tab-content="10" onclick="oc.ajax(`author_space::onShowTabAwards`)">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Награды <span
                 class="ui-text-body--2">{{received_awards_count + left_awards_count?:''}}</span>
             </div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="10">
+        <div class="ui-tabs-content" data-tab-content="11">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Комментарии <span
                 class="ui-text-body--2">{{ comments_count ?:''}}</span></div>
         </div>
-        <div class="ui-tabs-content" data-tab-content="11" onclick="oc.ajax(`author_space::onShowTabReposts`)">
+        <div class="ui-tabs-content" data-tab-content="12" onclick="oc.ajax(`author_space::onShowTabReposts`)">
             <div class="ui-container author__tab-title ui-text-head--3 ui-text--bold">Репосты <span
                 class="ui-text-body--2">{{reposts_count?:''}}</span></div>
         </div>
@@ -247,8 +256,8 @@
                     {% endif %}
                 </div>
                 <!-- Блог -->
-                <div class="author-blog ui-tabs-content" id="author-posts" data-tab-content="5">
-                    {% partial 'author_space::author-blog-tab' posts_paginator=posts_paginator %}
+                <div class="author-blog ui-tabs-content" id="author-products" data-tab-content="5">
+                    {% partial 'author_space::author-products-tab' products_paginator=products_paginator %}
                 </div>
                 <!-- Видеоблог -->
                 <div class="author-blog ui-tabs-content" id="author-videoposts" data-tab-content="6">

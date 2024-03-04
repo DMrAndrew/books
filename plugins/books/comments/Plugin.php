@@ -8,6 +8,7 @@ use Books\Comments\Components\Comments;
 use Books\Comments\Components\CommentsLC;
 use Books\Comments\Models\Comment;
 use Books\Profile\Models\Profile;
+use Books\Shop\Models\Product;
 use Books\Videoblog\Models\Videoblog;
 use Illuminate\Foundation\AliasLoader;
 use System\Classes\PluginBase;
@@ -53,7 +54,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-        foreach ([Profile::class, Book::class, Post::class, Videoblog::class] as $class) {
+        foreach ([Profile::class, Book::class, Post::class, Videoblog::class, Product::class] as $class) {
             $class::extend(function ($model) {
                 $model->implementClassWith(Commentable::class);
             });

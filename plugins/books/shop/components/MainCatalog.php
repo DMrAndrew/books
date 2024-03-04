@@ -1,0 +1,58 @@
+<?php namespace Books\Shop\Components;
+
+use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
+use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Shop\Models\Product;
+use Cms\Classes\ComponentBase;
+use RainLab\User\Facades\Auth;
+
+/**
+ * MainCatalog Component
+ *
+ * @link https://docs.octobercms.com/3.x/extend/cms-components.html
+ */
+class MainCatalog extends ComponentBase
+{
+    public function componentDetails()
+    {
+        return [
+            'name' => 'MainCatalog Component',
+            'description' => 'No description provided yet...'
+        ];
+    }
+
+    /**
+     * @link https://docs.octobercms.com/3.x/element/inspector-types.html
+     */
+    public function defineProperties()
+    {
+        return [];
+    }
+
+    public function init()
+    {
+        $this->prepareVals();
+        $this->registerBreadcrumbs();
+    }
+
+    private function prepareVals()
+    {
+        $products = Product::where('quantity', '>', 0)
+            ->orderByDesc('created_at');
+        $this->page['categoryId'] = $this->getController()->getRouter()->getParameter('category_id') ?? null;
+        if ($this->page['categoryId']) {
+            $products->where('category_id', $this->page['categoryId']);
+        }
+        $this->page['products'] = $products->paginate(6);
+    }
+
+    private function registerBreadcrumbs(): void
+    {
+        $manager = app(BreadcrumbsManager::class);
+
+        $manager->register('shop', function (BreadcrumbsGenerator $trail, $params) {
+            $trail->parent('/');
+            $trail->push('Магазин', url('/shop'));
+        });
+    }
+}

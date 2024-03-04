@@ -1,0 +1,70 @@
+{% if products_paginator.count %}
+    {% set posts = products_paginator.getCollection %}
+
+    {% if not posts[0] %}
+        <div class="author__placeholder _indent">
+            <div class="ui-text-head--3 ui-text--bold">У {{ isOwner ? 'вас' : 'пользователя' }} пока нет ни одного товара
+            </div>
+            <span>Когда они появятся, вы увидите их здесь</span>
+        </div>
+    {% else %}
+        <div class="personal-area">
+            <div class="ui-container-fluid">
+                <div class="personal-area__container ui-grid-container ui-grid-gap">
+                    <!-- меню кабинета -->
+                    <div class="ui-col-sm-3 shop-sidebar__container">
+                        <div class="shop-sidebar">
+                            <a class="shop-sidebar__link {% if categoryId == null %} active {% endif %}" data-request="{{__SELF__}}::onGetProductsByCategory"
+                               data-request-data="categoryId:null"
+                               data-request-complete=" $('#author-products')[0].scrollIntoView() "
+                            >
+                                Все товары
+                            </a>
+                            {% for category in categories %}
+                                <a class="shop-sidebar__link {% if category.id == activeCategory %}  active {% endif %}"
+                                       data-request="{{__SELF__}}::onGetProductsByCategory"
+                                       data-request-data="categoryId:{{ category.id }}"
+                                       data-request-complete=" $('#author-products')[0].scrollIntoView() "
+                                >
+                                    {{ category.title }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- основная часть -->
+                    <div class="ui-col-sm-9">
+                        <div class="shop-list">
+                            {% for product in posts %}
+
+                            <div class="shop-item">
+                                <a href="/shop/product/{{ product.id }}" class="shop-item-img">
+                                    <img src="{{ product.product_image.thumbUrl(250, 250, {quality: 100 }) }}"
+                                         alt="{{ product.title }}"/>
+                                </a>
+                                <a href="/shop/product/{{ product.id }}" class="shop-item-name">{{ product.title }}</a>
+                                <div class="shop-item-price">{{ product.price }} ₽</div>
+                                {% if user %}
+                                <div class="shop-item-actions">
+                                    <a href="#" class="ui-button ui-button--full ui-button-size--32 ui-button-view--2 ui-text--medium">
+                                        В корзину
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                        {% partial 'site/ajax_paginator' paginator=products_paginator function='onProductsPage' customPageName='productsPage' customTagName='#author-products' %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+
+
+{% endif %}

@@ -10,6 +10,8 @@ use Books\Book\Components\Widget;
 use Books\Book\Models\Author;
 use Books\Comments\Components\Comments;
 use Books\Profile\Models\Profile;
+use Books\Shop\Models\Category;
+use Books\Shop\Models\Product;
 use Cms\Classes\CmsException;
 use Cms\Classes\ComponentBase;
 use Illuminate\Pagination\Paginator;
@@ -36,12 +38,15 @@ class AuthorSpace extends ComponentBase
     protected $blogPostsCurrentPage = 1;
 
     protected $videoBlogPostsCurrentPage = 1;
+    protected $productCurrentPage = 1;
 
     protected int $perPage = 15;
     protected int $perPageBooks = 10;
     protected int $perPageBlogPosts = 10;
+    protected int $perPageProducts = 6;
     protected int $perPageVideoblogPosts = 6;
     protected int $perPageComments = 20;
+    private ?int $activeCategory = null;
 
     /**
      * componentDetails
@@ -121,6 +126,7 @@ class AuthorSpace extends ComponentBase
             $this->getAuthorCommentsCount(),
             $this->getAuthorBlogPosts(),
             $this->getAuthorVideoBlogPosts(),
+            $this->getAuthorProducts(),
         );
     }
 
@@ -216,6 +222,42 @@ class AuthorSpace extends ComponentBase
                         pageName: 'videoblogPostsPage',
                     )
             ) : collect(),
+        ];
+    }
+
+    public function getAuthorProducts(): array
+    {
+        $products = $this->profile->products()->where('quantity', '>', 0);
+        if ($this->activeCategory) {
+            $products->where('category_id', $this->activeCategory);
+        }
+        return [
+            'activeCategory' => $this->activeCategory,
+            'categories' => Category::all(),
+            'products_paginator' => CustomPaginator::from(
+                    $products->paginate(
+                        perPage: $this->perPageProducts,
+                        pageName: 'productsPage'
+                    )
+            ) ?? collect(),
+        ];
+    }
+
+    public function onGetProductsByCategory()
+    {
+        $this->activeCategory = (int)(post('categoryId')) ?? null;
+        return [
+            '#author-products' => $this->renderPartial('@author-products-tab', $this->getAuthorProducts()),
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function onProductsPage()
+    {
+        return [
+            '#author-products' => $this->renderPartial('@author-products-tab', $this->getAuthorProducts()),
         ];
     }
 
