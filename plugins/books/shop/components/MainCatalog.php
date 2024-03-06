@@ -13,6 +13,8 @@ use RainLab\User\Facades\Auth;
  */
 class MainCatalog extends ComponentBase
 {
+    private $user;
+
     public function componentDetails()
     {
         return [
@@ -31,19 +33,22 @@ class MainCatalog extends ComponentBase
 
     public function init()
     {
+        $this->user = Auth::getUser();
         $this->prepareVals();
         $this->registerBreadcrumbs();
     }
 
     private function prepareVals()
     {
-        $products = Product::where('quantity', '>', 0)
-            ->orderByDesc('created_at');
+        $products = Product::where('quantity', '>', 0);
+        if ($this->user) {
+            $products->where('seller_id', '!=', $this->user->getKey());
+        }
         $this->page['categoryId'] = $this->getController()->getRouter()->getParameter('category_id') ?? null;
         if ($this->page['categoryId']) {
             $products->where('category_id', $this->page['categoryId']);
         }
-        $this->page['products'] = $products->paginate(6);
+        $this->page['products'] = $products->orderByDesc('created_at')->paginate(6);
     }
 
     private function registerBreadcrumbs(): void

@@ -10,7 +10,10 @@
         <div class="shop-item-price">{{ product.price }} ₽</div>
         {% if user %}
         <div class="shop-item-actions">
-            <a href="#" class="ui-button ui-button--full ui-button-size--32 ui-button-view--2 ui-text--medium">
+            <a class="ui-button ui-button--full ui-button-size--32 ui-button-view--2 ui-text--medium"
+               data-request="Basket::onAddToBasket"
+               data-request-data="productId:{{ product.id }}"
+            >
                 В корзину
             </a>
         </div>

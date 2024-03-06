@@ -1,6 +1,12 @@
 <?php namespace Books\Shop\Components;
 
+use Books\Profile\Models\Profile;
+use Books\Shop\Models\OrderItems;
+use Books\Shop\Models\Product;
 use Cms\Classes\ComponentBase;
+use Exception;
+use October\Rain\Support\Facades\Flash;
+use RainLab\User\Facades\Auth;
 
 /**
  * Basket Component
@@ -9,6 +15,8 @@ use Cms\Classes\ComponentBase;
  */
 class Basket extends ComponentBase
 {
+    private $user;
+
     public function componentDetails()
     {
         return [
@@ -23,5 +31,40 @@ class Basket extends ComponentBase
     public function defineProperties()
     {
         return [];
+    }
+
+    public function init()
+    {
+        if ($redirect = redirectIfUnauthorized()) {
+            return $redirect;
+        }
+        $this->user = Auth::getUser();
+        $orderItems = OrderItems::where('buyer_id', $this->user->getKey())->whereNull('order_id')->get();
+        $sellers['usernames'] = Profile::whereIn('id', $orderItems->pluck('seller_id')->unique())->get()->pluck('username', 'id')->toArray();
+        $orderItems->groupBy('seller_id')->each(function ($items, $key) use (&$sellers) {
+            $sellers['amount'][$key] = $items->sum('price');
+        });
+        $this->page['orderItemsCount'] = $orderItems->count();
+        $this->page['orderItems'] = $orderItems->groupBy('seller_id');
+        $this->page['sellers'] = $sellers;
+    }
+
+    public function onAddToBasket()
+    {
+        $product = Product::findOrFail((int)post('productId'));
+        OrderItems::create([
+            'buyer_id' => $this->user->getKey(),
+            'seller_id' => $product->seller_id,
+            'product_id' => $product->getKey(),
+            'quantity' => 1,
+            'price' => $product->price,
+        ]);
+        $orderItemsCount = OrderItems::where('buyer_id', $this->user->getKey())->whereNull('order_id')->count();
+
+        return [
+            '#basketInHeader' => $this->renderPartial('@inHeader', [
+                'orderItemsCount' => $orderItemsCount
+            ]),
+        ];
     }
 }

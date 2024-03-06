@@ -1,0 +1,54 @@
+title = "Оформление заказа"
+layout = "default"
+url = "/shop/checkout"
+meta_title = "Оформление заказа"
+breadcrumbs="shop-checkout"
+[session]
+security = "user"
+redirect = "/shop"
+
+==
+
+{% component 'Breadcrumbs' %}
+
+<!-- Тело страницы -->
+<div class="ui-container">
+    <div class="basket__title ui-text-head--2 ui-text--bold">Оформление заказа</div>
+</div>
+
+<div class="ui-container-fluid">
+    <div class="order__body">
+        <div class="ui-text-head--3 ui-text--bold">Данные для почтового отправления</div>
+        <div class="ui-input--block">
+            <label class="ui-input-label">Имя и фамилия</label>
+            <input class="ui-input-item _size-32" type="text" >
+        </div>
+        <div class="ui-input--block">
+            <label class="ui-input-label">Телефон</label>
+            <input class="ui-input-item _size-32" type="text" >
+        </div>
+        <div class="ui-input--block">
+            <label class="ui-input-label">Страна</label>
+
+            <select id="country" class="hidden">
+                <option value="Россия">Россия</option>
+                <option value="Казахстан">Казахстан</option>
+                <option value="Грузия">Грузия</option>
+                <option value="Армения">Армения</option>
+            </select>
+        </div>
+        <div class="ui-input--block">
+            <label class="ui-input-label">Индекс</label>
+            <input class="ui-input-item _size-32" type="text" >
+        </div>
+        <div class="ui-input--full">
+            <label class="ui-input-label">Адрес</label>
+            <input class="ui-input-item _size-32" type="text" >
+        </div>
+    </div>
+
+    <div class="order__total">
+        <div class="ui-text-head--3 ui-text--bold">Итого: 550 ₽</div>
+        <a class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium" href="./order.html">Оплатить</a>
+    </div>
+</div>

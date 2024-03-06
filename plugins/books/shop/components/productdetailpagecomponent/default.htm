@@ -7,7 +7,12 @@
         <div class="shop-detail-name">{{ product.title }}</div>
         <div class="shop-detail-price">{{ product.price }} ₽</div>
         {% if user %}
-            <button class="shop-detail-btn ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">В корзину</button>
+            <button class="shop-detail-btn ui-button ui-button-size--32 ui-button-view--2 ui-text--medium"
+                    data-request="Basket::onAddToBasket"
+                    data-request-data="productId:{{ product.id }}"
+            >
+                В корзину
+            </button>
         {% endif %}
         <div class="shop-detail-description">
             {{ product.description }}

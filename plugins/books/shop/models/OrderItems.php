@@ -1,5 +1,7 @@
 <?php namespace Books\Shop\Models;
 
+use Books\Profile\Models\Profile;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Model;
 
 /**
@@ -20,4 +22,33 @@ class OrderItems extends Model
      * @var array rules for validation
      */
     public $rules = [];
+
+    protected $fillable = [
+        'buyer_id',
+        'seller_id',
+        'product_id',
+        'quantity',
+        'price',
+    ];
+
+    protected $with = [
+        'seller',
+        'buyer',
+        'product',
+    ];
+
+    public function seller(): BelongsTo
+    {
+        return $this->belongsTo(Profile::class, 'seller_id', 'id');
+    }
+
+    public function buyer(): BelongsTo
+    {
+        return $this->belongsTo(Profile::class, 'buyer_id', 'id');
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
 }

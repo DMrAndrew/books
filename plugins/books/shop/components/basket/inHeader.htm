@@ -1,0 +1,12 @@
+<div class="header__actions-wrapper" id="basketInHeader">
+    <a href="/shop/basket" data-turbo="false">
+        <div class="header__actions-item" >
+            <svg class="square-24">
+                <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#bag-stroked-24' | theme }}"></use>
+            </svg>
+            {% if orderItemsCount > 0 %}
+            <div class="ui-label-number _red">{{ orderItemsCount }}</div>
+            {% endif %}
+        </div>
+    </a>
+</div>
