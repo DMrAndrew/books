@@ -16,7 +16,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('books_shop_cities', function(Blueprint $table) {
+        Schema::create('books_shop_countries', function(Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('books_shop_cities');
+        Schema::dropIfExists('books_shop_countries');
     }
 };

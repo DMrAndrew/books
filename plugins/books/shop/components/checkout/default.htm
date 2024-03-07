@@ -1,0 +1,66 @@
+{% if amount > 0 %}
+
+    {{
+    form_ajax('onSave', {
+    flash: 1,
+    files: 1,
+    class:'ui-container-fluid wrapper',
+    'data-request-validate':'true',
+    })
+    }}
+
+        <div class="order__body">
+
+            <input type="hidden" name="buyer_id" value="{{ buyer_id }}">
+            <input type="hidden" name="seller_id" value="{{ seller_id }}">
+            <input type="hidden" name="amount" value="{{ amount }}">
+
+            <div class="ui-text-head--3 ui-text--bold">Данные для почтового отправления</div>
+            <div class="ui-input--block">
+                <label class="ui-input-label">Имя и фамилия</label>
+                <input class="ui-input-item _size-32" name="full_name" type="text">
+            </div>
+            <div class="ui-input--block">
+                <label class="ui-input-label">Телефон</label>
+                <input class="ui-input-item _size-32" name="phone" type="text">
+            </div>
+            <div class="ui-input--block">
+                <label class="ui-input-label">Страна</label>
+
+                <select id="country" class="hidden" name="country_id">
+                    {% for country in countries %}
+                        <option value="{{ country.id }}}">{{ country.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="ui-input--block">
+                <label class="ui-input-label">Индекс</label>
+                <input class="ui-input-item _size-32" name="index" type="text">
+            </div>
+            <div class="ui-input--full">
+                <label class="ui-input-label">Адрес</label>
+                <input class="ui-input-item _size-32" name="address" type="text">
+            </div>
+        </div>
+
+        <div class="order__total">
+            <div class="ui-text-head--3 ui-text--bold">Итого: 550 ₽</div>
+            <button class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Оплатить</button>
+        </div>
+
+    {{ form_close() }}
+
+{% else %}
+
+<div class="ui-container-fluid common-pages__container">
+    <div class="wrapper">
+        <div class="common-pages__content">
+            <div class="common-pages__title ui-text-head--2 ui-text--bold">У вас пока нет товаров для оформления заказа</div>
+            <div class="common-pages__text ">Вы можете перейти в <a href="/shop">Магазин</a> для покупки или вернуться на <a
+                href="#" onclick="history.back();">предыдущую страницу</a>.
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endif %}

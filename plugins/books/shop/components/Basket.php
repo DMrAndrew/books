@@ -4,8 +4,6 @@ use Books\Profile\Models\Profile;
 use Books\Shop\Models\OrderItems;
 use Books\Shop\Models\Product;
 use Cms\Classes\ComponentBase;
-use Exception;
-use October\Rain\Support\Facades\Flash;
 use RainLab\User\Facades\Auth;
 
 /**
@@ -15,7 +13,7 @@ use RainLab\User\Facades\Auth;
  */
 class Basket extends ComponentBase
 {
-    private $user;
+    private $userProfile;
 
     public function componentDetails()
     {
@@ -38,8 +36,8 @@ class Basket extends ComponentBase
         if ($redirect = redirectIfUnauthorized()) {
             return $redirect;
         }
-        $this->user = Auth::getUser();
-        $orderItems = OrderItems::where('buyer_id', $this->user->getKey())->whereNull('order_id')->get();
+        $this->userProfile = Auth::getUser()->profile;
+        $orderItems = OrderItems::where('buyer_id', $this->userProfile->getKey())->whereNull('order_id')->get();
         $sellers['usernames'] = Profile::whereIn('id', $orderItems->pluck('seller_id')->unique())->get()->pluck('username', 'id')->toArray();
         $orderItems->groupBy('seller_id')->each(function ($items, $key) use (&$sellers) {
             $sellers['amount'][$key] = $items->sum('price');
@@ -53,13 +51,13 @@ class Basket extends ComponentBase
     {
         $product = Product::findOrFail((int)post('productId'));
         OrderItems::create([
-            'buyer_id' => $this->user->getKey(),
+            'buyer_id' => $this->userProfile->getKey(),
             'seller_id' => $product->seller_id,
             'product_id' => $product->getKey(),
             'quantity' => 1,
             'price' => $product->price,
         ]);
-        $orderItemsCount = OrderItems::where('buyer_id', $this->user->getKey())->whereNull('order_id')->count();
+        $orderItemsCount = OrderItems::where('buyer_id', $this->userProfile->getKey())->whereNull('order_id')->count();
 
         return [
             '#basketInHeader' => $this->renderPartial('@inHeader', [

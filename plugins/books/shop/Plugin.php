@@ -4,7 +4,7 @@ use Backend;
 use Books\Profile\Models\Profile;
 use Books\Shop\Behaviors\HasProduct;
 use Books\Shop\Components\Basket;
-use Books\Shop\Components\BasketInHeader;
+use Books\Shop\Components\Checkout;
 use Books\Shop\Components\MainCatalog;
 use Books\Shop\Components\ProductDetailPageComponent;
 use Books\Shop\Components\ShopCategorySidebar;
@@ -68,8 +68,8 @@ class Plugin extends PluginBase
             MainCatalog::class => 'MainCatalog',
             ShopCategorySidebar::class => 'ShopCategorySidebar',
             ProductDetailPageComponent::class => 'ProductDetailPageComponent',
-            BasketInHeader::class => 'BasketInHeader',
             Basket::class => 'Basket',
+            Checkout::class => 'Checkout',
         ];
     }
 
