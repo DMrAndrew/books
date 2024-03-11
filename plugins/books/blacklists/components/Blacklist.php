@@ -1,4 +1,5 @@
-<?php namespace Books\Blacklists\Components;
+<?php
+namespace Books\Blacklists\Components;
 
 use App\classes\PartialSpawns;
 use Books\Profile\Models\Profile;
@@ -58,7 +59,9 @@ class Blacklist extends ComponentBase
     {
         return [
             'comments_blacklisted_profiles' => $this->profile?->profiles_blacklisted_in_comments()
-                ->paginate((int)$this->property('recordsPerPage', 16)),
+                ->paginate((int) $this->property('recordsPerPage', 16)),
+            'chat_blacklisted_profiles' => $this->profile?->profiles_blacklisted_in_chat()
+                ->paginate((int) $this->property('recordsPerPage', 16)),
         ];
     }
 
@@ -100,7 +103,6 @@ class Blacklist extends ComponentBase
             Flash::success('Профиль пользователя успешно удален из Черного списка');
 
             return starts_with($this->page->url, '/lc-blacklist') ? $this->renderList() : [];
-
         } catch (Exception $e) {
             Log::error($e->getMessage());
             Flash::error($e->getMessage());
@@ -130,6 +132,20 @@ class Blacklist extends ComponentBase
      */
     public function onRemoveFromChatBlacklist(): array
     {
-        return [];
+        if (!Auth::getUser()) {
+            return [];
+        }
+
+        try {
+            $unBanProfile = Profile::findOrFail(post('profile_id'));
+            $this->profile->unBlackListChatFor($unBanProfile);
+            Flash::success('Профиль пользователя успешно удален из Черного списка');
+
+            return starts_with($this->page->url, '/lc-blacklist') ? $this->renderList() : [];
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            Flash::error($e->getMessage());
+            return [];
+        }
     }
 }

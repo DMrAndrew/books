@@ -1,5 +1,6 @@
 <?php
 
+use Books\Book\Models\AwardBook;
 use Books\Book\Models\Cycle;
 use Books\Comments\Models\Comment;
 use Books\Reviews\Models\Review;
@@ -13,5 +14,6 @@ return [
         Comment::class,
         Cycle::class,
         Post::class,
+        AwardBook::class
     ],
 ];

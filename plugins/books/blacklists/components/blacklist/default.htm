@@ -12,7 +12,7 @@
                 <div class="ui-tabs-line"></div>
                 <div class="ui-tabs-header-wrapper js-wrapper" data-tabs="1">
                     <div class="ui-tabs-link active" data-tab="1">Комментарии</div>
-                    <!-- <div class="ui-tabs-link" data-tab="2">Чат</div>-->
+                     <div class="ui-tabs-link" data-tab="2">Чат</div>
                 </div>
             </div>
             <div class="ui-tabs-body" data-tabs="1">
@@ -61,46 +61,56 @@
                     {% endif %}
 
                 </div>
-<!--                <div class="ui-tabs-content wrapper" data-tab-content="2">-->
-<!--                    <div class="personal-area-blacklist ">-->
-<!--                        <div class="personal-area-blacklist__avatar">-->
-<!--                            &lt;!&ndash; Показывается сообщение или плейсхолдер &ndash;&gt;-->
-<!--                            <img src="./assets/images/author/avatar-placeholder.png" alt="">-->
-<!--                            &lt;!&ndash; <span class="ui-text&#45;&#45;bold">A</span> &ndash;&gt;-->
-<!--                        </div>-->
-<!--                        <div class="personal-area-blacklist__name">Александр </div>-->
-<!--                        <div class="personal-area-blacklist__action">-->
-<!--                            <svg class="square-16">-->
-<!--                                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>-->
-<!--                            </svg>-->
-<!--                            <div class="personal-area-blacklist-action">-->
-<!--                                <div class="personal-area-blacklist-action__wrapper">-->
-<!--                                    <button class="personal-area-blacklist-action__item">Убрать из черного списка</button>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="personal-area-blacklist">-->
-<!--                        <div class="personal-area-blacklist__avatar">-->
-<!--                            &lt;!&ndash; Показывается сообщение или плейсхолдер &ndash;&gt;-->
-<!--                            &lt;!&ndash; <img src="./assets/images/author/avatar-placeholder.png" alt=""> &ndash;&gt;-->
-<!--                            <span class="ui-text&#45;&#45;bold">A</span>-->
-<!--                        </div>-->
-<!--                        <div class="personal-area-blacklist__name">Александр Алексон</div>-->
-<!--                        <div class="personal-area-blacklist__action">-->
-<!--                            <svg class="square-16">-->
-<!--                                <use xlink:href="./assets/icon-sprite/svg-sprite.svg#more-16"></use>-->
-<!--                            </svg>-->
-<!--                            <div class="personal-area-blacklist-action">-->
-<!--                                <div class="personal-area-blacklist-action__wrapper">-->
-<!--                                    <button class="personal-area-blacklist-action__item">Убрать из черного списка</button>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
+                <div class="ui-tabs-content wrapper" data-tab-content="2">
+
+                    {% if chat_blacklisted_profiles.count %}
+                    {% for bannedProfile in chat_blacklisted_profiles %}
+                    <div class="personal-area-blacklist ">
+                        <div class="comments-comment__avatar square-40">
+                            {% if bannedProfile.avatar %}
+                            <img class="square-40" src="{{bannedProfile.avatar.getThumb(40,40)}}" alt="avatar">
+                            {% else %}
+                            <span class="ui-text-body--1 ui-text--bold">{{ bannedProfile.firstLatter }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="personal-area-blacklist__name">
+                            <a href="/author-page/{{bannedProfile.id}}">{{ bannedProfile.getAttribute('username') }}</a>
+                        </div>
+                        <div class="personal-area-blacklist__action">
+                            <svg class="square-16">
+                                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#more-16' | theme}}"></use>
+                            </svg>
+                            <div class="personal-area-blacklist-action">
+                                <div class="personal-area-blacklist-action__wrapper">
+                                    <div class="ui-dropdown-item active"
+                                         onclick="uiconfirm('Удалить пользователя из чёрного списка?',() => oc.ajax('Blacklist::onRemoveFromChatBlacklist',{data:{profile_id:'{{bannedProfile.id}}'}, flash: true}))">
+                                        <span>Убрать из черного списка</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+
+                    {{ pager(chat_blacklisted_profiles, { partial: 'site/standart_pagination'}) }}
+
+                    {% elseif not chat_blacklisted_profiles.count %}
+                    <div class="author__placeholder _indent">
+                        <svg class="square-32">
+                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-stroked-24' | theme}}"></use>
+                        </svg>
+                        <div class="ui-text-head--3 ui-text--bold">У вас пока нет ни одного пользователя в чёрном списке</div>
+                        <span>Когда они появятся, вы увидите их здесь</span>
+                    </div>
+                    {% endif %}
+
+                </div>
             </div>
         </div>
 
     </form>
 </div>
+<script>
+    initTabs('[data-tabs="1"]');
+</script>

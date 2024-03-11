@@ -32,6 +32,7 @@ use RainLab\User\Models\User;
 use RTippin\Messenger\Contracts\MessengerProvider;
 use RTippin\Messenger\Facades\Messenger;
 use RTippin\Messenger\Traits\Messageable;
+use RTippin\Messenger\Traits\Search;
 use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
 use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
@@ -62,6 +63,7 @@ class Profile extends Model implements MessengerProvider
     use HasRelationships;
     use HasUserScope;
     use Messageable;
+    use Search;
 
     const MAX_USER_PROFILES_COUNT = 5;
 
@@ -212,7 +214,7 @@ class Profile extends Model implements MessengerProvider
 
     public function getPictureAttribute(): bool|string
     {
-        return is_null($this->avatar) ?: $this->avatar->getPath();
+        return is_null($this->avatar) ? false : strstr($this->avatar->getThumb(100,100),'/storage');
     }
 
     public function name()
@@ -265,14 +267,14 @@ class Profile extends Model implements MessengerProvider
     public function isCommentAllowed(Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
-        if (! $profile) {
+        if (!$profile) {
             return false;
         }
         if ($profile->is($this)) {
             return true;
         }
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_FIT_ACCOUNT_INDEX_PAGE)->first();
-        if (! $setting) {
+        if (!$setting) {
             return false;
         }
 
@@ -286,14 +288,14 @@ class Profile extends Model implements MessengerProvider
     public function canSeeCommentFeed(Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
-        if (! $profile) {
+        if (!$profile) {
             return false;
         }
         if ($profile->is($this)) {
             return true;
         }
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_COMMENT_FEED)->first();
-        if (! $setting) {
+        if (!$setting) {
             return false;
         }
 
@@ -313,7 +315,7 @@ class Profile extends Model implements MessengerProvider
         }
 
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_BLOG)->first();
-        if (! $setting) {
+        if (!$setting) {
             return true;
         }
 
@@ -333,7 +335,7 @@ class Profile extends Model implements MessengerProvider
         }
 
         $setting = $this->settings()->type(UserSettingsEnum::PRIVACY_ALLOW_VIEW_VIDEO_BLOG)->first();
-        if (! $setting) {
+        if (!$setting) {
             return true;
         }
 
@@ -379,12 +381,12 @@ class Profile extends Model implements MessengerProvider
 
     public function scopeBooksExists(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->whereHas('books', fn ($book) => $book->public());
+        return $builder->whereHas('books', fn($book) => $book->public());
     }
 
     public function scopeBooksCount(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
     {
-        return $builder->withCount(['books' => fn ($book) => $book->public()]);
+        return $builder->withCount(['books' => fn($book) => $book->public()]);
     }
 
     public function getIsCurrentAttribute(): bool
@@ -429,12 +431,12 @@ class Profile extends Model implements MessengerProvider
 
     public function isEmpty(): bool
     {
-        return ! collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn ($i) => (bool) $i);
+        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => (bool) $i);
     }
 
     public function isContactsEmpty(): bool
     {
-        return ! collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn ($i) => (bool) $i);
+        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn($i) => (bool) $i);
     }
 
     public static function wordForm(): WordForm
@@ -445,8 +447,8 @@ class Profile extends Model implements MessengerProvider
     public function isUsernameExists(string $string): bool
     {
         return $this->user->profiles()->username($string)->exists() || $this->user->profiles()->usernameClipboard(
-            $string
-        )->exists();
+                $string
+            )->exists();
     }
 
     public function maxProfilesCount(): int
@@ -507,6 +509,13 @@ class Profile extends Model implements MessengerProvider
         string $search,
         array $searchItems
     ) {
-        return $query->usernameLike($search);
+        $user = Auth::getUser();
+        return $query->usernameLike($search)
+            ->when($user, fn($q) => $q->where('id', '!=', $user->profile->id)
+                ->whereDoesntHave('chat_blacklisted_by',
+                    fn($blacklist) => $blacklist->where('banned_profile_id', '!=', $user->profile->id))
+                ->whereDoesntHave('profiles_blacklisted_in_chat',
+                    fn($blacklist) => $blacklist->where('owner_profile_id', '!=', $user->profile->id))
+            );
     }
 }

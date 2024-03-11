@@ -1,9 +1,7 @@
 <?php
 
-//Broadcast::channel('test', fn () => true);
-//Broadcast::channel('mc-chat-conversation-{id}', function ($user, $id) {
-//    return $id == 4;
-//});
-//Broadcast::channel('me-{id}', function ($user, $id) {
-//    return $user?->id == $id;
-//});
+use RainLab\User\Facades\Auth;
+
+Broadcast::channel('profile.{id}', function ($user, $id) {
+    return Auth::getUser()?->profile->id == $id;
+});

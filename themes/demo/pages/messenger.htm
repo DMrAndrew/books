@@ -1,17 +1,13 @@
+title = "Чат"
 url = "/messenger"
 layout = "default"
-title = "Чат"
 turbo_cache_control='no-cache'
 meta_title = "Электронная библиотека “Время книг” - большой выбор электронных и аудио книг разных жанров"
 meta_description = "Самые свежие произведения, большой выбор популярных жанров, аудио и электронные книги на любой вкус"
+no_footer=true
+[session]
+security = "user"
+redirect = "/"
 ==
 {% partial 'chat/meta' %}
-<script>
-    localStorage.removeItem('user')
-    localStorage.setItem('user',`{{user|raw}}`)
-</script>
-
-<div class="ui-container">
-    <div class="ui-text-head--2 ui-text--bold page-title">Чат</div>
-</div>
 <div id="app-chat"></div>

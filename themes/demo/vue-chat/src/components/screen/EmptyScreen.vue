@@ -9,7 +9,7 @@ export default {
         <svg class="square-32">
             <use xlink:href="@/assets/icon-sprite/svg-sprite.svg#message-stroked-24"></use>
         </svg>
-        <div class="lc-chat__empty-text">Выберите чат<br>или <a href="./lc-chat-new.html">создайте
+        <div class="lc-chat__empty-text">Выберите чат<br>или <a href="" @click.prevent="messenger.sidebar.toCreateMode()">создайте
             новый</a>
         </div>
     </div>

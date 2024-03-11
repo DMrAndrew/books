@@ -352,19 +352,19 @@ return [
     */
     'collections' => [
         'search' => [
-            'page_count' => 25,
+            'page_count' => 35,
         ],
         'threads' => [
-            'index_count' => 100,
-            'page_count' => 25,
+            'index_count' => 20,
+            'page_count' => 15,
         ],
         'participants' => [
             'index_count' => 500,
             'page_count' => 50,
         ],
         'messages' => [
-            'index_count' => 50,
-            'page_count' => 50,
+            'index_count' => 25,
+            'page_count' => 20,
         ],
         'calls' => [
             'index_count' => 25,

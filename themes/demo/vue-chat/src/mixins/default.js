@@ -10,7 +10,7 @@ export default {
             return this.$store.getters.user
         },
         messenger(){
-            return this.$messenger
+            return this.$messenger.value
         }
     },
     methods:{

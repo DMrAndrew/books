@@ -47,14 +47,15 @@ return [
      * This array contains the hosts of which you want to allow incoming requests.
      * Leave this empty if you want to accept requests from all hosts.
      */
-    'allowed_origins' => [
-        //
-    ],
+    'allowed_origins' => env('APP_ENV','local') === 'production' ? [
+        'bookstime.ru',
+        'booktime2022'
+    ] : [],
 
     /*
      * The maximum request size in kilobytes that is allowed for an incoming WebSocket request.
      */
-    'max_request_size_in_kb' => 250,
+    'max_request_size_in_kb' => 350,
 
     /*
      * This path will be used to register the necessary routes for the package.
@@ -70,6 +71,7 @@ return [
      */
     'middleware' => [
         'web',
+        \RainLab\User\Classes\AuthMiddleware::class,
 
     ],
 

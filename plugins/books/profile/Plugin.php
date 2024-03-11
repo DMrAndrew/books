@@ -74,7 +74,8 @@ class Plugin extends PluginBase
         $this->app->singleton(OperationHistoryServiceContract::class, OperationHistoryService::class);
         $this->app->singleton(SellStatisticServiceContract::class, SellStatisticService::class);
 
-        Event::listen('books.profile.username.modify.requested', fn($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
+        Event::listen('books.profile.username.modify.requested',
+            fn($user) => (new ProfileEventHandler())->usernameModifyRequested($user));
     }
 
     /**
@@ -84,19 +85,15 @@ class Plugin extends PluginBase
      */
     public function boot(): void
     {
-        AliasLoader::getInstance()->alias('Profile', ProfileModel::class);
-        AliasLoader::getInstance()->alias('Profiler', Profiler::class);
         Config::set('profile', Config::get('books.profile::config'));
-
-        User::extend(function (User $model) {
-            $model->implementClassWith(HasProfile::class);
-        });
-
-        foreach ([User::class, ProfileModel::class] as $class) {
-            $class::extend(function (Model $model) {
-                $model->implementClassWith(Masterable::class);
-            });
-        }
+        loadAlias(['Profile' => ProfileModel::class, 'Profiler' => Profiler::class]);
+        loadImplements([
+            User::class => [
+                HasProfile::class,
+                Masterable::class
+            ],
+            ProfileModel::class => Masterable::class
+        ]);
 
         foreach (config('profile.slavable') ?? [] as $class) {
             $class::extend(function ($model) {
@@ -124,8 +121,8 @@ class Plugin extends PluginBase
             /** История операций */
             $form->addTabFields([
                 'operationhistory' => [
-                    'type'   => 'partial',
-                    'label'   => 'История операций',
+                    'type' => 'partial',
+                    'label' => 'История операций',
                     'path' => '$/books/profile/controllers/operationhistory/_history_operation_list.htm',
                     'tab' => 'История операций',
                     'order' => 1700,

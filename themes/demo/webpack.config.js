@@ -1,10 +1,10 @@
 const webpack = require('webpack');
 const dotenv = require('dotenv')
 
-const env = dotenv.config({path: '../../.env'}).parsed;
-
+const isProduction = process.env.NODE_ENV === 'production'
+const path = './vue-chat/.env' + (isProduction ? '.production' : '')
+const env = dotenv.config({path: path}).parsed;
 const envKeys = Object.keys(env)
-    .filter(e => e.startsWith('PUSHER'))
     .reduce((prev, next) => {
         prev[`process.env.${next}`] = JSON.stringify(env[next]);
         return prev;

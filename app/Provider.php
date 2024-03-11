@@ -9,14 +9,11 @@ use App\traits\DateScopes;
 use App\traits\FileExtension;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Exception;
 use Illuminate\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Console\PruneCommand;
 use Illuminate\Database\DatabaseManager;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Foundation\AliasLoader;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Illuminate\Queue\Console\BatchesTableCommand;
@@ -32,6 +29,31 @@ use System\Models\Revision;
  */
 class Provider extends AppBase
 {
+
+    protected array $middlewares = [
+        TrimStrings::class,
+        ConvertEmptyStringsToNull::class,
+        FetchCheckUp::class,
+    ];
+
+    protected array $implements = [
+        Model::class => DateScopes::class,
+        File::class => FileExtension::class,
+        Revision::class => RevisionHistory::class
+    ];
+
+    protected array $aliases = [
+        'Carbon' => Carbon::class,
+        'CarbonPeriod' => CarbonPeriod::class,
+        'CustomPaginator' => CustomPaginator::class
+    ];
+
+    protected array $commands = [
+        'model:prune' => PruneCommand::class,
+        'queue:batches-table' => BatchesTableCommand::class
+    ];
+
+
     /**
      * register method, called when the app is first registered.
      *
@@ -41,52 +63,23 @@ class Provider extends AppBase
     {
         parent::register();
         $this->app->rebinding('request', function ($app, $request) {
-            $request->setUserResolver(function () use ($app) {
-                return Auth::getUser();
-            });
+            $request->setUserResolver(fn() => Auth::getUser());
         });
-        $this->app->singleton(DatabaseManager::class, function ($app) {
-            return $app->make('db');
-        });
+        $this->app->singleton(DatabaseManager::class, fn($app) => $app->make('db'));
         $this->app->singleton(GateContract::class, static function ($app): GateContract {
             return new Gate($app, static function () use ($app) {
                 return fn() => Auth::getUser();
             });
         });
-        $this->registerConsoleCommand('model:prune', PruneCommand::class);
-        $this->registerConsoleCommand('queue:batches-table', BatchesTableCommand::class);
-        AliasLoader::getInstance()->alias('Carbon', Carbon::class);
-        AliasLoader::getInstance()->alias('CarbonPeriod', CarbonPeriod::class);
-        AliasLoader::getInstance()->alias('CustomPaginator', CustomPaginator::class);
 
-        Factory::guessFactoryNamesUsing(function ($modelName) {
-            if (property_exists($modelName, 'factory')) {
-                return $modelName::$factory;
-            }
-            throw new Exception('Factory for '.$modelName.' not found.');
-        });
-        Revision::extend(function (Revision $revision) {
-            $revision->implementClassWith(RevisionHistory::class);
-        });
 
-        // Add a new middleware to end of the stack.
-        $middlewares = [
-            TrimStrings::class,
-            ConvertEmptyStringsToNull::class,
-            FetchCheckUp::class,
-        ];
+        array_walk($this->commands, fn($class, $command) => $this->registerConsoleCommand($command, $class));
 
-        foreach ($middlewares as $middleware) {
+        array_walk($this->middlewares, fn($middleware) => $this->app[Kernel::class]->pushMiddleware($middleware));
 
-            $this->app[Kernel::class]->pushMiddleware($middleware);
-        }
+        loadAlias($this->aliases);
 
-        Model::extend(function (Model $model) {
-            $model->implementClassWith(DateScopes::class);
-        });
-        File::extend(function (File $model) {
-            $model->implementClassWith(FileExtension::class);
-        });
+        loadImplements($this->implements);
     }
 
     /**
@@ -97,7 +90,7 @@ class Provider extends AppBase
     public function boot()
     {
         parent::boot();
-        Model::preventLazyLoading(! app()->isProduction());
+        Model::preventLazyLoading(!app()->isProduction());
         Request::setTrustedProxies(config('app.trusted_proxies'), -1);
     }
 }

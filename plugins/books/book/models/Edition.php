@@ -48,6 +48,7 @@ use System\Models\Revision;
  *
  * * @property  Book book
  * * @property  BookStatus status
+ * * @property  BookStatus originalStatus
  * * @property  EditionsEnums type
  * * @property  bool download_allowed
  * * @property  int price
@@ -83,7 +84,10 @@ class Edition extends Model implements ProductInterface
 
     protected $revisionable = ['length', 'status', 'price'];
 
-    protected $purgeable = ['is_deferred', 'is_has_customers', 'is_has_completed', self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN, 'last_updated_at'];
+    protected $purgeable = [
+        'is_deferred', 'is_has_customers', 'is_has_completed', self::LAST_LENGTH_UPDATE_NOTIFICATION_AT_COLUMN,
+        'last_updated_at'
+    ];
 
     public $revisionableLimit = 10000;
 
@@ -199,7 +203,6 @@ class Edition extends Model implements ProductInterface
             'created_at' => new DateTime,
             'updated_at' => new DateTime,
         ]);
-
     }
 
     public function getLastLengthUpdateNotificationAtAttribute(): ?Carbon
@@ -254,7 +257,10 @@ class Edition extends Model implements ProductInterface
 
     public function scopeWithReadLength(Builder $builder, User $user): Builder
     {
-        return $builder->withSum(['trackers as read_length' => fn ($trackers) => $trackers->withoutTodayScope()->user($user)->latest('updated_at')->limit(1)], 'length');
+        return $builder->withSum([
+            'trackers as read_length' => fn($trackers
+            ) => $trackers->withoutTodayScope()->user($user)->latest('updated_at')->limit(1)
+        ], 'length');
     }
 
     public function getReadPercentAttribute(): int
@@ -271,7 +277,7 @@ class Edition extends Model implements ProductInterface
     {
         return match ($this->type) {
             EditionsEnums::Ebook => $this->book->title,
-            default => $this->book->title . ' ('. EditionsEnums::Audio->label().') ',
+            default => $this->book->title.' ('.EditionsEnums::Audio->label().') ',
         };
     }
 
@@ -302,7 +308,7 @@ class Edition extends Model implements ProductInterface
 
     public function isSold(?User $user): bool
     {
-        return $user && $this->customers()->user($user)->exists();
+        return $user and $this->customers()->user($user)->exists();
     }
 
     public function getSoldCountAttribute(): int
@@ -317,7 +323,7 @@ class Edition extends Model implements ProductInterface
 
     public function isFree(): bool
     {
-        return ! (bool) (int) $this->getOriginal('price');
+        return !(bool) (int) $this->getOriginal('price');
     }
 
     public function hasRevisionStatus(BookStatus ...$status)
@@ -335,11 +341,8 @@ class Edition extends Model implements ProductInterface
 
     public function isVisible(): bool
     {
-        return in_array($this->getOriginal('status'), [
-            BookStatus::WORKING,
-            BookStatus::COMPLETE
-        ])
-        || $this->book->profiles()->user(Auth::getUser())->exists();
+        return $this->getOriginal('status')->is(BookStatus::WORKING, BookStatus::COMPLETE)
+            or $this->book->profiles()->user(Auth::getUser())->exists();
     }
 
     public function setPublishAt(): void
@@ -357,7 +360,7 @@ class Edition extends Model implements ProductInterface
      */
     public function editAllowed(): bool
     {
-        return ! $this->is_deferred;
+        return !$this->is_deferred;
     }
 
     /**
@@ -367,22 +370,24 @@ class Edition extends Model implements ProductInterface
     {
         $cases = collect(BookStatus::publicCases());
 
-        if ($this->exists) {
-            $cases = match ($this->getOriginal('status')) {
-                BookStatus::WORKING => $this->is_has_customers ? $cases->forget(BookStatus::HIDDEN) : $cases,
-                // нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
-                BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value),
-                // Из “Завершено” можем перевести только в статус “Скрыто”.
-                BookStatus::HIDDEN => $this->isPublished() && $this->is_has_completed && $this->is_has_customers ? $cases->only(BookStatus::COMPLETE->value) : $cases,
-                //Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”,
-                // то книгу можно вернуть в статус “Скрыто”, но редактирование и удаление глав будет невозможным если есть продажи.
-                default => collect()
-            };
-
-            $cases[$this->getOriginal('status')->value] = $this->getOriginal('status');
+        if (!$this->exists) {
+            return $cases->toArray();
         }
 
-        return $cases->toArray();
+        $cases = match ($this->getOriginal('status')) {
+            // нельзя перевести в статус "Скрыто" если куплена хотя бы 1 раз
+            BookStatus::WORKING => $this->is_has_customers ? $cases->forget(BookStatus::HIDDEN) : $cases,
+            // Из “Завершено” можем перевести только в статус “Скрыто”.
+            BookStatus::COMPLETE => $cases->only(BookStatus::HIDDEN->value),
+            //Если из статуса “Скрыто” однажды перевели книгу в статус “Завершено”,
+            // то книгу можно вернуть в статус “Скрыто”, но редактирование и удаление глав будет невозможным если есть продажи.
+            BookStatus::HIDDEN => $this->isPublished() && $this->is_has_completed && $this->is_has_customers ? $cases->only(BookStatus::COMPLETE->value) : $cases,
+            default => collect()
+        };
+
+        return $cases
+            ->concat($this->getOriginal('status')->toArray())
+            ->toArray();
     }
 
     /**
@@ -391,11 +396,9 @@ class Edition extends Model implements ProductInterface
     public function shouldDeferredUpdate(): bool
     {
         return
-            // в статусе
-            in_array(
-            $this->getOriginal('status'), [BookStatus::HIDDEN, BookStatus::COMPLETE])
+            $this->getOriginal('status')->is(BookStatus::HIDDEN, BookStatus::COMPLETE)
             // и есть продажи
-            && $this->is_has_customers;
+            and $this->is_has_customers;
     }
 
     public function hasCompleted(): bool
@@ -437,13 +440,13 @@ class Edition extends Model implements ProductInterface
     public function shouldRevisionLength(): bool
     {
         return $this->isDirty('length')
-            && ! $this->is_deferred
-            && in_array($this->getOriginal('status'), [BookStatus::WORKING, BookStatus::FROZEN, BookStatus::COMPLETE]);
+            and !$this->is_deferred
+            and $this->getOriginal('status')->is(BookStatus::WORKING, BookStatus::FROZEN, BookStatus::COMPLETE);
     }
 
     protected function beforeUpdate(): void
     {
-        if (! $this->shouldRevisionLength()) {
+        if (!$this->shouldRevisionLength()) {
             $this->revisionable = array_diff_key($this->revisionable, ['length']);
         }
         $this->purgeAttributes();
@@ -456,12 +459,17 @@ class Edition extends Model implements ProductInterface
 
     public function scopeWithLastLengthRevision(Builder $builder): Builder
     {
-        return $builder->with(['revision_history' => fn ($history) => $history->where('field', '=', 'length')->orderByDesc('created_at')->limit(1)]);
+        return $builder->with([
+            'revision_history' => fn($history) => $history->where('field', '=',
+                'length')->orderByDesc('created_at')->limit(1)
+        ]);
     }
 
     public function scopeWithProgress(Builder $builder, User $user): Builder
     {
-        return $builder->withMax(['trackers as progress' => fn ($trackers) => $trackers->user($user)->withoutTodayScope()], 'progress');
+        return $builder->withMax([
+            'trackers as progress' => fn($trackers) => $trackers->user($user)->withoutTodayScope()
+        ], 'progress');
     }
 
     public function scopeMinPrice(Builder $builder, ?int $price): Builder
@@ -477,16 +485,16 @@ class Edition extends Model implements ProductInterface
     public function scopeVisible(Builder $builder): Builder
     {
         return $builder->whereIn($this->getQualifiedStatusColumn(), [
-                BookStatus::WORKING,
-                BookStatus::COMPLETE
-            ]);
+            BookStatus::WORKING,
+            BookStatus::COMPLETE
+        ]);
     }
 
     public function scopeFree(Builder $builder, bool $free = true): Builder
     {
         return $builder->when($free,
-            fn ($q) => $q->where($this->getQualifiedPriceColumn(), '=', 0),
-            fn ($q) => $q->minPrice(1)
+            fn($q) => $q->where($this->getQualifiedPriceColumn(), '=', 0),
+            fn($q) => $q->minPrice(1)
         );
     }
 
@@ -556,12 +564,12 @@ class Edition extends Model implements ProductInterface
 
     public function setFreeParts()
     {
-        $builder = fn () => $this->chapters()->public(withPlanned: true);
-        if ($this->isFree() || $this->status === BookStatus::FROZEN) {
-            $builder()->update(['sales_type' => ChapterSalesType::FREE]);
+        $query = $this->chapters()->public(withPlanned: true);
+        if ($this->isFree() or $this->status->is(BookStatus::FROZEN)) {
+            $query->update(['sales_type' => ChapterSalesType::FREE]);
         } else {
-            $builder()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
-            $builder()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
+            $query->clone()->limit($this->free_parts)->update(['sales_type' => ChapterSalesType::FREE]);
+            $query->clone()->get()->skip($this->free_parts)->each->update(['sales_type' => ChapterSalesType::PAY]);
         }
         $this->chapters()->public()->get()->each->setNeighbours();
     }
@@ -600,7 +608,7 @@ class Edition extends Model implements ProductInterface
 
         return static::query()
             ->status(BookStatus::WORKING)
-            ->whereHas('revision_history', fn ($revision_history) => $revision_history
+            ->whereHas('revision_history', fn($revision_history) => $revision_history
                 ->whereDate('created_at', '<=', $date)
                 ->where(['field' => 'status', 'new_value' => BookStatus::WORKING->value]))
             ->get()

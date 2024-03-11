@@ -7,6 +7,8 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@vueuse/components": "^10.9.0",
+    "@vueuse/core": "^10.9.0",
     "axios": "^1.6.7",
     "core-js": "^3.8.3",
     "laravel-echo": "^1.15.3",

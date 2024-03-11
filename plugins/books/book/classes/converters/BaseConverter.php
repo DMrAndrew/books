@@ -56,7 +56,7 @@ class BaseConverter
 
     public function title(): string
     {
-        return str_replace(' ', '_', translit($this->book->title));
+        return str_replace(' ', '_', \Str::ascii($this->book->title));
     }
 
     public function save(): void
