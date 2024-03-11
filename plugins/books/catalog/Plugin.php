@@ -50,9 +50,11 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-        AliasLoader::getInstance()->alias('Genre', Genre::class);
-        AliasLoader::getInstance()->alias('ListingFilter', ListingFilter::class);
-        AliasLoader::getInstance()->alias('Stats', Stats::class);
+        loadAlias([
+            'Genre' => Genre::class,
+            'ListingFilter' => ListingFilter::class,
+            'Stats' => Stats::class
+        ]);
     }
 
     /**

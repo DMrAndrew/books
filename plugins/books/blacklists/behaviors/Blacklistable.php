@@ -53,7 +53,7 @@ class Blacklistable extends ExtensionBase
     }
 
     /**
-     * @param Profile $banned
+     * @param  Profile  $banned
      *
      * @return bool
      */
@@ -65,7 +65,7 @@ class Blacklistable extends ExtensionBase
     }
 
     /**
-     * @param Profile $owner
+     * @param  Profile  $owner
      *
      * @return bool
      */
@@ -77,13 +77,13 @@ class Blacklistable extends ExtensionBase
     }
 
     /**
-     * @param Profile $banProfile
+     * @param  Profile  $banProfile
      *
      * @return void
      */
     public function blackListCommentsFor(Profile $banProfile): void
     {
-        if (! $this->isCommentsBlacklistedFor($banProfile)) {
+        if (!$this->isCommentsBlacklistedFor($banProfile)) {
             CommentsBlacklist::create([
                 'owner_profile_id' => $this->profile->id,
                 'banned_profile_id' => $banProfile->id,
@@ -92,7 +92,7 @@ class Blacklistable extends ExtensionBase
     }
 
     /**
-     * @param Profile $unBanProfile
+     * @param  Profile  $unBanProfile
      *
      * @return void
      */
@@ -100,6 +100,66 @@ class Blacklistable extends ExtensionBase
     {
         if ($this->isCommentsBlacklistedFor($unBanProfile)) {
             CommentsBlacklist::where([
+                'owner_profile_id' => $this->profile->id,
+                'banned_profile_id' => $unBanProfile->id,
+            ])->delete();
+        }
+    }
+
+    /**
+     * @param  Profile  $banned
+     *
+     * @return bool
+     */
+    public function isChatBlacklistedFor(Profile $banned): bool
+    {
+        return $this->profile->profiles_blacklisted_in_chat()
+            ->where('banned_profile_id', $banned->id)
+            ->exists();
+    }
+
+    /**
+     * @param  Profile  $owner
+     *
+     * @return bool
+     */
+    public function isChatBlacklistedBy(Profile $owner): bool
+    {
+        return $this->profile->chat_blacklisted_by()
+            ->where('owner_profile_id', $owner->id)
+            ->exists();
+    }
+
+    /**
+     * @param  Profile|null  $banProfile
+     *
+     * @return void
+     */
+    public function blackListChatFor(?Profile $banProfile): void
+    {
+        if (!$banProfile) {
+            return;
+        }
+        if (!$this->isChatBlacklistedFor($banProfile)) {
+            ChatBlacklist::create([
+                'owner_profile_id' => $this->profile->id,
+                'banned_profile_id' => $banProfile->id,
+            ]);
+        }
+    }
+
+    /**
+     * @param  Profile|null  $unBanProfile
+     *
+     * @return void
+     */
+    public function unBlackListChatFor(?Profile $unBanProfile): void
+    {
+        if (!$unBanProfile) {
+            return;
+        }
+        if ($this->isChatBlacklistedFor($unBanProfile)) {
+            ChatBlacklist::where([
                 'owner_profile_id' => $this->profile->id,
                 'banned_profile_id' => $unBanProfile->id,
             ])->delete();

@@ -114,7 +114,8 @@ return [
 
         // Core Service Provider
         System\ServiceProvider::class,
-
+        \App\Providers\MessengerServiceProvider::class,
+        \Illuminate\Notifications\NotificationServiceProvider::class
         // Package Service Providers...
         // Illuminate\Html\HtmlServiceProvider::class, // Example
 
@@ -132,6 +133,7 @@ return [
     */
 
     'aliases' => array_merge(include(base_path('modules/system/aliases.php')), [
+
 
         // 'Str' => Illuminate\Support\Str::class, // Example
 

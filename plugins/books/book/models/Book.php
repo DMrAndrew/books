@@ -2,7 +2,6 @@
 
 namespace Books\Book\Models;
 
-use Books\Book\Classes\Converters\BaseConverter;
 use Books\Book\Classes\DownloadService;
 use Books\Book\Classes\Enums\AgeRestrictionsEnum;
 use Books\Book\Classes\Enums\BookStatus;
@@ -18,7 +17,7 @@ use Books\Collections\Models\Lib;
 use Books\Profile\Models\Profile;
 use Carbon\Carbon;
 use Closure;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Prunable;
 use Kirschbaum\PowerJoins\PowerJoins;
 use Model;
 use October\Rain\Database\Builder;
@@ -79,7 +78,6 @@ use WordForm;
 class Book extends Model
 {
     use Validation;
-    use HasFactory;
     use HasRelationships;
     use PowerJoins;
 
@@ -263,7 +261,6 @@ class Book extends Model
                 ->find($book_id)
                 : null); // пользователь купил книгу
     }
-
     public function awardsItems()
     {
         return $this->hasManyDeepFromRelations($this->awards(), (new AwardBook())->award());
@@ -280,7 +277,6 @@ class Book extends Model
             ->with('authors')
             ->orderBy(Author::make()->qualifyColumn('sort_order'),'desc');
     }
-
     public function scopeOrderByPopularGenres(Builder $builder)
     {
         return $builder->orderByPowerJoinsMin('bookGenre.rate_number');
@@ -496,7 +492,7 @@ class Book extends Model
 
     public function isAdult(): bool
     {
-        return $this->age_restriction === AgeRestrictionsEnum::A18;
+        return $this->age_restriction === AgeRestrictionsEnum::A18 || $this->genres->where('adult', true)->count();
     }
 
     public function scopeAdult(Builder $builder): Builder|\Illuminate\Database\Eloquent\Builder
@@ -515,7 +511,7 @@ class Book extends Model
             ->hasProhibitedGenres(has: false)
             ->notEmptyEdition()
             ->onlyPublicStatus()
-            ->adult()
+            //->adult()
             ->genresExists();
     }
 

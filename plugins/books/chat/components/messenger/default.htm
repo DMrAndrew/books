@@ -1,0 +1,16 @@
+<div id="header_messenger_spawn" class="header__actions-wrapper">
+    <div class="header__actions-item" data-header-action="message">
+        <svg class="square-24">
+            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-stroked-24' | theme }}"></use>
+        </svg>
+        <div id="unread_thread_count_spawn">
+            {% partial __SELF__ ~  '::unread_thread_count' %}
+        </div>
+    </div>
+    <div class="popup-menu _message" data-header-content="message">
+        {% partial __SELF__ ~  '::threads' %}
+    </div>
+</div>
+<script>
+    initFn()
+</script>

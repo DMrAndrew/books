@@ -86,9 +86,16 @@ class ChapterService implements iChapterService
         if (! $this->edition->id) {
             throw new Exception('Edition required.');
         }
+
         $this->chapter->fill($data);
         $this->chapter->sort_order ??= $this->edition->nextChapterSortOrder();
-        $this->chapter->sales_type ??= ChapterSalesType::PAY;
+
+        if($this->edition->free_parts === 0 && $this->edition->price === 0) {
+            $this->chapter->sales_type ??= ChapterSalesType::FREE;
+        } else {
+            $this->chapter->sales_type ??= ChapterSalesType::PAY;
+        }
+
         $this->chapter['edition_id'] = $this->edition->id;
         $this->chapter->save();
 
@@ -117,8 +124,7 @@ class ChapterService implements iChapterService
     {
         $this->chapter->load('edition', 'edition.book');
 
-        if ($this->chapter->edition->status === BookStatus::COMPLETE
-            || $this->chapter->edition->status === BookStatus::WORKING) {
+        if (in_array($this->chapter->edition->status,[BookStatus::COMPLETE,BookStatus::WORKING])) {
             $lengthDeltaUpdates = $this->chapter->edition->revision_history()
                 ->where('field', '=', 'length')
                 ->latest('id')

@@ -15,11 +15,9 @@ use Books\Profile\Classes\SlaveScope;
 use Books\Profile\Factories\ProfileFactory;
 use Books\Profile\Traits\Subscribable;
 use Books\Reposts\Models\Repost;
-use Books\User\Classes\BoolOptionsEnum;
 use Books\User\Classes\PrivacySettingsEnum;
 use Books\User\Classes\UserSettingsEnum;
 use Books\User\Models\Settings;
-use Books\Videoblog\Models\Videoblog;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Model;
@@ -31,6 +29,10 @@ use October\Rain\Database\Traits\Revisionable;
 use October\Rain\Database\Traits\Validation;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
+use RTippin\Messenger\Contracts\MessengerProvider;
+use RTippin\Messenger\Facades\Messenger;
+use RTippin\Messenger\Traits\Messageable;
+use RTippin\Messenger\Traits\Search;
 use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
 use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use System\Models\File;
@@ -42,6 +44,9 @@ use WordForm;
  * Profile Model
  *
  * @property Carbon created_at
+ * @property File avatar
+ * @property File banner
+ *
  * @method BelongsToMany books
  * @method BelongsToMany subscribers
  * @method BelongsToMany subscriptions
@@ -49,7 +54,7 @@ use WordForm;
  * @method AttachOne banner
  * @method AttachOne avatar
  */
-class Profile extends Model
+class Profile extends Model implements MessengerProvider
 {
     use Validation;
     use Revisionable;
@@ -57,6 +62,8 @@ class Profile extends Model
     use HasFactory;
     use HasRelationships;
     use HasUserScope;
+    use Messageable;
+    use Search;
 
     const MAX_USER_PROFILES_COUNT = 5;
 
@@ -127,7 +134,7 @@ class Profile extends Model
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
      */
-    protected $appends = [];
+    protected $appends = ['picture'];
 
     /**
      * @var array hidden attributes removed from the API representation of the model (ex. toArray())
@@ -150,13 +157,14 @@ class Profile extends Model
     ];
 
     public $hasMany = [
-        'authorships' => [Author::class,
+        'authorships' => [
+            Author::class,
             'key' => 'profile_id',
             'otherKey' => 'id',
             'scope' => 'accepted',
         ],
         'settings' => [Settings::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
-//        'cycles' => [Cycle::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
+        //        'cycles' => [Cycle::class, 'key' => 'user_id', 'otherKey' => 'user_id'],
         'promocodes' => [Promocode::class, 'key' => 'profile_id', 'otherKey' => 'id'],
     ];
 
@@ -170,8 +178,18 @@ class Profile extends Model
             'otherKey' => 'book_id',
             'pivot' => ['percent', 'sort_order', 'is_owner', 'accepted'],
         ],
-        'subscribers' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'profile_id', 'otherKey' => 'subscriber_id'],
-        'subscriptions' => [Profile::class, 'table' => 'books_profile_subscribers', 'key' => 'subscriber_id', 'otherKey' => 'profile_id'],
+        'subscribers' => [
+            Profile::class,
+            'table' => 'books_profile_subscribers',
+            'key' => 'profile_id',
+            'otherKey' => 'subscriber_id',
+        ],
+        'subscriptions' => [
+            Profile::class,
+            'table' => 'books_profile_subscribers',
+            'key' => 'subscriber_id',
+            'otherKey' => 'profile_id',
+        ],
     ];
 
     public $morphTo = [];
@@ -187,9 +205,16 @@ class Profile extends Model
 
     public $attachMany = [];
 
+    protected $with = ['avatar'];
+
     public function service(): ProfileService
     {
         return new ProfileService($this);
+    }
+
+    public function getPictureAttribute(): bool|string
+    {
+        return is_null($this->avatar) ? false : strstr($this->avatar->getThumb(100,100),'/storage');
     }
 
     public function name()
@@ -210,8 +235,12 @@ class Profile extends Model
     public function cyclesWithShared(): \Illuminate\Database\Eloquent\Builder
     {
         $column_id = (new Cycle())->getQualifiedKeyName();
-        return Cycle::query()->whereIn($column_id, $this->cycles()->select('id')
-            ->union($this->books()->select('cycle_id')));
+
+        return Cycle::query()->whereIn(
+            $column_id,
+            $this->cycles()->select('id')
+                ->union($this->books()->select('cycle_id'))
+        );
     }
 
     public function receivedAwards(): HasManyDeep
@@ -235,7 +264,7 @@ class Profile extends Model
         return $this->belongsToManyTroughProfiler(Repost::class);
     }
 
-    public function isCommentAllowed(?Profile $profile = null)
+    public function isCommentAllowed(Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
         if (!$profile) {
@@ -256,7 +285,7 @@ class Profile extends Model
         };
     }
 
-    public function canSeeCommentFeed(?Profile $profile = null)
+    public function canSeeCommentFeed(Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
         if (!$profile) {
@@ -277,7 +306,7 @@ class Profile extends Model
         };
     }
 
-    public function canSeeBlogPosts(?Profile $profile = null)
+    public function canSeeBlogPosts(Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
 
@@ -297,7 +326,7 @@ class Profile extends Model
         };
     }
 
-    public function canSeeVideoBlogPosts(?Profile $profile = null)
+    public function canSeeVideoBlogPosts(Profile $profile = null)
     {
         $profile ??= Auth::getUser()?->profile;
 
@@ -320,8 +349,8 @@ class Profile extends Model
     public function scopeSettingsEnabledBlogPostNotifications(Builder $builder): Builder
     {
         return $builder->whereHas('user', function ($q) {
-                $q->settingsEnabledBlogPostNotifications();
-            });
+            $q->settingsEnabledBlogPostNotifications();
+        });
     }
 
     public function scopeSettingsEnabledVideoBlogPostNotifications(Builder $builder): Builder
@@ -334,15 +363,15 @@ class Profile extends Model
     public function scopeSettingsEnabledUpdateLibraryItemsNotifications(Builder $builder): Builder
     {
         return $builder->whereHas('user', function ($q) {
-                $q->settingsEnabledUpdateLibraryItemsNotifications();
-            });
+            $q->settingsEnabledUpdateLibraryItemsNotifications();
+        });
     }
 
     public function scopeSettingsEnabledBookDiscountNotifications(Builder $builder): Builder
     {
         return $builder->whereHas('user', function ($q) {
-                $q->settingsEnabledBookDiscountNotifications();
-            });
+            $q->settingsEnabledBookDiscountNotifications();
+        });
     }
 
     public function scopeShortPublicEager(Builder $builder)
@@ -402,12 +431,12 @@ class Profile extends Model
 
     public function isEmpty(): bool
     {
-        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => (bool)$i);
+        return !collect($this->only(['avatar', 'banner', 'status', 'about']))->some(fn($i) => (bool) $i);
     }
 
     public function isContactsEmpty(): bool
     {
-        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn($i) => (bool)$i);
+        return !collect($this->only(['ok', 'phone', 'tg', 'vk', 'email', 'website']))->some(fn($i) => (bool) $i);
     }
 
     public static function wordForm(): WordForm
@@ -417,7 +446,9 @@ class Profile extends Model
 
     public function isUsernameExists(string $string): bool
     {
-        return $this->user->profiles()->username($string)->exists() || $this->user->profiles()->usernameClipboard($string)->exists();
+        return $this->user->profiles()->username($string)->exists() || $this->user->profiles()->usernameClipboard(
+                $string
+            )->exists();
     }
 
     public function maxProfilesCount(): int
@@ -442,5 +473,49 @@ class Profile extends Model
         if ($this->isUsernameExists($this->username)) {
             throw new ValidationException(['username' => 'Псевдоним уже занят.']);
         }
+    }
+
+    protected function afterCreate()
+    {
+        Messenger::getProviderMessenger($this);
+    }
+
+    public static function getProviderSettings(): array
+    {
+        return [
+            'alias' => 'profile',
+            'searchable' => true,
+            'friendable' => true,
+            'devices' => false,
+            'default_avatar' => 'avatar',
+            'cant_message_first' => [],
+            'cant_search' => [],
+            'cant_friend' => [],
+        ];
+    }
+
+    public function getProviderAvatarColumn(): string
+    {
+        return 'avatar';
+    }
+
+    public function getProviderName(): string
+    {
+        return strip_tags(ucwords($this->username));
+    }
+
+    public static function getProviderSearchableBuilder(
+        Builder $query,
+        string $search,
+        array $searchItems
+    ) {
+        $user = Auth::getUser();
+        return $query->usernameLike($search)
+            ->when($user, fn($q) => $q->where('id', '!=', $user->profile->id)
+                ->whereDoesntHave('chat_blacklisted_by',
+                    fn($blacklist) => $blacklist->where('banned_profile_id', '!=', $user->profile->id))
+                ->whereDoesntHave('profiles_blacklisted_in_chat',
+                    fn($blacklist) => $blacklist->where('owner_profile_id', '!=', $user->profile->id))
+            );
     }
 }

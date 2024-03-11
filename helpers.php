@@ -10,6 +10,8 @@ use Books\Book\Models\Book;
 use Books\User\Classes\CookieEnum;
 use Books\User\Classes\UserService;
 use Carbon\CarbonInterval;
+use Illuminate\Foundation\AliasLoader;
+use Illuminate\Http\RedirectResponse;
 use RainLab\User\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -17,14 +19,14 @@ if (!function_exists('mb_ucfirst') && extension_loaded('mbstring')) {
     /**
      * mb_ucfirst - преобразует первый символ в верхний регистр
      *
-     * @param string $str - строка
-     * @param string $encoding - кодировка, по-умолчанию UTF-8
+     * @param  string  $str  - строка
+     * @param  string  $encoding  - кодировка, по-умолчанию UTF-8
      * @return string
      */
     function mb_ucfirst($str, $encoding = 'UTF-8')
     {
         $str = mb_ereg_replace('^[\ ]+', '', $str);
-        $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding) .
+        $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding).
             mb_substr($str, 1, mb_strlen($str), $encoding);
 
         return $str;
@@ -45,8 +47,11 @@ function plainText($text, $allowed_tags = '<br><p><li>')
 
 class WordForm
 {
-    public function __construct(public readonly string $first, public readonly string $second, public ?string $third = null)
-    {
+    public function __construct(
+        public readonly string $first,
+        public readonly string $second,
+        public ?string $third = null
+    ) {
         $this->third ??= $this->second;
     }
 
@@ -70,7 +75,7 @@ function word_form(array $words, int $count): string
     return (new WordForm(...$words))->getCorrectSuffix($count);
 }
 
-function redirectIfUnauthorized(): bool|\Illuminate\Http\RedirectResponse
+function redirectIfUnauthorized(): bool|RedirectResponse
 {
     if (!Auth::getUser()) {
         return Redirect::to('/');
@@ -127,10 +132,31 @@ function getLovedFromCookie(): array
 /**
  * @throws NotFoundHttpException
  */
-function askAboutAdult(Book $book): bool
+function needShowModalAskAboutAdult(Book $book): bool
 {
-    return restrictProhibited($book) &&
-        (($book->isAdult() && UserService::canBeAskedAdultPermission()) || abort(404));
+    /**
+     * If book is restrict prohibited
+     */
+    if (restrictProhibited($book)) {
+        abort(404);
+    }
+
+    /**
+     * If book is 18+
+     */
+    if ($book->isAdult()) {
+
+        /**
+         * Cant ask and not allowed
+         */
+        if ( !UserService::canBeAskedAdultPermission() && !UserService::allowedSeeAdult()) {
+            abort(404);
+        }
+
+        return UserService::canBeAskedAdultPermission();
+    }
+
+    return false;
 }
 
 /**
@@ -138,7 +164,7 @@ function askAboutAdult(Book $book): bool
  */
 function restrictProhibited(Book $book): bool
 {
-    return (isComDomainRequested() && $book->isProhibited()) ? abort(404) : true;
+    return isComDomainRequested() && $book->isProhibited();
 }
 
 /**
@@ -158,7 +184,7 @@ function formatMoneyAmount(mixed $number): string
 }
 
 /**
- * @param mixed $bytes
+ * @param  mixed  $bytes
  *
  * @return string|null
  */
@@ -169,15 +195,17 @@ function humanFileSize(mixed $bytes): ?string
     }
 
     $dec = 2;
-    $size   = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+    $size = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
     $factor = floor((strlen($bytes) - 1) / 3);
-    if ($factor == 0) $dec = 0;
+    if ($factor == 0) {
+        $dec = 0;
+    }
 
     return sprintf("%.{$dec}f %s", $bytes / (1024 ** $factor), $size[$factor]);
 }
 
 /**
- * @param mixed $seconds
+ * @param  mixed  $seconds
  *
  * @return string|null
  */
@@ -191,7 +219,7 @@ function humanTime(mixed $seconds): ?string
 }
 
 /**
- * @param mixed $seconds
+ * @param  mixed  $seconds
  *
  * @return string|null
  */
@@ -203,28 +231,17 @@ function humanTimeShort(mixed $seconds): ?string
 
     return AudioFileLengthHelper::formatSecondsToHumanReadableTimeShort($seconds);
 }
-
-function translit($value)
+function loadAlias(array $aliases): void
 {
-    $converter = array(
-        'а' => 'a',    'б' => 'b',    'в' => 'v',    'г' => 'g',    'д' => 'd',
-        'е' => 'e',    'ё' => 'e',    'ж' => 'zh',   'з' => 'z',    'и' => 'i',
-        'й' => 'y',    'к' => 'k',    'л' => 'l',    'м' => 'm',    'н' => 'n',
-        'о' => 'o',    'п' => 'p',    'р' => 'r',    'с' => 's',    'т' => 't',
-        'у' => 'u',    'ф' => 'f',    'х' => 'h',    'ц' => 'c',    'ч' => 'ch',
-        'ш' => 'sh',   'щ' => 'sch',  'ь' => '',     'ы' => 'y',    'ъ' => '',
-        'э' => 'e',    'ю' => 'yu',   'я' => 'ya',
+    array_walk($aliases, fn($class, $alias) => AliasLoader::getInstance()->alias($alias, $class));
+}
 
-        'А' => 'A',    'Б' => 'B',    'В' => 'V',    'Г' => 'G',    'Д' => 'D',
-        'Е' => 'E',    'Ё' => 'E',    'Ж' => 'Zh',   'З' => 'Z',    'И' => 'I',
-        'Й' => 'Y',    'К' => 'K',    'Л' => 'L',    'М' => 'M',    'Н' => 'N',
-        'О' => 'O',    'П' => 'P',    'Р' => 'R',    'С' => 'S',    'Т' => 'T',
-        'У' => 'U',    'Ф' => 'F',    'Х' => 'H',    'Ц' => 'C',    'Ч' => 'Ch',
-        'Ш' => 'Sh',   'Щ' => 'Sch',  'Ь' => '',     'Ы' => 'Y',    'Ъ' => '',
-        'Э' => 'E',    'Ю' => 'Yu',   'Я' => 'Ya',
-    );
 
-    return strtr($value, $converter);
+function loadImplements(array $implements): void
+{
+    foreach ($implements as $class => $implement) {
+        $class::extend(fn($model) => array_map(fn($ext) => $model->implementClassWith($ext), array_wrap($implement)));
+    }
 }
 
 ?>

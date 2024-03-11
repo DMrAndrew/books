@@ -1,6 +1,20 @@
-<?php namespace Books\Chat;
+<?php
 
+namespace Books\Chat;
+
+use App\middleware\SetMessengerProvider;
 use Backend;
+use Books\Chat\Classes\MessengerService;
+use Books\Chat\Components\Messenger;
+use Books\Profile\Models\Profile;
+use Broadcast;
+use Event;
+use Illuminate\Validation\ValidationException;
+use RainLab\User\Classes\AuthMiddleware;
+use RainLab\User\Facades\Auth;
+use Route;
+use RTippin\Messenger\Http\Collections\GroupThreadCollection;
+use RTippin\Messenger\Models\Thread;
 use System\Classes\PluginBase;
 
 /**
@@ -8,6 +22,9 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
+
+    public $require = ['Books.User'];
+
     /**
      * Returns information about this plugin.
      *
@@ -16,10 +33,10 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'Chat',
+            'name' => 'Chat',
             'description' => 'No description provided yet...',
-            'author'      => 'Books',
-            'icon'        => 'icon-leaf'
+            'author' => 'Books',
+            'icon' => 'icon-leaf',
         ];
     }
 
@@ -30,7 +47,6 @@ class Plugin extends PluginBase
      */
     public function register()
     {
-
     }
 
     /**
@@ -40,7 +56,34 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
+        Route::get('/block/{provider_id}', function ($provider_id) {
+            if (!$provider_id) {
+                throw new \ValidationException('нужен провайдер');
+            }
+            Auth::getUser()?->profile->blackListChatFor(Profile::find($provider_id));
+            return response()->json();
+        })->middleware(['web', AuthMiddleware::class, SetMessengerProvider::class])
+            ->prefix('api/messenger');
 
+
+        Route::get('/threads/search/{query?}', function ($q, \RTippin\Messenger\Messenger $messenger) {
+
+            return new GroupThreadCollection(Thread::hasProvider($messenger->getProvider())
+                ->where(function ($builder) use ($q) {
+                    return $builder->where('subject', 'LIKE', "%{$q}%")->orWhereHas('participants',
+                        fn($query) => $query->whereHas('owner', fn($b) => $b->username($q)));
+                })
+                ->with([
+                    'participants.owner',
+                    'latestMessage.owner',
+                ])
+                ->get());
+        })
+            ->middleware(['web', AuthMiddleware::class, SetMessengerProvider::class])
+            ->prefix('api/messenger');
+        Event::listen(MessengerService::updatableEvents(), fn($e) => MessengerService::broadcastUpdate($e));
+        Broadcast::routes(['web', AuthMiddleware::class, SetMessengerProvider::class]);
+        require_once __DIR__.'/channels.php';
     }
 
     /**
@@ -50,10 +93,8 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
         return [
-            'Books\Chat\Components\MyComponent' => 'myComponent',
+            Messenger::class => 'Messenger',
         ];
     }
 
@@ -69,7 +110,7 @@ class Plugin extends PluginBase
         return [
             'books.chat.some_permission' => [
                 'tab' => 'Chat',
-                'label' => 'Some permission'
+                'label' => 'Some permission',
             ],
         ];
     }
@@ -85,11 +126,11 @@ class Plugin extends PluginBase
 
         return [
             'chat' => [
-                'label'       => 'Chat',
-                'url'         => Backend::url('books/chat/mycontroller'),
-                'icon'        => 'icon-leaf',
+                'label' => 'Chat',
+                'url' => Backend::url('books/chat/mycontroller'),
+                'icon' => 'icon-leaf',
                 'permissions' => ['books.chat.*'],
-                'order'       => 500,
+                'order' => 500,
             ],
         ];
     }

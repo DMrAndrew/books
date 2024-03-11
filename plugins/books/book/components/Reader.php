@@ -60,6 +60,7 @@ class Reader extends ComponentBase
     public function init()
     {
         $this->user = Auth::getUser();
+
         $this->book_id = (int) $this->param('book_id');
         if (! $this->book_id) {
             $this->controller->run('404');
@@ -69,8 +70,14 @@ class Reader extends ComponentBase
 
         $this->book = Book::findForPublic($this->book_id, $this->user);
 
+        if (! $this->book?->ebook || !$this->editionVisible()) {
+            $this->controller->run('404');
+
+            return;
+        }
+
         $this->chapter_id = (int) $this->param('chapter_id');
-        $this->chapter = $this->chapter_id ? Chapter::find($this->chapter_id) ?? abort(404) : null;
+        $this->chapter = $this->chapter_id ? Chapter::find($this->chapter_id) : null;
 
         $this->tryInjectAdultModal();
         $this->addMeta();
@@ -226,5 +233,13 @@ class Reader extends ComponentBase
             /** Название книги */
             $trail->push($this->book->title, url('/book-card/' . $this->book->id));
         });
+    }
+
+    /**
+     * @return bool
+     */
+    private function editionVisible(): bool
+    {
+        return $this->book->ebook?->isVisible($this->user);
     }
 }

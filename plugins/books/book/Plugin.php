@@ -46,6 +46,8 @@ use Books\Book\Console\CleanHTMLContent;
 use Books\Book\FormWidgets\ContentDiff;
 use Books\Book\FormWidgets\DeferredComments;
 use Books\Book\Jobs\GenreRaterExec;
+use Books\Book\Jobs\Paginate;
+use Books\Book\Jobs\Repaginate;
 use Books\Book\Models\AudioReadProgress;
 use Books\Book\Models\Author;
 use Books\Book\Models\AwardBook;
@@ -73,6 +75,7 @@ use Config;
 use Event;
 use Illuminate\Database\Console\PruneCommand;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Log;
 use Mobecan\Favorites\Behaviors\Favorable;
 use October\Rain\Database\Models\DeferredBinding;
 use RainLab\Location\Behaviors\LocationModel;
@@ -92,6 +95,15 @@ class Plugin extends PluginBase
         'Books.AuthorPrograms',
         'Books.Moderation',
     ];
+
+    protected array $implements = [
+        Book::class => [
+            Favorable::class,
+            Shareable::class
+        ],
+        Prohibited::class => LocationModel::class
+    ];
+
 
     /**
      * Returns information about this plugin.
@@ -131,66 +143,28 @@ class Plugin extends PluginBase
     {
         Config::set('book', Config::get('books.book::config'));
 
-        AliasLoader::getInstance()->alias('FB2', FB2::class);
-        AliasLoader::getInstance()->alias('Book', Book::class);
-        AliasLoader::getInstance()->alias('Chapter', Chapter::class);
-        AliasLoader::getInstance()->alias('Cycle', Cycle::class);
-        AliasLoader::getInstance()->alias('Tag', Tag::class);
-        AliasLoader::getInstance()->alias('Edition', Edition::class);
-        AliasLoader::getInstance()->alias('Author', Author::class);
-        AliasLoader::getInstance()->alias('FB2Manager', FB2Manager::class);
-        AliasLoader::getInstance()->alias('BookService', BookService::class);
-        AliasLoader::getInstance()->alias('Tracker', Tracker::class);
-        AliasLoader::getInstance()->alias('Pagination', Pagination::class);
-        AliasLoader::getInstance()->alias('EditionsEnums', EditionsEnums::class);
-        AliasLoader::getInstance()->alias('Rater', Rater::class);
-        AliasLoader::getInstance()->alias('StatisticService', StatisticService::class);
-        AliasLoader::getInstance()->alias('WidgetService', WidgetService::class);
-        AliasLoader::getInstance()->alias('Promocode', Models\Promocode::class);
-        AliasLoader::getInstance()->alias('Discount', Discount::class);
-        AliasLoader::getInstance()->alias('Prohibited', Prohibited::class);
-        AliasLoader::getInstance()->alias('FB2Controller', FB2Controller::class);
-        AliasLoader::getInstance()->alias('CookieEnum', CookieEnum::class);
-        AliasLoader::getInstance()->alias('SystemMessage', SystemMessage::class);
-        AliasLoader::getInstance()->alias('StatsEnum', StatsEnum::class);
-        AliasLoader::getInstance()->alias('Content', ContentModel::class);
-        AliasLoader::getInstance()->alias('BUtils', BookUtilities::class);
+
+        loadAlias(config('book.aliases', []));
+        loadImplements($this->implements);
 
         $this->extendBooksController();
 
         Event::listen('books.book.created', fn(Book $book) => $book->createEventHandler());
 
-        Book::extend(function (Book $book) {
-            $book->implementClassWith(Favorable::class);
-            $book->implementClassWith(Shareable::class);
-        });
-
-        Prohibited::extend(function (Prohibited $prohibited) {
-            $prohibited->implementClassWith(LocationModel::class);
-        });
         foreach (config('book.prohibited') as $class) {
-            $class::extend(function ($model) {
-                $model->implementClassWith(Prohibitable::class);
-            });
+            $class::extend(fn($model) => $model->implementClassWith(Prohibitable::class));
         }
 
-        AwardBook::extend(function (AwardBook $award) {
-            $award->implementClassWith(Slavable::class);
-        });
 
         foreach ([Chapter::class, Pagination::class] as $class) {
-            $class::extend(function ($model) {
-                $model->implementClassWith(Contentable::class);
-            });
+            $class::extend(fn($model) => $model->implementClassWith(Contentable::class));
         }
 
         foreach ([Edition::class, Chapter::class, Pagination::class] as $class) {
-            $class::extend(function ($model) {
-                $model->implementClassWith(Trackable::class);
-            });
+            $class::extend(fn($model) => $model->implementClassWith(Trackable::class));
         }
 
-        \Books\Book\Controllers\Book::extendFormFields(function ($form, $model, $context) {
+        Controllers\Book::extendFormFields(function ($form, $model) {
             if (!$model instanceof Book) {
                 return;
             }
@@ -324,14 +298,14 @@ class Plugin extends PluginBase
             ChapterService::audit();
         })->everyMinute();
 
-        $times = app()->isProduction() ? 'everyTenMinutes' :'everyMinute';
         $schedule->call(function () {
-            GenreRaterExec::dispatch();
-        })->{$times}();
+            Repaginate::dispatch();
+        })->dailyAt('05:00');
 
-        $schedule->call(function () {
-            DeferredBinding::cleanUp(1);
-        })->dailyAt('03:00');
+        $schedule->call(fn() => GenreRaterExec::dispatch())->everyTenMinutes();
+
+        $schedule->call(fn() => DeferredBinding::cleanUp(1))->dailyAt('03:00');
+
 
         $schedule->command('model:prune', [
             '--model' => [Models\Promocode::class, Lib::class],
@@ -353,101 +327,35 @@ class Plugin extends PluginBase
      */
     private function registerBreadcrumbs(): void
     {
+        $breadcrumbs = [
+            'lc-profile' => 'Профиль',
+            'lc-advert' => 'Реклама',
+            'lc-awards' => 'Награды',
+            'lc-blacklist' => 'Черный список',
+            'lc-books' => 'Книги',
+            'lc-create' => 'Создание книги',
+            'lc-read-statistic' => 'Статистика прочтений',
+            'lc-comments' => 'Комментарии',
+            'lc-discounts' => 'Скидки',
+            'lc-notification' => 'Уведомления',
+            'lc-privacy' => 'Приватность',
+            'lc-blog' => 'Блог',
+            'lc-videoblog' => 'Видеоблог',
+            'lc-promocodes' => 'Промокоды',
+            'lc-referral' => 'Реферальная программа',
+            'lc-reposts' => 'Репосты',
+            'lc-settings' => 'Настройки',
+            'lc-subscribers' => 'Подписчики',
+            'lc-subscriptions' => 'Подписки',
+        ];
+
         $manager = app(BreadcrumbsManager::class);
 
-        $manager->register('lc-profile', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-        });
-
-        $manager->register('lc-advert', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Реклама');
-        });
-
-        $manager->register('lc-awards', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Награды');
-        });
-
-        $manager->register('lc-blacklist', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Черный список');
-        });
-
-        $manager->register('lc-books', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Книги');
-        });
-
-        $manager->register('book-create', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Создание книги');
-        });
-
-        $manager->register('lc-read-statistic', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Статистика прочтений');
-        });
-
-        $manager->register('lc-comments', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Комментарии');
-        });
-
-        $manager->register('lc-discounts', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Скидки');
-        });
-
-        $manager->register('lc-notification', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Уведомления');
-        });
-
-        $manager->register('lc-privacy', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Приватность');
-        });
-
-        $manager->register('lc-blog', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Блог');
-        });
-
-        $manager->register('lc-videoblog', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Видеоблог');
-        });
-
-        $manager->register('lc-promocodes', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Промокоды');
-        });
-
-        $manager->register('lc-referral', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Реферальная программа');
-        });
-
-        $manager->register('lc-reposts', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Репосты');
-        });
-
-        $manager->register('lc-settings', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Настройки');
-        });
-
-        $manager->register('lc-subscribers', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Подписчики');
-        });
-
-        $manager->register('lc-subscriptions', function (BreadcrumbsGenerator $trail, $params) {
-            $trail->parent('lc');
-            $trail->push('Подписки');
-        });
+        foreach ($breadcrumbs as $url => $title) {
+            $manager->register($url, function (BreadcrumbsGenerator $trail) use ($title) {
+                $trail->parent('lc') xor ($title and $trail->push($title));
+            });
+        }
     }
 
     /**
@@ -457,13 +365,19 @@ class Plugin extends PluginBase
     {
         return [
             'functions' => [
-                'humanFileSize' => function(mixed $kilobytes) { return humanFileSize($kilobytes); },
-                'humanTime' => function(mixed $seconds) { return humanTime($seconds); },
-                'humanTimeShort' => function(mixed $seconds) { return humanTimeShort($seconds); },
-                'save_user_audio_read_pregress_delay_in_seconds' => function() {
+                'humanFileSize' => function (mixed $kilobytes) {
+                    return humanFileSize($kilobytes);
+                },
+                'humanTime' => function (mixed $seconds) {
+                    return humanTime($seconds);
+                },
+                'humanTimeShort' => function (mixed $seconds) {
+                    return humanTimeShort($seconds);
+                },
+                'save_user_audio_read_pregress_delay_in_seconds' => function () {
                     return AudioReadProgress::getStartSavingUserReadProgressAfterDelay();
                 },
-                'save_user_audio_read_pregress_timeout_in_seconds' => function() {
+                'save_user_audio_read_pregress_timeout_in_seconds' => function () {
                     return AudioReadProgress::getSaveUserReadProgressStep();
                 },
             ],

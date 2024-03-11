@@ -14,7 +14,7 @@ class LoginHandler
      */
     public function userLogin($event)
     {
-        if (Auth::user()?->birthday->isBirthday()) {
+        if (Auth::user()?->birthday?->isBirthday()) {
             Cookie::queue('show_reader_birthday_program', true);
         }
         Cookie::queue('show_new_reader_program', true);

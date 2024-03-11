@@ -18,6 +18,7 @@ recordsPerView = 11
 [socialconnect]
 [Breadcrumbs]
 [CertificateModal]
+[Messenger]
 ==
 <!DOCTYPE html>
 <html lang="ru">
@@ -26,9 +27,14 @@ recordsPerView = 11
     {% partial 'site/yandex_metrika' %}
     {% partial 'site/vk_pixel' %}
 </head>
+{% if user %}
+<script>
+    localStorage.removeItem('user')
+    localStorage.setItem('user',`{{user|raw}}`)
+</script>
+{% endif %}
+
 <body class="{{ 'page-'~this.page.id }}" data-user="{{user ? 1: 0}}">
-
-
 <!-- Header -->
 <header id="layout-header" class="header">
     <div id='modal-spawn'></div>
@@ -40,13 +46,16 @@ recordsPerView = 11
     {% page %}
 </section>
 
-<!-- Footer -->
+{% if not this.page.no_footer %}
+
 <div class="footer-space"></div>
 <footer id="layout-footer">
     {% partial 'site/footer' %}
     {% component 'CertificateModal' %}
     <div id="certificate-modal"></div>
 </footer>
+{% endif %}
+<!-- Footer -->
 {% ajaxPartial 'controls/flash' %}
 {% partial 'modals/confirm' %}
 </body>

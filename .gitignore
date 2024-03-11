@@ -29,7 +29,6 @@ nbproject
 /bootstrap/compiled.php
 /vendor
 /plugins/mobecan/
-/frontend
 /themes/jquery-ui-1.13.2/
 
 docker-compose.local.yml
@@ -39,3 +38,4 @@ docker-compose.local.yml
 /backup
 
 pint.json
+/frontend/

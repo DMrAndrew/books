@@ -5,67 +5,7 @@ redirect = "/"
 operationsPerView = 11
 ==
 <div class="header__actions">
-    <!--    <div class="header__actions-wrapper">-->
-    <!--        <div class="header__actions-item" data-header-action="message">-->
-    <!--            <svg class="square-24">-->
-    <!--                <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-stroked-24' | theme}}"></use>-->
-    <!--            </svg>-->
-    <!--&lt;!&ndash;            <div class="ui-label-number _red">412</div>&ndash;&gt;-->
-    <!--        </div>-->
-    <!--        <div class="popup-menu _message" data-header-content="message">-->
-    <!--            <div class="popup-menu__content">-->
-    <!--                <div class="popup-menu__header popup-menu__wrapper">-->
-    <!--                    <div class="ui-text-head&#45;&#45;3 ui-text&#45;&#45;bold">Чат</div>-->
-    <!--                </div>-->
-    <!--                <div class="popup-menu__body popup-menu__wrapper">-->
-    <!--                    <div class="popup-menu__placeholder">-->
-    <!--                        <svg class="square-32">-->
-    <!--                            <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#message-stroked-24' | theme}}"></use>-->
-    <!--                        </svg>-->
-    <!--                        <span>Здесь пока ничего нет</span>-->
-    <!--                    </div>-->
-
-    <!--                    <div class="menu-chat">-->
-    <!--                        <div class="menu-chat__item">-->
-    <!--                            <div class="menu-chat__image-wrapper">-->
-    <!--                                <img class="menu-chat__image" src="{{'assets/images/main/girl.png' | theme}}" alt="">-->
-    <!--                            </div>-->
-    <!--                            <div class="menu-chat__info">-->
-    <!--                                <div class="menu-chat__info-up">-->
-    <!--                                    <div class="menu-chat__name">Евгения Жук</div>-->
-    <!--                                    <div class="menu-chat__time">11:06</div>-->
-    <!--                                </div>-->
-    <!--                                <div class="menu-chat__info-down">-->
-    <!--                                    <div class="menu-chat__message">Евгения: Обращайтесь)</div>-->
-    <!--                                    <div class="ui-label-number _violet">1</div>-->
-    <!--                                </div>-->
-    <!--                            </div>-->
-    <!--                        </div>-->
-    <!--                        <div class="menu-chat__item">-->
-    <!--                            <div class="menu-chat__image-wrapper">-->
-    <!--                                <img class="menu-chat__image" src="{{'assets/images/main/girl.png' | theme}}" alt="">-->
-    <!--                            </div>-->
-    <!--                            <div class="menu-chat__info">-->
-    <!--                                <div class="menu-chat__info-up">-->
-    <!--                                    <div class="menu-chat__name">Евгения Жук Евгения Жук Евгения Жук</div>-->
-    <!--                                    <div class="menu-chat__time">11:06</div>-->
-    <!--                                </div>-->
-    <!--                                <div class="menu-chat__info-down">-->
-    <!--                                    <div class="menu-chat__message">Евгения: Обращайтесь) Обращайтесь)</div>-->
-    <!--                                    <div class="ui-label-number _violet">1</div>-->
-    <!--                                </div>-->
-    <!--                            </div>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--                <div class="popup-menu__footer popup-menu__wrapper">-->
-    <!--                    <a href="#" class="ui-button ui-button-size&#45;&#45;32 ui-button-view&#45;&#45;2 ui-button&#45;&#45;full">Посмотреть-->
-    <!--                        все</a>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--    </div>-->
-
+    {% component 'Messenger' %}
     {% component 'NotificationsInHeader' %}
     {% component 'OperationHistoryInHeader' %}
 

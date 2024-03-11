@@ -1,8 +1,31 @@
 <?php
 
+use Books\Book\Classes\BookService;
+use Books\Book\Classes\BookUtilities;
+use Books\Book\Classes\Converters\FB2;
+use Books\Book\Classes\Enums\EditionsEnums;
+use Books\Book\Classes\Enums\StatsEnum;
+use Books\Book\Classes\FB2Manager;
+use Books\Book\Classes\Rater;
+use Books\Book\Classes\StatisticService;
+use Books\Book\Classes\WidgetService;
+use Books\Book\Models\Author;
 use Books\Book\Models\Book;
+use Books\Book\Models\Chapter;
+use Books\Book\Models\Content;
+use Books\Book\Models\Cycle;
+use Books\Book\Models\Discount;
+use Books\Book\Models\Edition;
+use Books\Book\Models\Pagination;
+use Books\Book\Models\Prohibited;
+use Books\Book\Models\Promocode;
+use Books\Book\Models\SystemMessage;
+use Books\Book\Models\Tag;
+use Books\Book\Models\Tracker;
 use Books\Catalog\Models\Genre;
+use Books\User\Classes\CookieEnum;
 use Jfcherng\Diff\Renderer\RendererConstant;
+use Tizis\FB2\FB2Controller;
 
 return [
     'book_cover_blank_dir' => '/themes/demo/assets/images/book-cover-blank/',
@@ -83,5 +106,31 @@ return [
         'save_user_audio_read_pregress_delay_in_seconds' => env('AUDIOBOOK_SAVE_USER_READ_PROGRESS_DELAY_IN_SECONDS', 60),
         'save_user_audio_read_pregress_timeout_in_seconds' => env('AUDIOBOOK_SAVE_USER_READ_PROGRESS_TIMEOUT_IN_SECONDS', 60),
     ],
+    'aliases' => [
+        'FB2' => FB2::class,
+        'Book' => Book::class,
+        'Chapter' => Chapter::class,
+        'Cycle' => Cycle::class,
+        'Tag' => Tag::class,
+        'Edition' => Edition::class,
+        'Author' => Author::class,
+        'FB2Manager' => FB2Manager::class,
+        'BookService' => BookService::class,
+        'Tracker' => Tracker::class,
+        'Pagination' => Pagination::class,
+        'EditionsEnums' => EditionsEnums::class,
+        'Rater' => Rater::class,
+        'StatisticService' => StatisticService::class,
+        'WidgetService' => WidgetService::class,
+        'Promocode' => Promocode::class,
+        'Discount' => Discount::class,
+        'Prohibited' => Prohibited::class,
+        'FB2Controller' => FB2Controller::class,
+        'CookieEnum' => CookieEnum::class,
+        'SystemMessage' => SystemMessage::class,
+        'StatsEnum' => StatsEnum::class,
+        'Content' => Content::class,
+        'BUtils' => BookUtilities::class
+    ]
 
 ];

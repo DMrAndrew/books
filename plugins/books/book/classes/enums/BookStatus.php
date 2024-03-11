@@ -27,6 +27,20 @@ enum BookStatus: string
         };
     }
 
+    public function is(self ...$status): bool
+    {
+        return in_array($this,$status);
+    }
+
+    public function in(self ...$status):bool
+    {
+        return $this->is(...$status);
+    }
+    public function toArray(): array
+    {
+        return [$this->value => $this];
+    }
+
     public static function publicCases(): array
     {
         return [

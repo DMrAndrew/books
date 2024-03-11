@@ -18,8 +18,6 @@ use Books\User\Models\User as BookUser;
 use Books\Wallet\Behaviors\WalletBehavior;
 use Event;
 use Flash;
-use Illuminate\Foundation\AliasLoader;
-use Monarobase\CountryList\CountryList;
 use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 use RainLab\Location\Behaviors\LocationModel;
 use RainLab\Location\Models\Country;
@@ -36,6 +34,28 @@ class Plugin extends PluginBase
     public $require = [
         'RainLab.User',
     ];
+
+    protected array $implements = [
+        User::class => [
+            BookUserBehavior::class,
+            LocationModel::class,
+            CanShare::class,
+            WalletBehavior::class,
+            CanWithdraw::class
+        ]
+    ];
+
+    protected array $aliases = [
+        'User' => User::class,
+        'BookUser' => BookUser::class,
+        'Search' => Search::class,
+        'SearchManager' => SearchManager::class,
+        'Country' => Country::class,
+        'BookSettings' => Settings::class,
+        'UserSettingsEnum' => UserSettingsEnum::class,
+        'TempAdultPass' => TempAdultPass::class
+    ];
+
 
     /**
      * Returns information about this plugin.
@@ -57,7 +77,6 @@ class Plugin extends PluginBase
      */
     public function register(): void
     {
-
     }
 
     /**
@@ -65,12 +84,9 @@ class Plugin extends PluginBase
      */
     public function boot(): void
     {
-        Event::listen('rainlab.user.getNotificationVars', function (User $model) {
-            return false;
-        });
+        Event::listen('rainlab.user.getNotificationVars', fn() => false);
 
         Event::listen('mobecan.socialconnect.registerUser', function (array $provider_details, array $user_details) {
-
             try {
                 if ($user_details['avatar'] ?? false) {
                     unset($user_details['avatar']);
@@ -89,7 +105,6 @@ class Plugin extends PluginBase
                 $user->fill($user_details);
 
                 return $user;
-
             } catch (\Exception $exception) {
                 $msg = $exception instanceof ValidationException ?
                     $exception->getMessage() :
@@ -98,45 +113,27 @@ class Plugin extends PluginBase
                 Flash::error($msg);
                 abort(redirect('/'));
             }
-
         });
 
-        Event::listen('mobecan.socialconnect.handleLogin', function ($provider_details, $provider_response, User $user) {
-            if (! $user->exists) {
-                CookieEnum::guest->set($user->toArray());
-                Flash::add('post_register_required', 1);
+        Event::listen('mobecan.socialconnect.handleLogin',
+            function ($provider_details, $provider_response, User $user) {
+                if (!$user->exists) {
+                    CookieEnum::guest->set($user->toArray());
+                    Flash::add('post_register_required', 1);
 
-                return redirect()->refresh();
-            }
-        });
+                    return redirect()->refresh();
+                }
+                return;
+            });
 
-        Event::listen('rainlab.user.beforeRegister', function (&$user) {
-            $user['required_post_register'] = 0;
-        });
-        Event::listen('rainlab.user.register', function ($user, $data) {
-            CookieEnum::guest->forget();
-        });
 
-        AliasLoader::getInstance()->alias('User', User::class);
-        AliasLoader::getInstance()->alias('BookUser', BookUser::class);
-        AliasLoader::getInstance()->alias('Search', Search::class);
-        AliasLoader::getInstance()->alias('SearchManager', SearchManager::class);
-        AliasLoader::getInstance()->alias('Country', Country::class);
-        AliasLoader::getInstance()->alias('BookSettings', Settings::class);
-        AliasLoader::getInstance()->alias('CountryList', CountryList::class);
-        AliasLoader::getInstance()->alias('UserSettingsEnum', UserSettingsEnum::class);
-        AliasLoader::getInstance()->alias('TempAdultPass', TempAdultPass::class);
-        Country::extend(function (Country $country) {
-            $country->implementClassWith(CountryTranslate::class);
-        });
+        Event::listen('rainlab.user.beforeRegister',
+            fn(&$user) => array_set($user, 'required_post_register', 0));
+        Event::listen('rainlab.user.register',
+            fn($user, $data) => CookieEnum::guest->forget());
 
-        User::extend(function (User $model) {
-            $model->implementClassWith(BookUserBehavior::class);
-            $model->implementClassWith(LocationModel::class);
-            $model->implementClassWith(CanShare::class);
-            $model->implementClassWith(WalletBehavior::class);
-            $model->implementClassWith(CanWithdraw::class);
-        });
+        loadAlias($this->aliases);
+        loadImplements($this->implements);
     }
 
     /**

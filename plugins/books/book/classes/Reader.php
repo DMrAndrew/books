@@ -62,9 +62,9 @@ class Reader
     public function isPageAllowed(): bool
     {
         return ! $this->contentGuard
-            || $this->chapter->isFree()
-            || ($this->user && $this->book->isAuthor($this->user->profile))
-            || ($this->user && $this->user->bookIsBought($this->edition));
+            or $this->chapter->isFree()
+            or ($this->user
+                and ($this->book->isAuthor($this->user->profile) or $this->user->bookIsBought($this->edition)));
     }
 
     public function track(?int $ms, int $paginator_id)
@@ -81,9 +81,9 @@ class Reader
     public function readBtn(): bool
     {
         return ! $this->nextPage()
-            && ! $this->nextChapter()
-            && $this->book->ebook->status === BookStatus::COMPLETE
-            && ($this->user && ! $this->user->library($this->book)->is(CollectionEnum::READ));
+            and ! $this->nextChapter()
+            and $this->book->ebook->status === BookStatus::COMPLETE
+            and ($this->user and ! $this->user->library($this->book)->is(CollectionEnum::READ));
     }
 
     /**

@@ -103,10 +103,8 @@ addEventListener('page:load', function () {
 
 });
 addEventListener('page:loaded', function () {
-     // console.log('page:loaded')
     initUserStuff()
     iniSelect()
-
 });
 addEventListener(`DOMContentLoaded`, function () {
     // console.log(`DOMContentLoaded`)

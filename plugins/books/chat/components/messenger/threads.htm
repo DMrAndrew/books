@@ -1,0 +1,55 @@
+<div id="thread_spawn" class="popup-menu__content">
+    <div class="popup-menu__header popup-menu__wrapper">
+        <div class="ui-text-head--3 ui-text--bold">Чат</div>
+    </div>
+    <div class="popup-menu__body popup-menu__wrapper">
+        {% if not unread_thread_count %}
+        <div class="popup-menu__placeholder">
+            <svg class="square-32">
+                <use xlink:href="/themes/demo/assets/icon-sprite/svg-sprite.svg#message-stroked-24"></use>
+            </svg>
+            <span>Здесь пока ничего нет</span>
+        </div>
+        {% else %}
+
+        <div class="menu-chat">
+            {% for thread in threads %}
+            <div class="menu-chat__item">
+                <div class="menu-chat__image-wrapper">
+                    {% if thread.group %}
+                    <svg  class="menu-chat__image  square-24">
+                        <use xlink:href="/themes/demo/assets/icon-sprite/svg-sprite.svg#users-stroked-32"></use>
+                    </svg>
+                    {% else %}
+                    {% set picture = thread.resources.latest_message.owner.base.picture %}
+                    {% if picture %}
+                    <img class="menu-chat__image square-40" src="{{picture}}" alt="">
+                    {% else %}
+                    <svg  class="menu-chat__image  square-24">
+                        <use xlink:href="/themes/demo/assets/icon-sprite/svg-sprite.svg#user-stroked-24"></use>
+                    </svg>
+                    {% endif %}
+                    {% endif %}
+                </div>
+                <div class="menu-chat__info">
+                    <div class="menu-chat__info-up">
+                        <div class="menu-chat__name">{{thread.name}}</div>
+                        <div class="menu-chat__time">{{thread.resources.latest_message.created_at.format('H:i')}}</div>
+                    </div>
+                    <div class="menu-chat__info-down">
+                        {% set msg = thread.group ? thread.resources.latest_message.owner.name~': '  : ''%}
+                        <div class="menu-chat__message">{{msg~thread.resources.latest_message.body|raw}}</div>
+                        {% if thread.unread_count %}
+                        <div class="ui-label-number _violet">{{thread.unread_count}}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    <div class="popup-menu__footer popup-menu__wrapper">
+        <a href="/messenger" class="ui-button ui-button-size--32 ui-button-view--2 ui-button--full">Посмотреть все</a>
+    </div>
+</div>

@@ -33,7 +33,7 @@
                data-request-validate="1"
                data-request-data="edition_id: {{ book.ebook.id }}"
                class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
-                {% if book.ebook.discount_exists %}
+                {% if book.ebook.priceTag.discountExists %}
                 <span>
                     <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
                     <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
@@ -46,7 +46,7 @@
             {% else %}
             <a onclick="loginPopup()" class="ui-button ui-button-size--56
                                             ui-button-view--1 ui-button--full cursor-pointer">
-                {% if book.ebook.discount_exists %}
+                {% if book.ebook.priceTag.discountExists %}
                 <span>
                     <span class="ui-text--medium">Купить {{book.ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTag.initialPrice}} ₽</span></span>
                     <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>

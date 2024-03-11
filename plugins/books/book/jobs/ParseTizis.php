@@ -24,7 +24,7 @@ class ParseTizis implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 1;
+    public $tries = 2;
 
     /**
      * __construct a new job instance.
