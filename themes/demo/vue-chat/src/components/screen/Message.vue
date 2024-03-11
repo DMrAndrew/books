@@ -16,7 +16,21 @@ export default {
   computed: {
     text() {
       return this.message.body?.replace(/\n/g, '<br>')
-    }
+    },
+    isSending(){
+      return this.message.sending
+    },
+    isFailed(){
+      return this.message.isFailed
+    },
+    mClass(){
+      return [
+        'header-search__icon',
+        'square-16',
+        this.isSending ? 'transform' : '',
+        this.isFailed ? 'failed' : ''
+      ].join(' ')
+    },
   }
 }
 </script>
@@ -29,12 +43,7 @@ export default {
       <div class="lc-chat__item-head">
         <div class="lc-chat__item-name">{{ message.owner.name }}</div>
         <div class="lc-chat__item-date lc-chat__item-date--left">{{ message.time }}</div>
-        <svg v-if="message.sending || message.isFailed"  :class="[
-            'header-search__icon',
-             'square-16',
-              message.sending ? 'transform' : '',
-               message.isFailed ? 'failed' : ''
-               ]" >
+        <svg v-show="isSending || isFailed"  :class="mClass" >
           <use xlink:href="@/assets/icon-sprite/svg-sprite.svg#refresh-stroked-24"></use>
         </svg>
       </div>
@@ -49,7 +58,7 @@ export default {
 
 <style>
 .failed{
-  color:red
+  color:var(--color-red)!important;
 }
 .transform{
   animation: rotate 0.8s infinite;

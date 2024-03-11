@@ -17,6 +17,7 @@
         "books/book-plugin": "*",
         "books/breadcrumbs-plugin": "*",
         "books/certificates-plugin": "*",
+        "books/chat-plugin": "*",
         "books/collections-plugin": "*",
         "books/comments-plugin": "*",
         "books/fileuploader-plugin": "*",
@@ -84,8 +85,7 @@
         "preferred-install": "dist",
         "allow-plugins": {
             "composer/installers": true,
-            "php-http/discovery": true,
-            "pestphp/pest-plugin": true
+            "php-http/discovery": true
         },
         "sort-packages": true
     },
@@ -201,6 +201,10 @@
         "books/shop-plugin": {
             "type": "path",
             "url": "./plugins/books/shop"
+        },
+        "books/chat-plugin": {
+            "type": "path",
+            "url": "plugins/books/chat"
         }
     },
     "extra": {

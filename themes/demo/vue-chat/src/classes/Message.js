@@ -39,19 +39,24 @@ export default class Message {
     async send(fake = false) {
         if (fake) return
 
-        if (this.isNew && !this.sending) {
-            this.sending = true
-            return await axios.post(messages_point(this.thread_id), {
-                message: this.body,
-                temporary_id: this.temporary_id
-            }).catch(e => {
-                this.isFailed = true
-                console.log(e)
-            }).finally(() => {
-                this.sending = false
-            })
+        try {
+            if (this.isNew && !this.sending) {
+                this.sending = true
+                return await axios.post(messages_point(this.thread_id), {
+                    message: this.body,
+                    temporary_id: this.temporary_id
+                }).catch(e => {
+                    this.isFailed = true
+                }).finally(() => {
+                     this.sending = false
+                })
+            }
+
+        } catch (e) {
+            this.sending = false
+            this.isFailed = true
         }
-        return
+
     }
 
     get thread_id() {
