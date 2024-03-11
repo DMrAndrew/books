@@ -3,6 +3,7 @@
 namespace Books\User\Classes;
 
 use Books\User\Models\TempAdultPass;
+use Carbon\Carbon;
 use RainLab\Location\Models\Country;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
@@ -43,6 +44,7 @@ class UserService
         if ($user = Auth::getUser()) {
             return $user->allowedSeeAdult();
         }
+
         return static::guestAllowedSeeAdult();
     }
 
@@ -56,6 +58,7 @@ class UserService
         if ($user = Auth::getUser()) {
             return $user->requiredAskAdult();
         }
+
         return static::canGuestBeAskedAdultPermission();
     }
 

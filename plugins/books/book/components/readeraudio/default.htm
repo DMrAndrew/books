@@ -27,7 +27,7 @@
                         </select>
                     </div>
                     <div class="reader-header__action _full">
-                        {% if book.ebook.exists %}
+                        {% if ebookVisible %}
                         <button class="reader-header__button _with-seperator">
                             <a href="/reader/{{book.id}}">Текст</a>
                         </button>

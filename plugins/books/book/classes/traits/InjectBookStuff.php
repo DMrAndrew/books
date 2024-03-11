@@ -1,19 +1,25 @@
 <?php namespace Books\Book\Classes\Traits;
 
 use Books\Book\Models\Book;
+use Books\User\Classes\UserService;
 use Str;
 
 trait InjectBookStuff
 {
     public function tryInjectAdultModal()
     {
-        if (!$this->validate() || !is_null($this->book)) {
+        if (!$this->validate()) {
             return false;
         }
-        if ($this->book = Book::query()->onlyPublicStatus()->find($this->book_id) ?? abort(404)) {
-            $this->page['ask_adult'] = askAboutAdult($this->book);
+
+        if ($this->book) {
+            $needToShowModalAskAboutAdult = needShowModalAskAboutAdult($this->book);
+        } else if ($this->book_id) {
+            $book = Book::query()->onlyPublicStatus()->find($this->book_id);
+            $needToShowModalAskAboutAdult = needShowModalAskAboutAdult($book);
         }
 
+        $this->page['ask_adult'] = $needToShowModalAskAboutAdult;// && !UserService::allowedSeeAdult();
     }
 
     public function addMeta()

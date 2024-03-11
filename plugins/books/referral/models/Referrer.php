@@ -107,8 +107,8 @@ class Referrer extends Model
     public function checkReferrerRequirements(): void
     {
         $minAge = 18;
-        $userAdulthood = $this->user->birthday->addYears($minAge);
-        if ($userAdulthood->greaterThan(now())) {
+        $userAdulthood = $this->user->birthday?->addYears($minAge);
+        if ( !$userAdulthood || $userAdulthood->greaterThan(now())) {
             throw new Exception("Минимальный возраст для участия в реферальной программе составляет {$minAge} лет");
         }
     }

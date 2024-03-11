@@ -99,9 +99,9 @@ class PriceTag
             $regularReaderProgram = AuthorsPrograms::userProgramRegularReader()->where('user_id', $authorAccount->id)->first();
 
             if ($readerBirthdayProgram) {
-                if ( (Carbon::now() === $reader?->birthday->subDay())
-                    xor (Carbon::now() === $reader?->birthday->addDay())
-                    xor $reader?->birthday->isBirthday() ) {
+                if ( (Carbon::now() === $reader?->birthday?->subDay())
+                    xor (Carbon::now() === $reader?->birthday?->addDay())
+                    xor $reader?->birthday?->isBirthday() ) {
                     if (array_intersect($this->edition->book->bookGenre->pluck('genre_id')->toArray(), $reader->loved_genres)) {
                         $this->discountsArr['values'][] = $readerBirthdayProgram->condition->percent;
                         if ($readerBirthdayProgram->condition->percent >= $this->discountAmount()) {
