@@ -12,6 +12,7 @@ use Event;
 use Illuminate\Validation\ValidationException;
 use RainLab\User\Classes\AuthMiddleware;
 use RainLab\User\Facades\Auth;
+use Route;
 use RTippin\Messenger\Http\Collections\GroupThreadCollection;
 use RTippin\Messenger\Models\Thread;
 use System\Classes\PluginBase;
@@ -57,7 +58,7 @@ class Plugin extends PluginBase
     {
         Route::get('/block/{provider_id}', function ($provider_id) {
             if (!$provider_id) {
-                throw new ValidationException('нужен провайдер');
+                throw new \ValidationException('нужен провайдер');
             }
             Auth::getUser()?->profile->blackListChatFor(Profile::find($provider_id));
             return response()->json();
