@@ -47,7 +47,7 @@ class Messenger extends ComponentBase
             return;
         }
         $filename = forceTLS() ? 'echo' : 'echo-dev';
-        $this->addJs("/themes/demo/assets/js/{$filename}.min.js?v=1203");
+        $this->addJs("/themes/demo/assets/js/{$filename}.min.js?v=12");
         $this->val();
     }
 
