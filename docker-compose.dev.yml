@@ -49,7 +49,7 @@ services:
     websockets:
         restart: unless-stopped
         ports:
-            - '${PUSHER_APP_PORT:-6001}:6001'
+            - '${PUSHER_APP_PORT:-6001}:${PUSHER_APP_PORT:-6001}'
         image: sail-8.1/app
         environment:
             CONTAINER_ROLE: websockets
