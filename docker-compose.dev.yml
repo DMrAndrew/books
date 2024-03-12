@@ -48,7 +48,6 @@ services:
             - site.loc
     websockets:
         restart: unless-stopped
-        container_name: websockets
         ports:
             - '${PUSHER_APP_PORT:-6001}:6001'
         image: sail-8.1/app
