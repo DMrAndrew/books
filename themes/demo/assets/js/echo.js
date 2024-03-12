@@ -7,10 +7,8 @@ window.Echo = new Echo({
     httpHost: window.location.hostname,
     wsHost: window.location.hostname,
     wsPort: process.env.VUE_APP_PUSHER_APP_PORT,
-    wssPort: process.env.VUE_APP_PUSHER_APP_PORT,
     forceTLS: process.env.NODE_ENV === 'production',
-    useTLS:process.env.NODE_ENV === 'production',
-    disableStats: true,
+    disableStats: false,
     cluster: process.env.VUE_APP_PUSHER_APP_CLUSTER,
     authEndpoint: 'api/broadcasting/auth',
     auth: {
