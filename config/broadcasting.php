@@ -38,7 +38,11 @@ return [
                 'encrypted' => env('PUSHER_APP_ENCRYPTED'),
                 'host' => env('PUSHER_APP_APP_HOST'),
                 'port' => env('PUSHER_APP_PORT'),
-                'scheme' => env('PUSHER_APP_SCHEME')
+                'scheme' => env('PUSHER_APP_SCHEME'),
+                'curl_options' => [
+                    CURLOPT_SSL_VERIFYHOST => 0,
+                    CURLOPT_SSL_VERIFYPEER => 0,
+                ]
             ],
         ],
 
