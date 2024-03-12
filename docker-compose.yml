@@ -61,6 +61,23 @@ services:
             - sail
         depends_on:
             - site.loc
+    websockets:
+        restart: unless-stopped
+        container_name: websockets
+        ports:
+            - '${PUSHER_APP_PORT:-6001}:6001'
+        image: books-sail-8.1/app
+        environment:
+            CONTAINER_ROLE: websockets
+            COMPOSE_INTERACTIVE_NO_CLI: 1
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sail
+        depends_on:
+            - site.loc
     mysql:
         image: 'mariadb:10.5'
         ports:
