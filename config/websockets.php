@@ -51,7 +51,7 @@ return [
         'bookstime.ru',
         'booktime2022',
         'books.pomon.ru',
-        'books-stage.pomon.ru'
+        'books-stage.pomon.ru',
     ] : [],
 
     /*

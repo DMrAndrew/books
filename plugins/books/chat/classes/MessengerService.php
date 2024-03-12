@@ -101,6 +101,7 @@ class MessengerService
     public static function broadcastUpdate(
         NewMessageEvent|ThreadArchivedEvent|NewThreadEvent|ParticipantReadEvent $event
     ): void {
+
         $participantRepository = new ParticipantRepository(\messenger());
         $participants = match (get_class($event)) {
             NewMessageEvent::class, ThreadArchivedEvent::class, NewThreadEvent::class
@@ -109,7 +110,6 @@ class MessengerService
             ParticipantReadEvent::class => [$event->participant]
         };
 
-        Log::info($participants);
         foreach ($participants as $participant) {
             MessengerUpdatedEvent::dispatch($participant->owner->withoutRelations());
         }

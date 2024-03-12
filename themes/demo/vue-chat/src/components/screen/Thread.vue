@@ -6,7 +6,11 @@
         <avatar :is-private="thread.isPrivate" :recipient="thread.recipient"></avatar>
         <div class="lc-chat__item-text">
           <div class="lc-chat__item-head">
-            <div class="lc-chat__item-name">{{ thread.name }}</div>
+            <a v-if="thread.isPrivate" :href="'/author-page/'+thread.recipient.providerID"
+               target="_blank"
+               class="lc-chat__item-name">{{ thread.name }}
+            </a>
+            <div v-else class="lc-chat__item-name">{{ thread.name }}</div>
           </div>
           <!--                    <div class="lc-chat__item-body">-->
           <!--                        <div class="lc-chat__item-status">20 участников</div>-->
@@ -134,8 +138,8 @@ export default {
     actions() {
       return [
         {condition: this.thread.isGroup && !this.thread.isAdmin, label: 'Покинуть', handler: this.leave},
-        {condition: this.thread.isPrivate, label: 'В черный список', handler: this.block},
-        {condition: this.thread.isPrivate, label: 'Удалить', handler: this.deleteConversation},
+        {condition: !this.thread.isNew && this.thread.isPrivate, label: 'В черный список', handler: this.block},
+        {condition: !this.thread.isNew && this.thread.isPrivate, label: 'Удалить', handler: this.deleteConversation},
       ]
     },
     showDropdown() {

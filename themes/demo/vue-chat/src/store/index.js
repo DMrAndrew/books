@@ -3,9 +3,6 @@ export default createStore({
   state: {
   },
   getters: {
-      user (state) {
-          return JSON.parse(localStorage.getItem('user' ))
-      }
   },
   mutations: {
   },

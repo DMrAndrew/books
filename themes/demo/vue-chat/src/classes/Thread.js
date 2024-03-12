@@ -95,7 +95,7 @@ export default class Thread {
     }
 
     get id() {
-        return this.thread?.id
+        return this.thread?.id ?? this.tempID
     }
 
     set id(id) {

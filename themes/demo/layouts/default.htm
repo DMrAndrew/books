@@ -28,10 +28,7 @@ recordsPerView = 11
     {% partial 'site/vk_pixel' %}
 </head>
 {% if user %}
-<script>
-    localStorage.removeItem('user')
-    localStorage.setItem('user',`{{user|raw}}`)
-</script>
+
 {% endif %}
 
 <body class="{{ 'page-'~this.page.id }}" data-user="{{user ? 1: 0}}">
