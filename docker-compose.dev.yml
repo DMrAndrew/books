@@ -46,21 +46,20 @@ services:
             - root
         depends_on:
             - site.loc
-    websockets:
-        restart: unless-stopped
-        image: sail-8.1/app
+    soketi:
+        image: 'quay.io/soketi/soketi:latest-16-alpine'
+        container_name: soketi
         environment:
-            CONTAINER_ROLE: websockets
+            SOKETI_DEBUG: '1'
+            SOKETI_METRICS_SERVER_PORT: '9601'
             COMPOSE_INTERACTIVE_NO_CLI: 1
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
-        volumes:
-            - '.:/var/www/html'
+        ports:
+            - '${SOKETI_PORT:-6001}:6001'
+            - '${SOKETI_METRICS_SERVER_PORT:-9601}:9601'
         networks:
             - sail
-            - root
-        depends_on:
-            - site.loc
     queue:
         restart: unless-stopped
         image: sail-8.1/app
