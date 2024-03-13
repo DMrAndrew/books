@@ -47,12 +47,7 @@ return [
      * This array contains the hosts of which you want to allow incoming requests.
      * Leave this empty if you want to accept requests from all hosts.
      */
-    'allowed_origins' => env('APP_ENV','local') === 'production' ? [
-        'bookstime.ru',
-        'booktime2022',
-        'books.pomon.ru',
-        'books-stage.pomon.ru',
-    ] : [],
+    'allowed_origins' => [],
 
     /*
      * The maximum request size in kilobytes that is allowed for an incoming WebSocket request.
