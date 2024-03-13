@@ -1,0 +1,13 @@
+{
+  "debug": true,
+  "port": 6001,
+  "appManager.array.apps": [
+    {
+      "id": "563049",
+      "key": "8b22c3dea726794a362c",
+      "secret": "aebd8b55b25a5c6ac8df",
+      "enabled": true,
+      "enableClientMessages": true
+    }
+  ]
+}
