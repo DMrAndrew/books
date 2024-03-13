@@ -6,11 +6,12 @@ namespace Books\Chat\Classes;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Laravel\Horizon\Contracts\Silenced;
 use RTippin\Messenger\Contracts\MessengerProvider;
 
-class MessengerUpdatedEvent extends \Event implements ShouldBroadcast, Silenced
+class MessengerUpdatedEvent extends \Event implements ShouldBroadcastNow, Silenced
 {
     use Dispatchable;
     use InteractsWithSockets;

@@ -111,7 +111,7 @@ export default class Thread {
             return
         }
         this._reading = true
-        axios.get(thread_point(this.id) + 'mark-read').then(e => {
+        axios.get(thread_point(this.id) + '/mark-read').then(e => {
             this.unread_count = 0
             this.last_read_at = moment()
         }).finally(() => this._reading = false)
@@ -119,7 +119,7 @@ export default class Thread {
 
     async leave() {
         if (this.isGroup && !this.isAdmin) {
-            await axios.post(thread_point(this.id) + 'leave').then(e => {
+            await axios.post(thread_point(this.id) + '/leave').then(e => {
                 this.messenger.deleteThread(this)
             })
         }

@@ -30,7 +30,7 @@ return [
             'path' => env('PUSHER_APP_PATH'),
             'capacity' => null,
             'enable_client_messages' => true,
-            'enable_statistics' => false,
+            'enable_statistics' => true,
         ],
     ],
 
@@ -72,8 +72,7 @@ return [
      * the existing middleware. Or, you can simply stick with this list.
      */
     'middleware' => [
-        'web',
-        \RainLab\User\Classes\AuthMiddleware::class,
+        'web'
 
     ],
 
