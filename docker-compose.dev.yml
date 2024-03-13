@@ -48,7 +48,6 @@ services:
             - site.loc
     soketi:
         image: 'quay.io/soketi/soketi:latest-16-alpine'
-        container_name: soketi
         environment:
             SOKETI_DEBUG: '1'
             SOKETI_METRICS_SERVER_PORT: '9601'
