@@ -13,7 +13,7 @@
     "core-js": "^3.8.3",
     "laravel-echo": "^1.15.3",
     "moment": "^2.30.1",
-    "pusher-js": "^8.4.0-rc2",
+    "pusher-js": "^7.1.1-beta",
     "vue": "^3.2.13",
     "vue-axios": "^3.5.2",
     "vuex": "^4.0.0"

@@ -27,7 +27,6 @@ return [
     */
 
     'connections' => [
-
         'pusher' => [
             'driver' => 'pusher',
             'key' => env('PUSHER_APP_KEY'),
@@ -42,7 +41,7 @@ return [
                 'client_options' => [
                     'verify' => false,
                 ],
-                'useTLS' => env('PUSHER_SCHEME') === 'https'
+                'useTLS' => false
             ],
         ],
 

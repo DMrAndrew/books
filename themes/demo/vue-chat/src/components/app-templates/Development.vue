@@ -170,5 +170,5 @@ export default {
 }
 </script>
 <style scoped>
-@import "http://127.0.0.1:8000/themes/demo/assets/css/main.min.css?v=19012024";
+@import "./../../../../assets/css/main.min.css";
 </style>

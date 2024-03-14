@@ -23,9 +23,6 @@ if [ "$role" = "app" ]; then
 elif [ "$role" = "queue" ]; then
     echo "Running the horizon..."
     php /var/www/html/artisan horizon
-elif [ "$role" = "websockets" ]; then
-    echo "Running websockets..."
-    php /var/www/html/artisan websockets:serve
 elif [ "$role" = "scheduler" ]; then
     while [ true ]
     do

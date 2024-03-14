@@ -1,23 +1,28 @@
 import Echo from "laravel-echo"
-
 window.Pusher = require('pusher-js');
+
 window.Echo = new Echo({
     broadcaster: 'pusher',
-    key: process.env.VUE_APP_PUSHER_APP_KEY,
+    key: process.env.PUSHER_APP_KEY,
     httpHost: window.location.hostname,
+    httpsHost: window.location.hostname,
     wsHost: window.location.hostname,
-    wsPort: process.env.VUE_APP_PUSHER_APP_PORT,
-    forceTLS: process.env.NODE_ENV === 'production',
+    wssHost: window.location.hostname,
+    encrypted:true,
+    wsPort: process.env.WEBSOCKETS_LISTEN_PORT ?? 6002,
+    wssPort: process.env.WEBSOCKETS_LISTEN_PORT ?? 6002,
+    forceTLS: process.env.APP_SCHEMA === 'https',
     disableStats: false,
-    cluster: process.env.VUE_APP_PUSHER_APP_CLUSTER,
+    cluster: process.env.PUSHER_CLUSTER,
     enabledTransports: ['ws', 'wss'],
     authEndpoint: 'api/broadcasting/auth',
     auth: {
         headers: {
-            'x-app-id': process.env.VUE_APP_PUSHER_APP_ID
+            'x-app-id': process.env.PUSHER_APP_ID
         }
     }
-});
+})
+
 
 addEventListener('page:loaded', function () {
     try {
