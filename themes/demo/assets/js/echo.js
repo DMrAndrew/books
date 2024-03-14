@@ -12,7 +12,7 @@ window.Echo = new Echo({
     encrypted:true,
     wsPort: 6002,
     wssPort: 6002,
-    forceTLS: process.env.NODE_ENV === 'production',
+    forceTLS: false,
     disableStats: false,
     cluster: process.env.VUE_APP_PUSHER_APP_CLUSTER,
     enabledTransports: ['ws', 'wss'],
