@@ -10,7 +10,7 @@ window.Echo = new Echo({
     forceTLS: process.env.NODE_ENV === 'production',
     disableStats: false,
     cluster: process.env.VUE_APP_PUSHER_APP_CLUSTER,
-    enabledTransports: ['ws', 'wss'],
+    enabledTransports: process.env.NODE_ENV === 'production' ? ['wss'] : ['ws', 'wss'],
     authEndpoint: 'api/broadcasting/auth',
     auth: {
         headers: {
