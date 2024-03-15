@@ -10,7 +10,7 @@ window.Echo = new Echo({
     wsHost: window.location.hostname,
     wssHost: window.location.hostname,
     encrypted:true,
-    wsPort: 80,
+    wsPort: process.env.NODE_ENV === 'production' ? 443 : 80,
     wssPort: 443,
     forceTLS: process.env.NODE_ENV === 'production',
     disableStats: false,

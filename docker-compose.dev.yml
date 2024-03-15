@@ -59,6 +59,7 @@ services:
             LARAVEL_SAIL: 1
         networks:
             - sail
+            - root
     queue:
         restart: unless-stopped
         image: sail-8.1/app
