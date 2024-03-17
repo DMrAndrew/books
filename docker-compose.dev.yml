@@ -7,7 +7,7 @@ services:
             - '${APP_PORT:-80}:80'
             - '${WEBSOCKETS_LISTEN_PORT:-6002}:${WEBSOCKETS_LISTEN_PORT:-6002}'
         volumes:
-            - ./docker/nginx/domain.pomon.conf:/etc/nginx/conf.d/default.conf:ro
+            - ./docker/nginx/domain.pomon.conf:/etc/nginx/conf.d/default.conf:rw
             - ./docker/nginx/snippets:/etc/nginx/snippets/:rw
             - ./docker/nginx/templates:/etc/nginx/templates/:ro
             - /etc/letsencrypt/live/:/etc/letsencrypt/live/:ro
