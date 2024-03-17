@@ -41,9 +41,6 @@ return [
                 'encrypted' => env('PUSHER_ENCRYPTED'),
                 'client_options' => [
                     'verify' => false,
-                    'auth' => [
-                        'books_stage', 'STaR'
-                    ]
                 ],
                 'useTLS' => false
             ],
