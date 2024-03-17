@@ -3,6 +3,8 @@ services:
     nginx:
         image: nginx:1.21.1-alpine
         restart: unless-stopped
+        env_file:
+            - .env
         ports:
             - '${APP_PORT:-80}:80'
             - '${WEBSOCKETS_LISTEN_PORT:-6002}:${WEBSOCKETS_LISTEN_PORT:-6002}'
@@ -10,7 +12,7 @@ services:
             - ./docker/nginx/domain.pomon.conf:/etc/nginx/conf.d/default.conf:rw
             - ./docker/nginx/snippets:/etc/nginx/snippets/:rw
             - ./docker/nginx/templates:/etc/nginx/templates/:ro
-            - /etc/letsencrypt/live/:/etc/letsencrypt/live/:ro
+            - /etc/letsencrypt/:/etc/letsencrypt/
             - ./:/var/www/html
         environment:
             NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx/snippets
@@ -54,12 +56,9 @@ services:
             - site.loc
     soketi:
         image: 'quay.io/soketi/soketi:latest-16-alpine'
-        volumes:
-            - './docker/soketi/soketi-dev.json:/opt/config.json'
-        command: [ "node", "/app/bin/server.js", "start", "--config=/opt/config.json" ]
+        env_file:
+            -   .env
         environment:
-            SOKETI_DEBUG: '1'
-            SOKETI_METRICS_SERVER_PORT: '9601'
             COMPOSE_INTERACTIVE_NO_CLI: 1
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
