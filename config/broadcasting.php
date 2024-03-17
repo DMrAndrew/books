@@ -32,6 +32,7 @@ return [
             'key' => env('PUSHER_APP_KEY'),
             'secret' => env('PUSHER_APP_SECRET'),
             'app_id' => env('PUSHER_APP_ID'),
+            'log'  => true,
             'options' => [
                 'host' => env('PUSHER_HOST'),
                 'port' => env('PUSHER_PORT'),
@@ -40,6 +41,9 @@ return [
                 'encrypted' => env('PUSHER_ENCRYPTED'),
                 'client_options' => [
                     'verify' => false,
+                    'auth' => [
+                        'books_stage', 'STaR'
+                    ]
                 ],
                 'useTLS' => false
             ],
