@@ -10,7 +10,9 @@ use Books\Book\Components\Widget;
 use Books\Book\Models\Author;
 use Books\Comments\Components\Comments;
 use Books\Profile\Models\Profile;
+use Books\Shop\Components\Basket;
 use Books\Shop\Models\Category;
+use Books\Shop\Models\OrderItems;
 use Books\Shop\Models\Product;
 use Cms\Classes\CmsException;
 use Cms\Classes\ComponentBase;
@@ -78,6 +80,7 @@ class AuthorSpace extends ComponentBase
         $awards = $this->addComponent(AwardsLC::class, 'awardsLC');
         $awards->bindProfile($this->profile);
         $this->addComponent(SaleTagBlock::class, 'SaleTagBlock');
+        $this->addComponent(Basket::class, 'Basket');
 
         $this->setSEO();
     }
@@ -231,8 +234,13 @@ class AuthorSpace extends ComponentBase
         if ($this->activeCategory) {
             $products->where('category_id', $this->activeCategory);
         }
+        $productsInBasket = OrderItems::where('buyer_id', $this->authUser?->profile->getKey())
+            ->whereNull('order_id')
+            ->get()
+            ->pluck('product_id');
         return [
             'activeCategory' => $this->activeCategory,
+            'productsInBasket' => $productsInBasket,
             'categories' => Category::all(),
             'products_paginator' => CustomPaginator::from(
                     $products->paginate(

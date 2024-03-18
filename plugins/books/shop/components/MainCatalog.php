@@ -2,6 +2,7 @@
 
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Shop\Models\OrderItems;
 use Books\Shop\Models\Product;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
@@ -49,6 +50,10 @@ class MainCatalog extends ComponentBase
             $products->where('category_id', $this->page['categoryId']);
         }
         $this->page['products'] = $products->orderByDesc('created_at')->paginate(6);
+        $this->page['productsInBasket'] = OrderItems::where('buyer_id', $this->user->profile->getKey())
+                                                        ->whereNull('order_id')
+                                                        ->get()
+                                                        ->pluck('product_id');
     }
 
     private function registerBreadcrumbs(): void

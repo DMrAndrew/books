@@ -52,7 +52,7 @@ class Order extends Model
         'amount' => 'Сумма',
     ];
 
-    public function products(): HasMany
+    public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItems::class, 'order_id', 'id');
     }

@@ -3,6 +3,7 @@
 use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
 use Books\Breadcrumbs\Classes\BreadcrumbsManager;
 use Books\Comments\Components\Comments;
+use Books\Shop\Models\OrderItems;
 use Books\Shop\Models\Product;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
@@ -34,6 +35,10 @@ class ProductDetailPageComponent extends ComponentBase
     {
         $product = Product::findOrFail($this->getController()->getRouter()->getParameter('product_id'));
         $this->page['product'] = $product;
+        $this->page['productsInBasket'] = OrderItems::where('buyer_id', Auth::getUser()->profile->getKey())
+                                                        ->whereNull('order_id')
+                                                        ->get()
+                                                        ->pluck('product_id');
         $comments = $this->addComponent(Comments::class, 'comments');
         $comments->bindModel($product);
         $comments->bindModelOwner($product->seller);

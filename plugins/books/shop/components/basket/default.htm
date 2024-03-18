@@ -8,21 +8,55 @@
 
                 <div class="basket__body">
                     <div class="basket__table">
-                        <div class="basket__table-item">
+                        <div class="basket__table-item {% if orderItem.product.quantity == 0 %} --disabled {% endif %}">
                             <div class="basket__table-item-img">
                                 <img src="{{ orderItem.product.product_image.thumbUrl(250, 250, {quality: 100 }) }}"
                                      alt="{{ orderItem.product.title }}"/>
                             </div>
                             <a class="basket__table-item-name" href="/shop/product/{{ orderItem.product.id }}">{{ orderItem.product.title }}</a>
-                            <div class="basket__table-item-counter">
-                                <div class="counter">
-                                    <button class="counter__button"><svg width="12" height="12"><use xlink:href="./assets/icon-sprite/svg-sprite.svg#minus-stroked-16"></use></svg></button>
-                                    <input class="counter__input" type="number" value="{{ orderItem.quantity }}" min="1" max="999">
-                                    <button class="counter__button"><svg width="12" height="12"><use xlink:href="./assets/icon-sprite/svg-sprite.svg#plus-stroked-16"></use></svg></button>
+
+                            {% if orderItem.product.quantity == 0 or orderItem.quantity >= orderItem.product.quantity %}
+                                <div class="basket__table-item-counter">
+                                    <div class="counter">
+                                        <button disabled class="counter__button"><svg width="12" height="12"><use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#minus-stroked-16' | theme }}"></use></svg></button>
+                                        <input disabled class="counter__input" type="number" value="{{ orderItem.quantity }}" min="1" max="999">
+                                        <button disabled class="counter__button"><svg width="12" height="12"><use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#plus-stroked-16' | theme }}"></use></svg></button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="basket__table-item-price">{{ orderItem.price }} ₽</div>
-                            <button type="button" class="basket__table-item-remove" onclick="this.parentNode.remove()">
+                                <div class="basket__table-item-price text-violet">
+                                    {% if orderItem.product.quantity == 0 %}
+                                        Нет вналичии
+                                    {% endif %}
+                                    {% if orderItem.quantity >= orderItem.product.quantity %}
+                                        Товара в меньше в наличие чем у вас в корзине
+                                    {% endif%}
+                                </div>
+                            {% else %}
+                                <div class="basket__table-item-counter">
+                                    <div class="counter">
+                                        <button class="counter__button"
+                                                {% if orderItem.quantity == 1 %} disabled {% endif %}
+                                                data-request="Basket::onReduceQuantity"
+                                                data-request-data="orderItemId:{{ orderItem.id }}"
+                                        ><svg width="12" height="12">
+                                            <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#minus-stroked-16' | theme }}"></use></svg>
+                                        </button>
+                                        <input class="counter__input" type="number" value="{{ orderItem.quantity }}" min="1" max="{{ orderItem.product.quantity }}">
+                                        <button class="counter__button"
+                                                {% if orderItem.quantity >= orderItem.product.quantity or orderItem.quantity >= orderItem.product.quantity %} disabled {% endif %}
+                                                data-request="Basket::onAddQuantity"
+                                                data-request-data="orderItemId:{{ orderItem.id }}"
+                                        ><svg width="12" height="12">
+                                            <use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#plus-stroked-16' | theme }}"></use></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="basket__table-item-price">{{ orderItem.price }} ₽</div>
+                            {% endif %}
+                            <button type="button" class="basket__table-item-remove"
+                                    data-request="Basket::onRemoveProduct"
+                                    data-request-data="orderItemId:{{ orderItem.id }}"
+                            >
                                 <svg width="24" height="24"><use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#close-stroked-16' | theme }}"></use></svg>
                             </button>
                         </div>
@@ -32,7 +66,14 @@
             {% endfor %}
             <div class="basket__item-footer">
                 <div class="ui-text-head--3 ui-text--bold">Итого: {{ sellers['amount'][key] }} ₽</div>
-                <a class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium" href="/shop/checkout/{{ key }}">Купить</a>
+                {% if sellers['hasDisabledProduct'][key] == false %}
+                    <a href="/shop/checkout/{{ key }}" class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Купить</a>
+                {% endif %}
+                {% if sellers['hasDisabledProduct'][key] == true %}
+                    <button disabled class="ui-button ui-button-size--32 ui-button-view--2 ui-text--medium">Купить</button>
+                    <p class="text-violet">В корзине присутсвуют товары которых нет в наличии. Перед оформлением заказа удалите их.</p>
+                {% endif %}
+
             </div>
         </div>
     {% endfor %}
@@ -50,3 +91,13 @@
 </div>
 
 {% endif %}
+
+
+<style>
+    .basket__table-item {
+        align-items: center;
+    }
+    .basket__table-item-remove {
+        justify-self: end;
+    }
+</style>

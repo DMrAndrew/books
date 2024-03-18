@@ -9,13 +9,19 @@
         <a href="/shop/product/{{ product.id }}" class="shop-item-name">{{ product.title }}</a>
         <div class="shop-item-price">{{ product.price }} ₽</div>
         {% if user %}
-        <div class="shop-item-actions">
-            <a class="ui-button ui-button--full ui-button-size--32 ui-button-view--2 ui-text--medium"
-               data-request="Basket::onAddToBasket"
-               data-request-data="productId:{{ product.id }}"
+        <div id="buy-btn-{{ product.id }}"  class="shop-item-actions">
+            <button class="ui-button ui-button--full ui-button-size--32 ui-button-view--2 ui-text--medium"
+                    {% if product.id in productsInBasket %} disabled {% endif %}
+                    data-request="Basket::onAddToBasket"
+                    data-request-data="productId:{{ product.id }}"
             >
-                В корзину
-            </a>
+                {% if product.id in productsInBasket %}
+                    Уже в корзине
+                {% else %}
+                    В корзину
+                {% endif %}
+
+            </button>
         </div>
         {% endif %}
     </div>

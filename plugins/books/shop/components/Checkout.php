@@ -105,7 +105,12 @@ class Checkout extends ComponentBase
                 ->where('buyer_id', $this->userProfile->getKey())
                 ->get();
 
-            $order->products()->saveMany($orderItems);
+            $order->orderItems()->saveMany($orderItems);
+            $orderItems->each(function ($orderItem) {
+                $product = $orderItem->product;
+                $product->quantity = $product->quantity - $orderItem->quantity;
+                $product->save();
+            });
 
             Flash::success('Заказ успешно создан');
 
