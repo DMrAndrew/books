@@ -1,0 +1,7 @@
+<div class="shop-sidebar">
+    <a class="shop-sidebar__link {% if categoryId == null %}  active {% endif %}" href="/shop">Все товары</a>
+    {% for category in categories %}
+        <a class="shop-sidebar__link {% if category.id == categoryId %}  active {% endif %}"
+           href="/shop/category/{{ category.id }}">{{ category.title }}</a>
+    {% endfor %}
+</div>

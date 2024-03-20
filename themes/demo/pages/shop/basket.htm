@@ -1,0 +1,23 @@
+title = "Корзина"
+layout = "default"
+url = "/shop/basket"
+meta_title = "Корзина"
+breadcrumbs="shop-basket"
+[session]
+security = "user"
+redirect = "/shop"
+[Basket]
+==
+
+{% component 'Breadcrumbs' %}
+
+<!-- Тело страницы -->
+<div class="ui-container">
+    <div class="basket__title ui-text-head--2 ui-text--bold">Корзина</div>
+</div>
+
+<div class="ui-container-fluid">
+    <div id="basket-conteiner" class="basket__container">
+        {% component 'Basket' %}
+    </div>
+</div>

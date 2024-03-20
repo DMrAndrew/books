@@ -1,11 +1,15 @@
 <?php namespace Books\Shop;
 
 use Backend;
-use Books\Breadcrumbs\Classes\BreadcrumbsGenerator;
-use Books\Breadcrumbs\Classes\BreadcrumbsManager;
+use Books\Profile\Models\Profile;
+use Books\Shop\Behaviors\HasProduct;
+use Books\Shop\Components\Basket;
+use Books\Shop\Components\Checkout;
+use Books\Shop\Components\MainCatalog;
+use Books\Shop\Components\ProductDetailPageComponent;
+use Books\Shop\Components\ShopCategorySidebar;
 use Books\Shop\Components\ShopLCForm;
 use Books\Shop\Components\ShopLCList;
-use RainLab\User\Facades\Auth;
 use System\Classes\PluginBase;
 
 /**
@@ -48,7 +52,9 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-        //
+        Profile::extend(function (Profile $model) {
+            $model->implementClassWith(HasProduct::class);
+        });
     }
 
     /**
@@ -59,6 +65,11 @@ class Plugin extends PluginBase
         return [
             ShopLCList::class => 'ShopLCList',
             ShopLCForm::class => 'ShopLCForm',
+            MainCatalog::class => 'MainCatalog',
+            ShopCategorySidebar::class => 'ShopCategorySidebar',
+            ProductDetailPageComponent::class => 'ProductDetailPageComponent',
+            Basket::class => 'Basket',
+            Checkout::class => 'Checkout',
         ];
     }
 

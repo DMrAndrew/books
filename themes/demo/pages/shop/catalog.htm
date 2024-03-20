@@ -1,0 +1,31 @@
+title = "Магазин"
+layout = "default"
+url = "/shop/"
+meta_title = "Магазин"
+breadcrumbs="shop"
+[session]
+security = "all"
+redirect = "/"
+[MainCatalog]
+[ShopCategorySidebar]
+[Basket]
+==
+
+{% component 'Breadcrumbs' %}
+{% partial 'shop/header' %}
+
+<div class="personal-area">
+    <div class="ui-container-fluid">
+        <div class="personal-area__container ui-grid-container ui-grid-gap">
+            <!-- меню кабинета -->
+            <div class="ui-col-sm-3 shop-sidebar__container">
+                {% component 'ShopCategorySidebar' %}
+            </div>
+
+            <!-- основная часть -->
+            <div class="ui-col-sm-9">
+                {% component 'MainCatalog' %}
+            </div>
+        </div>
+    </div>
+</div>

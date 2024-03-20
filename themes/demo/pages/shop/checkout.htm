@@ -1,0 +1,23 @@
+title = "Оформление заказа"
+layout = "default"
+url = "/shop/checkout/:seller_id"
+meta_title = "Оформление заказа"
+breadcrumbs="shop-checkout"
+[session]
+security = "user"
+redirect = "/shop"
+[Breadcrumbs]
+[Checkout]
+==
+
+{% component 'Breadcrumbs' %}
+
+<!-- Тело страницы -->
+<div class="ui-container">
+    <div class="basket__title ui-text-head--2 ui-text--bold">Оформление заказа</div>
+</div>
+
+<div class="ui-container-fluid">
+    {% component 'Checkout' %}
+</div>
+

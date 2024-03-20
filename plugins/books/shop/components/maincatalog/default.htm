@@ -1,0 +1,32 @@
+<div class="shop-list">
+    {% for product in products %}
+
+    <div class="shop-item">
+        <a href="/shop/product/{{ product.id }}" class="shop-item-img">
+            <img src="{{ product.product_image.thumbUrl(250, 250, {quality: 100 }) }}"
+                 alt="{{ product.title }}"/>
+        </a>
+        <a href="/shop/product/{{ product.id }}" class="shop-item-name">{{ product.title }}</a>
+        <div class="shop-item-price">{{ product.price }} ₽</div>
+        {% if user %}
+        <div id="buy-btn-{{ product.id }}"  class="shop-item-actions">
+            <button class="ui-button ui-button--full ui-button-size--32 ui-button-view--2 ui-text--medium"
+                    {% if product.id in productsInBasket %} disabled {% endif %}
+                    data-request="Basket::onAddToBasket"
+                    data-request-data="productId:{{ product.id }}"
+            >
+                {% if product.id in productsInBasket %}
+                    Уже в корзине
+                {% else %}
+                    В корзину
+                {% endif %}
+
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+    {% endfor %}
+</div>
+
+{{ pager(products, { partial: 'site/standart_pagination'}) }}
