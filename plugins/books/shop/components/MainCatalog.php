@@ -42,7 +42,6 @@ class MainCatalog extends ComponentBase
     private function prepareVals()
     {
         $orderItems = OrderItems::whereNull('order_id');
-
         $products = Product::where('quantity', '>', 0);
         if ($this->user) {
             $products->where('seller_id', '!=', $this->user->getKey());

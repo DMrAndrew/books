@@ -1,3 +1,4 @@
+{% if products.count > 0 %}
 <div class="shop-list">
     {% for product in products %}
 
@@ -30,3 +31,17 @@
 </div>
 
 {{ pager(products, { partial: 'site/standart_pagination'}) }}
+
+{% else %}
+
+<div class="ui-container-fluid common-pages__container">
+    <div class="wrapper">
+        <div class="common-pages__content">
+            <div class="common-pages__title ui-text-head--2 ui-text--bold">У нас пока нет товаров.</div>
+            <div class="common-pages__text ">Вы можете перейти в <a href="/">начало сайта</a> или вернуться на <a
+                href="#" onclick="history.back();">предыдущую страницу</a>.
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
