@@ -169,18 +169,21 @@ export default {
 
     },
     leave() {
+      this.dropdown = false
       this.$refs.dialog.confirm({
         question: 'Покинуть группу?',
         apply: this.thread.leave.bind(this.thread)
       })
     },
     block() {
+      this.dropdown = false
       this.$refs.dialog.confirm({
         question: 'Добавить в чёрный список? Все сообщения будут удалены.',
         apply: this.thread.block.bind(this.thread)
       })
     },
     deleteConversation() {
+      this.dropdown = false
       this.$refs.dialog.confirm({
         question: 'Удалить диалог?',
         apply: this.thread.delete.bind(this.thread)

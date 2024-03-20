@@ -23,6 +23,10 @@ export default {
     },
     search() {
       if (this.find.length < 3) {
+        if(window.oc){
+          oc.flashMsg({type:'error',message:'Поисковая строка должна быть не менее 2 символов'})
+        }
+
         return
       }
       this.axios.get('/search/' + this.find).then(e => {
@@ -32,6 +36,13 @@ export default {
     submit(e) {
       if (!this.chatname) {
         return
+      }
+      if(this.chatname.length < 2){
+
+        if(window.oc){
+          oc.flashMsg({type:'error',message:'Название чата должно быть не менее 2 символов'})
+        }
+        return;
       }
 
       const providers = this.collection.filter(e => e.selected).map(e => {

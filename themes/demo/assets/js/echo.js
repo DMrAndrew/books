@@ -1,4 +1,5 @@
 import Echo from "laravel-echo"
+
 window.Pusher = require('pusher-js');
 
 window.Echo = new Echo({
@@ -8,7 +9,7 @@ window.Echo = new Echo({
     httpsHost: window.location.hostname,
     wsHost: window.location.hostname,
     wssHost: window.location.hostname,
-    encrypted:true,
+    encrypted: true,
     wsPort: process.env.WEBSOCKETS_LISTEN_PORT ?? 6002,
     wssPort: process.env.WEBSOCKETS_LISTEN_PORT ?? 6002,
     forceTLS: process.env.APP_SCHEMA === 'https',
@@ -22,30 +23,38 @@ window.Echo = new Echo({
         }
     }
 })
-
-
-addEventListener('page:loaded', function () {
+window.Echo.authProfileSubscribe = async function () {
     try {
-        if (window && window.Echo && !window.profileChannel) {
+        if (window && window.Echo) {
             const user = JSON.parse(localStorage.getItem('user'))
-            const replacer = (data) => {
-                Object.keys(data).forEach((id) => {
-
-                    let el = document.getElementById(id)
-                    if (el) {
-                        el.innerHTML = data[id]
-                    }
-                })
-            }
             if (user && user.profile) {
-                window.profileChannel = window.Echo.private('profile.' + user.profile.id)
-                    .listen('.notifications', replacer)
+                const channel = 'private-profile.' + user.profile.id
+                if(window.Echo.connector.channels[channel]){
+                    return
+                }
+                window.Echo.private('profile.' + user.profile.id)
+                    .listen('.notifications', function (data) {
+                            Object.keys(data).forEach((id) => {
+                                let el = document.getElementById(id)
+                                if (el) {
+                                    el.innerHTML = data[id]
+                                }
+                            })
+                        }
+                    )
             }
         }
     } catch (e) {
         console.error(e)
     }
-})
+}
+window.Echo.authProfileDisconnect = function (){
+    if(window.Echo){
+        window.Echo.leaveAllChannels()
+    }
+}
+
+addEventListener('page:loaded', window.Echo.authProfileSubscribe)
 export default function () {
 
 }

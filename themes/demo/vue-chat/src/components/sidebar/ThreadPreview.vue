@@ -50,6 +50,7 @@ export default {
     setAsActive(e) {
       e.preventDefault()
       this.messenger.thread = this.thread
+      this.messenger.toScreen()
     }
   }
 }

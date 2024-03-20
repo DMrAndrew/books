@@ -56,6 +56,7 @@ operationsPerView = 11
                                         {{profile.id != user.profile.id ? 'data-request="profile::onSwitchProfile"' : ''}}
 
                                        data-request-data="profile_id:{{profile.id}}"
+                                       data-request-success="onLogout()"
                                        class="dropwdown-profile__link cursor-pointer {{profile.id == user.profile.id ? 'active' : ''}}">
                                         <svg class="square-16">
                                             <use
@@ -70,7 +71,7 @@ operationsPerView = 11
                     </li>
                     <li class="dropwdown-profile__separator"></li>
                     <li>
-                        <a class="cursor-pointer" data-request="onLogout">
+                        <a class="cursor-pointer" data-request="onLogout" data-request-success="onLogout()">
                             Выйти
                         </a>
                     </li>

@@ -162,6 +162,8 @@
                 <div class="menu-mobile__footer">
                     <div class="menu-mobile__separator"></div>
 
+
+                    {% partial 'site/chat-mobile' button = true %}
                     {% partial 'site/notifications-mobile' button = true %}
                     {% partial 'site/operation-history-mobile' button = true %}
 
@@ -196,6 +198,7 @@
             {% endif %}
         </div>
     </div>
+
 
     <!-- Книги -->
     <div class="menu-mobile__container " data-menu-item="2">
@@ -268,6 +271,7 @@
         </div>
     </div>
     {% if user %}
+        {% partial 'site/chat-mobile' %}
         {% partial 'site/notifications-mobile' %}
         {% partial 'site/operation-history-mobile' %}
 

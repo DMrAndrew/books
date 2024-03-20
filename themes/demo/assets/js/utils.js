@@ -1,7 +1,12 @@
 let closeForm = (id = 'auth_popup') => {
     $('#' + id).hide()
 }
-
+let onLogout = () => {
+    localStorage.removeItem('user')
+    if (window.Echo) {
+        window.Echo.authProfileDisconnect()
+    }
+}
 let loginPopup = () => oc.ajax('bookAccount::onGetLoginPopup');
 let registerPopup = () => oc.ajax('onGetRegisterPopup');
 let loginForm = () => oc.ajax('onGetLoginForm');
@@ -80,9 +85,11 @@ let tabElemInit = function () {
         }
     })
 }
-function refreshWidgets(){
+
+function refreshWidgets() {
     oc.ajax('IndexWidgets::onRefreshWidgets')
 }
+
 addEventListener('page:before-cache', function () {
     // console.log('page:before-cache')
     $('*[data-header-action]').removeClass('active')
@@ -96,18 +103,19 @@ addEventListener('page:render', function () {
 
 
 addEventListener('page:load', function () {
-     // console.log('page:load')
-    if (document.location.pathname === '/'  && document.querySelector('body').dataset.user === "0") {
+    // console.log('page:load')
+    if (document.location.pathname === '/' && document.querySelector('body').dataset.user === "0") {
         refreshWidgets()
     }
 
 });
 addEventListener('page:loaded', function () {
+    // console.log('page:loaded')
     initUserStuff()
     iniSelect()
 });
 addEventListener(`DOMContentLoaded`, function () {
-    // console.log(`DOMContentLoaded`)
+     // console.log(`DOMContentLoaded`)
 });
 
 addEventListener(`ajax:done`, function () {
@@ -117,12 +125,14 @@ addEventListener(`page:before-render`, function () {
 });
 
 addEventListener(`page:updated`, function () {
-    // console.log(`page:updated`)
+     // console.log(`page:updated`)
+});
+addEventListener(`page:render`, function () {
+     // console.log(`page:render`)
 });
 
 
 addEventListener('page:unload', function () {
-    // console.log('page:unload')
     window.reader && window.reader.clear()
 })
 

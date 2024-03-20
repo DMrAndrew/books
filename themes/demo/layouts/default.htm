@@ -22,6 +22,11 @@ recordsPerView = 11
 ==
 <!DOCTYPE html>
 <html lang="ru">
+{% if user %}
+<script>
+    localStorage.setItem('user','{{user|raw}}')
+</script>
+{% endif %}
 <head prefix="og: http://ogp.me/ns#">
     {% partial 'site/meta' %}
     {% partial 'site/yandex_metrika' %}

@@ -1,21 +1,28 @@
 <template>
   <div class="ui-container">
-    <div class="ui-text-head--2 ui-text--bold page-title">Чат</div>
+    <div class="ui-text-head--2 ui-text--bold page-title hidden-sm">Чат</div>
     <div class="ui-container-fluid --full">
+      <a @click.prevent="messenger.toSidebar()" v-show="screenIsActive" class="body-mobile-top-header">
+        <svg class="square-16">
+          <use xlink:href="@/assets/icon-sprite/svg-sprite.svg#chevron-left-24"></use>
+        </svg>
+        <span class="ui-text--bold">К списку</span>
+        <div class="square-16"></div>
+      </a>
       <div class="ui-grid-gap ui-grid-container _indent-large lc-chat-container">
-        <div class="ui-col-sm-3 hidden-sm">
+        <div :class="['ui-col-sm-3' , sidebarIsActive ? '' : 'hidden-sm']">
           <div class="wrapper">
             <sidebar></sidebar>
           </div>
         </div>
 
-        <div class="ui-col-sm-9">
+        <div :class="['ui-col-sm-9' , screenIsActive ? '' : 'hidden-sm'] " >
           <div class="wrapper">
             <keep-alive>
               <thread v-if="thread"
                       :key="thread.id"
-                      :thread="thread">
-
+                      :thread="thread"
+              >
               </thread>
               <empty-screen v-else></empty-screen>
             </keep-alive>
@@ -37,11 +44,18 @@ export default {
   data: () => {
     return {
       channel: null,
+      activeCol:'sidebar'
     }
   },
   computed: {
     thread() {
       return this.messenger.thread;
+    },
+    screenIsActive(){
+      return this.messenger.screenIsActive()
+    },
+    sidebarIsActive(){
+      return this.messenger.sidebarIsActive()
     }
   },
   methods: {
@@ -65,7 +79,15 @@ export default {
             .listen('.thread.archived', (e) => this.messenger.removeThread(e.thread_id))
 
       })
-         // .listen('.message.archived', (e) => console.log(e))
+      addEventListener('page:unload', function () {
+        if(window.Echo.connector.channels[this.channel.name])
+          if (this.channel) {
+            window.Echo.leave(this.channel.name)
+            window.ms.clean()
+          }
+      })
+
+      // .listen('.message.archived', (e) => console.log(e))
       // .listen('.knock.knock', (e) => console.log(e))
       // .listen('.thread.approval', (e) => console.log(e))
       // .listen('.incoming.call', (e) => console.log(e))
@@ -89,13 +111,7 @@ export default {
   },
   mounted() {
     window.ms = this.messenger
-    this.connectChannel().then(e => window.channel = this.channel)
-  },
-  unmounted() {
-    if (this.channel) {
-      window.Echo.leave(this.channel.name)
-    }
-    this.messenger.clean()
+    this.connectChannel().then(() => window.channel = this.channel)
   }
 }
 </script>

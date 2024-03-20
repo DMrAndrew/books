@@ -10,7 +10,7 @@ services:
         volumes:
             - ./docker/nginx/domain.production.conf:/etc/nginx/conf.d/default.conf:rw
             - ./docker/nginx/snippets:/etc/nginx/snippets/:rw
-            - ./docker/nginx/templates:/etc/nginx/templates/:ro
+            - ./docker/nginx/templates:/etc/nginx/templates/:rw
             - ./docker/nginx/ssl:/etc/letsencrypt:rw
             - ./:/var/www/html
         environment:

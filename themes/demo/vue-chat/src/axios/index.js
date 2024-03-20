@@ -13,5 +13,8 @@ axios.interceptors.response.use(
     }
 )
 export default axios.create({
-    baseURL: '/api/messenger/'
+    baseURL: '/api/messenger/',
+    headers:{
+        'Accept' : 'application/json'
+    }
 })

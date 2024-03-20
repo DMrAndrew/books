@@ -80,7 +80,13 @@ class MessengerService
     public function render(): array
     {
         $path = plugins_path('books/chat/components/messenger/');
-        $templates = [$path.'threads.htm', $path.'unread_thread_count.htm'];
+        $mobile =  themes_path('demo/partials/chat');
+        $templates = [
+            $path.'threads.htm',
+            $path.'unread_thread_count.htm',
+            $mobile.'/mobile-unread-count.htm',
+            $mobile.'/mobile-threads.htm'
+        ];
         foreach ($templates as $template) {
             if (!file_exists($template) || !is_readable($template)) {
                 return [];
@@ -91,10 +97,12 @@ class MessengerService
         $twig = (new Controller())->getTwig();
         $data = $this->headerArray();
 
-        [$threads, $unread_count] = collect($templates)->map(fn($t) => file_get_contents($t))->toArray();
+        [$threads, $unread_count,$mobile_unread,$mobile_threads] = collect($templates)->map(fn($t) => file_get_contents($t))->toArray();
         return [
             'thread_spawn' => $twig->createTemplate($threads)->render($data),
-            'unread_thread_count_spawn' => $twig->createTemplate($unread_count)->render($data)
+            'unread_thread_count_spawn' => $twig->createTemplate($unread_count)->render($data),
+            'mobile_unread_thread_count_spawn' => $twig->createTemplate($mobile_unread)->render($data ),
+            'mobile_thread_spawn' => $twig->createTemplate($mobile_threads)->render($data),
         ];
     }
 

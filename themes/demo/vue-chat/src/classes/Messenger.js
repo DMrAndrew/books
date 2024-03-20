@@ -14,6 +14,7 @@ class Messenger {
         this._heartbeat = {}
         this.heartbeat()
         this._heartbeat_interval = setInterval(this.heartbeat.bind(this), 50000)
+        this._active_side = 'sidebar'
     }
 
     async syncSettings() {
@@ -25,6 +26,30 @@ class Messenger {
             }))
         })
 
+    }
+
+    get activeSide(){
+        return this._active_side
+    }
+
+    set activeSide(val){
+        if(['sidebar','screen'].find(e => e === val)){
+            this._active_side = val
+        }
+    }
+
+    sidebarIsActive(){
+        return this.activeSide === 'sidebar'
+    }
+    screenIsActive(){
+        return this.activeSide === 'screen'
+    }
+    toScreen(){
+        this.activeSide = 'screen'
+    }
+
+    toSidebar(){
+        this.activeSide = 'sidebar'
     }
 
     hasThread(thread) {
@@ -107,6 +132,7 @@ class Messenger {
         this._threads.push(Thread.make(thread))
         if (active) {
             this.thread = this._threads.find(e => e.id === thread.id)
+            this.toScreen()
         }
     }
 
