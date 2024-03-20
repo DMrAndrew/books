@@ -34,11 +34,12 @@ class ProductDetailPageComponent extends ComponentBase
     public function init()
     {
         $product = Product::findOrFail($this->getController()->getRouter()->getParameter('product_id'));
+        $orderItems = OrderItems::whereNull('order_id');
+        if (Auth::getUser()) {
+            $orderItems->where('buyer_id', $this->user->profile->getKey());
+        }
         $this->page['product'] = $product;
-        $this->page['productsInBasket'] = OrderItems::where('buyer_id', Auth::getUser()->profile->getKey())
-                                                        ->whereNull('order_id')
-                                                        ->get()
-                                                        ->pluck('product_id');
+        $this->page['productsInBasket'] = $orderItems->get()->pluck('product_id');
         $comments = $this->addComponent(Comments::class, 'comments');
         $comments->bindModel($product);
         $comments->bindModelOwner($product->seller);
