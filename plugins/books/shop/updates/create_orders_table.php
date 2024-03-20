@@ -29,7 +29,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('country_id')
-                ->on('rainlab_location_countries')
+                ->on('books_shop_countries')
                 ->references('id');
             $table->foreign('buyer_id')
                 ->on('books_profile_profiles')
