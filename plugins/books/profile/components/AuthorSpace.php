@@ -239,6 +239,7 @@ class AuthorSpace extends ComponentBase
             ->get()
             ->pluck('product_id');
         return [
+            'user' => $this->authUser,
             'activeCategory' => $this->activeCategory,
             'productsInBasket' => $productsInBasket,
             'categories' => Category::all(),
