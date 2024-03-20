@@ -41,19 +41,19 @@ class MainCatalog extends ComponentBase
 
     private function prepareVals()
     {
+        $orderItems = OrderItems::whereNull('order_id');
+
         $products = Product::where('quantity', '>', 0);
         if ($this->user) {
             $products->where('seller_id', '!=', $this->user->getKey());
+            $orderItems->where('buyer_id', $this->user->profile->getKey());
         }
         $this->page['categoryId'] = $this->getController()->getRouter()->getParameter('category_id') ?? null;
         if ($this->page['categoryId']) {
             $products->where('category_id', $this->page['categoryId']);
         }
         $this->page['products'] = $products->orderByDesc('created_at')->paginate(6);
-        $this->page['productsInBasket'] = OrderItems::where('buyer_id', $this->user->profile->getKey())
-                                                        ->whereNull('order_id')
-                                                        ->get()
-                                                        ->pluck('product_id');
+        $this->page['productsInBasket'] = $orderItems->get()->pluck('product_id');
     }
 
     private function registerBreadcrumbs(): void
