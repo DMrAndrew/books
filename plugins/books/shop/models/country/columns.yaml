@@ -6,3 +6,7 @@ columns:
     id:
         label: ID
         searchable: true
+
+    name:
+        label: 'Название страниы'
+

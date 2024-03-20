@@ -1,6 +1,7 @@
 <?php namespace Books\Shop\Components;
 
 use Books\Shop\Models\Category;
+use Books\Shop\Models\Product;
 use Cms\Classes\ComponentBase;
 use RainLab\User\Facades\Auth;
 
@@ -35,6 +36,6 @@ class ShopCategorySidebar extends ComponentBase
     private function prepareVals()
     {
         $this->page['categoryId'] = $this->getController()->getRouter()->getParameter('category_id') ?? null;
-        $this->page['categories'] = Category::all();
+        $this->page['categories'] = Category::whereIn('id', Product::all()->pluck('category_id'))->get();
     }
 }
