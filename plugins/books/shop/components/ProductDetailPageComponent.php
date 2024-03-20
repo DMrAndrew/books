@@ -36,7 +36,7 @@ class ProductDetailPageComponent extends ComponentBase
         $product = Product::findOrFail($this->getController()->getRouter()->getParameter('product_id'));
         $orderItems = OrderItems::whereNull('order_id');
         if (Auth::getUser()) {
-            $orderItems->where('buyer_id', $this->user->profile->getKey());
+            $orderItems->where('buyer_id', Auth::getUser()->profile->getKey());
         }
         $this->page['product'] = $product;
         $this->page['productsInBasket'] = $orderItems->get()->pluck('product_id');
