@@ -109,7 +109,13 @@ class Plugin extends PluginBase
                         'icon' => 'icon-shopping-basket',
                         'url' => Backend::url('books/shop/products'),
                         'permissions' => ['books.shop.*'],
-                    ]
+                    ],
+                    'countries' => [
+                        'label' => 'Страны',
+                        'icon' => 'icon-thumb-tack',
+                        'url' => Backend::url('books/shop/countries'),
+                        'permissions' => ['books.shop.*'],
+                    ],
                 ]
             ],
         ];

@@ -242,7 +242,7 @@ class AuthorSpace extends ComponentBase
             'user' => $this->authUser,
             'activeCategory' => $this->activeCategory,
             'productsInBasket' => $productsInBasket,
-            'categories' => Category::all(),
+            'categories' => Category::whereIn('id', Product::all()->pluck('category_id'))->get(),
             'products_paginator' => CustomPaginator::from(
                     $products->paginate(
                         perPage: $this->perPageProducts,
