@@ -34,6 +34,8 @@ class MainCatalog extends ComponentBase
 
     public function init()
     {
+        $this->addComponent(Basket::class, 'Basket');
+
         $this->user = Auth::getUser();
         $this->prepareVals();
         $this->registerBreadcrumbs();
