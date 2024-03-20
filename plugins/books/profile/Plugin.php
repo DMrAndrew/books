@@ -46,7 +46,6 @@ class Plugin extends PluginBase
         'RainLab.Location',
         'Books.User',
         'Books.Wallet',
-        'Shop.Basket',
     ];
 
     /**
