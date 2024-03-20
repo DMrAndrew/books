@@ -58,6 +58,8 @@ class OutOfFree extends ComponentBase
 
         $this->page['edition'] = $this->edition;
         $this->page['chapter'] = $this->chapter;
+
+        $this->setSEO();
     }
 
     public function onRun()
@@ -69,5 +71,16 @@ class OutOfFree extends ComponentBase
         if ($currentUserAlreadyOwnEdition) {
             return Redirect::to(sprintf('/book-card/%s', $this->edition->book->id));
         }
+    }
+
+    /**
+     * @return void
+     */
+    private function setSEO(): void
+    {
+        $this->page->meta_description = sprintf(
+            'Вы закончили читать бесплатный ознакомительный фрагмент %s. Купите доступ ко всем главам книги, выполнив единоразовый платеж.',
+            $this->edition->book->title
+        );
     }
 }
