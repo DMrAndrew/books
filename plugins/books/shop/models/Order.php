@@ -1,5 +1,6 @@
 <?php namespace Books\Shop\Models;
 
+use Books\Shop\Classes\OrderStatus;
 use Model;
 use October\Rain\Database\Relations\HasMany;
 
@@ -16,6 +17,10 @@ class Order extends Model
      * @var string table name
      */
     public $table = 'books_shop_orders';
+
+    protected $casts = [
+        'status' => OrderStatus::class
+    ];
 
     /**
      * @var array rules for validation

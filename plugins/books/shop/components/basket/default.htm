@@ -15,7 +15,7 @@
                             </div>
                             <a class="basket__table-item-name" href="/shop/product/{{ orderItem.product.id }}">{{ orderItem.product.title }}</a>
 
-                            {% if orderItem.product.quantity == 0 or orderItem.quantity >= orderItem.product.quantity %}
+                            {% if orderItem.product.quantity == 0 or orderItem.quantity > orderItem.product.quantity %}
                                 <div class="basket__table-item-counter">
                                     <div class="counter">
                                         <button disabled class="counter__button"><svg width="12" height="12"><use xlink:href="{{ 'assets/icon-sprite/svg-sprite.svg#minus-stroked-16' | theme }}"></use></svg></button>
@@ -27,8 +27,8 @@
                                     {% if orderItem.product.quantity == 0 %}
                                         Нет вналичии
                                     {% endif %}
-                                    {% if orderItem.quantity >= orderItem.product.quantity %}
-                                        Товара в меньше в наличие чем у вас в корзине
+                                    {% if orderItem.quantity > orderItem.product.quantity %}
+                                        Товара в наличие меньше чем у вас в корзине
                                     {% endif%}
                                 </div>
                             {% else %}
@@ -43,7 +43,7 @@
                                         </button>
                                         <input class="counter__input" type="number" value="{{ orderItem.quantity }}" min="1" max="{{ orderItem.product.quantity }}">
                                         <button class="counter__button"
-                                                {% if orderItem.quantity >= orderItem.product.quantity or orderItem.quantity >= orderItem.product.quantity %} disabled {% endif %}
+                                                {% if orderItem.quantity >= orderItem.product.quantity or orderItem.quantity > orderItem.product.quantity %} disabled {% endif %}
                                                 data-request="Basket::onAddQuantity"
                                                 data-request-data="orderItemId:{{ orderItem.id }}"
                                         ><svg width="12" height="12">

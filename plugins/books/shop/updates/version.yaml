@@ -8,3 +8,6 @@ v1.0.3:
     - create_cities_table.php
     - create_orders_table.php
     - create_order_items_table.php
+v1.0.4:
+    - 'Миграции для корзины и оформления заказа'
+    - add_status_column_in_order_table.php

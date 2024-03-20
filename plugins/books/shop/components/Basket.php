@@ -54,7 +54,7 @@ class Basket extends ComponentBase
         $orderItems->groupBy('seller_id')->each(function ($items, $key) use (&$sellers) {
             $itemsSum = 0;
             foreach ($items as $item) {
-                if ($item->product->quantity == 0 || $item->quantity > $item->product->quantity) {
+                if ($item->product->quantity != 0 || $item->quantity < $item->product->quantity) {
                     $itemsSum += $item->price * $item->quantity;
                     $sellers['hasDisabledProduct'][$key] = $sellers['hasDisabledProduct'][$key] ?? false;
                 } else {
