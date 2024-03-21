@@ -346,8 +346,10 @@ class Edition extends Model implements ProductInterface
         }
         
         $user ??= Auth::getUser();
-        return $this->book->profiles()->user($user)->exists()
-            || $this->customers()->where('user_id', $user->id);
+
+        return $user
+            and ($this->book->profiles()->user($user)->exists()
+                or $this->customers()->where('user_id', $user->id));
     }
 
     public function setPublishAt(): void
