@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Books\Book\Classes\Services;
 
@@ -14,14 +16,10 @@ use Str;
 
 class TextCleanerService
 {
-    const PROCESS_LINK_MODE_RETURN_ERROR = 1; // возвращать ошибку, останавливать
-    const PROCESS_LINK_MODE_EXTRACT_ANCHOR = 2; // удалять ссылку, оставлять её текст в контенте
-    const PROCESS_LINK_MODE_IGNORE = 3; // игнорировать
-
     const DEFAULT_ALLOW_TAGS = [
         // js editor tags
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7',
-        'p', 'span', 'strong', 'b',  'i', 's', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote',
+        'p', 'span', 'strong', 'b', 'i', 's', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote',
         'br'
     ];
 
@@ -51,23 +49,22 @@ class TextCleanerService
         array $allowAttributes = self::DEFAULT_ALLOW_ATTRIBUTES,
         array $allowClasses = self::DEFAULT_ALLOW_CLASSES,
         array $allowInlineStyles = self::DEFAULT_ALLOW_INLINE_STYLES,
-        int $processLinksMode = self::PROCESS_LINK_MODE_RETURN_ERROR,
+        CleanerMode $processLinksMode = CleanerMode::RETURN_ERROR,
 
-    ): ?string
-    {
+    ): ?string {
         if ($inputContent === null) {
             return null;
+        }
+
+        $inputContent = Str::squish(trim($inputContent));
+        if (mb_strlen($inputContent) == 0) {
+            return $inputContent;
         }
 
         /**
          * Add safe container for paginated content
          */
         $inputContent = "<p>{$inputContent}</p>";
-
-        $inputContent = Str::squish(trim($inputContent));
-        if (mb_strlen($inputContent) == 0) {
-            return $inputContent;
-        }
 
         /**
          * Clean Tags
@@ -78,11 +75,12 @@ class TextCleanerService
         /**
          * Parse content html
          */
-        try{
+        try {
             $doc = new DOMDocument('1.0', 'utf-8');
             $encodedContent = mb_convert_encoding($cleanedContent, 'HTML-ENTITIES', 'UTF-8');
             //$doc->loadHTML($encodedContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-            @$doc->loadHTML($encodedContent, LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
+            @$doc->loadHTML($encodedContent,
+                LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES | LIBXML_HTML_NODEFDTD | LIBXML_PARSEHUGE);
 
             /**
              * Clean attributes
@@ -117,12 +115,10 @@ class TextCleanerService
             /**
              * Check links domains
              */
-            self::validateLinkProcessMode($processLinksMode);
-            if ( $processLinksMode != self::PROCESS_LINK_MODE_IGNORE) {
+            if ($processLinksMode != CleanerMode::IGNORE) {
                 $allowDomains = self::getAppDomainWhitelist();
                 self::validateLinkHrefDomains($doc, $allowDomains, $processLinksMode);
             }
-
         } catch (TextContentWrongLinkException|TextContentLinkDomainException $e) {
             throw new Exception($e->getMessage());
         } catch (Exception $e) {
@@ -152,20 +148,18 @@ class TextCleanerService
     }
 
     /**
-     * @param DOMNode $domNode
-     * @param array $allowAttributes
+     * @param  DOMNode  $domNode
+     * @param  array  $allowAttributes
      *
      * @return void
      */
     public static function cleanAttributes(DOMNode &$domNode, array $allowAttributes): void
     {
         /** @var DOMNode $node */
-        foreach ($domNode->childNodes as $nodeKey => $node)
-        {
+        foreach ($domNode->childNodes as $nodeKey => $node) {
             $attributes = $node->attributes;
             if ($attributes) {
                 foreach ($attributes as $attr) {
-
                     $attributeName = $attr->nodeName;
                     $attributeValue = $attr->nodeValue;
 
@@ -180,27 +174,25 @@ class TextCleanerService
                 }
             }
 
-            if($node->hasChildNodes()) {
+            if ($node->hasChildNodes()) {
                 self::cleanAttributes($node, $allowAttributes);
             }
         }
     }
 
     /**
-     * @param DOMNode $domNode
-     * @param array $allowClasses
+     * @param  DOMNode  $domNode
+     * @param  array  $allowClasses
      *
      * @return void
      */
     public static function cleanClases(DOMNode &$domNode, array $allowClasses): void
     {
         /** @var DOMNode $node */
-        foreach ($domNode->childNodes as $nodeKey => $node)
-        {
+        foreach ($domNode->childNodes as $nodeKey => $node) {
             $attributes = $node->attributes;
             if ($attributes) {
                 foreach ($attributes as $attr) {
-
                     $attributeName = $attr->nodeName;
                     $attributeValue = $attr->nodeValue;
 
@@ -217,38 +209,34 @@ class TextCleanerService
                 }
             }
 
-            if($node->hasChildNodes()) {
+            if ($node->hasChildNodes()) {
                 self::cleanClases($node, $allowClasses);
             }
         }
     }
 
     /**
-     * @param DOMNode $domNode
-     * @param array $allowInlineStyles
+     * @param  DOMNode  $domNode
+     * @param  array  $allowInlineStyles
      *
      * @return void
      */
     public static function cleanStyles(DOMNode &$domNode, array $allowInlineStyles): void
     {
         /** @var DOMNode $node */
-        foreach ($domNode->childNodes as $nodeKey => $node)
-        {
+        foreach ($domNode->childNodes as $nodeKey => $node) {
             $attributes = $node->attributes;
             if ($attributes) {
                 foreach ($attributes as $attr) {
-
                     $attributeName = $attr->nodeName;
                     $attributeValue = $attr->nodeValue;
 
                     if ($attributeName === "style") {
-
                         $filteredStyles = [];
 
                         $usedStyles = explode(';', $attributeValue);
                         foreach ($usedStyles as $usedStyle) {
                             if (mb_strlen($usedStyle) > 0 && str_contains($usedStyle, ':')) {
-
                                 /**
                                  * Whitelist styles
                                  */
@@ -261,7 +249,7 @@ class TextCleanerService
 
                         $combineStyles = [];
                         foreach ($filteredStyles as $filteredStyle => $filteredValue) {
-                            $combineStyles[] = $filteredStyle . ':' . $filteredValue;
+                            $combineStyles[] = $filteredStyle.':'.$filteredValue;
                         }
 
                         $filteredInlineStyles = implode(';', $combineStyles);
@@ -269,7 +257,7 @@ class TextCleanerService
                         if ($filteredInlineStyles !== $attributeValue) {
                             $domNode->childNodes[$nodeKey]->setAttribute('style', $filteredInlineStyles);
 
-                             /**
+                            /**
                              * Вызываем еще раз, так как изменение аттрибута останавливает обход
                              */
                             self::cleanStyles($domNode, $allowInlineStyles);
@@ -278,111 +266,100 @@ class TextCleanerService
                 }
             }
 
-            if($node->hasChildNodes()) {
+            if ($node->hasChildNodes()) {
                 self::cleanStyles($node, $allowInlineStyles);
             }
         }
     }
 
     /**
-     * @param DOMNode $domNode
-     * @param array $allowDomains
-     * @param int $processLinksMode
+     * @param  DOMNode  $domNode
+     * @param  array  $allowDomains
+     * @param  CleanerMode  $processLinksMode
      *
      * @return void
      * @throws TextContentLinkDomainException
      * @throws TextContentWrongLinkException
      */
-    public static function validateLinkHrefDomains(DOMNode &$domNode, array $allowDomains, int $processLinksMode): void
-    {
+    public static function validateLinkHrefDomains(
+        DOMNode &$domNode,
+        array $allowDomains,
+        CleanerMode $processLinksMode
+    ): void {
         /** @var DOMNode $node */
-        foreach ($domNode->childNodes as $nodeKey => $node)
-        {
+        foreach ($domNode->childNodes as $node) {
+            if (!self::validateHrefNode($node, $allowDomains, $processLinksMode)) {
+                self::validateLinkHrefDomains($domNode, $allowDomains, $processLinksMode);
+            };
 
-            $attributes = $node->attributes;
-            if ($attributes) {
 
-                foreach ($attributes as $attr) {
-
-                    $attributeName = $attr->nodeName;
-                    $attributeValue = $attr->nodeValue;
-
-                    if ($attributeName === "href") {
-                        /**
-                         * Mode: возвращать ошибки
-                         */
-                        if ($processLinksMode === self::PROCESS_LINK_MODE_RETURN_ERROR) {
-                            if (mb_strlen($node->textContent) === 0) {
-                                throw new TextContentWrongLinkException("У ссылки `{$attributeValue}` - отсутствует якорь.");
-                            }
-
-                            $urlHost = parse_url(trim($attributeValue), PHP_URL_HOST);
-                            if ($urlHost === null) {
-                                throw new TextContentWrongLinkException("`{$node->textContent}` - Пустая ссылка или ссылка с некорректным адресом.");
-                            }
-
-                            if (!in_array($urlHost, $allowDomains)) {
-                                throw new TextContentLinkDomainException("Ссылка `{$node->textContent}` содержит недопустимый адрес. Разрешаются ссылки только на внутренние страницы сервиса.");
-                            }
-                        }
-
-                        /**
-                         * Mode: заменять текст
-                         */
-                        else if ($processLinksMode === self::PROCESS_LINK_MODE_EXTRACT_ANCHOR) {
-
-                            $urlHost = parse_url(trim($attributeValue), PHP_URL_HOST);
-
-                            /**
-                             * Отсутствует якорь - удалить (заменить пустой строкой)
-                             */
-                            if (mb_strlen($node->textContent) === 0) {
-                                $domNode->childNodes[$nodeKey]->parentNode->replaceChild(new DOMText(''), $node);
-                                self::validateLinkHrefDomains($domNode, $allowDomains, $processLinksMode);
-
-                                return;
-                            }
-
-                            /**
-                             * Пустая ссылка - удалить (заменить пустой строкой)
-                             */
-                            else if ($urlHost === null) {
-                                $domNode->childNodes[$nodeKey]->parentNode->replaceChild(new DOMText(''), $node);
-                                self::validateLinkHrefDomains($domNode, $allowDomains, $processLinksMode);
-
-                                return;
-                            }
-
-                            /**
-                             * Запрещенный домен - заменить ссылку на анкор
-                             */
-                            else if (!in_array($urlHost, $allowDomains)) {
-                                $domNode->childNodes[$nodeKey]->parentNode->replaceChild(new DOMText($node->textContent), $node);
-                                self::validateLinkHrefDomains($domNode, $allowDomains, $processLinksMode);
-
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if($node->hasChildNodes()) {
+            if ($node->hasChildNodes()) {
                 self::validateLinkHrefDomains($node, $allowDomains, $processLinksMode);
             }
         }
     }
 
+    private static function validateHrefNode(
+        DOMNode $node,
+        array $allowDomains,
+        CleanerMode $processLinksMode
+    ): bool {
+        $attributes = $node->attributes;
+        if (!$attributes) {
+            return true;
+        }
+
+        foreach ($attributes as $attr) {
+            $attributeName = $attr->nodeName;
+            $attributeValue = $attr->nodeValue;
+
+            if ($attributeName !== "href") {
+                continue;
+            }
+
+            $urlHost = parse_url(trim($attributeValue), PHP_URL_HOST);
+
+            $replaceChild = fn(DOMText $text = new DOMText('')) => $node->parentNode->replaceChild($text, $node);
+
+
+            if (mb_strlen($node->textContent) === 0) {
+                match ($processLinksMode) {
+                    CleanerMode::RETURN_ERROR => throw new TextContentWrongLinkException("У ссылки `{$attributeValue}` - отсутствует якорь."),
+                    CleanerMode::EXTRACT_ANCHOR => $replaceChild(),
+                    default => null
+                };
+            }
+
+//            if ($urlHost === null) {
+//                match ($processLinksMode) {
+//                    self::PROCESS_LINK_MODE_RETURN_ERROR => throw new TextContentWrongLinkException("`{$node->textContent}` - Пустая ссылка или ссылка с некорректным адресом."),
+//                    self::PROCESS_LINK_MODE_EXTRACT_ANCHOR => $replaceChild()
+//                };
+//            }
+
+            if (!in_array($urlHost, $allowDomains)) {
+                match ($processLinksMode) {
+                    CleanerMode::RETURN_ERROR => throw new TextContentLinkDomainException("Ссылка `{$node->textContent}` содержит пустой или недопустимый адрес. Разрешаются ссылки только на внутренние страницы сервиса."),
+                    CleanerMode::EXTRACT_ANCHOR => $replaceChild(new DOMText($node->textContent)),
+                    default => null
+                };
+            }
+            if ($processLinksMode === CleanerMode::EXTRACT_ANCHOR) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
-     * @param DOMNode $domNode
+     * @param  DOMNode  $domNode
      *
      * @return void
      */
     private static function extractSpans(DOMNode &$domNode): void
     {
         /** @var DOMNode $node */
-        foreach ($domNode->childNodes as $nodeKey => $node)
-        {
+        foreach ($domNode->childNodes as $nodeKey => $node) {
             $nodeName = $node->nodeName;
 
             if ($nodeName === 'span') {
@@ -397,7 +374,7 @@ class TextCleanerService
                 }
             }
 
-            if($node->hasChildNodes()) {
+            if ($node->hasChildNodes()) {
                 self::extractSpans($node);
             }
         }
@@ -407,7 +384,7 @@ class TextCleanerService
      * input: array of tags
      * output: string of tags (example: `<p><a><img><ul><ol><li><table><thead><tbody><tr><th><td>`)
      *
-     * @param array $allowTags
+     * @param  array  $allowTags
      *
      * @return string
      */
@@ -435,7 +412,7 @@ class TextCleanerService
     }
 
     /**
-     * @param string $html
+     * @param  string  $html
      *
      * @return string
      */
@@ -455,7 +432,7 @@ class TextCleanerService
     }
 
     /**
-     * @param string $html
+     * @param  string  $html
      *
      * @return string
      */
@@ -465,21 +442,11 @@ class TextCleanerService
 
         return Str::squish(preg_replace($pattern, '', $html));
     }
+}
 
-    /**
-     * @param int $mode
-     *
-     * @return void
-     * @throws Exception
-     */
-    private static function validateLinkProcessMode(int $mode): void
-    {
-        if (!in_array($mode, [
-            self::PROCESS_LINK_MODE_RETURN_ERROR,
-            self::PROCESS_LINK_MODE_EXTRACT_ANCHOR,
-            self::PROCESS_LINK_MODE_IGNORE,
-        ])) {
-            throw new Exception('Непонятный режим обработки ссылок');
-        }
-    }
+enum CleanerMode: int
+{
+    case RETURN_ERROR = 1; // возвращать ошибку, останавливать
+    case EXTRACT_ANCHOR = 2; // удалять ссылку, оставлять её текст в контенте
+    case IGNORE = 3; // игнорировать
 }

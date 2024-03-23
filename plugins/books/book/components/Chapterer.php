@@ -147,7 +147,7 @@ class Chapterer extends ComponentBase
             $this->chapter->setLive();
             $this->chapter->saveQuietly();
 
-            return Redirect::to('/about-book/' . $this->book->id)->withFragment('#electronic')->setLastModified(now());
+            return Redirect::to('/about-book/' . $this->book->id)->withFragment('#electronic');
         } catch (Exception $ex) {
             Flash::error($ex->getMessage());
             return [];
