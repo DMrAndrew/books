@@ -49,7 +49,7 @@ class TextCleanerService
         array $allowAttributes = self::DEFAULT_ALLOW_ATTRIBUTES,
         array $allowClasses = self::DEFAULT_ALLOW_CLASSES,
         array $allowInlineStyles = self::DEFAULT_ALLOW_INLINE_STYLES,
-        CleanerMode $processLinksMode = CleanerMode::RETURN_ERROR,
+        CleanerMode $mode = CleanerMode::RETURN_ERROR,
 
     ): ?string {
         if ($inputContent === null) {
@@ -115,9 +115,9 @@ class TextCleanerService
             /**
              * Check links domains
              */
-            if ($processLinksMode != CleanerMode::IGNORE) {
+            if ($mode != CleanerMode::IGNORE) {
                 $allowDomains = self::getAppDomainWhitelist();
-                self::validateLinkHrefDomains($doc, $allowDomains, $processLinksMode);
+                self::validateLinkHrefDomains($doc, $allowDomains, $mode);
             }
         } catch (TextContentWrongLinkException|TextContentLinkDomainException $e) {
             throw new Exception($e->getMessage());
@@ -275,7 +275,7 @@ class TextCleanerService
     /**
      * @param  DOMNode  $domNode
      * @param  array  $allowDomains
-     * @param  CleanerMode  $processLinksMode
+     * @param  CleanerMode  $mode
      *
      * @return void
      * @throws TextContentLinkDomainException
@@ -284,25 +284,33 @@ class TextCleanerService
     public static function validateLinkHrefDomains(
         DOMNode &$domNode,
         array $allowDomains,
-        CleanerMode $processLinksMode
+        CleanerMode $mode
     ): void {
         /** @var DOMNode $node */
         foreach ($domNode->childNodes as $node) {
-            if (!self::validateHrefNode($node, $allowDomains, $processLinksMode)) {
-                self::validateLinkHrefDomains($domNode, $allowDomains, $processLinksMode);
+            if (!self::validateHrefNode($node, $allowDomains, $mode)) {
+                self::validateLinkHrefDomains($domNode, $allowDomains, $mode);
             };
 
 
             if ($node->hasChildNodes()) {
-                self::validateLinkHrefDomains($node, $allowDomains, $processLinksMode);
+                self::validateLinkHrefDomains($node, $allowDomains, $mode);
             }
         }
     }
 
+    /**
+     * @param  DOMNode  $node
+     * @param  array  $allowDomains
+     * @param  CleanerMode  $mode
+     * @return bool
+     * @throws TextContentLinkDomainException
+     * @throws TextContentWrongLinkException
+     */
     private static function validateHrefNode(
         DOMNode $node,
         array $allowDomains,
-        CleanerMode $processLinksMode
+        CleanerMode $mode
     ): bool {
         $attributes = $node->attributes;
         if (!$attributes) {
@@ -323,28 +331,21 @@ class TextCleanerService
 
 
             if (mb_strlen($node->textContent) === 0) {
-                match ($processLinksMode) {
+                match ($mode) {
                     CleanerMode::RETURN_ERROR => throw new TextContentWrongLinkException("У ссылки `{$attributeValue}` - отсутствует якорь."),
                     CleanerMode::EXTRACT_ANCHOR => $replaceChild(),
                     default => null
                 };
             }
 
-//            if ($urlHost === null) {
-//                match ($processLinksMode) {
-//                    self::PROCESS_LINK_MODE_RETURN_ERROR => throw new TextContentWrongLinkException("`{$node->textContent}` - Пустая ссылка или ссылка с некорректным адресом."),
-//                    self::PROCESS_LINK_MODE_EXTRACT_ANCHOR => $replaceChild()
-//                };
-//            }
-
-            if (!in_array($urlHost, $allowDomains)) {
-                match ($processLinksMode) {
-                    CleanerMode::RETURN_ERROR => throw new TextContentLinkDomainException("Ссылка `{$node->textContent}` содержит пустой или недопустимый адрес. Разрешаются ссылки только на внутренние страницы сервиса."),
+            if ($urlHost && !in_array($urlHost, $allowDomains)) {
+                match ($mode) {
+                    CleanerMode::RETURN_ERROR => throw new TextContentLinkDomainException("Ссылка `{$node->textContent}` содержит недопустимый адрес. Разрешаются ссылки только на внутренние страницы сервиса."),
                     CleanerMode::EXTRACT_ANCHOR => $replaceChild(new DOMText($node->textContent)),
                     default => null
                 };
             }
-            if ($processLinksMode === CleanerMode::EXTRACT_ANCHOR) {
+            if ($mode === CleanerMode::EXTRACT_ANCHOR) {
                 return false;
             }
         }
