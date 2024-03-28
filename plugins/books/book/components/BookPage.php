@@ -81,6 +81,11 @@ class BookPage extends ComponentBase
             ->withChapters()
             ->defaultEager()
             ->with(['cycle' => fn ($cycle) => $cycle->booksEager()])
+            ->with([
+                'editions' => fn ($q) => $q->withPriceEager(),
+                'authors.profile',
+            ])
+
             ->find($this->book->id);
 
         if ($this->book?->profile) {

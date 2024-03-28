@@ -263,11 +263,18 @@ class Edition extends Model implements ProductInterface
         );
     }
 
-    public function getPriceForUser(User $user): PriceTag
+    public function scopeWithPriceEager(Builder $q): Builder
     {
-        $priceTag = new PriceTag($this);
-
-        return $priceTag->calculateForUser($user);
+        return $q->with([
+            'discounts',
+            'promocodes',
+            'book',
+            'book.profile',
+            'book.profile.user',
+            'book.profile.user.programs',
+            'book.authors',
+            'book.authors.profile',
+        ]);
     }
 
     public function scopeWithReadLength(Builder $builder, User $user): Builder

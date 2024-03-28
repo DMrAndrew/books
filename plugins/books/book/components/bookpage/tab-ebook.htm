@@ -1,16 +1,22 @@
-{% if book.ebook %}
+{% set typeEbook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Ebook') %}
+{% set typeAudiobook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Audio') %}
+
+{% set ebook = book.editions.where('type', typeEbook).first %}
+{% set audiobook = book.editions.where('type', typeAudiobook).first %}
+
+{% if ebook %}
 <div class="ui-tabs-content active" data-tab-content="1">
     <div class="book-card-full-type">
         <div class="book-card-full-type__description _indent-bottom">
-            {% partial 'site/book-status' edition=book.ebook %}
+            {% partial 'site/book-status' edition=ebook %}
             <span class="book-card-full-type__description-dot"></span>
             {% if historyEbook.items.first %}
             <span itemprop="bookEdition">{{ historyEbook.items.first.date.format('d.m.y') }}</span>
             {% else %}
-            <span>{{carbon(book.ebook.sales_at).format('d.m.y')}}</span>
+            <span>{{carbon(ebook.sales_at).format('d.m.y')}}</span>
             {% endif %}
             <span class="book-card-full-type__description-dot"></span>
-            <span>{{book.ebook.length}} зн.</span>
+            <span>{{ebook.length}} зн.</span>
             {% if historyEbook.items.first %}
             <span class="book-card-full-type__description-dot"></span>
             <a class="ui-link _violet cursor-pointer" data-modal="open-history-ebook">История</a>
@@ -24,35 +30,35 @@
             {% endif %}
 
             {% if buyBtn_ebook %}
-            {% if not book.ebook.isBought %}
+            {% if not ebook.isBought %}
 
             {% if user %}
             <a href="javascript:;"
                data-request="Order::onCreateOrder"
                data-request-flash="1"
                data-request-validate="1"
-               data-request-data="edition_id: {{ book.ebook.id }}"
+               data-request-data="edition_id: {{ ebook.id }}"
                class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
-                {% if book.ebook.priceTagForUser(user).discountExists %}
+                {% if ebook.priceTagForUser(user).discountExists %}
                 <span>
-                    <span class="ui-text--medium">Купить {{book.ebook.priceTagForUser(user).price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTagForUser(user).initialPrice}} ₽</span></span>
-                    <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
+                    <span class="ui-text--medium">Купить {{ebook.priceTagForUser(user).price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{ebook.priceTagForUser(user).initialPrice}} ₽</span></span>
+                    <span class="ui-text-body--3 ui-text--regular">Скидка {{ebook.discount.amount}}%</span>
                 </span>
                 {% else %}
-                <span> Купить {{book.ebook.price}} ₽</span>
+                <span> Купить {{ebook.price}} ₽</span>
                 {% endif %}
             </a>
 
             {% else %}
             <a onclick="loginPopup()" class="ui-button ui-button-size--56
                                             ui-button-view--1 ui-button--full cursor-pointer">
-                {% if book.ebook.priceTagForUser(user).discountExists %}
+                {% if ebook.priceTagForUser(user).discountExists %}
                 <span>
-                    <span class="ui-text--medium">Купить {{book.ebook.priceTagForUser(user).price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{book.ebook.priceTagForUser(user).initialPrice}} ₽</span></span>
-                    <span class="ui-text-body--3 ui-text--regular">Скидка {{book.ebook.discount.amount}}%</span>
+                    <span class="ui-text--medium">Купить {{ebook.priceTagForUser(user).price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{ebook.priceTagForUser(user).initialPrice}} ₽</span></span>
+                    <span class="ui-text-body--3 ui-text--regular">Скидка {{ebook.discount.amount}}%</span>
                 </span>
                 {% else %}
-                <span> Купить {{book.ebook.price}} ₽</span>
+                <span> Купить {{ebook.price}} ₽</span>
                 {% endif %}
             </a>
             {% endif %}
@@ -70,7 +76,7 @@
             <a href="#" data-attach-loading onclick="oc.ajax('onDownload',{data:{format:'txt'}, download:true, flash:true, loading:'#loading_book'});return false" class="ui-link _violet">txt</a>&nbsp;
             <span class="book-card-full-type__description-dot"></span>
 
-            <span>{{book.ebook.downloadsCount}}</span>
+            <span>{{ebook.downloadsCount}}</span>
         </div>
         <div style="display:flex;justify-content: center">
             <div class="loading__wrap" id="loading_book" style="margin: 0;display: none">

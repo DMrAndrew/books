@@ -149,16 +149,7 @@ class AuthorSpace extends ComponentBase
                         'tags',
                         'genres' => fn ($q) => $q->withPivot(['rate_number']),
                         'stats',
-                        'editions' => fn ($q) => $q->with([
-                            'discounts',
-                            'promocodes',
-                            'book',
-                            'book.profile',
-                            'book.profile.user',
-                            'book.profile.user.programs',
-                            'book.authors',
-                            'book.authors.profile',
-                        ]),
+                        'editions' => fn ($q) => $q->withPriceEager(),
                         'authors.profile',
                     ])
                     ->public()

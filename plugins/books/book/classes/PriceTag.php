@@ -84,6 +84,7 @@ class PriceTag
         }
 
         if ($this->reader) {
+
             $this->checkLoadedRelation();
 
             $author = $this->edition->book->profile->user;
@@ -142,7 +143,6 @@ class PriceTag
                 }
             }
         }
-
     }
 
     public function discountExists()
