@@ -79,6 +79,7 @@ class Edition extends Model implements ProductInterface
 
     protected $appends = [
         'read_percent',
+        'book',
     ];
 
     protected $revisionable = ['length', 'status', 'price'];
@@ -251,7 +252,22 @@ class Edition extends Model implements ProductInterface
 
     public function priceTag(): PriceTag
     {
-        return new PriceTag($this, $this->discount);
+        return new PriceTag(edition: $this);
+    }
+
+    public function priceTagForUser(User $user): PriceTag
+    {
+        return new PriceTag(
+            edition: $this,
+            reader: $user,
+        );
+    }
+
+    public function getPriceForUser(User $user): PriceTag
+    {
+        $priceTag = new PriceTag($this);
+
+        return $priceTag->calculateForUser($user);
     }
 
     public function scopeWithReadLength(Builder $builder, User $user): Builder

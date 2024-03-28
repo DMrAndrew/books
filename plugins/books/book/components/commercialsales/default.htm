@@ -36,7 +36,7 @@
                 <tr>
                     <td class="_half"><div class="ellipsis"><a href="{{ 'book-card'|page({ book_id: edition.book.id }) }}" class="ui-link _violet">{{ edition.title }}</a></div></td>
                     <td>{{ edition.status.value == 'complete' ? 'Продажа' : 'Подписка'}}</td>
-                    <td class="_right">{{ edition.priceTag.price }} ₽</td>
+                    <td class="_right">{{ edition.priceTagForUser(user).price }} ₽</td>
                 </tr>
                 {% endfor %}
 

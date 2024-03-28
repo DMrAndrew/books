@@ -46,10 +46,10 @@ meta_title = "Конец ознакомительной части"
                     {% endif %}
 
                     <span>
-                    {% if edition.priceTag.discountExists %}
+                    {% if edition.priceTagForUser(user).discountExists %}
                         <span>
-                            <span class="ui-text--medium">Купить {{edition.priceTag.price}} ₽
-                                <span class="ui-button-text-initial ui-text--lt">{{edition.priceTag.initialPrice}} ₽</span>
+                            <span class="ui-text--medium">Купить {{edition.priceTagForUser(user).price}} ₽
+                                <span class="ui-button-text-initial ui-text--lt">{{edition.priceTagForUser(user).initialPrice}} ₽</span>
                             </span>
                             <span class="ui-text-body--3 ui-text--regular">Скидка {{edition.discount.amount}}%</span>
                         </span>

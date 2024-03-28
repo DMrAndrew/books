@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Facades\Auth;
 use ValidationException;
 
 /**
@@ -66,7 +67,7 @@ class Discount extends Model
 
     public function priceTag(): PriceTag
     {
-        return new PriceTag(edition: $this->edition, discount: $this);
+        return new PriceTag(edition: $this->edition, discount: $this, reader: Auth::getuser());
     }
 
     public function isActive()

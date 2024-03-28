@@ -1,3 +1,9 @@
+{% set typeEbook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Ebook') %}
+{% set typeAudiobook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Audio') %}
+
+{% set ebook = book.editions.where('type', typeEbook).first %}
+{% set audiobook = book.editions.where('type', typeAudiobook).first %}
+
 <div class="thematic-section__container swiper">
     <div class="thematic-section__card-container swiper-wrapper">
         {% for book in books %}
@@ -10,28 +16,28 @@
                          alt="Обложка для книги {{ book.title }}"
                          loading="lazy"/>
                     </noindex>
-                    {% if book.ebook.priceTag.discountExists %}
-                    {% partial 'SaleTagBlock::default' discountInfo = book.ebook.priceTag.getDiscountInfo %}
+                    {% if ebook.priceTagForUser(user).discountExists %}
+                    {% partial 'SaleTagBlock::default' discountInfo = ebook.priceTagForUser(user).getDiscountInfo %}
                     {% endif %}
                 </div>
                 <div class="book-mini-card__title">
                     {{ book.title }}
                 </div>
             </a>
-            {% if book.ebook.priceTag.discountExists %}
+            {% if ebook.priceTagForUser(user).discountExists %}
             <div class="book-mini-card__price ui-tooltip" data-tooltip="Электронная книга">
                 <svg>
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>
                 </svg>
-                {% partial 'book/book-price' edition=book.ebook %}
+                {% partial 'book/book-price' edition=ebook %}
             </div>
             {% endif %}
-            {% if book.audiobook.priceTag.discountExists %}
+            {% if audiobook.priceTagForUser(user).discountExists %}
             <div class="book-mini-card__price ui-tooltip" data-tooltip="Аудиокнига">
                 <svg>
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-16' | theme}}"></use>
                 </svg>
-                {% partial 'book/book-price' edition=book.audiobook %}
+                {% partial 'book/book-price' edition=audiobook %}
             </div>
             {% endif %}
         </div>

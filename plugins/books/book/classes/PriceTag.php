@@ -3,31 +3,32 @@ declare(strict_types=1);
 
 namespace Books\Book\Classes;
 
-use Books\AuthorPrograms\Models\AuthorsPrograms;
-use Books\Book\Models\Author;
+use Books\AuthorPrograms\Classes\Enums\ProgramsEnums;
 use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
 use Books\Book\Models\Promocode;
-use Books\Book\Models\UserBook;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use Exception;
 use RainLab\User\Facades\Auth;
+use RainLab\User\Models\User;
 
 class PriceTag
 {
     protected array $discountsArr = [];
 
-    public function __construct(protected Edition    $edition,
-                                protected ?Discount  $discount = null,
-                                protected ?Promocode $promocode = null
-    )
-    {
+    public function __construct(
+        protected Edition    $edition,
+        protected ?Discount $discount = null,
+        protected ?Promocode $promocode = null,
+        protected ?User $reader = null,
+    ) {
         $this->discount ??= $this->edition->discounts()->active()->first();
         $this->promocode = $this->promocode ? $this->edition
             ->promocodes()
             ->code($this->promocode->code)
             ->alive()
             ->first() : null;
+        $this->reader ??= Auth::getUser();
         $this->fillDiscountArray();
     }
 
@@ -70,13 +71,6 @@ class PriceTag
         return $this->discount;
     }
 
-    /**
-     * todo: необходимо отрефакторить:
-     *  на список из 10книг выполняет ~30 запросов
-     *  можно попробовать в Edition->defaultEager() добавить необходимые поля
-     *  и с готовыми полями работать в этом методе
-     * @return void
-     */
     public function fillDiscountArray()
     {
         if ($discount = $this->discount?->amount) {
@@ -89,36 +83,38 @@ class PriceTag
             }
         }
 
-        if ($reader = Auth::getUser()) {
-            $authorProfile = $this->edition->book->profile;
-            $authorAccount = $authorProfile->user;
+        if ($this->reader) {
+            $this->checkLoadedRelation();
 
-            // todo: тут три запроса выполняется, можно сделать один и дальше коллекцию фильтровать
-            $readerBirthdayProgram = AuthorsPrograms::userProgramReaderBirthday()->where('user_id', $authorAccount->id)->first();
-            $newReaderProgram = AuthorsPrograms::userProgramNewReader()->where('user_id', $authorAccount->id)->first();
-            $regularReaderProgram = AuthorsPrograms::userProgramRegularReader()->where('user_id', $authorAccount->id)->first();
+            $author = $this->edition->book->profile->user;
+            $authorPrograms = $author->programs;
 
-            if ($readerBirthdayProgram) {
-                if ( (Carbon::now() === $reader?->birthday?->subDay())
-                    xor (Carbon::now() === $reader?->birthday?->addDay())
-                    xor $reader?->birthday?->isBirthday() ) {
-                    if (array_intersect($this->edition->book->bookGenre->pluck('genre_id')->toArray(), $reader->loved_genres)) {
-                        $this->discountsArr['values'][] = $readerBirthdayProgram->condition->percent;
-                        if ($readerBirthdayProgram->condition->percent >= $this->discountAmount()) {
+            $birthdayProgram = $authorPrograms->where('program', ProgramsEnums::READER_BIRTHDAY->value)->first();
+            $newReaderProgram = $authorPrograms->where('program', ProgramsEnums::NEW_READER->value)->first();
+            $regularReaderProgram = $authorPrograms->where('program', ProgramsEnums::REGULAR_READER->value)->first();
+
+            if ($birthdayProgram) {
+                if (
+                    (Carbon::now() === $this->reader?->birthday?->subDay())
+                    xor (Carbon::now() === $this->reader?->birthday?->addDay())
+                    xor $this->reader?->birthday?->isBirthday()
+                ) {
+                    if (array_intersect($this->edition->book->bookGenre->pluck('genre_id')->toArray(), $this->reader->loved_genres)) {
+                        $this->discountsArr['values'][] = $birthdayProgram->condition->percent;
+                        if ($birthdayProgram->condition->percent >= $this->discountAmount()) {
                             $this->discountsArr['discount'] = [
                                 'color' => 'green',
-                                'text' => "{$readerBirthdayProgram->condition->percent}% по программе \"День рождения читателя\""
+                                'text' => "{$birthdayProgram->condition->percent}% по программе \"День рождения читателя\""
                             ];
                         }
                     }
                 }
-
             }
 
-            $authorBooks = Author::where('profile_id', $authorProfile->id)->get()->pluck('book_id');
-            $readerBooksPurchased = UserBook::where('user_id', $reader->getAuthIdentifier())
-                ->whereIn('ownable_id', $authorBooks)
-                ->orderBy('created_at', 'ASC');
+            $authorBooks = $this->edition->book->authors;
+            $readerBooksPurchased = $this->reader
+                ->ownedBooks
+                ->whereIn('ownable_id', $authorBooks->pluck('book_id')->toArray());
 
             if ($regularReaderProgram && $readerBooksPurchased->count() > $regularReaderProgram->condition->books) {
                 $this->discountsArr['values'][] = $regularReaderProgram->condition->percent;
@@ -157,5 +153,31 @@ class PriceTag
     public function getDiscountInfo()
     {
         return array_key_exists('discount', $this->discountsArr) ? $this->discountsArr['discount'] : [];
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function checkLoadedRelation()
+    {
+        if (! $this->edition->relationLoaded('book')) {
+            throw new Exception('Relation `book` eager loading detected for $this->edition');
+        }
+
+        if (! $this->edition->book->relationLoaded('profile')) {
+            throw new Exception('Relation `profile` eager loading detected for $this->edition->book');
+        }
+
+        if (! $this->edition->book->profile->relationLoaded('user')) {
+            throw new Exception('Relation `user` eager loading detected for $this->edition->book->profile');
+        }
+
+        if (! $this->edition->book->profile->user->relationLoaded('programs')) {
+            throw new Exception('Relation `programs` eager loading detected for $this->edition->book->profile->user');
+        }
+
+        if (! $this->edition->book->relationLoaded('authors')) {
+            throw new Exception('Relation `authors` eager loading detected for $this->edition->book');
+        }
     }
 }

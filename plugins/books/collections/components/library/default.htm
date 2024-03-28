@@ -48,8 +48,8 @@
                                                             <img src="{{ lib.book.cover.getThumb(208,300) }}"
                                                                 class="book-mini-card__image" alt=""
                                                                 loading="lazy">
-                                                            {% if lib.book.ebook.priceTag.discountExists %}
-                                                                {% partial 'SaleTagBlock::default' discountInfo = lib.book.ebook.priceTag.getDiscountInfo %}
+                                                            {% if lib.book.ebook.priceTagForUser(user).discountExists %}
+                                                                {% partial 'SaleTagBlock::default' discountInfo = lib.book.ebook.priceTagForUser(user).getDiscountInfo %}
                                                             {% endif %}
                                                     </div>
                                                     </a>

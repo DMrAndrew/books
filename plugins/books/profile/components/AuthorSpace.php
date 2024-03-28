@@ -7,12 +7,10 @@ use Books\Book\Classes\Enums\WidgetEnum;
 use Books\Book\Components\AwardsLC;
 use Books\Book\Components\SaleTagBlock;
 use Books\Book\Components\Widget;
-use Books\Book\Models\Author;
 use Books\Comments\Components\Comments;
 use Books\Profile\Models\Profile;
 use Cms\Classes\CmsException;
 use Cms\Classes\ComponentBase;
-use Illuminate\Pagination\Paginator;
 use RainLab\User\Facades\Auth;
 use RainLab\User\Models\User;
 use Redirect;
@@ -58,7 +56,10 @@ class AuthorSpace extends ComponentBase
     {
         $this->profile_id = (int)$this->param('profile_id');
         $this->authUser = Auth::getUser();
-        $this->profile = Profile::query()->find($this->profile_id ?? $this->authUser?->profile->id);
+
+        $this->profile = $this->authUser->profiles->firstWhere('id', $this->profile_id)
+                        ?? Profile::query()->find($this->profile_id);
+
         if (! $this->profile) {
             $this->controller->run('404');
 
@@ -93,11 +94,12 @@ class AuthorSpace extends ComponentBase
             ->hasSubscriber($this->authUser?->profile)
             ->with([
                 'banner',
-                'avatar'
-                //'books' => fn($books) => $books->public()->defaultEager()->orderByPivot('sort_order', 'desc')
+                'avatar',
             ])
             ->withCount(['leftAwards', 'receivedAwards', 'subscriptions', 'subscribers', 'reposts'])
             ->find($this->profile->id);
+
+        $authorBooks = $this->getAuthorBooks();
 
         return array_merge([
             'isLoggedIn' => (bool)$this->authUser,
@@ -106,7 +108,7 @@ class AuthorSpace extends ComponentBase
             'hasContacts' => !$this->profile->isContactsEmpty(),
             'should_call_fit_profile' => $isOwner && $this->profile->isEmpty(),
             'profile' => $this->profile,
-            'hasBooks' => (bool) $this->profile->books?->count(),
+            'hasBooks' => (bool) $authorBooks['books']?->count(),
             'cycles' => $this->profile->cyclesWithShared()
                 ->booksEager()
                 ->get(),
@@ -117,7 +119,7 @@ class AuthorSpace extends ComponentBase
             'subscribers_count' => $this->profile?->subscribers_count,
             'reposts_count' => $this->profile?->reposts_count,
         ],
-            $this->getAuthorBooks(),
+            $authorBooks,
             $this->getAuthorCommentsCount(),
             $this->getAuthorBlogPosts(),
             $this->getAuthorVideoBlogPosts(),
@@ -142,7 +144,24 @@ class AuthorSpace extends ComponentBase
         return [
             'books' =>
                 $this->profile->books()
-                    ->public()->defaultEager()
+                    ->with([
+                        'cover',
+                        'tags',
+                        'genres' => fn ($q) => $q->withPivot(['rate_number']),
+                        'stats',
+                        'editions' => fn ($q) => $q->with([
+                            'discounts',
+                            'promocodes',
+                            'book',
+                            'book.profile',
+                            'book.profile.user',
+                            'book.profile.user.programs',
+                            'book.authors',
+                            'book.authors.profile',
+                        ]),
+                        'authors.profile',
+                    ])
+                    ->public()
                     ->orderByAuthorSortOrder()
                     ->get()
         ];

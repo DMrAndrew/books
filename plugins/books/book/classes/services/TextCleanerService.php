@@ -292,7 +292,6 @@ class TextCleanerService
                 self::validateLinkHrefDomains($domNode, $allowDomains, $mode);
             };
 
-
             if ($node->hasChildNodes()) {
                 self::validateLinkHrefDomains($node, $allowDomains, $mode);
             }

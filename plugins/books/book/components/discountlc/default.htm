@@ -26,8 +26,8 @@
                 </td>
                 <td ><span class="{{discount.isActive ? 'personal-area__wrap  _color-green' : ''}}">{{discount.active_at.format('d.m.y')}}</span></td>
                 <td>{{discount.amount}}%</td>
-                <td>{{discount.priceTag.initialPrice}} ₽</td>
-                <td>{{discount.priceTag.price}} ₽</td>
+                <td>{{discount.priceTagForUser(user).initialPrice}} ₽</td>
+                <td>{{discount.priceTagForUser(user).price}} ₽</td>
                 <td>
                     <button data-request="onDelete" data-request-flash="true" data-request-data="id:{{discount.id}}">
                         <svg class=" square-16">
