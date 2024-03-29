@@ -48,7 +48,10 @@ class AboutBook extends ComponentBase
         }
         $this->user = Auth::getUser();
         $this->book_id = (int) $this->param('book_id');
-        $this->book = $this->user->profile->books()->with('editions')->findOrFail($this->book_id);
+        $this->book = $this->user->profile
+            ->books()
+            ->with(['editions' => fn ($q) => $q->withPriceEager()])
+            ->findOrFail($this->book_id);
 
         $this->addComponent(
             Booker::class,

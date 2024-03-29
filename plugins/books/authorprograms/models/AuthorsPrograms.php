@@ -3,6 +3,7 @@
 use Books\AuthorPrograms\Classes\Enums\ProgramsEnums;
 use Model;
 use October\Rain\Database\Builder;
+use RainLab\User\Models\User;
 
 /**
  * AuthorsPrograms Model
@@ -33,6 +34,9 @@ class AuthorsPrograms extends Model
         'condition' => 'object'
     ];
 
+    public $belongsTo = [
+        'user' => [User::class],
+    ];
 
     public function scopeUserProgramReaderBirthday(Builder $query)
     {

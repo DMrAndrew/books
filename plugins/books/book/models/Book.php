@@ -268,6 +268,24 @@ class Book extends Model
         return $this->hasManyDeepFromRelations($this->awards(), (new AwardBook())->award());
     }
 
+    public function getEbook(): ?Edition
+    {
+        if (! $this->relationLoaded('editions')) {
+            $this->load(['editions' => fn ($q) => $q->withPriceEager()]);
+        }
+
+        return $this->editions->where('type', EditionsEnums::Ebook)->first();
+    }
+
+    public function getAudiobook(): ?Edition
+    {
+        if (! $this->relationLoaded('editions')) {
+            $this->load(['editions' => fn ($q) => $q->withPriceEager()]);
+        }
+
+        return $this->editions->where('type', EditionsEnums::Audio)->first();
+    }
+
     public function scopeWithSumAwardItems(Builder $builder, int $ofLastDays = null)
     {
         return $builder->withSum(['awardsItems' => fn ($awards) => $awards->when($ofLastDays, fn ($b) => $b->ofLastDays($b))], 'rate');
@@ -554,10 +572,10 @@ class Book extends Model
                 'tags',
                 'genres' => fn ($q) => $q->withPivot(['rate_number']),
                 'stats',
-                'ebook' => fn ($ebook) => $ebook->withActiveDiscountExist(),
-                'ebook.discount',
-                'audiobook' => fn ($audiobook) => $audiobook->withActiveDiscountExist(),
-                'audiobook.discount',
+//                'ebook' => fn ($ebook) => $ebook->withActiveDiscountExist(),
+//                'ebook.discount',
+//                'audiobook' => fn ($audiobook) => $audiobook->withActiveDiscountExist(),
+//                'audiobook.discount',
                 'author.profile',
                 'authors.profile',
             ])

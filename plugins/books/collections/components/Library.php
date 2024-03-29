@@ -43,7 +43,11 @@ class Library extends ComponentBase
     {
         if ($this->user) {
             $lib = $this->user->getLib();
-            $lib[CollectionEnum::BOUGHT->value] = $this->user->ownedBooks()->with('ownable')->get()->map->ownable;
+            $lib[CollectionEnum::BOUGHT->value] = $this->user->ownedBooks()
+                ->with([
+                    'ownable' => fn ($q) => $q->withPriceEager(),
+                ])
+                ->get();
             $collection = collect(CollectionEnum::cases())->map(function ($item) use ($lib) {
                 return [
                     'label' => $item->label(),
@@ -78,7 +82,10 @@ class Library extends ComponentBase
 
     public function onSwitch()
     {
-        $book = Book::find(post('book_id'));
+        $book = Book::query()
+            ->with(['editions' => fn ($q) => $q->withPriceEager()])
+            ->find(post('book_id'));
+
         $action = post('action');
         if ($book && in_array($action, ['loved', 'remove', 'interested', 'watched', 'reading', 'read', 'unloved'])) {
             $this->user->library($book)->{$action}();

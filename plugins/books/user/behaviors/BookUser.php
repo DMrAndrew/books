@@ -97,7 +97,6 @@ class BookUser extends ExtensionBase
             'birthday.date' => 'Поле Дата рождения должно быть корректной датой',
             'birthday.required' => 'Поле Дата рождения обязательное для заполнения',
         ]);
-
     }
 
     public function service(): UserService

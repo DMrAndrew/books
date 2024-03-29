@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Model;
 use October\Rain\Database\Builder;
 use October\Rain\Database\Traits\Validation;
+use RainLab\User\Facades\Auth;
 use ValidationException;
 
 /**

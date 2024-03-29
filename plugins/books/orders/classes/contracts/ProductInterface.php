@@ -4,6 +4,7 @@ namespace Books\Orders\Classes\Contracts;
 
 use Books\Book\Classes\PriceTag;
 use October\Rain\Database\Relations\MorphMany;
+use RainLab\User\Models\User;
 
 interface ProductInterface
 {

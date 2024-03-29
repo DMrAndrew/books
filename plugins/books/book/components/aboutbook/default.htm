@@ -26,7 +26,7 @@
                 </div>
 
                 <div class="e-book-sale ui-tabs-content wrapper" data-tab-content="ebook-ecommerce">
-                    {% if book.ebook %}
+                    {% if book.getEbook %}
                         {% partial 'ebooker::settings' authors=book.profiles %}
                     {% else %}
                         {% partial 'ebooker::chapters' authors=book.profiles %}
@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="e-book-sale ui-tabs-content wrapper" data-tab-content="audio-ecommerce">
-                    {% if book.audiobook %}
+                    {% if book.getAudiobook %}
                         {% partial 'audiobooker::settings' authors=book.profiles %}
                     {% else %}
                         {% partial 'audiobooker::chapters' authors=book.profiles %}

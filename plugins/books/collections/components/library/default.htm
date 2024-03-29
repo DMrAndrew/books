@@ -33,26 +33,26 @@
                                     <div class="ui-grid-container ui-grid-gap">
                                         {% for lib in item.items %}
 
-
                                             <div
                                                 class="ui-col-md-2 ui-col-sm-3 ui-col-xs-4 ui-col-xxs-4 book-mini-card">
                                                 <div data-tippy-continer>
-                                                    <div class="book-mini-card__image">
 
-                                                        {% if lib.book.ebook %}
+                                                    <div class="book-mini-card__image">
+                                                        {% if lib.book.getEbook %}
                                                             <a href="/reader/{{ lib.book.id }}" data-tippy-init>
-                                                        {% elseif lib.book.audiobook %}
+                                                        {% elseif lib.book.getAudiobook %}
                                                             <a href="/readeraudio/{{ lib.book.id }}" data-tippy-init>
                                                         {% endif %}
 
                                                             <img src="{{ lib.book.cover.getThumb(208,300) }}"
                                                                 class="book-mini-card__image" alt=""
                                                                 loading="lazy">
-                                                            {% if lib.book.ebook.priceTag.discountExists %}
-                                                                {% partial 'SaleTagBlock::default' discountInfo = lib.book.ebook.priceTag.getDiscountInfo %}
+                                                            {% if lib.book.getEbook.priceTag.discountExists %}
+                                                                {% partial 'SaleTagBlock::default' discountInfo = lib.book.getEbook.priceTag.getDiscountInfo %}
                                                             {% endif %}
+                                                        </a>
                                                     </div>
-                                                    </a>
+
                                                     <div data-tippy-block>
                                                         <div class="tippymodal">
                                                             <div class="tippymodal-block tags-list"><span
@@ -173,22 +173,23 @@
                                                     {{ lib.book.title }}
                                                 </a>
                                                 {% if item.type.value == 3 %}
-                                                {% if lib.book.ebook %}
+                                                {% if lib.book.getEbook %}
                                                     <div class="book-mini-card__progress book-mini-card-progress">
                                                         <div class="book-mini-card-progress__item-wrapper">
                                                             <div class="book-mini-card-progress__line"
-                                                                 style="width:{{ lib.book.ebook.readPercent }}% ">
+                                                                 style="width:{{ lib.book.getEbook.readPercent }}% ">
                                                             </div>
                                                         </div>
 
                                                         <div
-                                                            class="book-mini-card-progress__text">{{ lib.book.ebook.readPercent }}
+                                                            class="book-mini-card-progress__text">{{ lib.book.getEbook.readPercent }}
                                                             %
                                                         </div>
                                                     </div>
                                                 {% endif %}
                                                 {% endif %}
                                             </div>
+
                                         {% endfor %}
 
                                     </div>

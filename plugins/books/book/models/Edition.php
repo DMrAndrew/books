@@ -79,6 +79,7 @@ class Edition extends Model implements ProductInterface
 
     protected $appends = [
         'read_percent',
+        'book',
     ];
 
     protected $revisionable = ['length', 'status', 'price'];
@@ -251,7 +252,18 @@ class Edition extends Model implements ProductInterface
 
     public function priceTag(): PriceTag
     {
-        return new PriceTag($this, $this->discount);
+        return new PriceTag(edition: $this);
+    }
+
+    public function scopeWithPriceEager(Builder $q): Builder
+    {
+        return $q->with([
+            'discounts',
+            'promocodes',
+            'book',
+            'book.profile.user.programs',
+            'book.authors.profile',
+        ]);
     }
 
     public function scopeWithReadLength(Builder $builder, User $user): Builder
@@ -346,8 +358,10 @@ class Edition extends Model implements ProductInterface
         }
         
         $user ??= Auth::getUser();
-        return $this->book->profiles()->user($user)->exists()
-            || $this->customers()->where('user_id', $user->id);
+
+        return $user
+            and ($this->book->profiles()->user($user)->exists()
+                or $this->customers()->where('user_id', $user->id));
     }
 
     public function setPublishAt(): void

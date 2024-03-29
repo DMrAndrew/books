@@ -29,23 +29,23 @@
                     {% partial 'controls/tags-link-list' tags=book.tags %}
                 </div>
 
-                {% if book.ebook %}
+                {% if book.getEbook %}
                     <div class="chapter-book__info-container">
                         <div class="book-card__info-wrapper">
-                            {% partial 'book/edition-info' edition=book.ebook %}
-                            {% partial 'site/book-status' edition=book.ebook %}
-                            {% if book.ebook.sales_at %}
+                            {% partial 'book/edition-info' edition=book.getEbook %}
+                            {% partial 'site/book-status' edition=book.getEbook %}
+                            {% if book.getEbook.sales_at %}
                             <div class="book-card__info-dot"></div>
-                            <div class="book-card__info-wrap _text">{{ carbon(book.ebook.sales_at).format('d.m.y') }}</div>
+                            <div class="book-card__info-wrap _text">{{ carbon(book.getEbook.sales_at).format('d.m.y') }}</div>
                             {% endif %}
                             <div class="book-card__info-dot"></div>
-                            {% if book.ebook.length %}
-                            <div class="book-card__info-wrap _text">{{book.ebook.length}}&thinsp;зн.</div>
+                            {% if book.getEbook.length %}
+                            <div class="book-card__info-wrap _text">{{book.getEbook.length}}&thinsp;зн.</div>
                             {% endif %}
                         </div>
                     </div>
 
-                    {% if book.ebook.is_deferred %}
+                    {% if book.getEbook.is_deferred %}
                     <div class="chapter-book__info-container" id="ebook_is_deferred">
                         <div class="chapter-book__status">
 
@@ -67,23 +67,23 @@
                     {% endif %}
                 {% endif %}
 
-                {% if book.audiobook %}
+                {% if book.getAudiobook %}
                     <div class="chapter-book__info-container">
                         <div class="book-card__info-wrapper">
-                            {% partial 'book/edition-info' edition=book.audiobook %}
-                            {% partial 'site/book-status' edition=book.audiobook %}
-                            {% if book.audiobook.sales_at %}
+                            {% partial 'book/edition-info' edition=book.getAudiobook %}
+                            {% partial 'site/book-status' edition=book.getAudiobook %}
+                            {% if book.getAudiobook.sales_at %}
                             <div class="book-card__info-dot"></div>
-                            <div class="book-card__info-wrap _text">{{ carbon(book.audiobook.sales_at).format('d.m.y') }}</div>
+                            <div class="book-card__info-wrap _text">{{ carbon(book.getAudiobook.sales_at).format('d.m.y') }}</div>
                             {% endif %}
                             <div class="book-card__info-dot"></div>
-                            {% if book.audiobook.length %}
-                            <div class="book-card__info-wrap _text">{{ book.audiobook.audio_length }}&thinsp;</div>
+                            {% if book.getAudiobook.length %}
+                            <div class="book-card__info-wrap _text">{{ book.getAudiobook.audio_length }}&thinsp;</div>
                             {% endif %}
                         </div>
                     </div>
 
-                    {% if book.audiobook.is_deferred %}
+                    {% if book.getAudiobook.is_deferred %}
                         <div class="chapter-book__info-container" id="audiobook_is_deferred">
 
 

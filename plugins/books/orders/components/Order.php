@@ -47,7 +47,10 @@ class Order extends ComponentBase
 
         $this->user = Auth::getUser();
         $book_id = $this->param('book_id');
-        $this->book = Book::query()->public()->find($book_id) ?? $this->user?->profile->books()->find($book_id)
+        $this->book = Book::query()
+                ->with(['editions' => fn ($q) => $q->withPriceEager()])
+                ->public()
+                ->find($book_id) ?? $this->user?->profile->books()->find($book_id)
             ?? null;
     }
 
@@ -68,7 +71,7 @@ class Order extends ComponentBase
 
     public function onCreateOrder(): array
     {
-        $edition = Edition::findOrFail(post('edition_id'));
+        $edition = Edition::withPriceEager()->findOrFail(post('edition_id'));
 
         try {
             $order = $this->getOrder($this->getUser(), $edition);
@@ -93,7 +96,7 @@ class Order extends ComponentBase
 
     public function onOrderSubmit(): array
     {
-        $edition = Edition::findOrFail(post('edition_id'));
+        $edition = Edition::withPriceEager()->findOrFail(post('edition_id'));
 
         try {
             $order = $this->getOrder($this->getUser(), $edition);
@@ -123,7 +126,7 @@ class Order extends ComponentBase
             return [];
         }
 
-        $edition = Edition::findOrFail(post('edition_id'));
+        $edition = Edition::withPriceEager()->findOrFail(post('edition_id'));
 
         $order = $this->getOrder($this->getUser(), $edition);
 
@@ -185,7 +188,7 @@ class Order extends ComponentBase
 
     public function onOrderAddAward(): array
     {
-        $edition = Edition::findOrFail(post('edition_id'));
+        $edition = Edition::withPriceEager()->findOrFail(post('edition_id'));
         $order = $this->getOrder($this->getUser(), $edition);
         $awards = Award::find($this->getAwardsIds());
 
@@ -204,7 +207,7 @@ class Order extends ComponentBase
 
     public function onOrderAddDonation(): array
     {
-        $edition = Edition::findOrFail(post('edition_id'));
+        $edition = Edition::withPriceEager()->findOrFail(post('edition_id'));
         $order = $this->getOrder($this->getUser(), $edition);
         $this->orderService->applyAuthorSupport($order, (int)post('donate'));
 
@@ -221,7 +224,7 @@ class Order extends ComponentBase
 
     public function onOrderAddPromocode(): array
     {
-        $edition = Edition::findOrFail(post('edition_id'));
+        $edition = Edition::withPriceEager()->findOrFail(post('edition_id'));
         $order = $this->getOrder($this->getUser(), $edition);
         $promocodeIsApplied = $this->orderService->applyPromocode($order, (string)post('promocode'));
 

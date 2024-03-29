@@ -42,6 +42,7 @@ class BookCard extends ComponentBase
     {
         $this->user = Auth::getUser();
         $this->book = Book::query()
+            ->with(['editions' => fn ($q) => $q->withPriceEager()])
             ->notEmptyEdition()
             ->find(post('book_id'));
 
@@ -79,6 +80,7 @@ class BookCard extends ComponentBase
     public function render(array $options = [])
     {
         $book = Book::query()
+            ->with(['editions' => fn ($q) => $q->withPriceEager()])
             ->notEmptyEdition()
             ->defaultEager()
             ->findOrFail($this->book->id);

@@ -5,8 +5,8 @@
             <div class="book-mini-card__image">
                     <img src="{{ book.cover.getThumb(210,300) }}"
                          alt="Обложка для книги {{ book.title }}" loading="lazy">
-                {% if book.ebook.priceTag.discountExists %}
-                    {% partial 'SaleTagBlock::default' discountInfo = book.ebook.priceTag.getDiscountInfo %}
+                {% if book.getEbook.priceTag.discountExists %}
+                    {% partial 'SaleTagBlock::default' discountInfo = book.getEbook.priceTag.getDiscountInfo %}
                 {% endif %}
             </div>
             </a>
