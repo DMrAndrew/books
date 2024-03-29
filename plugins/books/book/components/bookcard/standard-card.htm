@@ -1,4 +1,3 @@
-{% set typeEbook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Ebook') %}
 <div class="book-card">
     <div class="book-card__body">
         <div class="book-card__column-left">
@@ -6,9 +5,8 @@
             <div class="book-mini-card__image">
                     <img src="{{ book.cover.getThumb(210,300) }}"
                          alt="Обложка для книги {{ book.title }}" loading="lazy">
-                {% set ebook = book.editions.where('type', typeEbook).first %}
-                {% if ebook.priceTag.discountExists %}
-                    {% partial 'SaleTagBlock::default' discountInfo = ebook.priceTag.getDiscountInfo %}
+                {% if book.getEbook.priceTag.discountExists %}
+                    {% partial 'SaleTagBlock::default' discountInfo = book.getEbook.priceTag.getDiscountInfo %}
                 {% endif %}
             </div>
             </a>

@@ -1,8 +1,5 @@
-{% set typeEbook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Ebook') %}
-{% set typeAudiobook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Audio') %}
-
-{% set ebook = book.editions.where('type', typeEbook).first %}
-{% set audiobook = book.editions.where('type', typeAudiobook).first %}
+{% set ebook = book.getEbook %}
+{% set audiobook = book.getAudiobook %}
 
 {% if ebook %}
     {% set historyEbook = ebook.updateHistoryView %}

@@ -1,9 +1,3 @@
-{% set typeEbook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Ebook') %}
-{% set typeAudiobook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Audio') %}
-
-{% set ebook = book.editions.where('type', typeEbook).first %}
-{% set audiobook = book.editions.where('type', typeAudiobook).first %}
-
 <div class="about-book__header ui-container-fluid">
     <div class="listing-book__book book-card">
         <div class="book-card__body">
@@ -35,23 +29,23 @@
                     {% partial 'controls/tags-link-list' tags=book.tags %}
                 </div>
 
-                {% if ebook %}
+                {% if book.getEbook %}
                     <div class="chapter-book__info-container">
                         <div class="book-card__info-wrapper">
-                            {% partial 'book/edition-info' edition=ebook %}
-                            {% partial 'site/book-status' edition=ebook %}
-                            {% if ebook.sales_at %}
+                            {% partial 'book/edition-info' edition=book.getEbook %}
+                            {% partial 'site/book-status' edition=book.getEbook %}
+                            {% if book.getEbook.sales_at %}
                             <div class="book-card__info-dot"></div>
-                            <div class="book-card__info-wrap _text">{{ carbon(ebook.sales_at).format('d.m.y') }}</div>
+                            <div class="book-card__info-wrap _text">{{ carbon(book.getEbook.sales_at).format('d.m.y') }}</div>
                             {% endif %}
                             <div class="book-card__info-dot"></div>
-                            {% if ebook.length %}
-                            <div class="book-card__info-wrap _text">{{ebook.length}}&thinsp;зн.</div>
+                            {% if book.getEbook.length %}
+                            <div class="book-card__info-wrap _text">{{book.getEbook.length}}&thinsp;зн.</div>
                             {% endif %}
                         </div>
                     </div>
 
-                    {% if ebook.is_deferred %}
+                    {% if book.getEbook.is_deferred %}
                     <div class="chapter-book__info-container" id="ebook_is_deferred">
                         <div class="chapter-book__status">
 
@@ -73,23 +67,23 @@
                     {% endif %}
                 {% endif %}
 
-                {% if audiobook %}
+                {% if book.getAudiobook %}
                     <div class="chapter-book__info-container">
                         <div class="book-card__info-wrapper">
-                            {% partial 'book/edition-info' edition=audiobook %}
-                            {% partial 'site/book-status' edition=audiobook %}
-                            {% if audiobook.sales_at %}
+                            {% partial 'book/edition-info' edition=book.getAudiobook %}
+                            {% partial 'site/book-status' edition=book.getAudiobook %}
+                            {% if book.getAudiobook.sales_at %}
                             <div class="book-card__info-dot"></div>
-                            <div class="book-card__info-wrap _text">{{ carbon(audiobook.sales_at).format('d.m.y') }}</div>
+                            <div class="book-card__info-wrap _text">{{ carbon(book.getAudiobook.sales_at).format('d.m.y') }}</div>
                             {% endif %}
                             <div class="book-card__info-dot"></div>
-                            {% if audiobook.length %}
-                            <div class="book-card__info-wrap _text">{{ audiobook.audio_length }}&thinsp;</div>
+                            {% if book.getAudiobook.length %}
+                            <div class="book-card__info-wrap _text">{{ book.getAudiobook.audio_length }}&thinsp;</div>
                             {% endif %}
                         </div>
                     </div>
 
-                    {% if audiobook.is_deferred %}
+                    {% if book.getAudiobook.is_deferred %}
                         <div class="chapter-book__info-container" id="audiobook_is_deferred">
 
 

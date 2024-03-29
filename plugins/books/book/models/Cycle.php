@@ -103,7 +103,13 @@ class Cycle extends Model
     {
         return $builder
             ->whereHas('books', fn($books) => $books->public()->defaultEager())
-            ->with(['books' => fn($books) => $books->public()->defaultEager()->orderBySalesAt(true)]);
+            ->with([
+                'books' => fn($q) => $q
+                    ->public()
+                    ->with(['editions' => fn ($q) => $q->withPriceEager()])
+                    //->defaultEager()
+                    ->orderBySalesAt(true),
+            ]);
     }
 
 
