@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Books\Book\Classes;
 
+use App;
 use Books\AuthorPrograms\Classes\Enums\ProgramsEnums;
 use Books\Book\Models\Discount;
 use Books\Book\Models\Edition;
@@ -160,24 +161,28 @@ class PriceTag
      */
     private function checkLoadedRelation()
     {
+        if (App::runningInConsole()) {
+            return;
+        }
+
         if (! $this->edition->relationLoaded('book')) {
-            throw new Exception('Relation `book` eager loading detected for $this->edition');
+            throw new Exception('Relation `book` eager loading detected for $this->edition while price calculation');
         }
 
         if (! $this->edition->book->relationLoaded('profile')) {
-            throw new Exception('Relation `profile` eager loading detected for $this->edition->book');
+            throw new Exception('Relation `profile` eager loading detected for $this->edition->book while price calculation');
         }
 
         if (! $this->edition->book->profile->relationLoaded('user')) {
-            throw new Exception('Relation `user` eager loading detected for $this->edition->book->profile');
+            throw new Exception('Relation `user` eager loading detected for $this->edition->book->profile while price calculation');
         }
 
         if (! $this->edition->book->profile->user->relationLoaded('programs')) {
-            throw new Exception('Relation `programs` eager loading detected for $this->edition->book->profile->user');
+            throw new Exception('Relation `programs` eager loading detected for $this->edition->book->profile->user while price calculation');
         }
 
         if (! $this->edition->book->relationLoaded('authors')) {
-            throw new Exception('Relation `authors` eager loading detected for $this->edition->book');
+            throw new Exception('Relation `authors` eager loading detected for $this->edition->book while price calculation');
         }
     }
 }
