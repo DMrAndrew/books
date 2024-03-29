@@ -59,7 +59,10 @@ class EBooker extends ComponentBase
     {
         $this->ebook = Auth::getUser()?->profile
             ->books()
-            ->with(['ebook.chapters' => fn($chapters) => $chapters->with(['deferred' => fn($d) => $d->deferred()])])
+            ->with([
+                'ebook.chapters' => fn($chapters) => $chapters->with(['deferred' => fn($d) => $d->deferred()]),
+                'editions' => fn ($q) => $q->withPriceEager(),
+            ])
             ->find($this->property('book_id'))?->ebook
             ?? new Edition([
                 'type' => EditionsEnums::Ebook,

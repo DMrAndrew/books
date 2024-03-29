@@ -1,3 +1,9 @@
+{% set typeEbook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Ebook') %}
+{% set typeAudiobook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Audio') %}
+
+{% set ebook = book.editions.where('type', typeEbook).first %}
+{% set audiobook = book.editions.where('type', typeAudiobook).first %}
+
 <div class="about-book">
     <div id="about-header">
         {% partial 'book/about-header' book=book %}
@@ -26,7 +32,7 @@
                 </div>
 
                 <div class="e-book-sale ui-tabs-content wrapper" data-tab-content="ebook-ecommerce">
-                    {% if book.ebook %}
+                    {% if ebook %}
                         {% partial 'ebooker::settings' authors=book.profiles %}
                     {% else %}
                         {% partial 'ebooker::chapters' authors=book.profiles %}
@@ -38,7 +44,7 @@
                 </div>
 
                 <div class="e-book-sale ui-tabs-content wrapper" data-tab-content="audio-ecommerce">
-                    {% if book.audiobook %}
+                    {% if audiobook %}
                         {% partial 'audiobooker::settings' authors=book.profiles %}
                     {% else %}
                         {% partial 'audiobooker::chapters' authors=book.profiles %}

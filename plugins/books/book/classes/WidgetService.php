@@ -53,7 +53,6 @@ class WidgetService
         $this->setShort($this->short);
     }
 
-
     public function clearQuery(): \Illuminate\Database\Eloquent\Builder
     {
         return Book::query()->onlyPublicStatus();// Не использовать scope Public, который содержит scope adult, иначе в кэш не попадут 18+

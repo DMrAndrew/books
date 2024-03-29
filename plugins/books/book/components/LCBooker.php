@@ -50,7 +50,11 @@ class LCBooker extends ComponentBase
         return $this->user->profile
             ->authorships()
             ->owner($this->getIsOwner())
-            ->with(['book' => fn($q) => $q->defaultEager(), 'book.profile'])
+            ->with([
+                'book' => fn($q) => $q->defaultEager(),
+                'book.profile',
+                'book.editions' => fn ($q) => $q->withPriceEager(),
+            ])
             ->get()
             ->sortByDesc('sort_order');
     }

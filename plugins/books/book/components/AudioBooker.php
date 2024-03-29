@@ -72,7 +72,10 @@ class AudioBooker extends ComponentBase
     {
         $this->audiobook = Auth::getUser()?->profile
             ->books()
-            ->with(['audiobook.chapters' => fn($chapters) => $chapters->with(['deferred' => fn($d) => $d->deferred()])])
+            ->with([
+                'audiobook.chapters' => fn($chapters) => $chapters->with(['deferred' => fn($d) => $d->deferred()]),
+                'editions' => fn ($q) => $q->withPriceEager(),
+            ])
             ->find($this->property('book_id'))?->audiobook
             ?? new Edition([
                 'type' => EditionsEnums::Audio,

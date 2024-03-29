@@ -40,6 +40,7 @@ class HasLibrary extends ExtensionBase
             ->whereHas('favorable', fn ($favorable) => $favorable->public())
             ->with(['favorable' => function ($q) {
                 $q->with([
+                    'book.editions' => fn ($q) => $q->withPriceEager()->withReadLength($this->model),
                     'book.ebook' => fn ($ebook) => $ebook->withReadLength($this->model),
                     'book.audiobook' => fn ($audiobook) => $audiobook->withReadLength($this->model),
                 ]);

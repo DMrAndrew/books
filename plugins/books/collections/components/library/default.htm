@@ -1,3 +1,6 @@
+{% set typeEbook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Ebook') %}
+{% set typeAudiobook = constant('Books\\Book\\Classes\\Enums\\EditionsEnums::Audio') %}
+
 <div class="library">
     <!--    {% if user and library_has_items %}-->
     <!--    <div class="ui-container">-->
@@ -33,23 +36,22 @@
                                     <div class="ui-grid-container ui-grid-gap">
                                         {% for lib in item.items %}
 
-
                                             <div
                                                 class="ui-col-md-2 ui-col-sm-3 ui-col-xs-4 ui-col-xxs-4 book-mini-card">
                                                 <div data-tippy-continer>
                                                     <div class="book-mini-card__image">
 
-                                                        {% if lib.book.ebook %}
+                                                        {% if lib.book.editions.where('type', typeEbook).first %}
                                                             <a href="/reader/{{ lib.book.id }}" data-tippy-init>
-                                                        {% elseif lib.book.audiobook %}
+                                                        {% elseif lib.book.editions.where('type', typeAudiobook).first %}
                                                             <a href="/readeraudio/{{ lib.book.id }}" data-tippy-init>
                                                         {% endif %}
 
                                                             <img src="{{ lib.book.cover.getThumb(208,300) }}"
                                                                 class="book-mini-card__image" alt=""
                                                                 loading="lazy">
-                                                            {% if lib.book.ebook.priceTag.discountExists %}
-                                                                {% partial 'SaleTagBlock::default' discountInfo = lib.book.ebook.priceTag.getDiscountInfo %}
+                                                            {% if lib.book.editions.where('type', typeEbook).first.priceTag.discountExists %}
+                                                                {% partial 'SaleTagBlock::default' discountInfo = lib.book.editions.where('type', typeEbook).first.priceTag.getDiscountInfo %}
                                                             {% endif %}
                                                     </div>
                                                     </a>
