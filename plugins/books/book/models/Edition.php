@@ -261,10 +261,7 @@ class Edition extends Model implements ProductInterface
             'discounts',
             'promocodes',
             'book',
-            'book.profile',
-            'book.profile.user',
             'book.profile.user.programs',
-            'book.authors',
             'book.authors.profile',
         ]);
     }
