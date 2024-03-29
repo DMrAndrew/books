@@ -268,16 +268,6 @@ class Book extends Model
         return $this->hasManyDeepFromRelations($this->awards(), (new AwardBook())->award());
     }
 
-    public function getEbook(): ?Edition
-    {
-        return $this->editions->where('type', EditionsEnums::Ebook)->first();
-    }
-
-    public function getAudiobook(): ?Edition
-    {
-        return $this->editions->where('type', EditionsEnums::Audio)->first();
-    }
-
     public function scopeWithSumAwardItems(Builder $builder, int $ofLastDays = null)
     {
         return $builder->withSum(['awardsItems' => fn ($awards) => $awards->when($ofLastDays, fn ($b) => $b->ofLastDays($b))], 'rate');
