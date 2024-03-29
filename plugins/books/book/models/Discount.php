@@ -67,7 +67,7 @@ class Discount extends Model
 
     public function priceTag(): PriceTag
     {
-        return new PriceTag(edition: $this->edition, discount: $this, reader: Auth::getuser());
+        return new PriceTag(edition: $this->edition, discount: $this);
     }
 
     public function isActive()

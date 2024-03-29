@@ -1,10 +1,10 @@
 {% if priceTag %}
 <div class="personal-area__wrap _indent-large personal-area-discount-modal__text">
     <div>Цена:</div>
-    <span>{{priceTagForUser(user).initialPrice}} руб</span>
+    <span>{{priceTag.initialPrice}} руб</span>
 </div>
 <div class="personal-area__wrap _indent-large personal-area-discount-modal__text">
     <div>Цена со скидкой:</div>
-    <span class="personal-area__wrap _color-green">{{priceTagForUser(user).price}} руб</span>
+    <span class="personal-area__wrap _color-green">{{priceTag.price}} руб</span>
 </div>
 {% endif %}

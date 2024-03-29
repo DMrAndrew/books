@@ -57,7 +57,7 @@ class AuthorSpace extends ComponentBase
         $this->profile_id = (int)$this->param('profile_id');
         $this->authUser = Auth::getUser();
 
-        $this->profile = $this->authUser->profiles->firstWhere('id', $this->profile_id)
+        $this->profile = $this->authUser?->profiles->firstWhere('id', $this->profile_id)
                         ?? Profile::query()->find($this->profile_id);
 
         if (! $this->profile) {

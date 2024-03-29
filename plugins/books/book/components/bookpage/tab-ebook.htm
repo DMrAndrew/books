@@ -39,9 +39,9 @@
                data-request-validate="1"
                data-request-data="edition_id: {{ ebook.id }}"
                class="ui-button ui-button-size--56 ui-button-view--1 ui-button--full cursor-pointer">
-                {% if ebook.priceTagForUser(user).discountExists %}
+                {% if ebook.priceTag.discountExists %}
                 <span>
-                    <span class="ui-text--medium">Купить {{ebook.priceTagForUser(user).price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{ebook.priceTagForUser(user).initialPrice}} ₽</span></span>
+                    <span class="ui-text--medium">Купить {{ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{ebook.priceTag.initialPrice}} ₽</span></span>
                     <span class="ui-text-body--3 ui-text--regular">Скидка {{ebook.discount.amount}}%</span>
                 </span>
                 {% else %}
@@ -52,9 +52,9 @@
             {% else %}
             <a onclick="loginPopup()" class="ui-button ui-button-size--56
                                             ui-button-view--1 ui-button--full cursor-pointer">
-                {% if ebook.priceTagForUser(user).discountExists %}
+                {% if ebook.priceTag.discountExists %}
                 <span>
-                    <span class="ui-text--medium">Купить {{ebook.priceTagForUser(user).price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{ebook.priceTagForUser(user).initialPrice}} ₽</span></span>
+                    <span class="ui-text--medium">Купить {{ebook.priceTag.price}} ₽ <span class="ui-button-text-initial ui-text--lt">{{ebook.priceTag.initialPrice}} ₽</span></span>
                     <span class="ui-text-body--3 ui-text--regular">Скидка {{ebook.discount.amount}}%</span>
                 </span>
                 {% else %}

@@ -7,8 +7,8 @@
                     <img src="{{ book.cover.getThumb(210,300) }}"
                          alt="Обложка для книги {{ book.title }}" loading="lazy">
                 {% set ebook = book.editions.where('type', typeEbook).first %}
-                {% if ebook.priceTagForUser(user).discountExists %}
-                    {% partial 'SaleTagBlock::default' discountInfo = ebook.priceTagForUser(user).getDiscountInfo %}
+                {% if ebook.priceTag.discountExists %}
+                    {% partial 'SaleTagBlock::default' discountInfo = ebook.priceTag.getDiscountInfo %}
                 {% endif %}
             </div>
             </a>

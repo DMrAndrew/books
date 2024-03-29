@@ -1,9 +1,9 @@
 {% if edition.price %}
-    {% if edition.priceTagForUser(user).discountExists %}
-    <span class="ui-text--bold">{{ edition.priceTagForUser(user).price }} ₽ <span
-        class="ui-text--lt">{{edition.priceTagForUser(user).initialPrice}} ₽</span></span>
+    {% if edition.priceTag.discountExists %}
+    <span class="ui-text--bold">{{ edition.priceTag.price }} ₽ <span
+        class="ui-text--lt">{{edition.priceTag.initialPrice}} ₽</span></span>
     {% else %}
-    <span class="ui-text--bold">{{ edition.priceTagForUser(user).price }}  ₽</span>
+    <span class="ui-text--bold">{{ edition.priceTag.price }}  ₽</span>
     {% endif %}
 {% else %}
     <span class="ui-text--bold">Бесплатно</span>

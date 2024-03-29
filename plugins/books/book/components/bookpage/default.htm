@@ -15,8 +15,8 @@
     <div class="book-card-full _indent">
         <div class="book-card-full__image" itemprop="image" itemscope itemtype="http://schema.org/ImageObject">
             <img itemprop="contentUrl" class="book-card-full__image" src="{{book.cover.getThumb(334,488)}}" alt="Обложка для книги {{book.title}}" style="object-fit: fill" >
-            {% if ebook.priceTagForUser(user).discountExists %}
-                {% partial 'SaleTagBlock::default' discountInfo = ebook.priceTagForUser(user).getDiscountInfo %}
+            {% if ebook.priceTag.discountExists %}
+                {% partial 'SaleTagBlock::default' discountInfo = ebook.priceTag.getDiscountInfo %}
             {% endif %}
         </div>
         <div class="book-card-full__description">

@@ -255,14 +255,6 @@ class Edition extends Model implements ProductInterface
         return new PriceTag(edition: $this);
     }
 
-    public function priceTagForUser(User $user): PriceTag
-    {
-        return new PriceTag(
-            edition: $this,
-            reader: $user,
-        );
-    }
-
     public function scopeWithPriceEager(Builder $q): Builder
     {
         return $q->with([

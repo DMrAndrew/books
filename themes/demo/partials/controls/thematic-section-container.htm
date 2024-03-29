@@ -16,15 +16,15 @@
                          alt="Обложка для книги {{ book.title }}"
                          loading="lazy"/>
                     </noindex>
-                    {% if ebook.priceTagForUser(user).discountExists %}
-                    {% partial 'SaleTagBlock::default' discountInfo = ebook.priceTagForUser(user).getDiscountInfo %}
+                    {% if ebook.priceTag.discountExists %}
+                    {% partial 'SaleTagBlock::default' discountInfo = ebook.priceTag.getDiscountInfo %}
                     {% endif %}
                 </div>
                 <div class="book-mini-card__title">
                     {{ book.title }}
                 </div>
             </a>
-            {% if ebook.priceTagForUser(user).discountExists %}
+            {% if ebook.priceTag.discountExists %}
             <div class="book-mini-card__price ui-tooltip" data-tooltip="Электронная книга">
                 <svg>
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#book-16' | theme}}"></use>
@@ -32,7 +32,7 @@
                 {% partial 'book/book-price' edition=ebook %}
             </div>
             {% endif %}
-            {% if audiobook.priceTagForUser(user).discountExists %}
+            {% if audiobook.priceTag.discountExists %}
             <div class="book-mini-card__price ui-tooltip" data-tooltip="Аудиокнига">
                 <svg>
                     <use xlink:href="{{'assets/icon-sprite/svg-sprite.svg#audio-16' | theme}}"></use>
