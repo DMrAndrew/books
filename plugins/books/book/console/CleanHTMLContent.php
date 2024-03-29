@@ -1,6 +1,7 @@
 <?php namespace Books\Book\Console;
 
 use Books\Blog\Models\Post;
+use Books\Book\Classes\Services\CleanerMode;
 use Books\Book\Classes\Services\TextCleanerService;
 use Books\Book\Models\Book;
 use Books\Profile\Models\Profile;
@@ -41,7 +42,7 @@ class CleanHTMLContent extends Command
 
         $type = $this->argument('type');
         $idsList = $this->argument('ids');
-        $linksProcessMode = $this->option('linksMode');
+        $linksProcessMode = CleanerMode::tryFrom($this->option('linksMode')) ?? CleanerMode::EXTRACT_ANCHOR;
         $ids = explode(',', $idsList);
 
         $csvName = storage_path() . '/' . now()->format('Y-m-d_H-i-s') . '.csv';
@@ -73,7 +74,7 @@ class CleanHTMLContent extends Command
                     try{
                         $this->info(" --Чистка главы [{$chapter->id}] `{$chapter->title}`");
                         $chapter->content->update([
-                            'body' => TextCleanerService::cleanContent($chapter->content->body, processLinksMode: $linksProcessMode)
+                            'body' => TextCleanerService::cleanContent($chapter->content->body, mode: $linksProcessMode)
                         ]);
 
                     } catch(Throwable $ignored){
@@ -94,7 +95,7 @@ class CleanHTMLContent extends Command
                         try {
                             $this->info(" -- --Чистка пагинации [{$pagination->id}]");
                             $pagination->content->update([
-                                'body' => TextCleanerService::cleanContent($pagination->content->body, processLinksMode: $linksProcessMode)
+                                'body' => TextCleanerService::cleanContent($pagination->content->body, mode: $linksProcessMode)
                             ]);
 
                         } catch (Throwable $ignored) {
@@ -134,7 +135,7 @@ class CleanHTMLContent extends Command
 
                     if ($book->annotation) {
                         $book->update([
-                            'annotation' => TextCleanerService::cleanContent($book->annotation, processLinksMode: $linksProcessMode)
+                            'annotation' => TextCleanerService::cleanContent($book->annotation, mode: $linksProcessMode)
                         ]);
                     }
                 } catch (Throwable $ignored) {
@@ -171,7 +172,7 @@ class CleanHTMLContent extends Command
                     if ($profile->about) {
 
                         $profile->update([
-                            'about' => TextCleanerService::cleanContent($profile->about, processLinksMode: $linksProcessMode)
+                            'about' => TextCleanerService::cleanContent($profile->about, mode: $linksProcessMode)
                         ]);
                     }
                 } catch (Throwable $ignored) {
@@ -208,7 +209,7 @@ class CleanHTMLContent extends Command
                     if ($blogPost->content) {
 
                         $blogPost->update([
-                            'content' => TextCleanerService::cleanContent($blogPost->content, processLinksMode: $linksProcessMode)
+                            'content' => TextCleanerService::cleanContent($blogPost->content, mode: $linksProcessMode)
                         ]);
                     }
                 } catch (Throwable $ignored) {

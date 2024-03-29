@@ -75,7 +75,7 @@ class Chapterer extends ComponentBase
                 ->find($this->param('chapter_id'))
             ?? new Chapter([
                 'edition_id' => $this->ebook->id,
-                'type' => EditionsEnums::Audio,
+                'type' => EditionsEnums::Ebook,
             ]);
         $this->chapterManager = ($this->ebook->shouldDeferredUpdate() ? $this->chapter->deferredService() : $this->chapter->service())->setEdition($this->ebook);
         $this->prepareVals();
