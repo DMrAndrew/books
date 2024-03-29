@@ -44,7 +44,7 @@ class Blacklist extends ComponentBase
     public function init()
     {
         $authUser = Auth::getUser();
-        $this->profile = Profile::query()->find($this->profile_id ?? $authUser?->profile->id);
+        $this->profile = Profile::query()->find($authUser?->profile?->id);
     }
 
     public function onRun()

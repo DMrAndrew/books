@@ -90,7 +90,10 @@ class PriceTag
         }
 
         if ($reader = Auth::getUser()) {
-            $authorProfile = $this->edition->book->profile;
+            $authorProfile = $this->edition?->book?->profile;
+            if(!$authorProfile){
+                return;
+            }
             $authorAccount = $authorProfile->user;
 
             // todo: тут три запроса выполняется, можно сделать один и дальше коллекцию фильтровать
