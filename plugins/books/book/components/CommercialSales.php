@@ -59,8 +59,9 @@ class CommercialSales extends ComponentBase
     {
         $accountBooks = $this->getAccountBooks();
 
-        $editionsInSale = Edition
-            ::whereHas('book', function($q) use ($accountBooks) {
+        $editionsInSale = Edition::query()
+            ->withPriceEager()
+            ->whereHas('book', function($q) use ($accountBooks) {
                 $q->whereIn('id', $accountBooks->pluck('id'));
             })
             ->selling()

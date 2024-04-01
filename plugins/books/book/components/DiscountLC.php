@@ -169,6 +169,7 @@ class DiscountLC extends ComponentBase
         $accountBooks = $this->getAccountBooks();
 
         return Edition::query()
+            ->withPriceEager()
             ->whereIn('book_id', $accountBooks->pluck('id')->toArray())
             ->free(false)
             ->orderBySalesAt()
@@ -189,6 +190,7 @@ class DiscountLC extends ComponentBase
         $editions = $this->getNotFreeAccountEditions();
 
         return Discount::query()
+            ->with(['edition' => fn ($q) => $q->withPriceEager()])
             ->whereIn('edition_id', $editions->pluck('id')->toArray())
             ->get();
     }
