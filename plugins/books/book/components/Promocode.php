@@ -148,6 +148,7 @@ class Promocode extends ComponentBase
         $accountBooks = $this->getAccountBooks();
 
         return Edition::query()
+            ->withPriceEager()
             ->whereIn('book_id', $accountBooks->pluck('id')->toArray())
             ->free(false)
             ->orderBySalesAt()
